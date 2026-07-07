@@ -1,0 +1,17 @@
+# PostgreSQL 16 para desarrollo local (el compose de producción con
+# Nginx + SSL + backend se agrega en la etapa Docker del Hito 2)
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cochrane-db
+    environment:
+      POSTGRES_DB: cochrane_turismo
+      POSTGRES_USER: cochrane
+      POSTGRES_PASSWORD: cochrane_dev
+    ports:
+      - '5432:5432'
+    volumes:
+      - cochrane_pgdata:/var/lib/postgresql/data
+
+volumes:
+  cochrane_pgdata:
