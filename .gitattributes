@@ -1,0 +1,20 @@
+# Normalización de fin de línea — PWA Turismo Cochrane
+# Git decide automáticamente el manejo de texto...
+* text=auto
+
+# ...pero estos SIEMPRE deben quedar en LF, o se rompen dentro de los
+# contenedores Linux (scripts de arranque, configs del proxy, Dockerfiles).
+*.sh            text eol=lf
+Dockerfile      text eol=lf
+Dockerfile.*    text eol=lf
+Caddyfile       text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+
+# Binarios: que Git no toque los saltos de línea.
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.webp          binary
+*.ico           binary
+*.woff2         binary
