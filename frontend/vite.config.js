@@ -26,8 +26,12 @@ export default defineConfig({
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
+      // Habilita el service worker también en `npm run dev` para probar el push.
+      devOptions: { enabled: true, type: 'module' },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
+        // Importa el manejador de Web Push (push/notificationclick) al SW generado.
+        importScripts: ['push-listener.js'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/[abc]\.tile\.openstreetmap\.org\/.*/i,

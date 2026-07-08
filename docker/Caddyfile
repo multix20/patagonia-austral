@@ -1,0 +1,41 @@
+# Reverse proxy + SSL automático — PWA Turismo Cochrane
+# Licitación ID 3797-37-LE26 (bases punto 4: servidor web/reverse proxy + SSL/TLS).
+#
+# Caddy obtiene y renueva certificados HTTPS solo (Let's Encrypt) cuando
+# SITE_ADDRESS es un dominio público real. En local usa localhost (CA interna)
+# o http:// (sin TLS). Se configura por variables de entorno (ver .env.prod).
+
+{
+	# Correo para Let's Encrypt (avisos de expiración). Cámbialo por el del municipio.
+	email {$ACME_EMAIL:admin@example.com}
+}
+
+{$SITE_ADDRESS:localhost} {
+	encode zstd gzip
+
+	# Cabeceras de seguridad básicas (propuesta de seguridad, Anexo 4).
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	# --- Backend Laravel / Filament (API pública, panel /admin, healthcheck) ---
+	# Estas rutas van a php-fpm (contenedor `app`) por la red interna de Docker.
+	@backend path /api/* /admin /admin/* /up /livewire/* /vendor/* /storage/* /css/* /js/* /fonts/* /images/*
+	handle @backend {
+		root * /var/www/html/public
+		php_fastcgi app:9000
+		file_server
+	}
+
+	# --- Frontend PWA (SPA React) ---
+	# Todo lo demás lo sirve el build estático; fallback a index.html (SPA routing).
+	handle {
+		root * /srv/frontend
+		try_files {path} /index.html
+		file_server
+	}
+}

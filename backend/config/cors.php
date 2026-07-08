@@ -4,7 +4,7 @@
 // Configura FRONTEND_URL en .env
 return [
     'paths' => ['api/*'],
-    'allowed_methods' => ['GET'],
+    'allowed_methods' => ['GET', 'POST', 'OPTIONS'],
     'allowed_origins' => array_filter([
         env('FRONTEND_URL'),
         'http://localhost:5173',

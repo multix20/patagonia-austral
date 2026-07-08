@@ -1,0 +1,38 @@
+# Imagen de PRODUCCIÓN (php-fpm) — PWA Turismo Cochrane · backend Laravel + Filament
+# Licitación ID 3797-37-LE26. Contenedor exigido por las bases (punto 4).
+#
+# A diferencia de backend/Dockerfile (que usa `php artisan serve` para el demo de
+# Render), esta imagen expone php-fpm detrás del reverse proxy Caddy, que es la
+# arquitectura de producción con SSL que piden las bases.
+FROM php:8.4-fpm-bookworm
+
+# Dependencias del sistema y extensiones PHP requeridas por Laravel + Filament + PostgreSQL
+# (gmp lo necesita la librería de Web Push / VAPID)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git unzip rsync libpq-dev libicu-dev libzip-dev libpng-dev libjpeg-dev libfreetype6-dev libgmp-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j"$(nproc)" pdo_pgsql pgsql bcmath intl zip gd exif pcntl gmp \
+    && rm -rf /var/lib/apt/lists/*
+
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# Código de la app
+COPY . .
+
+# Dependencias PHP de producción (sin dev) + permisos
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist \
+    && chmod -R 775 storage bootstrap/cache
+
+# Copia pristina de public/ y storage/ para poder refrescar los volúmenes en cada
+# arranque (ver entrypoint). public/ y storage/ se montan como volúmenes en compose.
+RUN cp -a public /opt/public-src && cp -a storage /opt/storage-src \
+    && chmod +x docker/entrypoint.fpm.sh
+
+# php-fpm escucha en el 9000 (lo consume Caddy vía fastcgi por la red interna)
+EXPOSE 9000
+
+ENTRYPOINT ["docker/entrypoint.fpm.sh"]
+CMD ["php-fpm", "--nodaemonize"]

@@ -1,0 +1,52 @@
+# Blueprint Render — PWA Turismo Cochrane · Licitación ID 3797-37-LE26
+# Despliega el backend: 1 web service en contenedor Docker + 1 PostgreSQL gestionado.
+# El frontend (PWA) va en Netlify por separado (ver DEPLOY.md).
+services:
+  - type: web
+    name: cochrane-turismo-api
+    runtime: docker
+    plan: free
+    region: oregon
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /up
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_TIMEZONE
+        value: America/Santiago
+      - key: APP_DEBUG
+        value: "false"
+      # Clave de la app (demo). Puedes rotarla con: php artisan key:generate --show
+      - key: APP_KEY
+        value: base64:O+1DNk4TIHTUKcVutvdgZ+Gt5okYC9EXbD1iVz+e3Nw=
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: DB_CONNECTION
+        value: pgsql
+      # Cadena de conexión inyectada desde la base Postgres de abajo
+      - key: DB_URL
+        fromDatabase:
+          name: cochrane-turismo-db
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      # Origen permitido por CORS (la PWA en Netlify). Ajusta si cambia el dominio.
+      - key: FRONTEND_URL
+        value: https://cochrane-turismo.netlify.app
+      # Web Push (VAPID). Mismo par que en local para no invalidar suscripciones.
+      - key: VAPID_SUBJECT
+        value: mailto:turismo@municochrane.cl
+      - key: VAPID_PUBLIC_KEY
+        value: BI_S5cKlSTNgTD-9Ic1CX4LI8v0zfWZeZ3Jcdl_Q8EmmK29ijPKPgKjllfjc0qAgClM2S7-5IoMsMAVXuFMsYM8
+      - key: VAPID_PRIVATE_KEY
+        value: 2iJlhvJeNf1SNPg2eSZ-YuGjBfDTi33E5Jvklx9a_Cs
+
+databases:
+  - name: cochrane-turismo-db
+    databaseName: cochrane_turismo
+    user: cochrane
+    plan: free

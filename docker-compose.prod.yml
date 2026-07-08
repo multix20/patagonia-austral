@@ -1,0 +1,141 @@
+# Orquestación de PRODUCCIÓN — PWA Turismo Cochrane
+# Licitación ID 3797-37-LE26 · I. Municipalidad de Cochrane
+#
+# Cubre el punto 4 de las bases: solución desplegable con Docker Compose que el
+# municipio puede replicar, auditar, mantener o migrar. Corre igual en local o en
+# una instancia AWS EC2.
+#
+#   Servicios:  db (PostgreSQL 16) · app (Laravel php-fpm) · scheduler (Web Push)
+#               frontend (build de la PWA) · web (Caddy: reverse proxy + SSL)
+#   Red interna privada entre servicios · Volúmenes persistentes · SSL automático
+#
+# Variables: copia .env.prod.example a .env y complétalo antes de levantar.
+#   docker compose -f docker-compose.prod.yml up -d --build
+
+name: cochrane-turismo
+
+services:
+  # ---------------------------------------------------------------------------
+  # Base de datos PostgreSQL 16 (contenedor con volumen persistente)
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - interna
+
+  # ---------------------------------------------------------------------------
+  # Backend Laravel + Filament (php-fpm). Sirve API /api, panel /admin.
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.fpm
+    image: cochrane-backend:prod
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    volumes:
+      - app_public:/var/www/html/public
+      - app_storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "php -r \"exit(@fsockopen('127.0.0.1',9000)?0:1);\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      - interna
+
+  # ---------------------------------------------------------------------------
+  # Scheduler: despacha los avisos programados (Web Push) cada minuto.
+  # Reutiliza la imagen del backend, sin re-migrar (arranca tras `app`).
+  # ---------------------------------------------------------------------------
+  scheduler:
+    image: cochrane-backend:prod
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    entrypoint: ["sh", "-c", "php artisan schedule:work"]
+    volumes:
+      - app_storage:/var/www/html/storage
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - interna
+
+  # ---------------------------------------------------------------------------
+  # Build de la PWA (React/Vite). Compila y publica dist/ al volumen compartido.
+  # Corre una vez y termina (restart: no).
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${APP_URL}
+        VITE_VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY}
+    restart: "no"
+    volumes:
+      - frontend_dist:/out
+    networks:
+      - interna
+
+  # ---------------------------------------------------------------------------
+  # Reverse proxy Caddy: SSL automático, sirve la PWA y enruta al backend.
+  # ---------------------------------------------------------------------------
+  web:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    env_file:
+      - .env
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - app_public:/var/www/html/public:ro
+      - app_storage:/var/www/html/storage:ro
+      - frontend_dist:/srv/frontend:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+      frontend:
+        condition: service_completed_successfully
+    networks:
+      - interna
+
+networks:
+  interna:
+    driver: bridge
+
+volumes:
+  pgdata:
+  app_public:
+  app_storage:
+  frontend_dist:
+  caddy_data:
+  caddy_config:

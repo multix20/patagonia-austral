@@ -3,13 +3,15 @@ import { openDB } from 'idb'
 // Almacenamiento local estructurado (IndexedDB) según plan de contingencia
 // offline: los contenidos quedan disponibles sin conexión tras la primera visita.
 const DB_NOMBRE = 'cochrane-turismo'
-const DB_VERSION = 1
+const DB_VERSION = 2
 
 function db() {
   return openDB(DB_NOMBRE, DB_VERSION, {
     upgrade(d) {
       if (!d.objectStoreNames.contains('lugares')) d.createObjectStore('lugares', { keyPath: 'id' })
       if (!d.objectStoreNames.contains('meta')) d.createObjectStore('meta')
+      // v2: avisos municipales cacheados para consulta sin conexión
+      if (!d.objectStoreNames.contains('avisos')) d.createObjectStore('avisos', { keyPath: 'id' })
     },
   })
 }
@@ -24,6 +26,19 @@ export async function guardarLugares(lista) {
 export async function leerLugares() {
   const d = await db()
   return d.getAll('lugares')
+}
+
+export async function guardarAvisos(lista) {
+  const d = await db()
+  const tx = d.transaction('avisos', 'readwrite')
+  await tx.store.clear() // los avisos son volátiles: reflejar exactamente lo publicado
+  await Promise.all(lista.map((a) => tx.store.put(a)))
+  await tx.done
+}
+
+export async function leerAvisos() {
+  const d = await db()
+  return d.getAll('avisos')
 }
 
 export async function guardarMeta(clave, valor) {

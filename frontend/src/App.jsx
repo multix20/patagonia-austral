@@ -1,11 +1,20 @@
 import { useCallback, useEffect, useState } from 'react'
 import { I18nProvider, useI18n } from './i18n'
-import { CATEGORIAS, AVISOS_SEED } from './data/places'
-import { obtenerLugares } from './api/client'
+import { CATEGORIAS } from './data/places'
+import { obtenerLugares, obtenerAvisos } from './api/client'
+import { activarPush, pushSoportado } from './push'
 import Icon from './components/Icon'
 import MapView from './components/MapView'
 import PlaceDetail from './components/PlaceDetail'
 import ChatBot from './components/ChatBot'
+
+// Etiquetas de tipo de aviso (coinciden con el CMS Filament)
+const TIPOS_AVISO = {
+  info: { es: 'Información', en: 'Info' },
+  clima: { es: 'Clima', en: 'Weather' },
+  seguridad: { es: 'Seguridad', en: 'Safety' },
+  evento: { es: 'Evento', en: 'Event' },
+}
 
 function AppInterna() {
   const { t, lang, setLang } = useI18n()
@@ -19,9 +28,21 @@ function AppInterna() {
   const [demoOffline, setDemoOffline] = useState(false)
   const offline = sinRed || demoOffline
 
-  // Notificaciones (demo local; en producción: Web Push desde el CMS)
+  // Avisos municipales sincronizados desde el CMS (/api/notices)
+  const [avisos, setAvisos] = useState([])
   const [toast, setToast] = useState(null)
-  const [iAviso, setIAviso] = useState(0)
+  const [panelAvisos, setPanelAvisos] = useState(false)
+  // Avisos ya vistos (para el contador sobre la campanita), persistidos en el dispositivo.
+  const [avisosVistos, setAvisosVistos] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('avisosVistos') || '[]')
+    } catch {
+      return []
+    }
+  })
+
+  // Web Push real (suscripción del dispositivo a los avisos municipales)
+  const [pushEstado, setPushEstado] = useState('idle') // idle|activando|activado|error
 
   // Instalación PWA (beforeinstallprompt real)
   const [promptInstalar, setPromptInstalar] = useState(null)
@@ -31,6 +52,7 @@ function AppInterna() {
 
   useEffect(() => {
     obtenerLugares().then(setLugares)
+    obtenerAvisos().then(setAvisos)
   }, [])
 
   useEffect(() => {
@@ -67,11 +89,51 @@ function AppInterna() {
     localStorage.setItem('bannerInstalarCerrado', '1')
   }
 
-  const probarPush = () => {
-    setToast(AVISOS_SEED[iAviso % AVISOS_SEED.length][lang])
-    setIAviso((i) => i + 1)
+  const mostrarToast = (msg) => {
+    setToast(msg)
     setTimeout(() => setToast(null), 4500)
   }
+
+  const habilitarPush = async () => {
+    try {
+      setPushEstado('activando')
+      await activarPush()
+      setPushEstado('activado')
+      mostrarToast(
+        lang === 'es'
+          ? 'Notificaciones activadas. Recibirás los avisos municipales.'
+          : 'Notifications enabled. You will receive municipal alerts.'
+      )
+    } catch (e) {
+      setPushEstado('error')
+      mostrarToast(
+        lang === 'es'
+          ? 'No se pudieron activar las notificaciones.'
+          : 'Could not enable notifications.'
+      )
+    }
+  }
+
+  // Avisos no leídos = los que aún no se han visto (contador de la campanita)
+  const noLeidos = avisos.filter((a) => !avisosVistos.includes(a.id)).length
+
+  // Abre el panel con TODOS los avisos y los marca como vistos (limpia el contador)
+  const abrirPanelAvisos = () => {
+    setPanelAvisos(true)
+    const ids = avisos.map((a) => a.id)
+    setAvisosVistos(ids)
+    localStorage.setItem('avisosVistos', JSON.stringify(ids))
+  }
+
+  const fmtFechaAviso = (iso) =>
+    new Date(iso).toLocaleString(lang === 'es' ? 'es-CL' : 'en-US', {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+
+  const tipoAvisoLabel = (tp) => TIPOS_AVISO[tp]?.[lang] ?? tp
 
   const onSeleccionar = useCallback((id) => setSeleccionado(id), [])
   const lugarSel = lugares.find((l) => l.id === seleccionado)
@@ -111,12 +173,35 @@ function AppInterna() {
             <Icon nombre="plane" tam={14} /> {t('demoOffline')}
           </span>
         </button>
-        <button onClick={probarPush}>
+        <button onClick={abrirPanelAvisos}>
           <span className="tag">DEMO</span>
           <span className="b-linea">
-            <Icon nombre="bell" tam={14} /> {t('demoPush')}
+            <span className="campanita">
+              <Icon nombre="bell" tam={14} />
+              {noLeidos > 0 && <span className="badge-avisos">{noLeidos}</span>}
+            </span>
+            {t('demoPush')}
           </span>
         </button>
+        {pushSoportado() && (
+          <button onClick={habilitarPush} disabled={pushEstado === 'activado'}>
+            <span className="tag">{pushEstado === 'activado' ? 'ON' : 'PUSH'}</span>
+            <span className="b-linea">
+              <Icon nombre="bell" tam={14} />{' '}
+              {pushEstado === 'activado'
+                ? lang === 'es'
+                  ? 'Notificaciones activas'
+                  : 'Notifications on'
+                : pushEstado === 'activando'
+                  ? lang === 'es'
+                    ? 'Activando…'
+                    : 'Enabling…'
+                  : lang === 'es'
+                    ? 'Activar notificaciones'
+                    : 'Enable notifications'}
+            </span>
+          </button>
+        )}
       </div>
 
       <MapView lugares={lugares} filtro={filtro} onSeleccionar={onSeleccionar} offline={offline} />
@@ -172,6 +257,40 @@ function AppInterna() {
           <div>
             <div className="t-titulo">{t('muni')}</div>
             <div className="t-msg">{toast}</div>
+          </div>
+        </div>
+      )}
+
+      {panelAvisos && (
+        <div className="panel-avisos-overlay" onClick={() => setPanelAvisos(false)}>
+          <div className="panel-avisos" onClick={(e) => e.stopPropagation()}>
+            <div className="pa-head">
+              <span>
+                <Icon nombre="bell" tam={16} />{' '}
+                {lang === 'es' ? 'Avisos municipales' : 'Municipal alerts'}
+              </span>
+              <button
+                className="pa-cerrar"
+                onClick={() => setPanelAvisos(false)}
+                aria-label={lang === 'es' ? 'Cerrar' : 'Close'}
+              >
+                <Icon nombre="x" tam={14} />
+              </button>
+            </div>
+            <div className="pa-lista">
+              {avisos.length === 0 && (
+                <div className="pa-vacio">
+                  {lang === 'es' ? 'No hay avisos por ahora.' : 'No alerts right now.'}
+                </div>
+              )}
+              {avisos.map((a) => (
+                <div key={a.id} className="pa-item">
+                  <span className={`pa-tipo t-${a.tipo}`}>{tipoAvisoLabel(a.tipo)}</span>
+                  <div className="pa-msg">{a.mensaje[lang]}</div>
+                  {a.publicado_en && <div className="pa-fecha">{fmtFechaAviso(a.publicado_en)}</div>}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
