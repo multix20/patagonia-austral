@@ -205,6 +205,99 @@ h1 small {
   gap: 6px;
 }
 
+/* ---------- Ubicación del usuario (punto azul pulsante) ---------- */
+.yo-punto {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #1a73e8;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+.yo-pulso {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: rgba(26, 115, 232, 0.35);
+  animation: yo-latido 2s ease-out infinite;
+}
+@keyframes yo-latido {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+/* ---------- Selector de mapa base (Mapa / Satélite) ---------- */
+.mapa-capas {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 500;
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 8px;
+  padding: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.btn-capa {
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #444;
+  cursor: pointer;
+}
+.btn-capa.activo {
+  background: var(--verde, #0f6e56);
+  color: #fff;
+}
+
+/* ---------- Botón "centrar en mi ubicación" ---------- */
+.btn-ubicarme {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 500;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.btn-ubicarme:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ---------- Etiqueta de distancia sobre la ruta ---------- */
+.ruta-tip {
+  background: var(--verde, #0f6e56);
+  color: #fff;
+  border: 0;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+.ruta-tip::before {
+  display: none;
+}
+
 /* ---------- Chips ---------- */
 .chips {
   display: flex;

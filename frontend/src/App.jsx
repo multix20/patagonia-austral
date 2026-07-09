@@ -235,7 +235,13 @@ function AppInterna() {
         )}
       </div>
 
-      <MapView lugares={lugares} filtro={filtro} onSeleccionar={onSeleccionar} offline={offline} />
+      <MapView
+        lugares={lugares}
+        filtro={filtro}
+        seleccionado={seleccionado}
+        onSeleccionar={onSeleccionar}
+        offline={offline}
+      />
 
       <div className="chips">
         <button

@@ -29,6 +29,7 @@ const RUTAS = {
   landmark: 'M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l8 5H4l8-5',
   bot: 'M12 8V4H8M2 14h2M20 14h2M15 13v2M9 13v2',
   globe: 'M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z',
+  locate: 'M2 12h3M19 12h3M12 2v3M12 19v3',
 }
 
 // Formas adicionales (círculos/rects) por icono
@@ -71,6 +72,7 @@ export function iconoHTML(nombre, tam = 14, color = '#fff') {
     smartphone: '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>',
     bot: '<rect width="16" height="12" x="4" y="8" rx="2"/>',
     globe: '<circle cx="12" cy="12" r="10"/>',
+    locate: '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.5"/>',
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${tam}" height="${tam}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${RUTAS[nombre] || ''}"/>${extras[nombre] || ''}</svg>`
 }
