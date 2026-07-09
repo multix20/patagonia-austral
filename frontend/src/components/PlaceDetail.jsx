@@ -45,6 +45,14 @@ export default function PlaceDetail({ lugar, onCerrar }) {
             <a href={`tel:${lugar.tel.replace(/\s/g, '')}`}>{lugar.tel}</a>
           </div>
         )}
+        <a
+          className="btn-como-llegar"
+          href={`https://www.google.com/maps/dir/?api=1&destination=${lugar.lat},${lugar.lng}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon nombre="locate" tam={16} /> {lang === 'es' ? 'Cómo llegar' : 'Get directions'}
+        </a>
         <div className="disp-offline">
           <Icon nombre="check-circle" tam={14} /> {t('dispOffline')}
         </div>

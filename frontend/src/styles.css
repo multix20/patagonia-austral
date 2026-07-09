@@ -298,6 +298,26 @@ h1 small {
   display: none;
 }
 
+/* ---------- Botón "Cómo llegar" (ficha de lugar) ---------- */
+.btn-como-llegar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 14px 0 4px;
+  padding: 11px 14px;
+  background: var(--verde, #0f6e56);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(15, 110, 86, 0.3);
+}
+.btn-como-llegar:active {
+  transform: scale(0.98);
+}
+
 /* ---------- Chips ---------- */
 .chips {
   display: flex;

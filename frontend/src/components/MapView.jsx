@@ -124,13 +124,18 @@ export default function MapView({ lugares, filtro, seleccionado, onSeleccionar, 
     const lugar = lugares.find((l) => l.id === seleccionado)
     if (!lugar || !pos) return
     const destino = [lugar.lat, lugar.lng]
+    const km = distanciaKm(pos, destino)
+    // Solo dibuja la ruta directa si el usuario está razonablemente cerca (en/junto
+    // a Cochrane). Lejos —p. ej. en otra ciudad— una línea recta de cientos de km
+    // no aporta y descuadra el mapa. Para esos casos está el botón "Cómo llegar"
+    // (Google Maps) en la ficha del lugar.
+    if (km > 30) return
     const linea = L.polyline([pos, destino], {
       color: '#0F6E56',
       weight: 4,
       opacity: 0.85,
       dashArray: '8 8',
     }).addTo(mapa)
-    const km = distanciaKm(pos, destino)
     const txt = km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`
     linea
       .bindTooltip(txt, { permanent: true, direction: 'center', className: 'ruta-tip' })
