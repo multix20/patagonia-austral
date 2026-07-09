@@ -7,6 +7,10 @@ import { useI18n } from '../i18n'
 // Centro de Cochrane
 const COCHRANE = [-47.2539, -72.5732]
 
+// Radio máximo (km) para dibujar la línea de ruta en el mapa: solo turistas
+// realmente cerca del destino. Lejos, para eso está el botón "Cómo llegar".
+const RADIO_RUTA_KM = 30
+
 // Mapas base disponibles. Las teselas se cachean en el service worker
 // (CacheFirst en vite.config.js) para uso sin conexión.
 const BASEMAPS = {
@@ -129,7 +133,7 @@ export default function MapView({ lugares, filtro, seleccionado, onSeleccionar, 
     // a Cochrane). Lejos —p. ej. en otra ciudad— una línea recta de cientos de km
     // no aporta y descuadra el mapa. Para esos casos está el botón "Cómo llegar"
     // (Google Maps) en la ficha del lugar.
-    if (km > 30) return
+    if (km > RADIO_RUTA_KM) return
     const linea = L.polyline([pos, destino], {
       color: '#0F6E56',
       weight: 4,

@@ -61,8 +61,20 @@ PostgreSQL corre solo como servicio. Verificar: `Get-Service postgresql*`.
   `postMessage({tipo:'nuevo-aviso'})` a las ventanas abiertas; `App.jsx` escucha
   con `navigator.serviceWorker.addEventListener('message', …)` y recarga
   `obtenerAvisos()`, así la campanita/contador se actualiza al instante junto con
-  la notificación del SO, sin refrescar. Archivos: `frontend/public/push-listener.js`,
-  `frontend/src/App.jsx`.
+  la notificación del SO, sin refrescar. En móvil, además, se recargan los avisos
+  con `visibilitychange`/`focus` (la página se congela en segundo plano). Archivos:
+  `frontend/public/push-listener.js`, `frontend/src/App.jsx`.
+- **Despliegue en Render (09-jul-2026)**: TODO en Render — backend/CMS/PostgreSQL +
+  frontend como Static Site (`cochrane-turismo.onrender.com`). Push verificado en
+  **PC (Edge/WNS) y móvil (Android/Chrome/FCM)** con `push:test` (2 suscripciones OK).
+  Nota: cada dispositivo se suscribe por separado; en plan free no corre el scheduler
+  (avisos programados a futuro no se disparan) y el backend duerme por inactividad.
+- **Mejoras de mapa (09-jul-2026)**: `MapView.jsx` con ubicación GPS en vivo (punto
+  azul + botón centrar), basemap CARTO Voyager con switch Mapa/Satélite (Esri), y
+  línea de ruta con distancia al lugar seleccionado (solo si el usuario está a ≤30 km).
+  Botón "Cómo llegar" (Google Maps, navegación real) en `PlaceDetail.jsx`. Icono
+  `locate` añadido a `Icon.jsx`. `vite.config.js` cachea las teselas CARTO+Esri para
+  mantener el mapa offline.
 
 ---
 
