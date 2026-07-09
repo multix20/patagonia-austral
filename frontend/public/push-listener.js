@@ -18,7 +18,20 @@ self.addEventListener('push', (event) => {
     data: { tipo: data.tipo || 'info' },
   }
 
-  event.waitUntil(self.registration.showNotification(title, options))
+  // Muestra la notificacion del SO Y avisa a la app abierta (si la hay) para que
+  // la campanita/badge se actualice en vivo, sin necesidad de refrescar.
+  event.waitUntil(
+    Promise.all([
+      self.registration.showNotification(title, options),
+      self.clients
+        .matchAll({ type: 'window', includeUncontrolled: true })
+        .then((lista) => {
+          for (const cliente of lista) {
+            cliente.postMessage({ tipo: 'nuevo-aviso', aviso: data })
+          }
+        }),
+    ])
+  )
 })
 
 self.addEventListener('notificationclick', (event) => {

@@ -55,6 +55,20 @@ function AppInterna() {
     obtenerAvisos().then(setAvisos)
   }, [])
 
+  // Cuando llega un Web Push, el service worker avisa a la app (postMessage).
+  // Recargamos los avisos desde la API para que la campanita/badge se actualice
+  // AL MISMO TIEMPO que la notificación del sistema, sin refrescar la página.
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return
+    const alMensaje = (event) => {
+      if (event.data?.tipo === 'nuevo-aviso') {
+        obtenerAvisos().then(setAvisos)
+      }
+    }
+    navigator.serviceWorker.addEventListener('message', alMensaje)
+    return () => navigator.serviceWorker.removeEventListener('message', alMensaje)
+  }, [])
+
   useEffect(() => {
     const on = () => setSinRed(false)
     const off = () => setSinRed(true)

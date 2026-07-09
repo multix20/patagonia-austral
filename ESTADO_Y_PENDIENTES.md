@@ -57,6 +57,12 @@ PostgreSQL corre solo como servicio. Verificar: `Get-Service postgresql*`.
 - **Web Push**: `minishlink/web-push`; tablas `push_subscriptions` + columna `notificado_en`; `PushController` (`/api/push/*`); `WebPushSender`; `NoticeObserver`; comando `avisos:despachar` planificado cada minuto; `push-listener.js` en el SW; botón "Activar notificaciones" en la PWA. CORS ahora permite POST.
 - `User.php` implementa `canAccessPanel()` (necesario para Filament en producción).
 - Despliegue preparado (demo): `render.yaml`, `backend/Dockerfile`, `DEPLOY.md`.
+- **Badge de avisos en vivo (09-jul-2026)**: al recibir un Web Push, el SW hace
+  `postMessage({tipo:'nuevo-aviso'})` a las ventanas abiertas; `App.jsx` escucha
+  con `navigator.serviceWorker.addEventListener('message', …)` y recarga
+  `obtenerAvisos()`, así la campanita/contador se actualiza al instante junto con
+  la notificación del SO, sin refrescar. Archivos: `frontend/public/push-listener.js`,
+  `frontend/src/App.jsx`.
 
 ---
 
