@@ -79,7 +79,7 @@ define(['./workbox-b1bafff1'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "index.html",
-    "revision": "0.4hlhr7d092c"
+    "revision": "0.p2h7so1gl4"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
@@ -87,6 +87,24 @@ define(['./workbox-b1bafff1'], (function (workbox) { 'use strict';
   }));
   workbox.registerRoute(/^https:\/\/[abc]\.tile\.openstreetmap\.org\/.*/i, new workbox.CacheFirst({
     "cacheName": "osm-tiles",
+    plugins: [new workbox.ExpirationPlugin({
+      maxEntries: 600,
+      maxAgeSeconds: 2592000
+    }), new workbox.CacheableResponsePlugin({
+      statuses: [0, 200]
+    })]
+  }), 'GET');
+  workbox.registerRoute(/^https:\/\/[a-d]\.basemaps\.cartocdn\.com\/.*/i, new workbox.CacheFirst({
+    "cacheName": "carto-tiles",
+    plugins: [new workbox.ExpirationPlugin({
+      maxEntries: 800,
+      maxAgeSeconds: 2592000
+    }), new workbox.CacheableResponsePlugin({
+      statuses: [0, 200]
+    })]
+  }), 'GET');
+  workbox.registerRoute(/^https:\/\/server\.arcgisonline\.com\/.*/i, new workbox.CacheFirst({
+    "cacheName": "esri-tiles",
     plugins: [new workbox.ExpirationPlugin({
       maxEntries: 600,
       maxAgeSeconds: 2592000

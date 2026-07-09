@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// PWA Turismo Cochrane - Licitacion ID 3797-37-LE26
+// PWA Patagonia Austral Turismo - Carretera Austral (Coyhaique a Villa O'Higgins)
 // Offline-first: precache del app shell + cache de teselas OSM + cache de API
 export default defineConfig({
   plugins: [
@@ -11,10 +11,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
       manifest: {
-        name: 'Cochrane Turismo',
-        short_name: 'Cochrane',
+        name: 'Patagonia Austral Turismo',
+        short_name: 'Patagonia',
         description:
-          'Guia turistica oficial de Cochrane, capital de la Patagonia chilena. Funciona sin conexion.',
+          'Guia turistica de la Carretera Austral, de Coyhaique a Villa O Higgins. Funciona sin conexion.',
         lang: 'es',
         theme_color: '#0F6E56',
         background_color: '#F7F5F0',
