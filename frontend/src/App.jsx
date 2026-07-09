@@ -69,6 +69,23 @@ function AppInterna() {
     return () => navigator.serviceWorker.removeEventListener('message', alMensaje)
   }, [])
 
+  // En móvil, la página se congela en segundo plano y no procesa el mensaje del
+  // service worker. Al volver a primer plano (o recuperar el foco) recargamos los
+  // avisos, así la campanita se actualiza sin tener que salir y reabrir la app.
+  useEffect(() => {
+    const refrescar = () => {
+      if (document.visibilityState === 'visible') {
+        obtenerAvisos().then(setAvisos)
+      }
+    }
+    document.addEventListener('visibilitychange', refrescar)
+    window.addEventListener('focus', refrescar)
+    return () => {
+      document.removeEventListener('visibilitychange', refrescar)
+      window.removeEventListener('focus', refrescar)
+    }
+  }, [])
+
   useEffect(() => {
     const on = () => setSinRed(false)
     const off = () => setSinRed(true)
