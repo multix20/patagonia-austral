@@ -136,10 +136,14 @@ function AppInterna() {
       )
     } catch (e) {
       setPushEstado('error')
+      // El código del error (no-soportado | sin-clave | permiso-denegado |
+      // registro-fallido | otro) se muestra para poder diagnosticar en móvil,
+      // donde no hay consola a mano.
+      const motivo = e?.message || 'desconocido'
       mostrarToast(
         lang === 'es'
-          ? 'No se pudieron activar las notificaciones.'
-          : 'Could not enable notifications.'
+          ? `No se pudieron activar las notificaciones (${motivo}).`
+          : `Could not enable notifications (${motivo}).`
       )
     }
   }
