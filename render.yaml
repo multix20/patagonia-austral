@@ -1,10 +1,12 @@
 # Blueprint Render — Patagonia Austral (PWA de turismo, proyecto propio)
-# Despliega el backend: 1 web service en contenedor Docker + 1 PostgreSQL gestionado.
-# El frontend (PWA) se despliega aparte como Static Site en Render (ver DEPLOY.md).
+# Despliega SOLO el backend (Laravel + Filament) como web service Docker.
+# - La base de datos es EXTERNA: Postgres gestionado en Neon (neon.tech, free).
+#   Se conecta vía DB_URL (secreto del dashboard). Así no chocamos con el límite
+#   de una sola Postgres free por cuenta de Render (la ocupa el proyecto Cochrane).
+# - El frontend (PWA) va en Netlify (netlify.toml). Ver DEPLOY.md.
 #
-# OJO: los nombres de servicio son propios de ESTE proyecto y no chocan con los
-# del proyecto Cochrane (cochrane-turismo-api / cochrane-turismo-db), que puede
-# seguir desplegado en la misma cuenta sin conflicto.
+# OJO: el nombre del servicio es propio de ESTE proyecto y no choca con los del
+# proyecto Cochrane (cochrane-turismo-*), que sigue en la misma cuenta sin conflicto.
 services:
   - type: web
     name: patagonia-austral-api
@@ -30,18 +32,18 @@ services:
         value: stderr
       - key: DB_CONNECTION
         value: pgsql
-      # Cadena de conexión inyectada desde la base Postgres de abajo
+      # Connection string de Neon — SECRETO del dashboard (sync: false).
+      # Formato: postgresql://usuario:clave@host.neon.tech/patagonia_austral?sslmode=require
       - key: DB_URL
-        fromDatabase:
-          name: patagonia-austral-db
-          property: connectionString
+        sync: false
       - key: SESSION_DRIVER
         value: database
       - key: CACHE_STORE
         value: database
-      # Origen permitido por CORS (la URL pública de la PWA). Ajustar si cambia el dominio.
+      # Origen permitido por CORS = URL pública de la PWA en Netlify.
+      # Ajustar cuando exista el sitio real (o si se usa dominio propio).
       - key: FRONTEND_URL
-        value: https://patagonia-austral.onrender.com
+        value: https://patagonia-austral.netlify.app
       # Web Push (VAPID). Par de claves PROPIO de este proyecto (no reutilizar las
       # de Cochrane; cambiar el par invalida las suscripciones ya hechas).
       # La pública no es secreta (viaja al navegador); la privada se ingresa en el
@@ -52,9 +54,3 @@ services:
         value: BHXyuwrehAa5BbAxa02Q76oIza-obs5baPkAl05sjiKF-wB8YaHDxflkFG4l0NwRrEnHWnAV6FLvApRXr2l2-iE
       - key: VAPID_PRIVATE_KEY
         sync: false
-
-databases:
-  - name: patagonia-austral-db
-    databaseName: patagonia_austral
-    user: patagonia
-    plan: free

@@ -94,9 +94,12 @@ Config local en `frontend/.env.local` (VITE_API_URL + VITE_VAPID_PUBLIC_KEY).
 
 ## PENDIENTES — roadmap propio (ver README para las fases)
 
-### 1. Desplegar este repo en Render
-Blueprint `render.yaml` (backend+db) + Static Site (frontend). Guía: `DEPLOY.md`.
-Verificar que los servicios de Cochrane siguen intactos tras el Apply.
+### 1. Desplegar este repo — Netlify + Render + Neon
+Arquitectura decidida (10-jul-2026): **frontend en Netlify**, **backend en
+Render** (web service free), **PostgreSQL en Neon** (free, externa). La base va
+en Neon porque Render solo permite una Postgres free por cuenta (la ocupa
+Cochrane) y además las free de Render expiran a los 30 días. Guía paso a paso:
+`DEPLOY.md`. Verificar que los servicios de Cochrane siguen intactos.
 
 ### 2. Fase 1 — Multi-localidad
 Modelo `Localidad`, selector de pueblo, filtro por localidad en mapa y API.

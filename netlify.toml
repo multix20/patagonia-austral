@@ -1,5 +1,5 @@
-# Despliegue continuo Netlify — Patagonia Austral (alternativa opcional;
-# el despliegue principal del frontend es un Static Site en Render, ver DEPLOY.md)
+# Despliegue continuo Netlify — Patagonia Austral (frontend PWA)
+# Variables del sitio: VITE_API_URL + VITE_VAPID_PUBLIC_KEY (ver DEPLOY.md)
 [build]
   base    = "frontend"
   command = "npm run build"

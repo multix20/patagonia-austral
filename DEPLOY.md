@@ -1,66 +1,79 @@
 # Despliegue — Patagonia Austral (PWA de turismo)
 
-Proyecto **personal/comercial propio**. Esta guía deja el sitio público en Render:
+Proyecto **personal/comercial propio**. Arquitectura del despliegue (todo gratis):
 
-- **Backend (Laravel + Filament) + PostgreSQL** → Render (contenedor Docker +
-  Postgres gestionado) vía blueprint `render.yaml`.
-- **Frontend (PWA)** → Render **Static Site** (mismo proveedor, un solo dashboard).
-  `netlify.toml` queda en el repo como alternativa si algún día conviene Netlify.
+| Pieza | Proveedor | Cómo |
+|---|---|---|
+| **Frontend (PWA React)** | **Netlify** | `netlify.toml` (base `frontend/`) |
+| **Backend (Laravel + Filament)** | **Render** (web service Docker, free) | blueprint `render.yaml` |
+| **PostgreSQL** | **Neon** (neon.tech, free) | connection string como secreto en Render |
 
+> **Por qué la base va en Neon y no en Render:** el plan free de Render permite
+> **una sola Postgres por cuenta** y ya la ocupa el proyecto Cochrane; además
+> las Postgres free de Render **expiran a los 30 días**. Neon es gratis, no
+> expira y mantiene a Cochrane intacto.
+>
 > **Independencia del proyecto Cochrane**: este repo es un fork/evolución de
-> `multix20/cochrane-turismo`, pero es un proyecto separado. Los nombres de
-> servicio en `render.yaml` (`patagonia-austral-api`, `patagonia-austral-db`),
-> el `APP_KEY` y las claves VAPID son **propios**; ambos proyectos pueden
-> convivir desplegados en la misma cuenta de Render sin pisarse.
+> `multix20/cochrane-turismo`, pero es un proyecto separado. El servicio de
+> Render (`patagonia-austral-api`), el `APP_KEY` y las claves VAPID son
+> **propios**; ambos proyectos conviven en la misma cuenta sin pisarse.
 
 ---
 
-## 1) Backend + base de datos en Render
+## 0) Base de datos en Neon (primero, porque Render la necesita)
 
-1. Entra a <https://dashboard.render.com> → **New → Blueprint**.
-2. Conecta el repo `multix20/patagonia-austral` (rama `main`). Render detecta
-   `render.yaml` y propone crear: **1 Web Service** (`patagonia-austral-api`) +
-   **1 PostgreSQL** (`patagonia-austral-db`).
-3. **Secretos**: al aplicar, Render pide los valores marcados `sync: false` en
-   el blueprint — `APP_KEY` y `VAPID_PRIVATE_KEY`. Se pegan ahí y quedan solo
-   en el dashboard, nunca en el repo. (APP_KEY se genera con
-   `php artisan key:generate --show`; el par VAPID debe ser el mismo cuya
-   pública está en `render.yaml`.) Confirma y **Apply**.
-4. Espera el primer build (≈ 5–10 min). Al terminar tendrás una URL tipo:
+1. Entra a <https://neon.tech> → crea cuenta (puede ser con GitHub) → **New Project**.
+   - Nombre del proyecto/base: `patagonia_austral` (región: la más cercana a
+     Oregon, p. ej. AWS us-west-2, para latencia baja con Render).
+2. Copia la **connection string** (botón *Connect*): tiene la forma
+   `postgresql://usuario:clave@ep-xxxx.us-west-2.aws.neon.tech/patagonia_austral?sslmode=require`
+3. Guárdala: es el secreto `DB_URL` que pedirá Render en el paso siguiente.
+
+## 1) Backend en Render
+
+1. Entra a <https://dashboard.render.com> → **New → Blueprint** (o usa el
+   blueprint `patagonia-austral` ya conectado → **Manual sync**).
+2. Repo `multix20/patagonia-austral`, rama `main`. Render detecta `render.yaml`
+   y propone crear **solo** el web service `patagonia-austral-api` (la base ya
+   no va en el blueprint).
+3. **Secretos** (`sync: false` — se pegan en el dashboard, nunca en el repo):
+   - `APP_KEY` → generar con `php artisan key:generate --show`
+   - `DB_URL` → la connection string de Neon (paso 0)
+   - `VAPID_PRIVATE_KEY` → la privada del par cuya pública está en `render.yaml`
+4. **Apply** y espera el primer build (≈ 5–10 min). URL resultante tipo:
    `https://patagonia-austral-api.onrender.com`
-5. El arranque corre migraciones y siembra los lugares + avisos automáticamente.
-   Verifica:
+5. El arranque corre migraciones y siembra lugares + avisos en Neon. Verifica:
    - `https://patagonia-austral-api.onrender.com/api/places` → JSON con lugares.
    - `https://patagonia-austral-api.onrender.com/admin` → login de Filament.
-6. **Crear tu usuario admin**: en el dashboard de Render, entra al web service →
-   pestaña **Shell** y ejecuta:
+6. **Crear tu usuario admin**: web service → pestaña **Shell**:
    ```
    php artisan make:filament-user
    ```
    (o usa el que siembra el seeder: `test@example.com` / `password`).
 
-## 2) Frontend (PWA) como Static Site en Render
+## 2) Frontend (PWA) en Netlify
 
-1. **New → Static Site** → conecta el mismo repo `multix20/patagonia-austral`,
-   rama `main`.
-2. Configuración:
-   - **Root Directory**: `frontend`
-   - **Build Command**: `npm run build`
-   - **Publish Directory**: `dist`
-3. **Environment variables** del static site:
+1. Entra a <https://app.netlify.com> → **Add new site → Import an existing
+   project** → conecta `multix20/patagonia-austral`, rama `main`.
+   Netlify lee `netlify.toml` (base `frontend/`, build `npm run build`,
+   publish `dist`) — no hay que configurar nada a mano.
+2. **Site configuration → Environment variables**:
    ```
-   VITE_API_URL         = https://patagonia-austral-api.onrender.com
+   VITE_API_URL          = https://patagonia-austral-api.onrender.com
    VITE_VAPID_PUBLIC_KEY = (la VAPID_PUBLIC_KEY de render.yaml)
    ```
    > `VITE_*` se resuelve en tiempo de build: si cambias una variable hay que
-   > **redeploy** para que la tome.
-4. **Redirects/Rewrites** (SPA): regla `/*` → `/index.html`, acción **Rewrite**.
-5. Si la URL pública del frontend difiere de la puesta en `FRONTEND_URL` del
-   `render.yaml`, actualiza esa variable en el web service (CORS).
+   > **Trigger deploy** para que la tome.
+3. Si quieres URL fija: **Site configuration → Change site name** →
+   `patagonia-austral` → queda `https://patagonia-austral.netlify.app`.
+4. **CORS**: la variable `FRONTEND_URL` del web service en Render debe ser
+   exactamente la URL pública de Netlify (el blueprint trae
+   `https://patagonia-austral.netlify.app`; ajústala en el dashboard si el
+   nombre del sitio termina siendo otro).
 
 ## 3) Prueba de fuego en producción
 
-1. Abre la PWA (URL del static site) → cargan los lugares desde la API.
+1. Abre la PWA (URL de Netlify) → cargan los lugares desde la API.
 2. Entra a `…-api.onrender.com/admin`, edita un lugar, guarda.
 3. Recarga la PWA → aparece el cambio. ✅
 4. Publica un Aviso en el CMS → llega la notificación push a los dispositivos
@@ -68,16 +81,19 @@ Proyecto **personal/comercial propio**. Esta guía deja el sitio público en Ren
 
 ---
 
-## Advertencias del plan gratuito (Render)
+## Advertencias de los planes gratuitos
 
-- **El backend se duerme** tras 15 min sin tráfico; el primer request lo despierta
-  en ~1 minuto. El static site del frontend NO duerme (se sirve desde CDN).
-- **La Postgres free expira 30 días** después de crearla (con 14 días de gracia
-  para migrarla). Para producción real hay que subir de plan.
-- **No corre el scheduler** en plan free: los avisos programados a futuro no se
-  despachan solos (los inmediatos sí, van por el observer al guardar).
-- **Filesystem efímero**: lo subido al disco se pierde al reiniciar. Cuando se
-  agreguen imágenes al CMS, usar almacenamiento en la nube (S3 o equivalente).
+- **Render (backend)**: se duerme tras 15 min sin tráfico; el primer request lo
+  despierta en ~1 minuto. **No corre el scheduler**: los avisos programados a
+  futuro no se despachan solos (los inmediatos sí, van por el observer).
+- **Neon (base)**: 0.5 GB de almacenamiento y *autosuspend* del compute tras
+  inactividad (~5 min); despierta solo en el primer query (sub-segundo a pocos
+  segundos). Sin expiración a 30 días.
+- **Netlify (frontend)**: 100 GB de banda/mes en free — de sobra. No se duerme
+  (CDN estático).
+- **Filesystem efímero en Render**: lo subido al disco se pierde al reiniciar.
+  Cuando se agreguen imágenes al CMS, usar almacenamiento en la nube (S3 o
+  equivalente).
 
 ---
 
