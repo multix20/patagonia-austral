@@ -157,6 +157,21 @@ function AppInterna() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Red de seguridad: si la app corre INSTALADA y el permiso ya está concedido,
+  // asegura la suscripción en cada arranque. Repara dispositivos donde el flujo
+  // de appinstalled no llegó a registrar la suscripción en el backend (p. ej.
+  // el permiso se dio a nivel de sistema pero el POST nunca ocurrió). Silencioso
+  // y sin duplicados: el backend hace updateOrCreate por endpoint.
+  useEffect(() => {
+    const instalada =
+      window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone
+    if (instalada && pushSoportado() && Notification.permission === 'granted') {
+      activarPush()
+        .then(() => setPushEstado('activado'))
+        .catch(() => {})
+    }
+  }, [])
+
   // Avisos no leídos = los que aún no se han visto (contador de la campanita)
   const noLeidos = avisos.filter((a) => !avisosVistos.includes(a.id)).length
 
