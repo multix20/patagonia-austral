@@ -94,12 +94,18 @@ Config local en `frontend/.env.local` (VITE_API_URL + VITE_VAPID_PUBLIC_KEY).
 
 ## PENDIENTES — roadmap propio (ver README para las fases)
 
-### 1. Desplegar este repo — Netlify + Render + Neon
-Arquitectura decidida (10-jul-2026): **frontend en Netlify**, **backend en
-Render** (web service free), **PostgreSQL en Neon** (free, externa). La base va
-en Neon porque Render solo permite una Postgres free por cuenta (la ocupa
-Cochrane) y además las free de Render expiran a los 30 días. Guía paso a paso:
-`DEPLOY.md`. Verificar que los servicios de Cochrane siguen intactos.
+### ✅ 1. Desplegar este repo — Netlify + Render + Neon — HECHO (10-jul-2026)
+**Frontend en Netlify**, **backend en Render** (`patagonia-austral-api`, web
+service free), **PostgreSQL en Neon** (free, externa). La base va en Neon porque
+Render solo permite una Postgres free por cuenta (la ocupa Cochrane) y además
+las free de Render expiran a los 30 días. Guía paso a paso: `DEPLOY.md`.
+**Verificado en vivo en móvil (Android/Chrome):** API + CMS escribiendo en Neon,
+campanita sincronizando avisos, y **Web Push llegando con la app cerrada**
+(suscripción vía `appinstalled` + red de seguridad al abrir la app instalada).
+Los servicios de Cochrane quedaron intactos.
+Nota Android: al instalar puede aparecer "no se pudieron activar las
+notificaciones" si el POST de suscripción falla en ese momento; se autorepara
+al abrir la app (el toast ahora muestra el motivo exacto entre paréntesis).
 
 ### 2. Fase 1 — Multi-localidad
 Modelo `Localidad`, selector de pueblo, filtro por localidad en mapa y API.
@@ -118,6 +124,11 @@ almacenamiento de imágenes en la nube (S3 o equivalente), difusión.
 Base lista: `docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`.
 
 ### Menores
+- **Push en iOS (pendiente de probar):** iOS no dispara `appinstalled` y exige
+  un gesto del usuario para pedir el permiso → hoy un iPhone no tiene vía para
+  suscribirse. Solución diseñada: tarjeta única "¿Quieres recibir avisos?" que
+  aparece solo en modo standalone con permiso pendiente (sirve también como
+  respaldo en Android).
 - Revisar categorías del directorio para el producto propio (¿rutas
   patrimoniales? ¿comercios locales?).
 - Mantener el peso inicial de la PWA bajo (~20 MB) para instalabilidad.
