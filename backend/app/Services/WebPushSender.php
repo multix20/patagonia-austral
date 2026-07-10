@@ -35,7 +35,7 @@ class WebPushSender
         ]);
 
         $payload = json_encode([
-            'title' => 'Municipalidad de Cochrane',
+            'title' => 'Patagonia Austral',
             'body' => $notice->mensaje['es'] ?? '',
             'body_en' => $notice->mensaje['en'] ?? '',
             'tipo' => $notice->tipo,
