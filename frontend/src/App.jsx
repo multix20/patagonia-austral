@@ -23,10 +23,9 @@ function AppInterna() {
   const [seleccionado, setSeleccionado] = useState(null)
   const [chatAbierto, setChatAbierto] = useState(false)
 
-  // Estado de conexión real + modo demo para presentaciones
+  // Estado de conexión real del dispositivo
   const [sinRed, setSinRed] = useState(!navigator.onLine)
-  const [demoOffline, setDemoOffline] = useState(false)
-  const offline = sinRed || demoOffline
+  const offline = sinRed
 
   // Avisos municipales sincronizados desde el CMS (/api/notices)
   const [avisos, setAvisos] = useState([])
@@ -145,6 +144,19 @@ function AppInterna() {
     }
   }
 
+  // Al instalar la app (desde nuestro banner o el propio navegador),
+  // se pide el permiso de notificaciones una sola vez, sin botón visible.
+  useEffect(() => {
+    const alInstalar = () => {
+      if (pushEstado === 'idle' && pushSoportado() && Notification.permission === 'default') {
+        habilitarPush()
+      }
+    }
+    window.addEventListener('appinstalled', alInstalar)
+    return () => window.removeEventListener('appinstalled', alInstalar)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Avisos no leídos = los que aún no se han visto (contador de la campanita)
   const noLeidos = avisos.filter((a) => !avisosVistos.includes(a.id)).length
 
@@ -178,6 +190,16 @@ function AppInterna() {
           </h1>
           <div className="acciones-header">
             <button
+              className="btn-campanita"
+              onClick={abrirPanelAvisos}
+              aria-label={lang === 'es' ? 'Avisos municipales' : 'Municipal alerts'}
+            >
+              <span className="campanita">
+                <Icon nombre="bell" tam={16} />
+                {noLeidos > 0 && <span className="badge-avisos">{noLeidos}</span>}
+              </span>
+            </button>
+            <button
               className="btn-idioma"
               onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
               aria-label="Cambiar idioma / Switch language"
@@ -196,44 +218,6 @@ function AppInterna() {
           <Icon nombre="wifi-off" tam={14} /> {t('bannerOffline')}
         </div>
       )}
-
-      <div className="demo-bar">
-        <button onClick={() => setDemoOffline((v) => !v)}>
-          <span className="tag">DEMO</span>
-          <span className="b-linea">
-            <Icon nombre="plane" tam={14} /> {t('demoOffline')}
-          </span>
-        </button>
-        <button onClick={abrirPanelAvisos}>
-          <span className="tag">DEMO</span>
-          <span className="b-linea">
-            <span className="campanita">
-              <Icon nombre="bell" tam={14} />
-              {noLeidos > 0 && <span className="badge-avisos">{noLeidos}</span>}
-            </span>
-            {t('demoPush')}
-          </span>
-        </button>
-        {pushSoportado() && (
-          <button onClick={habilitarPush} disabled={pushEstado === 'activado'}>
-            <span className="tag">{pushEstado === 'activado' ? 'ON' : 'PUSH'}</span>
-            <span className="b-linea">
-              <Icon nombre="bell" tam={14} />{' '}
-              {pushEstado === 'activado'
-                ? lang === 'es'
-                  ? 'Notificaciones activas'
-                  : 'Notifications on'
-                : pushEstado === 'activando'
-                  ? lang === 'es'
-                    ? 'Activando…'
-                    : 'Enabling…'
-                  : lang === 'es'
-                    ? 'Activar notificaciones'
-                    : 'Enable notifications'}
-            </span>
-          </button>
-        )}
-      </div>
 
       <MapView
         lugares={lugares}
