@@ -1,140 +1,128 @@
-# Estado del proyecto y pendientes — PWA Turismo Cochrane
+# Estado del proyecto y pendientes — Patagonia Austral
 
-Licitación ID **3797-37-LE26** (I. Municipalidad de Cochrane).
-Stack según bases: **React 18 (Vite) + Laravel (PHP 8.x) + PostgreSQL 16**, PWA offline-first + CMS municipal (Filament).
+**Proyecto personal/comercial propio.** PWA de turismo offline-first para la
+**Carretera Austral** (Coyhaique a Villa O'Higgins) + CMS (Filament).
+Stack: **React 18 (Vite) + Laravel (PHP 8.x) + PostgreSQL 16**.
 
-Repo: https://github.com/multix20/cochrane-turismo — rama `main`.
+Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
-> Fechas clave licitación: **cierre 13-07-2026**, adjudicación 27-07-2026.
-> Presupuesto máx **$10.000.000 CLP** IVA incl. Contrato **150 días**. Soporte +
-> hosting + mantención hasta **31-jul-2028**, luego traspaso al municipio.
+> **Aclaración importante (10-jul-2026):** este proyecto nació como fork de la
+> PWA de Cochrane (licitación ID 3797-37-LE26, repo `multix20/cochrane-turismo`),
+> pero es un **producto independiente que NO se rige por bases de licitación**.
+> Toda mención a "las bases exigen…" en notas históricas de este archivo quedó
+> obsoleta: los requisitos ahora los define el roadmap propio (ver README).
+> El proyecto Cochrane original **sigue vivo y desplegado por separado**; los
+> servicios de Render de este repo usan nombres y claves propios
+> (`patagonia-austral-*`) para no interferir con los de Cochrane
+> (`cochrane-turismo-*`).
 
 ---
 
-## Entorno local ya instalado y funcionando
+## Entorno local (heredado de la base Cochrane)
 
 - **PHP 8.4.23** y **Composer 2.10.1** vía **Laravel Herd** (Windows). `php` y `composer` en el PATH.
-- **PostgreSQL 16** nativo (servicio de Windows). Base: `cochrane_turismo`, usuario `cochrane`, pass `cochrane_dev`, host `127.0.0.1:5432`.
-- **Laravel 13** + **Filament v3.3.54** en `app/backend/`.
-- Docker NO instalado (por eso PostgreSQL nativo). **Ojo: las bases exigen Docker** (ver pendientes).
+- **PostgreSQL 16** nativo (servicio de Windows).
+- **Laravel 13** + **Filament v3.3.54** en `backend/`.
 
-## Qué quedó FUNCIONANDO (verificado)
+## Qué está FUNCIONANDO (verificado)
 
-1. **API pública** (la consume la PWA): `GET /api/places` (15 lugares bilingües), `GET /api/notices`.
+1. **API pública** (la consume la PWA): `GET /api/places` (lugares bilingües), `GET /api/notices`.
 2. **CMS Filament** en `/admin`: CRUD de **Lugares** y **Avisos**, bilingüe ES/EN.
-3. **PostgreSQL** con datos semilla (15 places + avisos).
-4. **PWA conectada a la API en vivo** ✅ (pendiente #1 hecho) — lugares y avisos se
-   sincronizan a IndexedDB; editar en `/admin` se refleja en la PWA al recargar.
-5. **Web Push (VAPID)** ✅ (pendiente #2 hecho) — suscripción desde la PWA, envío
-   al publicar un aviso (inmediato y **programado a futuro**), limpieza de
-   suscripciones caducadas. Notificación nativa del SO (probado en Windows/Edge).
+3. **PostgreSQL** con datos semilla (places + avisos).
+4. **PWA conectada a la API en vivo** — lugares y avisos se sincronizan a
+   IndexedDB; editar en `/admin` se refleja en la PWA al recargar.
+5. **Web Push (VAPID)** — permiso solicitado automáticamente al instalar la PWA
+   (evento `appinstalled`), envío al publicar un aviso (inmediato y programado),
+   limpieza de suscripciones caducadas.
+6. **Docker Compose de producción** probado en vivo (5 contenedores, Caddy+SSL).
 
 ## Cómo levantar el entorno
 
 ```powershell
 # Backend
-cd C:\Users\JP\Documents\Desarrollo\Cochrane\app\backend
+cd backend
 php artisan serve            # -> http://localhost:8000  (API en /api, CMS en /admin)
 php artisan schedule:work    # OTRA terminal: despacha avisos programados (Web Push)
 
 # Frontend
-cd C:\Users\JP\Documents\Desarrollo\Cochrane\app\frontend
+cd frontend
 npm install                  # solo la primera vez
 npm run dev                  # o: npm run build && npm run preview (para probar el SW/push)
 ```
 
 Config local en `frontend/.env.local` (VITE_API_URL + VITE_VAPID_PUBLIC_KEY).
-PostgreSQL corre solo como servicio. Verificar: `Get-Service postgresql*`.
 
 ---
 
-## Cambios de sesiones anteriores (para no repetirlos)
+## Historial técnico (decisiones que no hay que repetir)
 
 - `bootstrap/app.php`: `api: routes/api.php` en `withRouting()` + `trustProxies('*')`.
-- `.env`: PostgreSQL, `APP_URL`, `FRONTEND_URL`, `APP_TIMEZONE=America/Santiago`, claves VAPID.
 - Seeders idempotentes (`updateOrCreate` / guard por `count()`).
-- **PWA↔API**: `frontend/.env.local` con `VITE_API_URL`; `client.js` sincroniza places y avisos a IndexedDB (`db.js` v2 con store `avisos`).
-- **Web Push**: `minishlink/web-push`; tablas `push_subscriptions` + columna `notificado_en`; `PushController` (`/api/push/*`); `WebPushSender`; `NoticeObserver`; comando `avisos:despachar` planificado cada minuto; `push-listener.js` en el SW; botón "Activar notificaciones" en la PWA. CORS ahora permite POST.
+- **PWA↔API**: `client.js` sincroniza places y avisos a IndexedDB (`db.js` v2 con store `avisos`).
+- **Web Push**: `minishlink/web-push`; tablas `push_subscriptions` + columna
+  `notificado_en`; `PushController` (`/api/push/*`); `WebPushSender`;
+  `NoticeObserver`; comando `avisos:despachar` cada minuto; `push-listener.js` en el SW.
 - `User.php` implementa `canAccessPanel()` (necesario para Filament en producción).
-- Despliegue preparado (demo): `render.yaml`, `backend/Dockerfile`, `DEPLOY.md`.
 - **Badge de avisos en vivo (09-jul-2026)**: al recibir un Web Push, el SW hace
-  `postMessage({tipo:'nuevo-aviso'})` a las ventanas abiertas; `App.jsx` escucha
-  con `navigator.serviceWorker.addEventListener('message', …)` y recarga
-  `obtenerAvisos()`, así la campanita/contador se actualiza al instante junto con
-  la notificación del SO, sin refrescar. En móvil, además, se recargan los avisos
-  con `visibilitychange`/`focus` (la página se congela en segundo plano). Archivos:
-  `frontend/public/push-listener.js`, `frontend/src/App.jsx`.
-- **Despliegue en Render (09-jul-2026)**: TODO en Render — backend/CMS/PostgreSQL +
-  frontend como Static Site (`cochrane-turismo.onrender.com`). Push verificado en
-  **PC (Edge/WNS) y móvil (Android/Chrome/FCM)** con `push:test` (2 suscripciones OK).
-  Nota: cada dispositivo se suscribe por separado; en plan free no corre el scheduler
-  (avisos programados a futuro no se disparan) y el backend duerme por inactividad.
-- **Mejoras de mapa (09-jul-2026)**: `MapView.jsx` con ubicación GPS en vivo (punto
-  azul + botón centrar), basemap CARTO Voyager con switch Mapa/Satélite (Esri), y
-  línea de ruta con distancia al lugar seleccionado (solo si el usuario está a ≤30 km).
-  Botón "Cómo llegar" (Google Maps, navegación real) en `PlaceDetail.jsx`. Icono
-  `locate` añadido a `Icon.jsx`. `vite.config.js` cachea las teselas CARTO+Esri para
-  mantener el mapa offline.
+  `postMessage({tipo:'nuevo-aviso'})`; `App.jsx` recarga `obtenerAvisos()` y el
+  contador se actualiza al instante. En móvil además se recarga con
+  `visibilitychange`/`focus`.
+- **Mejoras de mapa (09-jul-2026)**: GPS en vivo (punto azul + botón centrar),
+  basemap CARTO Voyager con switch Mapa/Satélite (Esri), ruta con distancia
+  (≤30 km), botón "Cómo llegar" (Google Maps). Teselas cacheadas para offline.
+- **Contenerización (08-jul-2026)**: `docker-compose.prod.yml` — db (postgres16)
+  · app (Laravel php-fpm) · scheduler · frontend (build Vite) · web (**Caddy**:
+  reverse proxy + SSL automático). `backend/Dockerfile.fpm`, `frontend/Dockerfile`,
+  `docker/Caddyfile`, `.env.prod.example`, `docker/README-DESPLIEGUE.md`.
+  Se eligió Caddy (no Nginx) por HTTPS automático; frontend en el mismo origen
+  (sin CORS).
+- **UI minimalista (10-jul-2026)**: eliminada la barra de botones demo
+  ("Simular sin conexión / Probar push / Activar notificaciones"). El permiso de
+  push se pide solo al instalar la PWA (`appinstalled`); los avisos quedaron en
+  una campanita minimalista en el header. Mergeado a `main`.
+- **Separación de Cochrane (10-jul-2026)**: `render.yaml` renombrado a
+  `patagonia-austral-api`/`patagonia-austral-db` con `APP_KEY` y par VAPID
+  **nuevos y propios** (los de Cochrane quedaron solo en aquel proyecto).
+  `DEPLOY.md` reescrito para este repo (todo en Render, static site + blueprint).
 
 ---
 
-## PENDIENTES — en orden de valor
+## PENDIENTES — roadmap propio (ver README para las fases)
 
-### ✅ 1. Conectar la PWA con la API — HECHO
-### ✅ 2. Web Push (VAPID) — HECHO
+### 1. Desplegar este repo en Render
+Blueprint `render.yaml` (backend+db) + Static Site (frontend). Guía: `DEPLOY.md`.
+Verificar que los servicios de Cochrane siguen intactos tras el Apply.
 
-### ✅ 3. Contenerización con Docker — HECHO Y PROBADO EN VIVO (08-jul-2026)
-Levantado con `docker compose -f docker-compose.prod.yml up -d --build`: 5
-contenedores OK, PWA en `https://localhost` "En línea" con datos reales del CMS.
-Fixes de la prueba: PHP 8.4 + extensión `gmp` en `Dockerfile.fpm`; `chown www-data`
-de `storage/` y `bootstrap/cache` en el entrypoint (php-fpm atiende como www-data).
-Las bases exigen solución **desplegable con Docker Compose** (backend, frontend,
-PostgreSQL y reverse proxy). **Creado (08-jul-2026):**
-- `docker-compose.prod.yml` — db (postgres16) · app (Laravel php-fpm) · scheduler
-  (Web Push cada minuto) · frontend (build Vite) · web (Caddy: reverse proxy + SSL
-  automático). Red interna, volúmenes persistentes, healthchecks.
-- `backend/Dockerfile.fpm` + `backend/docker/entrypoint.fpm.sh` (migra/siembra/
-  publica assets Filament; refresca public/ y storage/).
-- `frontend/Dockerfile` (compila la PWA a volumen compartido).
-- `docker/Caddyfile` (SSL Let's Encrypt automático + cabeceras de seguridad;
-  enruta /api,/admin,/up al backend y sirve la PWA en /).
-- `.env.prod.example` (variables por ambiente) y `docker/README-DESPLIEGUE.md`
-  (manual: despliegue local/EC2, backup/restore, actualización, rollback).
+### 2. Fase 1 — Multi-localidad
+Modelo `Localidad`, selector de pueblo, filtro por localidad en mapa y API.
+Cargar 2-3 pueblos reales (Cochrane, Tortel, Puerto Río Tranquilo).
 
-Validado estáticamente (YAML, shell, variables). **Pendiente:** instalar Docker
-Desktop y correr `docker compose -f docker-compose.prod.yml up -d --build` para la
-prueba en vivo (API, /admin, PWA, push). Se decidió **Caddy** (no Nginx) por HTTPS
-automático; frontend servido desde el compose (mismo origen, sin CORS).
+### 3. Fase 2 — Contenido
+Poblar todas las localidades (atractivos, alojamiento, comida, servicios,
+emergencias, rutas) en ES/EN.
 
-### 4. Despliegue en la nube
-- **Frontend**: Netlify (listo `netlify.toml`); apuntar `VITE_API_URL` al backend.
-- **Backend + PostgreSQL gestionado**: demo gratis lista en **Render** (`DEPLOY.md`).
-  Para producción definitiva: nube grande (AWS/Azure/GCP) según las bases.
-- Requisitos de las bases a cubrir en prod: dominio/subdominio, **SSL/TLS**,
-  variables por ambiente, **respaldos + restauración**, **logs y monitoreo**,
-  **almacenamiento de imágenes en la nube** (S3), documentación de despliegue.
+### 4. Fase 3 — Capa comercial
+Fichas destacadas, planes de negocio, analítica.
 
-### 5. Certificación cloud del oferente  ← NUEVO (requisito de las bases)
-Se exige que el oferente o un profesional del equipo acredite una certificación
-cloud vigente: **AWS CLF-C02 / Azure AZ-900 / Google Cloud Digital Leader /
-Oracle OCI Foundations / IBM Cloud Advocate**. No es código; hay que obtenerla.
-Las más rápidas/baratas: AZ-900 o GCP Digital Leader.
+### 5. Fase 4 — Producción definitiva
+Dominio propio + SSL, respaldos + restauración, logs y monitoreo,
+almacenamiento de imágenes en la nube (S3 o equivalente), difusión.
+Base lista: `docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`.
 
 ### Menores
-- Categorías del directorio: las bases nombran "rutas patrimoniales" y "comercios
-  locales" como filtros; hoy: atractivo/alojamiento/comida/servicio/evento/emergencia.
-- Confirmar peso inicial de la PWA **< 20 MB** (requisito de instalabilidad).
-- La **oferta técnica (Anexo 4)** debe incluir: arquitectura, plan de contingencia
-  offline, UI/UX y **propuesta de seguridad**.
+- Revisar categorías del directorio para el producto propio (¿rutas
+  patrimoniales? ¿comercios locales?).
+- Mantener el peso inicial de la PWA bajo (~20 MB) para instalabilidad.
 
 ---
 
 ## Archivos clave
 
-- CMS: `app/backend/app/Filament/Resources/{PlaceResource,NoticeResource}.php`
-- API: `app/backend/app/Http/Controllers/Api/{Place,Notice,Push}Controller.php`
-- Modelos: `app/backend/app/Models/{Place,Notice,PushSubscription,User}.php`
-- Web Push: `app/backend/app/Services/WebPushSender.php`, `app/Observers/NoticeObserver.php`, `app/Console/Commands/{DespacharAvisos,PushTest}.php`
-- Rutas: `app/backend/routes/api.php`, `routes/console.php`
-- Frontend: `app/frontend/src/{api/client.js,push.js,db.js,App.jsx}`, `public/push-listener.js`
-- Despliegue: `app/render.yaml`, `app/backend/Dockerfile`, `app/DEPLOY.md`, `app/PUSH.md`
+- CMS: `backend/app/Filament/Resources/{PlaceResource,NoticeResource}.php`
+- API: `backend/app/Http/Controllers/Api/{Place,Notice,Push}Controller.php`
+- Modelos: `backend/app/Models/{Place,Notice,PushSubscription,User}.php`
+- Web Push: `backend/app/Services/WebPushSender.php`, `app/Observers/NoticeObserver.php`, `app/Console/Commands/{DespacharAvisos,PushTest}.php`
+- Rutas: `backend/routes/api.php`, `routes/console.php`
+- Frontend: `frontend/src/{api/client.js,push.js,db.js,App.jsx}`, `public/push-listener.js`
+- Despliegue: `render.yaml`, `backend/Dockerfile`, `DEPLOY.md`, `PUSH.md`,
+  `docker-compose.prod.yml`, `docker/README-DESPLIEGUE.md`

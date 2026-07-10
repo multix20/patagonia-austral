@@ -1,10 +1,9 @@
-# Manual de despliegue con Docker — PWA Turismo Cochrane
+# Manual de despliegue con Docker — Patagonia Austral
 
-Licitación **ID 3797-37-LE26** · I. Municipalidad de Cochrane.
-Este documento cubre el **punto 4 de las bases**: la solución se despliega con
-**Docker Compose**, de modo que la Municipalidad pueda **replicarla, auditarla,
-mantenerla o migrarla**. El mismo `docker-compose.prod.yml` corre en un PC local
-o en una instancia **AWS EC2**.
+Proyecto **personal/comercial propio** (PWA de turismo de la Carretera Austral).
+La solución se despliega con **Docker Compose**, replicable y auditable. El mismo
+`docker-compose.prod.yml` corre en un PC local o en una instancia en la nube
+(p. ej. **AWS EC2**).
 
 ---
 
@@ -38,7 +37,7 @@ Servicios (`docker-compose.prod.yml`):
 **Volúmenes persistentes:** `pgdata` (datos), `app_public`, `app_storage`,
 `frontend_dist`, `caddy_data` (certificados SSL), `caddy_config`.
 
-### Checklist de requisitos de las bases (punto 4)
+### Checklist de la arquitectura
 
 - [x] Contenedor **backend Laravel** (`app`, php-fpm)
 - [x] Despliegue del **frontend React** (`frontend` → `web`)
@@ -63,7 +62,7 @@ Servicios (`docker-compose.prod.yml`):
   docker compose version
   ```
 
-- Para SSL real en producción: un **dominio** (p. ej. `turismo.municochrane.cl`)
+- Para SSL real en producción: un **dominio** propio
   apuntando (registro DNS `A`) a la IP pública del servidor, y los **puertos 80 y
   443 abiertos**.
 

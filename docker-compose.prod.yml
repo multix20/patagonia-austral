@@ -1,9 +1,7 @@
-# Orquestación de PRODUCCIÓN — PWA Turismo Cochrane
-# Licitación ID 3797-37-LE26 · I. Municipalidad de Cochrane
+# Orquestación de PRODUCCIÓN — Patagonia Austral (PWA de turismo, proyecto propio)
 #
-# Cubre el punto 4 de las bases: solución desplegable con Docker Compose que el
-# municipio puede replicar, auditar, mantener o migrar. Corre igual en local o en
-# una instancia AWS EC2.
+# Solución desplegable con Docker Compose, replicable en local o en una
+# instancia en la nube (p. ej. AWS EC2).
 #
 #   Servicios:  db (PostgreSQL 16) · app (Laravel php-fpm) · scheduler (Web Push)
 #               frontend (build de la PWA) · web (Caddy: reverse proxy + SSL)
@@ -12,7 +10,7 @@
 # Variables: copia .env.prod.example a .env y complétalo antes de levantar.
 #   docker compose -f docker-compose.prod.yml up -d --build
 
-name: cochrane-turismo
+name: patagonia-austral
 
 services:
   # ---------------------------------------------------------------------------
@@ -42,7 +40,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.fpm
-    image: cochrane-backend:prod
+    image: patagonia-backend:prod
     restart: unless-stopped
     env_file:
       - .env
@@ -68,7 +66,7 @@ services:
   # Reutiliza la imagen del backend, sin re-migrar (arranca tras `app`).
   # ---------------------------------------------------------------------------
   scheduler:
-    image: cochrane-backend:prod
+    image: patagonia-backend:prod
     restart: unless-stopped
     env_file:
       - .env

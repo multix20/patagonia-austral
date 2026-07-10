@@ -1,9 +1,13 @@
-# Blueprint Render — PWA Turismo Cochrane · Licitación ID 3797-37-LE26
+# Blueprint Render — Patagonia Austral (PWA de turismo, proyecto propio)
 # Despliega el backend: 1 web service en contenedor Docker + 1 PostgreSQL gestionado.
-# El frontend (PWA) va en Netlify por separado (ver DEPLOY.md).
+# El frontend (PWA) se despliega aparte como Static Site en Render (ver DEPLOY.md).
+#
+# OJO: los nombres de servicio son propios de ESTE proyecto y no chocan con los
+# del proyecto Cochrane (cochrane-turismo-api / cochrane-turismo-db), que puede
+# seguir desplegado en la misma cuenta sin conflicto.
 services:
   - type: web
-    name: cochrane-turismo-api
+    name: patagonia-austral-api
     runtime: docker
     plan: free
     region: oregon
@@ -18,9 +22,9 @@ services:
         value: America/Santiago
       - key: APP_DEBUG
         value: "false"
-      # Clave de la app (demo). Puedes rotarla con: php artisan key:generate --show
+      # Clave de la app (propia de este proyecto). Rotar con: php artisan key:generate --show
       - key: APP_KEY
-        value: base64:O+1DNk4TIHTUKcVutvdgZ+Gt5okYC9EXbD1iVz+e3Nw=
+        value: base64:+AYQQNOsl/hhb5nr7g2vQMeIhk9Lq04kGMJwdIgLNE4=
       - key: LOG_CHANNEL
         value: stderr
       - key: DB_CONNECTION
@@ -28,25 +32,26 @@ services:
       # Cadena de conexión inyectada desde la base Postgres de abajo
       - key: DB_URL
         fromDatabase:
-          name: cochrane-turismo-db
+          name: patagonia-austral-db
           property: connectionString
       - key: SESSION_DRIVER
         value: database
       - key: CACHE_STORE
         value: database
-      # Origen permitido por CORS (la PWA en Netlify). Ajusta si cambia el dominio.
+      # Origen permitido por CORS (la URL pública de la PWA). Ajustar si cambia el dominio.
       - key: FRONTEND_URL
-        value: https://cochrane-turismo.netlify.app
-      # Web Push (VAPID). Mismo par que en local para no invalidar suscripciones.
+        value: https://patagonia-austral.onrender.com
+      # Web Push (VAPID). Par de claves PROPIO de este proyecto (no reutilizar las de
+      # Cochrane; cambiar estas claves invalida las suscripciones ya hechas).
       - key: VAPID_SUBJECT
-        value: mailto:turismo@municochrane.cl
+        value: mailto:jp.devtravel@gmail.com
       - key: VAPID_PUBLIC_KEY
-        value: BI_S5cKlSTNgTD-9Ic1CX4LI8v0zfWZeZ3Jcdl_Q8EmmK29ijPKPgKjllfjc0qAgClM2S7-5IoMsMAVXuFMsYM8
+        value: BArTDwHNRxAVRiRCFPokGigPfQfQbH1Xpi5801V1MG8EpBplKvJsFp0JGoJSvECYH8s1yYW199jj9hc6Sit9ux8
       - key: VAPID_PRIVATE_KEY
-        value: 2iJlhvJeNf1SNPg2eSZ-YuGjBfDTi33E5Jvklx9a_Cs
+        value: AgGdgL-PNmlWMtNdhnlVkYCEztlCR8yKoP1wtlZpqYE
 
 databases:
-  - name: cochrane-turismo-db
-    databaseName: cochrane_turismo
-    user: cochrane
+  - name: patagonia-austral-db
+    databaseName: patagonia_austral
+    user: patagonia
     plan: free

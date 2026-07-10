@@ -1,4 +1,5 @@
-# Despliegue continuo Netlify — PWA Turismo Cochrane
+# Despliegue continuo Netlify — Patagonia Austral (alternativa opcional;
+# el despliegue principal del frontend es un Static Site en Render, ver DEPLOY.md)
 [build]
   base    = "frontend"
   command = "npm run build"

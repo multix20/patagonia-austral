@@ -1,12 +1,11 @@
-# Reverse proxy + SSL automático — PWA Turismo Cochrane
-# Licitación ID 3797-37-LE26 (bases punto 4: servidor web/reverse proxy + SSL/TLS).
+# Reverse proxy + SSL automático — Patagonia Austral (PWA de turismo)
 #
 # Caddy obtiene y renueva certificados HTTPS solo (Let's Encrypt) cuando
 # SITE_ADDRESS es un dominio público real. En local usa localhost (CA interna)
 # o http:// (sin TLS). Se configura por variables de entorno (ver .env.prod).
 
 {
-	# Correo para Let's Encrypt (avisos de expiración). Cámbialo por el del municipio.
+	# Correo para Let's Encrypt (avisos de expiración).
 	email {$ACME_EMAIL:admin@example.com}
 }
 

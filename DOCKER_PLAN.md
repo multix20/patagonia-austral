@@ -1,7 +1,14 @@
 # Plan de arranque — Contenerización con Docker (pendiente #3)
 
+> **[HISTÓRICO — TAREA COMPLETADA]** Este plan se escribió durante la fase
+> Cochrane (licitación 3797-37-LE26) y ya se ejecutó: existe
+> `docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`, probado en vivo.
+> Se conserva solo como registro de decisiones. **Patagonia Austral es hoy un
+> proyecto personal/comercial propio que no se rige por bases de licitación**
+> (ver `ESTADO_Y_PENDIENTES.md`).
+
 Documento para **retomar en un chat nuevo**. Resume el contexto, las decisiones a
-tomar y los primeros pasos. Licitación **3797-37-LE26**.
+tomar y los primeros pasos.
 
 ---
 

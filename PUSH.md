@@ -1,13 +1,14 @@
-# Web Push (VAPID) — notificaciones de avisos municipales
+# Web Push (VAPID) — notificaciones de avisos
 
-Requisito de las bases (punto 4): "Sistema de Notificaciones Push" para alertas
-de eventos, clima, seguridad y promociones. Cuando se **publica un Aviso** en el
-CMS, se envía una notificación push a los dispositivos suscritos.
+Sistema de notificaciones push para alertas de eventos, clima, seguridad y
+promociones. Cuando se **publica un Aviso** en el CMS, se envía una notificación
+push a los dispositivos suscritos.
 
 ## Cómo funciona
 
-1. La PWA pide permiso y **suscribe** el dispositivo → `POST /api/push/subscribe`
-   (se guarda en la tabla `push_subscriptions`).
+1. Al **instalar la PWA** (evento `appinstalled`) la app pide el permiso de
+   notificaciones automáticamente — ya no hay botón visible — y **suscribe** el
+   dispositivo → `POST /api/push/subscribe` (tabla `push_subscriptions`).
 2. En el CMS `/admin` se crea/publica un **Aviso** (campo `publicado_en` con fecha
    presente o pasada).
 3. Un *observer* de `Notice` detecta la publicación y envía el push a todos los
@@ -20,7 +21,7 @@ Las claves VAPID ya están en `backend/.env` y en `frontend/.env.local`
 ## Puesta en marcha (una sola vez)
 
 ```powershell
-cd C:\Users\JP\Documents\Desarrollo\Cochrane\app\backend
+cd backend
 
 # 1. Librería de envío Web Push
 composer require minishlink/web-push
@@ -40,17 +41,19 @@ El Web Push necesita un *service worker* activo y contexto seguro. `localhost`
 
 ```powershell
 # Terminal 1 — backend
-cd C:\Users\JP\Documents\Desarrollo\Cochrane\app\backend
+cd backend
 php artisan serve
 
 # Terminal 2 — frontend (build + preview genera el SW real)
-cd C:\Users\JP\Documents\Desarrollo\Cochrane\app\frontend
+cd frontend
 npm run build
 npm run preview   # -> http://localhost:4173
 ```
 
-1. Abre <http://localhost:4173> → botón **"Activar notificaciones"** → acepta el
-   permiso del navegador.
+1. Abre <http://localhost:4173> e **instala la PWA** (icono de instalar del
+   navegador o el banner de la app) → al instalarse pide el permiso de
+   notificaciones → acepta. (Para probar sin instalar, puedes ejecutar
+   `activarPush()` desde la consola del navegador: `import('/src/push.js').then(m => m.activarPush())`.)
 2. Ve a <http://localhost:8000/admin> → **Avisos → Crear**, escribe el mensaje,
    pon `publicado_en` en la fecha/hora actual y **guarda**.
 3. Aparece la **notificación del sistema** (globo de Windows) con el aviso. ✅
@@ -73,7 +76,7 @@ comando `avisos:despachar`, planificado cada minuto. Para que corra, deja abiert
 el planificador de Laravel en una terminal:
 
 ```powershell
-cd C:\Users\JP\Documents\Desarrollo\Cochrane\app\backend
+cd backend
 php artisan schedule:work
 ```
 
