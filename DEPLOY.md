@@ -20,14 +20,19 @@ Proyecto **personal/comercial propio**. Esta guía deja el sitio público en Ren
 1. Entra a <https://dashboard.render.com> → **New → Blueprint**.
 2. Conecta el repo `multix20/patagonia-austral` (rama `main`). Render detecta
    `render.yaml` y propone crear: **1 Web Service** (`patagonia-austral-api`) +
-   **1 PostgreSQL** (`patagonia-austral-db`). Confirma y **Apply**.
-3. Espera el primer build (≈ 5–10 min). Al terminar tendrás una URL tipo:
+   **1 PostgreSQL** (`patagonia-austral-db`).
+3. **Secretos**: al aplicar, Render pide los valores marcados `sync: false` en
+   el blueprint — `APP_KEY` y `VAPID_PRIVATE_KEY`. Se pegan ahí y quedan solo
+   en el dashboard, nunca en el repo. (APP_KEY se genera con
+   `php artisan key:generate --show`; el par VAPID debe ser el mismo cuya
+   pública está en `render.yaml`.) Confirma y **Apply**.
+4. Espera el primer build (≈ 5–10 min). Al terminar tendrás una URL tipo:
    `https://patagonia-austral-api.onrender.com`
-4. El arranque corre migraciones y siembra los lugares + avisos automáticamente.
+5. El arranque corre migraciones y siembra los lugares + avisos automáticamente.
    Verifica:
    - `https://patagonia-austral-api.onrender.com/api/places` → JSON con lugares.
    - `https://patagonia-austral-api.onrender.com/admin` → login de Filament.
-5. **Crear tu usuario admin**: en el dashboard de Render, entra al web service →
+6. **Crear tu usuario admin**: en el dashboard de Render, entra al web service →
    pestaña **Shell** y ejecuta:
    ```
    php artisan make:filament-user

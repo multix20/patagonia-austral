@@ -22,9 +22,10 @@ services:
         value: America/Santiago
       - key: APP_DEBUG
         value: "false"
-      # Clave de la app (propia de este proyecto). Rotar con: php artisan key:generate --show
+      # Clave de la app — SECRETO: se ingresa en el dashboard de Render al aplicar
+      # el blueprint (sync: false). Generar con: php artisan key:generate --show
       - key: APP_KEY
-        value: base64:+AYQQNOsl/hhb5nr7g2vQMeIhk9Lq04kGMJwdIgLNE4=
+        sync: false
       - key: LOG_CHANNEL
         value: stderr
       - key: DB_CONNECTION
@@ -41,14 +42,16 @@ services:
       # Origen permitido por CORS (la URL pública de la PWA). Ajustar si cambia el dominio.
       - key: FRONTEND_URL
         value: https://patagonia-austral.onrender.com
-      # Web Push (VAPID). Par de claves PROPIO de este proyecto (no reutilizar las de
-      # Cochrane; cambiar estas claves invalida las suscripciones ya hechas).
+      # Web Push (VAPID). Par de claves PROPIO de este proyecto (no reutilizar las
+      # de Cochrane; cambiar el par invalida las suscripciones ya hechas).
+      # La pública no es secreta (viaja al navegador); la privada se ingresa en el
+      # dashboard de Render al aplicar el blueprint (sync: false).
       - key: VAPID_SUBJECT
         value: mailto:jp.devtravel@gmail.com
       - key: VAPID_PUBLIC_KEY
-        value: BArTDwHNRxAVRiRCFPokGigPfQfQbH1Xpi5801V1MG8EpBplKvJsFp0JGoJSvECYH8s1yYW199jj9hc6Sit9ux8
+        value: BHXyuwrehAa5BbAxa02Q76oIza-obs5baPkAl05sjiKF-wB8YaHDxflkFG4l0NwRrEnHWnAV6FLvApRXr2l2-iE
       - key: VAPID_PRIVATE_KEY
-        value: AgGdgL-PNmlWMtNdhnlVkYCEztlCR8yKoP1wtlZpqYE
+        sync: false
 
 databases:
   - name: patagonia-austral-db

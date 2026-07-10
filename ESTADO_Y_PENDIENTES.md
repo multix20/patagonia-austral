@@ -84,6 +84,11 @@ Config local en `frontend/.env.local` (VITE_API_URL + VITE_VAPID_PUBLIC_KEY).
   `patagonia-austral-api`/`patagonia-austral-db` con `APP_KEY` y par VAPID
   **nuevos y propios** (los de Cochrane quedaron solo en aquel proyecto).
   `DEPLOY.md` reescrito para este repo (todo en Render, static site + blueprint).
+- **Secretos fuera del repo (10-jul-2026)**: `APP_KEY` y `VAPID_PRIVATE_KEY`
+  van con `sync: false` en `render.yaml` — se ingresan en el dashboard de Render
+  al aplicar el blueprint y no viven en git. Unas claves anteriores alcanzaron a
+  quedar en el historial de commits: se **rotaron** (par VAPID nuevo, cuya
+  pública está en `render.yaml`), así que las del historial no sirven.
 
 ---
 
