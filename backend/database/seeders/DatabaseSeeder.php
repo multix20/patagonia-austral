@@ -15,12 +15,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::firstOrCreate(
-            ['email' => 'test@example.com'],
-            ['name' => 'Test User', 'password' => bcrypt('password')]
-        );
+        // Usuario de prueba SOLO fuera de producción: el seeder corre en cada
+        // arranque del contenedor, y en producción esta credencial conocida
+        // sería una puerta de entrada al CMS. El admin real se crea con
+        // `php artisan make:filament-user` (ver DEPLOY.md).
+        if (! app()->isProduction()) {
+            User::firstOrCreate(
+                ['email' => 'test@example.com'],
+                ['name' => 'Test User', 'password' => bcrypt('password')]
+            );
+        }
 
         $this->call(PlaceSeeder::class);
     }

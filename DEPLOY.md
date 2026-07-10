@@ -49,7 +49,10 @@ Proyecto **personal/comercial propio**. Arquitectura del despliegue (todo gratis
    ```
    php artisan make:filament-user
    ```
-   (o usa el que siembra el seeder: `test@example.com` / `password`).
+   > En producción NO existe usuario semilla (el `test@example.com` del seeder
+   > solo se crea fuera de producción, justamente para no dejar una credencial
+   > conocida expuesta). Si alguna vez existió en la base, elimínalo:
+   > `php artisan tinker --execute="App\Models\User::where('email','test@example.com')->delete();"`
 
 ## 2) Frontend (PWA) en Netlify
 
