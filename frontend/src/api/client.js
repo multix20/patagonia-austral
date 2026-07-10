@@ -50,6 +50,7 @@ export async function obtenerAvisos() {
           id: a.id,
           mensaje: a.mensaje,
           tipo: a.tipo,
+          publicado_en: a.publicado_en,
         }))
         await guardarAvisos(datos)
         return datos
