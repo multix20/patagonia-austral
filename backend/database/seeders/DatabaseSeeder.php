@@ -15,11 +15,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Usuario de prueba SOLO fuera de producción: el seeder corre en cada
-        // arranque del contenedor, y en producción esta credencial conocida
-        // sería una puerta de entrada al CMS. El admin real se crea con
-        // `php artisan make:filament-user` (ver DEPLOY.md).
-        if (! app()->isProduction()) {
+        // El seeder corre en cada arranque del contenedor (migrate --seed).
+        if (app()->isProduction()) {
+            // Sin credencial de prueba en producción: si alguna vez quedó
+            // sembrada, se elimina aquí (no hay Shell en el plan free de Render).
+            User::where('email', 'test@example.com')->delete();
+
+            // Admin real desde variables de entorno del dashboard:
+            // definir ADMIN_EMAIL y ADMIN_PASSWORD (y opcional ADMIN_NAME),
+            // dejar que arranque una vez, y luego BORRAR ADMIN_PASSWORD del
+            // dashboard (el usuario ya creado no se toca en arranques futuros).
+            if (env('ADMIN_EMAIL') && env('ADMIN_PASSWORD')) {
+                User::firstOrCreate(
+                    ['email' => env('ADMIN_EMAIL')],
+                    ['name' => env('ADMIN_NAME', 'Admin'), 'password' => bcrypt(env('ADMIN_PASSWORD'))]
+                );
+            }
+        } else {
+            // Usuario de prueba solo para desarrollo local.
             User::firstOrCreate(
                 ['email' => 'test@example.com'],
                 ['name' => 'Test User', 'password' => bcrypt('password')]

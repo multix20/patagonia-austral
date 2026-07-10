@@ -45,14 +45,20 @@ Proyecto **personal/comercial propio**. Arquitectura del despliegue (todo gratis
 5. El arranque corre migraciones y siembra lugares + avisos en Neon. Verifica:
    - `https://patagonia-austral-api.onrender.com/api/places` → JSON con lugares.
    - `https://patagonia-austral-api.onrender.com/admin` → login de Filament.
-6. **Crear tu usuario admin**: web service → pestaña **Shell**:
+6. **Crear tu usuario admin** (sin Shell — el plan free no la incluye):
+   en **Environment** del web service agrega:
    ```
-   php artisan make:filament-user
+   ADMIN_EMAIL    = tu-correo@ejemplo.com
+   ADMIN_PASSWORD = (contraseña fuerte)
+   ADMIN_NAME     = Tu Nombre        (opcional)
    ```
-   > En producción NO existe usuario semilla (el `test@example.com` del seeder
-   > solo se crea fuera de producción, justamente para no dejar una credencial
-   > conocida expuesta). Si alguna vez existió en la base, elimínalo:
-   > `php artisan tinker --execute="App\Models\User::where('email','test@example.com')->delete();"`
+   Guarda (se redespliega solo): el seeder crea ese usuario al arrancar.
+   **Después borra `ADMIN_PASSWORD` del dashboard** — el usuario ya creado no
+   se modifica en arranques futuros y la contraseña deja de estar a la vista.
+   > En producción NO existe usuario semilla: el seeder elimina
+   > `test@example.com` en cada arranque (solo se siembra en desarrollo local).
+   > Para cambiar la contraseña más adelante: borra el usuario desde el SQL
+   > Editor de Neon (`DELETE FROM users WHERE email='...';`) y repite este paso.
 
 ## 2) Frontend (PWA) en Netlify
 
