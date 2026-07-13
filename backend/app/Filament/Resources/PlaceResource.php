@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PlaceResource\Pages;
+use App\Models\Localidad;
 use App\Models\Place;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -34,12 +35,27 @@ class PlaceResource extends Resource
         'emergencia' => 'Emergencia',
     ];
 
+    /** Opciones de localidad (norte → sur) para formulario y filtro */
+    protected static function opcionesLocalidad(): array
+    {
+        return Localidad::orderBy('orden')
+            ->get()
+            ->mapWithKeys(fn (Localidad $l) => [$l->id => $l->nombre['es'] ?? $l->slug])
+            ->all();
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
             Forms\Components\Section::make('Clasificación y ubicación')
                 ->columns(2)
                 ->schema([
+                    Forms\Components\Select::make('localidad_id')
+                        ->label('Localidad')
+                        ->options(fn () => self::opcionesLocalidad())
+                        ->required()
+                        ->native(false)
+                        ->helperText('Pueblo de la Carretera Austral al que pertenece este lugar.'),
                     Forms\Components\Select::make('cat')
                         ->label('Categoría')
                         ->options(self::CATEGORIAS)
@@ -100,11 +116,15 @@ class PlaceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with('localidad'))
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')->sortable()->toggleable(),
                 Tables\Columns\TextColumn::make('nombre.es')
                     ->label('Nombre')->searchable()->sortable()->limit(40),
+                Tables\Columns\TextColumn::make('localidad_nombre')
+                    ->label('Localidad')
+                    ->getStateUsing(fn (Place $record): string => $record->localidad?->nombre['es'] ?? '—'),
                 Tables\Columns\TextColumn::make('cat')
                     ->label('Categoría')
                     ->badge()
@@ -126,6 +146,8 @@ class PlaceResource extends Resource
                     ->label('Actualizado')->dateTime('d/m/Y H:i')->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('localidad_id')
+                    ->label('Localidad')->options(fn () => self::opcionesLocalidad()),
                 Tables\Filters\SelectFilter::make('cat')
                     ->label('Categoría')->options(self::CATEGORIAS),
                 Tables\Filters\TernaryFilter::make('publicado')

@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Place extends Model
 {
     protected $fillable = [
         'cat', 'lat', 'lng', 'tel', 'nombre', 'descripcion', 'como', 'dist', 'publicado',
+        'localidad_id',
     ];
 
     protected $casts = [
@@ -20,7 +22,16 @@ class Place extends Model
         'publicado' => 'boolean',
     ];
 
-    /** Forma que consume la PWA (src/api/client.js) */
+    public function localidad(): BelongsTo
+    {
+        return $this->belongsTo(Localidad::class);
+    }
+
+    /**
+     * Forma que consume la PWA (src/api/client.js).
+     * El campo `localidad` (slug) es aditivo: las versiones antiguas de la
+     * PWA lo ignoran, así que el backend puede desplegarse primero.
+     */
     public function toApi(): array
     {
         return [
@@ -33,6 +44,7 @@ class Place extends Model
             'desc' => $this->descripcion,
             'como' => $this->como,
             'dist' => $this->dist,
+            'localidad' => $this->localidad?->slug,
         ];
     }
 }

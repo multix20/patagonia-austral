@@ -11,7 +11,8 @@ class PlaceController extends Controller
     public function index()
     {
         return response()->json(
-            Place::where('publicado', true)
+            Place::with('localidad')
+                ->where('publicado', true)
                 ->orderBy('id')
                 ->get()
                 ->map(fn (Place $p) => $p->toApi())

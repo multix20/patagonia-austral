@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
             );
         }
 
+        $this->call(LocalidadSeeder::class); // antes que PlaceSeeder: los lugares referencian localidades por slug
         $this->call(PlaceSeeder::class);
     }
 }
