@@ -1,9 +1,11 @@
-import { LUGARES_SEED, AVISOS_SEED } from '../data/places'
+import { LUGARES_SEED, AVISOS_SEED, LOCALIDADES_SEED } from '../data/places'
 import {
   guardarLugares,
   leerLugares,
   guardarAvisos,
   leerAvisos,
+  guardarLocalidades,
+  leerLocalidades,
   guardarMeta,
   leerMeta,
 } from '../db'
@@ -64,6 +66,33 @@ export async function obtenerAvisos() {
 
   // Sin sincronización previa: usar los avisos semilla empaquetados
   return AVISOS_SEED.map((m, i) => ({ id: `seed-${i}`, mensaje: m, tipo: 'info' }))
+}
+
+// Localidades de la ruta (Fase 1 — multi-localidad), misma estrategia
+// offline-first. Siempre se devuelven ordenadas norte → sur (`orden`).
+export async function obtenerLocalidades() {
+  const ordenar = (lista) => [...lista].sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0))
+
+  if (API_URL && navigator.onLine) {
+    try {
+      const r = await fetch(`${API_URL}/api/localidades`, {
+        headers: { Accept: 'application/json' },
+      })
+      if (r.ok) {
+        const datos = await r.json()
+        await guardarLocalidades(datos)
+        return ordenar(datos)
+      }
+    } catch {
+      // sin red o API caída (o backend sin Fase 1 aún): continuar con datos locales
+    }
+  }
+  const locales = await leerLocalidades()
+  if (locales.length > 0) return ordenar(locales)
+
+  // Primera visita sin API: sembrar con las localidades empaquetadas
+  await guardarLocalidades(LOCALIDADES_SEED)
+  return ordenar(LOCALIDADES_SEED)
 }
 
 export async function fechaActualizacion() {

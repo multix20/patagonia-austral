@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { I18nProvider, useI18n } from './i18n'
 import { CATEGORIAS } from './data/places'
-import { obtenerLugares, obtenerAvisos } from './api/client'
+import { obtenerLugares, obtenerAvisos, obtenerLocalidades } from './api/client'
 import { activarPush, pushSoportado } from './push'
 import Icon from './components/Icon'
 import MapView from './components/MapView'
@@ -22,6 +22,11 @@ function AppInterna() {
   const [filtro, setFiltro] = useState('todos')
   const [seleccionado, setSeleccionado] = useState(null)
   const [chatAbierto, setChatAbierto] = useState(false)
+
+  // Multi-localidad (Fase 1): pueblos de la ruta sincronizados offline-first.
+  // 'todas' = toda la Carretera Austral (sin filtro). Se persiste la elección.
+  const [localidades, setLocalidades] = useState([])
+  const [localidad, setLocalidad] = useState(() => localStorage.getItem('localidadSel') || 'todas')
 
   // Estado de conexión real del dispositivo
   const [sinRed, setSinRed] = useState(!navigator.onLine)
@@ -52,6 +57,7 @@ function AppInterna() {
   useEffect(() => {
     obtenerLugares().then(setLugares)
     obtenerAvisos().then(setAvisos)
+    obtenerLocalidades().then(setLocalidades)
   }, [])
 
   // Cuando llega un Web Push, el service worker avisa a la app (postMessage).
@@ -200,6 +206,26 @@ function AppInterna() {
   const onSeleccionar = useCallback((id) => setSeleccionado(id), [])
   const lugarSel = lugares.find((l) => l.id === seleccionado)
 
+  // Cambia la localidad activa: persiste la elección y cierra la ficha abierta
+  // (podría ser de otro pueblo). El mapa se recentra vía props de MapView.
+  const cambiarLocalidad = (slug) => {
+    setLocalidad(slug)
+    localStorage.setItem('localidadSel', slug)
+    setSeleccionado(null)
+  }
+
+  const locActiva = localidades.find((l) => l.slug === localidad)
+
+  // Lugares visibles según la localidad elegida. Los lugares cacheados por
+  // versiones previas de la app (sin campo `localidad`) se asumen de Cochrane,
+  // que era la única localidad hasta la Fase 1.
+  const lugaresVisibles =
+    localidad === 'todas'
+      ? lugares
+      : lugares.filter((l) => (l.localidad || 'cochrane') === localidad)
+
+  const lugaresFiltrados = lugaresVisibles.filter((l) => filtro === 'todos' || l.cat === filtro)
+
   return (
     <div className={`app ${offline ? 'offline' : ''}`}>
       <header>
@@ -230,6 +256,26 @@ function AppInterna() {
             </div>
           </div>
         </div>
+
+        {/* Selector de localidad (Fase 1): elige el pueblo de la ruta */}
+        <div className="selector-localidad">
+          <Icon nombre="map-pin" tam={14} />
+          <label className="visualmente-oculto" htmlFor="sel-localidad">
+            {t('localidad')}
+          </label>
+          <select
+            id="sel-localidad"
+            value={localidad}
+            onChange={(e) => cambiarLocalidad(e.target.value)}
+          >
+            <option value="todas">{t('todaLaRuta')}</option>
+            {localidades.map((l) => (
+              <option key={l.slug} value={l.slug}>
+                {l.nombre[lang]}
+              </option>
+            ))}
+          </select>
+        </div>
       </header>
 
       {offline && (
@@ -239,11 +285,13 @@ function AppInterna() {
       )}
 
       <MapView
-        lugares={lugares}
+        lugares={lugaresVisibles}
         filtro={filtro}
         seleccionado={seleccionado}
         onSeleccionar={onSeleccionar}
         offline={offline}
+        centro={locActiva ? [locActiva.lat, locActiva.lng] : null}
+        zoom={locActiva?.zoom}
       />
 
       <div className="chips">
@@ -265,8 +313,10 @@ function AppInterna() {
       </div>
 
       <div className="lista">
-        {lugares
-          .filter((l) => filtro === 'todos' || l.cat === filtro)
+        {lugaresFiltrados.length === 0 && (
+          <div className="lista-vacia">{t('sinLugaresLocalidad')}</div>
+        )}
+        {lugaresFiltrados
           .map((l) => {
             const c = CATEGORIAS[l.cat]
             return (

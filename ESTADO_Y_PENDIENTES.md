@@ -107,9 +107,37 @@ Nota Android: al instalar puede aparecer "no se pudieron activar las
 notificaciones" si el POST de suscripción falla en ese momento; se autorepara
 al abrir la app (el toast ahora muestra el motivo exacto entre paréntesis).
 
-### 2. Fase 1 — Multi-localidad
-Modelo `Localidad`, selector de pueblo, filtro por localidad en mapa y API.
-Cargar 2-3 pueblos reales (Cochrane, Tortel, Puerto Río Tranquilo).
+### ✅ 2. Fase 1 — Multi-localidad — HECHO (13-jul-2026)
+**Backend:** modelo `Localidad` (tabla `localidades`: slug único, nombre
+bilingüe jsonb, lat/lng, `zoom` inicial del mapa, `orden` norte→sur en decenas
+para intercalar pueblos), `Place belongsTo Localidad` (FK nullable
+`localidad_id`), recurso Filament **Localidades** (CRUD con contador de
+lugares), `GET /api/localidades` y campo aditivo `localidad` (slug) en
+`/api/places` — **compatible hacia atrás**: la PWA desplegada ignora el campo
+nuevo, así que el backend puede desplegarse primero. La migración
+`2026_07_13_000002` asigna los 15 lugares preexistentes a Cochrane (crea la
+localidad si no existe; corre antes que los seeders). `LocalidadSeeder`
+idempotente (updateOrCreate por slug) con Puerto Río Tranquilo (orden 30),
+Cochrane (60) y Caleta Tortel (70); `PlaceSeeder` resuelve la localidad por
+slug desde `data/places.json` y ahora **resetea la secuencia de PostgreSQL**
+tras sembrar con ids explícitos (bug latente: crear un lugar desde el CMS
+chocaba con los ids semilla).
+**Frontend:** IndexedDB v3 con store `localidades` (keyPath `slug`),
+`obtenerLocalidades()` en `api/client.js` (misma estrategia offline-first:
+API → IndexedDB → seed empaquetado), selector de localidad en el header
+(persistido en `localStorage.localidadSel`, opción "Toda la ruta"), filtro por
+localidad en lista y mapa, y recentrado del mapa (`flyTo` a lat/lng/zoom de la
+localidad). Lugares cacheados por versiones previas (sin campo `localidad`) se
+asumen de Cochrane. Textos nuevos ES/EN en `i18n.jsx`
+(`localidad`/`todaLaRuta`/`sinLugaresLocalidad`).
+**Contenido:** 6 lugares reales nuevos (ids 16-21): Capillas de Mármol,
+Glaciar Exploradores y posta de salud (Puerto Río Tranquilo); pasarelas,
+Isla de los Muertos y posta de salud (Caleta Tortel). Seeds del frontend
+(`data/places.js`) y backend (`seeders/data/places.json`) en espejo — el JSON
+se regeneró desde el seed del frontend, mantener esa dirección al editar.
+**Verificado:** build+lint del frontend OK; `php -l` OK; `migrate:fresh
+--seed` contra PostgreSQL 16 local y respuestas reales de `/api/places` y
+`/api/localidades` comprobadas con `php artisan serve`.
 
 ### 3. Fase 2 — Contenido
 Poblar todas las localidades (atractivos, alojamiento, comida, servicios,

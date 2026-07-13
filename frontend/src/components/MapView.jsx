@@ -37,7 +37,18 @@ function distanciaKm(a, b) {
   return 2 * R * Math.asin(Math.sqrt(s))
 }
 
-export default function MapView({ lugares, filtro, seleccionado, onSeleccionar, offline }) {
+// `centro`/`zoom` (opcionales) llegan de la localidad elegida en el selector:
+// al cambiarla, el mapa vuela al pueblo correspondiente. Sin localidad
+// ("toda la ruta") el mapa conserva su vista actual.
+export default function MapView({
+  lugares,
+  filtro,
+  seleccionado,
+  onSeleccionar,
+  offline,
+  centro = null,
+  zoom = null,
+}) {
   const contRef = useRef(null)
   const mapaRef = useRef(null)
   const capaRef = useRef(null) // grupo de marcadores de lugares
@@ -61,6 +72,14 @@ export default function MapView({ lugares, filtro, seleccionado, onSeleccionar, 
       mapaRef.current = null
     }
   }, [])
+
+  // Recentra el mapa al cambiar de localidad (Fase 1 — multi-localidad)
+  useEffect(() => {
+    const mapa = mapaRef.current
+    if (!mapa || !centro) return
+    mapa.flyTo(centro, zoom || 13, { duration: 0.8 })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [centro?.[0], centro?.[1], zoom])
 
   // Cambia el mapa base (Mapa ↔ Satélite)
   useEffect(() => {
