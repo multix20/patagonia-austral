@@ -2,14 +2,41 @@
 // En producción estos contenidos provienen de la API Laravel (/api/places)
 // y son administrados por funcionarios municipales desde el CMS.
 
-// Localidades de la Carretera Austral sur (Fase 1 — multi-localidad).
+// Localidades de la Carretera Austral sur (Fases 1 y 2 — multi-localidad).
 // El slug es la clave estable que une lugares ↔ localidades (igual al backend).
 // `orden` va norte → sur en decenas para poder intercalar pueblos después.
+// Chile Chico (45) no está sobre la Carretera pero es el desvío clásico por la
+// ribera sur del lago General Carrera, entre Puerto Guadal y Puerto Bertrand.
 export const LOCALIDADES_SEED = [
+  {
+    slug: 'coyhaique',
+    nombre: { es: 'Coyhaique', en: 'Coyhaique' },
+    lat: -45.5719, lng: -72.0683, zoom: 13, orden: 10,
+  },
+  {
+    slug: 'villa-cerro-castillo',
+    nombre: { es: 'Villa Cerro Castillo', en: 'Villa Cerro Castillo' },
+    lat: -46.1216, lng: -72.1636, zoom: 15, orden: 20,
+  },
   {
     slug: 'puerto-rio-tranquilo',
     nombre: { es: 'Puerto Río Tranquilo', en: 'Puerto Río Tranquilo' },
     lat: -46.6252, lng: -72.6735, zoom: 14, orden: 30,
+  },
+  {
+    slug: 'puerto-guadal',
+    nombre: { es: 'Puerto Guadal', en: 'Puerto Guadal' },
+    lat: -46.8442, lng: -72.7027, zoom: 15, orden: 40,
+  },
+  {
+    slug: 'chile-chico',
+    nombre: { es: 'Chile Chico', en: 'Chile Chico' },
+    lat: -46.5399, lng: -71.7288, zoom: 14, orden: 45,
+  },
+  {
+    slug: 'puerto-bertrand',
+    nombre: { es: 'Puerto Bertrand', en: 'Puerto Bertrand' },
+    lat: -47.0219, lng: -72.8247, zoom: 15, orden: 50,
   },
   {
     slug: 'cochrane',
@@ -20,6 +47,11 @@ export const LOCALIDADES_SEED = [
     slug: 'caleta-tortel',
     nombre: { es: 'Caleta Tortel', en: 'Caleta Tortel' },
     lat: -47.7967, lng: -73.536, zoom: 15, orden: 70,
+  },
+  {
+    slug: 'villa-ohiggins',
+    nombre: { es: "Villa O'Higgins", en: "Villa O'Higgins" },
+    lat: -48.4686, lng: -72.5601, zoom: 14, orden: 80,
   },
 ]
 
