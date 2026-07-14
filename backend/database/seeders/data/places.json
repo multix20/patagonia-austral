@@ -491,5 +491,566 @@
       "es": "Por la pasarela principal, sector centro del pueblo.",
       "en": "Along the main boardwalk, central sector of town."
     }
+  },
+  {
+    "id": 22,
+    "cat": "atractivo",
+    "localidad": "coyhaique",
+    "lat": -45.532,
+    "lng": -72.032,
+    "nombre": {
+      "es": "Reserva Nacional Coyhaique",
+      "en": "Coyhaique National Reserve"
+    },
+    "dist": {
+      "es": "5 km · 15 min en auto",
+      "en": "5 km · 15 min by car"
+    },
+    "desc": {
+      "es": "Bosques de lenga y coigüe, lagunas y miradores sobre la ciudad y el valle del río Simpson. Senderos cortos ideales para aclimatarse antes de seguir ruta al sur.",
+      "en": "Lenga and coigüe forests, lagoons and viewpoints over the city and the Simpson River valley. Short trails, ideal for warming up before heading south."
+    },
+    "como": {
+      "es": "Camino de ripio señalizado desde el sector norte de la ciudad, entrada CONAF.",
+      "en": "Signposted gravel road from the north side of the city, CONAF entrance."
+    }
+  },
+  {
+    "id": 23,
+    "cat": "atractivo",
+    "localidad": "coyhaique",
+    "lat": -45.5719,
+    "lng": -72.0683,
+    "nombre": {
+      "es": "Plaza de Armas pentagonal",
+      "en": "Pentagonal Main Square"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "Única en Chile: una plaza de cinco lados de la que irradian diez calles, corazón de la capital regional de Aysén. Alrededor se concentran cafés, artesanía y servicios.",
+      "en": "Unique in Chile: a five-sided square with ten radiating streets, the heart of the Aysén regional capital. Cafés, crafts and services cluster around it."
+    },
+    "como": {
+      "es": "Centro de Coyhaique, entre las calles Horn, Bilbao, Prat, 21 de Mayo y Condell.",
+      "en": "Central Coyhaique, between Horn, Bilbao, Prat, 21 de Mayo and Condell streets."
+    }
+  },
+  {
+    "id": 24,
+    "cat": "atractivo",
+    "localidad": "coyhaique",
+    "lat": -45.582,
+    "lng": -72.078,
+    "nombre": {
+      "es": "Piedra del Indio (mirador del río Simpson)",
+      "en": "Piedra del Indio (Simpson River viewpoint)"
+    },
+    "dist": {
+      "es": "1,5 km · 20 min a pie",
+      "en": "1.5 km · 20 min on foot"
+    },
+    "desc": {
+      "es": "Formación rocosa que recuerda un perfil humano sobre el cañón del río Simpson. Mirador clásico de la ciudad, especialmente al atardecer.",
+      "en": "A rock formation resembling a human profile above the Simpson River canyon. A classic city viewpoint, best at sunset."
+    },
+    "como": {
+      "es": "Salida suroeste de la ciudad, por el puente sobre el río Simpson (camino a Puerto Aysén).",
+      "en": "Southwest exit of the city, by the bridge over the Simpson River (road to Puerto Aysén)."
+    }
+  },
+  {
+    "id": 25,
+    "cat": "alojamiento",
+    "localidad": "coyhaique",
+    "lat": -45.5731,
+    "lng": -72.0699,
+    "tel": "+56 9 1111 2222",
+    "nombre": {
+      "es": "Hostal del Centro (ejemplo)",
+      "en": "Downtown Hostel (sample)"
+    },
+    "dist": {
+      "es": "300 m de la plaza",
+      "en": "300 m from the square"
+    },
+    "desc": {
+      "es": "Coyhaique concentra la mayor oferta de alojamiento de la región: hostales, hoteles y cabañas para todos los presupuestos. (Contenido de ejemplo).",
+      "en": "Coyhaique has the region’s widest range of lodging: hostels, hotels and cabins for every budget. (Sample content)."
+    },
+    "como": {
+      "es": "A pasos de la Plaza de Armas.",
+      "en": "Steps from the main square."
+    }
+  },
+  {
+    "id": 26,
+    "cat": "comida",
+    "localidad": "coyhaique",
+    "lat": -45.5713,
+    "lng": -72.0668,
+    "nombre": {
+      "es": "Restaurante Patagón (ejemplo)",
+      "en": "Patagón Restaurant (sample)"
+    },
+    "dist": {
+      "es": "Frente a la plaza",
+      "en": "Facing the square"
+    },
+    "desc": {
+      "es": "Cordero, carnes a la parrilla y cerveza artesanal ayseninas. El centro reúne decenas de restaurantes y cafés. (Contenido de ejemplo).",
+      "en": "Lamb, grilled meats and Aysén craft beer. Downtown has dozens of restaurants and cafés. (Sample content)."
+    },
+    "como": {
+      "es": "Sector Plaza de Armas.",
+      "en": "Main square area."
+    }
+  },
+  {
+    "id": 27,
+    "cat": "servicio",
+    "localidad": "coyhaique",
+    "lat": -45.5725,
+    "lng": -72.066,
+    "nombre": {
+      "es": "Combustible, bancos y supermercados",
+      "en": "Fuel, banks and supermarkets"
+    },
+    "dist": {
+      "es": "En el centro y accesos",
+      "en": "Downtown and city exits"
+    },
+    "desc": {
+      "es": "Coyhaique es el principal punto de abastecimiento de toda la Carretera Austral sur: varias estaciones de servicio, bancos con cajero automático y supermercados grandes. Carga combustible y retira efectivo aquí antes de seguir al sur.",
+      "en": "Coyhaique is the main supply point of the whole southern Carretera Austral: several petrol stations, banks with ATMs and large supermarkets. Fill up and withdraw cash here before heading south."
+    },
+    "como": {
+      "es": "Estaciones de servicio en los accesos de la ciudad; bancos y supermercados en el centro.",
+      "en": "Petrol stations at the city exits; banks and supermarkets downtown."
+    }
+  },
+  {
+    "id": 28,
+    "cat": "emergencia",
+    "localidad": "coyhaique",
+    "lat": -45.5754,
+    "lng": -72.0736,
+    "tel": "131",
+    "nombre": {
+      "es": "Hospital Regional de Coyhaique",
+      "en": "Coyhaique Regional Hospital"
+    },
+    "dist": {
+      "es": "800 m del centro",
+      "en": "800 m from downtown"
+    },
+    "desc": {
+      "es": "El hospital de mayor complejidad de la región de Aysén, urgencias las 24 horas. Aquí se derivan las emergencias graves de toda la Carretera Austral.",
+      "en": "The highest-complexity hospital in the Aysén region, 24-hour ER. Serious emergencies from the whole Carretera Austral are referred here."
+    },
+    "como": {
+      "es": "Calle Dr. Jorge Ibar, sector poniente del centro.",
+      "en": "Dr. Jorge Ibar St., west of downtown."
+    }
+  },
+  {
+    "id": 29,
+    "cat": "emergencia",
+    "localidad": "coyhaique",
+    "lat": -45.5708,
+    "lng": -72.0662,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Comisaría Coyhaique",
+      "en": "Police — Coyhaique Station"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "Emergencias policiales y coordinación con rescate de montaña. Informa tus rutas de trekking antes de internarte en zonas aisladas.",
+      "en": "Police emergencies and mountain-rescue coordination. Register your trekking routes before entering remote areas."
+    },
+    "como": {
+      "es": "Sector céntrico, a cuadras de la Plaza de Armas.",
+      "en": "Central area, blocks from the main square."
+    }
+  },
+  {
+    "id": 30,
+    "cat": "atractivo",
+    "localidad": "villa-cerro-castillo",
+    "lat": -46.113,
+    "lng": -72.179,
+    "nombre": {
+      "es": "Sendero Laguna Cerro Castillo (P.N. Cerro Castillo)",
+      "en": "Cerro Castillo Lagoon Trail (Cerro Castillo N.P.)"
+    },
+    "dist": {
+      "es": "Acceso a 3 km · trekking de día completo",
+      "en": "Trailhead 3 km away · full-day hike"
+    },
+    "desc": {
+      "es": "El trekking estrella de la zona: ascenso exigente hasta la laguna turquesa al pie de las agujas de basalto del cerro Castillo (unas 8 horas ida y vuelta). En temporada alta el acceso es regulado y con horario de ingreso.",
+      "en": "The area’s star hike: a demanding climb to the turquoise lagoon at the foot of Cerro Castillo’s basalt spires (about 8 hours round trip). In high season access is regulated with entry hours."
+    },
+    "como": {
+      "es": "Acceso señalizado sector Estero Parada, a unos 3 km del pueblo. Registro obligatorio; consulta condiciones antes de subir.",
+      "en": "Signposted access at the Estero Parada sector, about 3 km from the village. Registration required; check conditions before climbing."
+    }
+  },
+  {
+    "id": 31,
+    "cat": "atractivo",
+    "localidad": "villa-cerro-castillo",
+    "lat": -46.1295,
+    "lng": -72.152,
+    "nombre": {
+      "es": "Paredón de las Manos",
+      "en": "Paredón de las Manos (Wall of Hands)"
+    },
+    "dist": {
+      "es": "3 km · 40 min a pie",
+      "en": "3 km · 40 min on foot"
+    },
+    "desc": {
+      "es": "Alero rocoso con pinturas rupestres de manos de unos 3.000 años de antigüedad, herencia de los antiguos cazadores tehuelches. Administrado por la comunidad local con una pequeña entrada.",
+      "en": "A rock overhang with hand paintings around 3,000 years old, a legacy of ancient Tehuelche hunters. Managed by the local community with a small entry fee."
+    },
+    "como": {
+      "es": "Desvío señalizado desde el pueblo, camino al sector sur.",
+      "en": "Signposted turnoff from the village, on the road to the southern sector."
+    }
+  },
+  {
+    "id": 32,
+    "cat": "atractivo",
+    "localidad": "villa-cerro-castillo",
+    "lat": -46.1223,
+    "lng": -72.1638,
+    "nombre": {
+      "es": "Museo Escuela (antigua escuela rural)",
+      "en": "School Museum (old rural school)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "La antigua escuela del pueblo convertida en museo de la vida pionera y la cultura gaucha del valle Ibáñez. Horarios acotados fuera de temporada.",
+      "en": "The village’s old school turned into a museum of pioneer life and gaucho culture in the Ibáñez valley. Limited hours off-season."
+    },
+    "como": {
+      "es": "Calle principal del pueblo (avenida O’Higgins).",
+      "en": "Main street of the village (O’Higgins Avenue)."
+    }
+  },
+  {
+    "id": 33,
+    "cat": "alojamiento",
+    "localidad": "villa-cerro-castillo",
+    "lat": -46.1219,
+    "lng": -72.1645,
+    "tel": "+56 9 3333 4444",
+    "nombre": {
+      "es": "Hospedaje La Villa (ejemplo)",
+      "en": "La Villa Guesthouse (sample)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Hospedajes familiares, cabañas y campings para los trekkers del cerro Castillo. Reserva con anticipación en temporada alta. (Contenido de ejemplo).",
+      "en": "Family guesthouses, cabins and campsites for Cerro Castillo trekkers. Book ahead in high season. (Sample content)."
+    },
+    "como": {
+      "es": "Casco del pueblo, junto a la Carretera Austral.",
+      "en": "Village centre, next to the Carretera Austral."
+    }
+  },
+  {
+    "id": 34,
+    "cat": "comida",
+    "localidad": "villa-cerro-castillo",
+    "lat": -46.1213,
+    "lng": -72.1629,
+    "nombre": {
+      "es": "Cocinería del valle (ejemplo)",
+      "en": "Valley eatery (sample)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Cocinerías y cafés de ruta con menú casero: cazuelas, asado y kuchen. (Contenido de ejemplo).",
+      "en": "Roadside eateries and cafés with home cooking: stews, roast lamb and kuchen. (Sample content)."
+    },
+    "como": {
+      "es": "Sobre la calle principal.",
+      "en": "On the main street."
+    }
+  },
+  {
+    "id": 35,
+    "cat": "servicio",
+    "localidad": "villa-cerro-castillo",
+    "lat": -46.1216,
+    "lng": -72.1633,
+    "nombre": {
+      "es": "Almacenes y provisiones",
+      "en": "Grocery stores and supplies"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Almacenes básicos para reponer víveres antes o después del trekking. No cuentes con combustible ni cajero automático: lo seguro es cargar en Coyhaique o en Puerto Río Tranquilo.",
+      "en": "Basic grocery stores to restock before or after the trek. Don’t count on fuel or an ATM: the safe bet is to fill up in Coyhaique or Puerto Río Tranquilo."
+    },
+    "como": {
+      "es": "Calle principal del pueblo.",
+      "en": "Main street of the village."
+    }
+  },
+  {
+    "id": 36,
+    "cat": "emergencia",
+    "localidad": "villa-cerro-castillo",
+    "lat": -46.1224,
+    "lng": -72.1626,
+    "tel": "131",
+    "nombre": {
+      "es": "Posta de Salud Villa Cerro Castillo",
+      "en": "Villa Cerro Castillo Health Post"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Posta de salud rural para primeros auxilios y urgencias básicas. Las urgencias mayores se derivan a Coyhaique (1,5 h por camino pavimentado).",
+      "en": "Rural health post for first aid and basic emergencies. Major emergencies are referred to Coyhaique (1.5 h on paved road)."
+    },
+    "como": {
+      "es": "Casco del pueblo.",
+      "en": "Village centre."
+    }
+  },
+  {
+    "id": 37,
+    "cat": "emergencia",
+    "localidad": "villa-cerro-castillo",
+    "lat": -46.1207,
+    "lng": -72.1642,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Retén Cerro Castillo",
+      "en": "Police — Cerro Castillo Outpost"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Emergencias policiales y apoyo en rescates del parque nacional. Avisa aquí tu plan de trekking si vas a rutas largas.",
+      "en": "Police emergencies and support for national-park rescues. Report your trekking plan here before long routes."
+    },
+    "como": {
+      "es": "Junto a la calle principal.",
+      "en": "By the main street."
+    }
+  },
+  {
+    "id": 38,
+    "cat": "atractivo",
+    "localidad": "chile-chico",
+    "lat": -46.5378,
+    "lng": -71.7275,
+    "nombre": {
+      "es": "Costanera del lago General Carrera",
+      "en": "General Carrera Lake waterfront"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Chile Chico, la \"ciudad del sol\", goza de un microclima cálido a orillas del lago más grande de Chile. Playas de aguas turquesas, huertos frutales y vista a las cumbres de la ribera norte.",
+      "en": "Chile Chico, the \"city of the sun\", enjoys a warm microclimate on the shore of Chile’s largest lake. Turquoise beaches, fruit orchards and views of the peaks on the northern shore."
+    },
+    "como": {
+      "es": "Borde norte del pueblo, frente al lago.",
+      "en": "Northern edge of town, facing the lake."
+    }
+  },
+  {
+    "id": 39,
+    "cat": "atractivo",
+    "localidad": "chile-chico",
+    "lat": -46.82,
+    "lng": -72,
+    "nombre": {
+      "es": "Reserva Nacional Lago Jeinimeni",
+      "en": "Lago Jeinimeni National Reserve"
+    },
+    "dist": {
+      "es": "52 km · 1 h 30 min en auto",
+      "en": "52 km · 1.5 h by car"
+    },
+    "desc": {
+      "es": "Lagunas color esmeralda entre estepa y bosque, hoy parte del Parque Nacional Patagonia. En el camino: la Piedra Clavada, la Cueva de las Manos y el valle Lunar, de paisaje casi marciano.",
+      "en": "Emerald lagoons between steppe and forest, now part of Patagonia National Park. On the way: Piedra Clavada, the Cave of Hands and the Moon Valley with its almost Martian landscape."
+    },
+    "como": {
+      "es": "Camino de ripio hacia el sur desde Chile Chico. Sin combustible ni señal en la ruta: sal preparado.",
+      "en": "Gravel road south from Chile Chico. No fuel or phone signal on the way: leave prepared."
+    }
+  },
+  {
+    "id": 40,
+    "cat": "alojamiento",
+    "localidad": "chile-chico",
+    "lat": -46.5402,
+    "lng": -71.7263,
+    "tel": "+56 9 5555 6666",
+    "nombre": {
+      "es": "Hostería del Sol (ejemplo)",
+      "en": "Hostería del Sol (sample)"
+    },
+    "dist": {
+      "es": "200 m del centro",
+      "en": "200 m from downtown"
+    },
+    "desc": {
+      "es": "Hosterías, cabañas y residenciales familiares; el microclima hace agradable la estadía todo el año. (Contenido de ejemplo).",
+      "en": "Inns, cabins and family guesthouses; the microclimate makes for a pleasant stay year-round. (Sample content)."
+    },
+    "como": {
+      "es": "Sector céntrico.",
+      "en": "Central area."
+    }
+  },
+  {
+    "id": 41,
+    "cat": "comida",
+    "localidad": "chile-chico",
+    "lat": -46.5396,
+    "lng": -71.7248,
+    "nombre": {
+      "es": "Restaurante frente al lago (ejemplo)",
+      "en": "Lakefront restaurant (sample)"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "Cocina casera y productos del microclima local: cerezas, duraznos y hortalizas de los huertos del pueblo. (Contenido de ejemplo).",
+      "en": "Home cooking and produce from the local microclimate: cherries, peaches and vegetables from the town’s orchards. (Sample content)."
+    },
+    "como": {
+      "es": "Sector céntrico, cerca de la costanera.",
+      "en": "Central area, near the waterfront."
+    }
+  },
+  {
+    "id": 42,
+    "cat": "servicio",
+    "localidad": "chile-chico",
+    "lat": -46.5405,
+    "lng": -71.729,
+    "nombre": {
+      "es": "Combustible y banco (BancoEstado)",
+      "en": "Fuel and bank (BancoEstado)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Chile Chico tiene estación de servicio y sucursal de BancoEstado con cajero automático: uno de los pocos puntos con banco entre Coyhaique y Cochrane.",
+      "en": "Chile Chico has a petrol station and a BancoEstado branch with an ATM: one of the few banking points between Coyhaique and Cochrane."
+    },
+    "como": {
+      "es": "Calle principal (avenida O’Higgins).",
+      "en": "Main street (O’Higgins Avenue)."
+    }
+  },
+  {
+    "id": 43,
+    "cat": "servicio",
+    "localidad": "chile-chico",
+    "lat": -46.5359,
+    "lng": -71.731,
+    "nombre": {
+      "es": "Barcaza Chile Chico — Puerto Ibáñez",
+      "en": "Chile Chico — Puerto Ibáñez ferry"
+    },
+    "dist": {
+      "es": "Rampa en la costanera",
+      "en": "Ramp on the waterfront"
+    },
+    "desc": {
+      "es": "La barcaza cruza el lago General Carrera y conecta Chile Chico con Puerto Ibáñez (unas 2 horas), atajo clave hacia Coyhaique. Lleva vehículos y pasajeros; reserva con anticipación en temporada alta.",
+      "en": "The ferry crosses General Carrera Lake linking Chile Chico with Puerto Ibáñez (about 2 hours), a key shortcut to Coyhaique. Carries vehicles and passengers; book ahead in high season."
+    },
+    "como": {
+      "es": "Rampa de la costanera; horarios y reservas en la oficina local o en línea.",
+      "en": "Waterfront ramp; timetables and bookings at the local office or online."
+    }
+  },
+  {
+    "id": 44,
+    "cat": "emergencia",
+    "localidad": "chile-chico",
+    "lat": -46.5418,
+    "lng": -71.7222,
+    "tel": "131",
+    "nombre": {
+      "es": "Hospital de Chile Chico",
+      "en": "Chile Chico Hospital"
+    },
+    "dist": {
+      "es": "400 m del centro",
+      "en": "400 m from downtown"
+    },
+    "desc": {
+      "es": "Hospital de baja complejidad con urgencias las 24 horas. Los casos graves se evacuan a Coyhaique por barcaza o vía aérea.",
+      "en": "Low-complexity hospital with 24-hour ER. Serious cases are evacuated to Coyhaique by ferry or air."
+    },
+    "como": {
+      "es": "Sector oriente del pueblo.",
+      "en": "Eastern sector of town."
+    }
+  },
+  {
+    "id": 45,
+    "cat": "emergencia",
+    "localidad": "chile-chico",
+    "lat": -46.541,
+    "lng": -71.727,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Comisaría Chile Chico",
+      "en": "Police — Chile Chico Station"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "Emergencias policiales y control fronterizo cercano (paso Río Jeinimeni hacia Los Antiguos, Argentina).",
+      "en": "Police emergencies; the Río Jeinimeni border crossing to Los Antiguos, Argentina, is nearby."
+    },
+    "como": {
+      "es": "Sector céntrico.",
+      "en": "Central area."
+    }
   }
 ]
