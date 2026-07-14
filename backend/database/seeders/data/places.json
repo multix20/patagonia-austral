@@ -1052,5 +1052,520 @@
       "es": "Sector céntrico.",
       "en": "Central area."
     }
+  },
+  {
+    "id": 46,
+    "cat": "atractivo",
+    "localidad": "puerto-guadal",
+    "lat": -46.845,
+    "lng": -72.702,
+    "nombre": {
+      "es": "Costanera y playas del lago General Carrera",
+      "en": "General Carrera Lake waterfront and beaches"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Pueblo tranquilo en la ribera suroeste del lago General Carrera, con playas de aguas turquesas y vista hacia las montañas del Campo de Hielo Norte. Buen punto base entre Río Tranquilo y Chile Chico.",
+      "en": "A quiet village on the southwest shore of General Carrera Lake, with turquoise beaches and views towards the Northern Ice Field mountains. A good base between Río Tranquilo and Chile Chico."
+    },
+    "como": {
+      "es": "Borde del lago, junto al casco del pueblo.",
+      "en": "Lakeshore, by the village centre."
+    }
+  },
+  {
+    "id": 47,
+    "cat": "atractivo",
+    "localidad": "puerto-guadal",
+    "lat": -46.822,
+    "lng": -72.622,
+    "nombre": {
+      "es": "Cascada Los Maquis",
+      "en": "Los Maquis Waterfall"
+    },
+    "dist": {
+      "es": "10 km · 20 min en auto + caminata corta",
+      "en": "10 km · 20 min by car + short walk"
+    },
+    "desc": {
+      "es": "Salto de agua entre vegetación nativa, con pasarelas y mirador sobre el lago General Carrera. Caminata corta y familiar.",
+      "en": "A waterfall amid native vegetation, with walkways and a viewpoint over General Carrera Lake. A short, family-friendly walk."
+    },
+    "como": {
+      "es": "Camino a Chile Chico (ribera sur del lago), desvío señalizado.",
+      "en": "Road to Chile Chico (southern lakeshore), signposted turnoff."
+    }
+  },
+  {
+    "id": 48,
+    "cat": "alojamiento",
+    "localidad": "puerto-guadal",
+    "lat": -46.844,
+    "lng": -72.704,
+    "tel": "+56 9 7777 8888",
+    "nombre": {
+      "es": "Cabañas del Lago (ejemplo)",
+      "en": "Lakeside Cabins (sample)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Cabañas, hospedajes y campings frente al lago, varios con vista a las montañas. (Contenido de ejemplo).",
+      "en": "Cabins, guesthouses and campsites facing the lake, several with mountain views. (Sample content)."
+    },
+    "como": {
+      "es": "Sector costanera.",
+      "en": "Waterfront area."
+    }
+  },
+  {
+    "id": 49,
+    "cat": "comida",
+    "localidad": "puerto-guadal",
+    "lat": -46.8445,
+    "lng": -72.7025,
+    "nombre": {
+      "es": "Café-restaurante del pueblo (ejemplo)",
+      "en": "Village café-restaurant (sample)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Cocina casera y repostería en un circuito pequeño de cafés y cocinerías de temporada. (Contenido de ejemplo).",
+      "en": "Home cooking and pastries in a small circuit of seasonal cafés and eateries. (Sample content)."
+    },
+    "como": {
+      "es": "Casco del pueblo.",
+      "en": "Village centre."
+    }
+  },
+  {
+    "id": 50,
+    "cat": "servicio",
+    "localidad": "puerto-guadal",
+    "lat": -46.8438,
+    "lng": -72.7022,
+    "nombre": {
+      "es": "Almacenes y abastecimiento",
+      "en": "Grocery stores and supplies"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Almacenes de abarrotes para reponer víveres. El combustible no está garantizado: carga en Puerto Río Tranquilo, Chile Chico o Cochrane.",
+      "en": "Grocery stores to restock supplies. Fuel is not guaranteed: fill up in Puerto Río Tranquilo, Chile Chico or Cochrane."
+    },
+    "como": {
+      "es": "Calle principal del pueblo.",
+      "en": "Main street of the village."
+    }
+  },
+  {
+    "id": 51,
+    "cat": "emergencia",
+    "localidad": "puerto-guadal",
+    "lat": -46.8435,
+    "lng": -72.703,
+    "tel": "131",
+    "nombre": {
+      "es": "Posta de Salud Puerto Guadal",
+      "en": "Puerto Guadal Health Post"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Posta de salud rural para primeros auxilios y urgencias básicas. Los casos mayores se derivan a Chile Chico o Cochrane.",
+      "en": "Rural health post for first aid and basic emergencies. Major cases are referred to Chile Chico or Cochrane."
+    },
+    "como": {
+      "es": "Casco del pueblo.",
+      "en": "Village centre."
+    }
+  },
+  {
+    "id": 52,
+    "cat": "emergencia",
+    "localidad": "puerto-guadal",
+    "lat": -46.8442,
+    "lng": -72.702,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Retén Puerto Guadal",
+      "en": "Police — Puerto Guadal Outpost"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Emergencias policiales y orientación sobre el estado de los caminos de la ribera sur del lago.",
+      "en": "Police emergencies and updates on the state of the southern lakeshore roads."
+    },
+    "como": {
+      "es": "Casco del pueblo.",
+      "en": "Village centre."
+    }
+  },
+  {
+    "id": 53,
+    "cat": "atractivo",
+    "localidad": "puerto-bertrand",
+    "lat": -47.028,
+    "lng": -72.82,
+    "nombre": {
+      "es": "Nacimiento del río Baker",
+      "en": "Source of the Baker River"
+    },
+    "dist": {
+      "es": "2 km · 30 min a pie",
+      "en": "2 km · 30 min on foot"
+    },
+    "desc": {
+      "es": "Aquí nace el río más caudaloso de Chile: las aguas turquesas del lago Bertrand se convierten en el Baker a pasos del pueblo. Sendero corto por la ribera.",
+      "en": "Chile’s mightiest river is born here: the turquoise waters of Lake Bertrand become the Baker just steps from the village. Short riverside trail."
+    },
+    "como": {
+      "es": "Sendero desde el pueblo por la ribera del lago, hacia el sur.",
+      "en": "Trail from the village along the lakeshore, heading south."
+    }
+  },
+  {
+    "id": 54,
+    "cat": "atractivo",
+    "localidad": "puerto-bertrand",
+    "lat": -47.022,
+    "lng": -72.824,
+    "nombre": {
+      "es": "Rafting y pesca en el río Baker",
+      "en": "Rafting and fishing on the Baker River"
+    },
+    "dist": {
+      "es": "Desde el pueblo",
+      "en": "From the village"
+    },
+    "desc": {
+      "es": "Puerto Bertrand es la base clásica para rafting en los rápidos del Baker y pesca deportiva de truchas y salmones, con guías y operadores de temporada.",
+      "en": "Puerto Bertrand is the classic base for rafting the Baker rapids and fly-fishing for trout and salmon, with seasonal guides and operators."
+    },
+    "como": {
+      "es": "Operadores en el pueblo; salidas sujetas al caudal y al clima.",
+      "en": "Operators in the village; departures depend on river flow and weather."
+    }
+  },
+  {
+    "id": 55,
+    "cat": "alojamiento",
+    "localidad": "puerto-bertrand",
+    "lat": -47.0215,
+    "lng": -72.8245,
+    "tel": "+56 9 2222 3333",
+    "nombre": {
+      "es": "Cabañas junto al lago (ejemplo)",
+      "en": "Lakeside cabins (sample)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Cabañas y hospedajes pequeños frente al lago Bertrand, muchos orientados a pescadores. (Contenido de ejemplo).",
+      "en": "Small cabins and guesthouses facing Lake Bertrand, many geared to anglers. (Sample content)."
+    },
+    "como": {
+      "es": "Casco del pueblo, frente al lago.",
+      "en": "Village centre, facing the lake."
+    }
+  },
+  {
+    "id": 56,
+    "cat": "comida",
+    "localidad": "puerto-bertrand",
+    "lat": -47.0221,
+    "lng": -72.8242,
+    "nombre": {
+      "es": "Cocinería del pueblo (ejemplo)",
+      "en": "Village eatery (sample)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Oferta pequeña y de temporada: cocinerías caseras y algún café. Fuera de temporada conviene llevar provisiones. (Contenido de ejemplo).",
+      "en": "A small, seasonal offering: home-style eateries and the odd café. Off-season, carry your own provisions. (Sample content)."
+    },
+    "como": {
+      "es": "Calle principal.",
+      "en": "Main street."
+    }
+  },
+  {
+    "id": 57,
+    "cat": "servicio",
+    "localidad": "puerto-bertrand",
+    "lat": -47.0218,
+    "lng": -72.8248,
+    "nombre": {
+      "es": "Almacén de abarrotes",
+      "en": "Grocery store"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Almacén básico para víveres. Sin combustible ni cajero: los puntos seguros más cercanos son Cochrane (al sur) y Puerto Río Tranquilo (al norte).",
+      "en": "Basic grocery store. No fuel or ATM: the nearest reliable points are Cochrane (south) and Puerto Río Tranquilo (north)."
+    },
+    "como": {
+      "es": "Casco del pueblo.",
+      "en": "Village centre."
+    }
+  },
+  {
+    "id": 58,
+    "cat": "emergencia",
+    "localidad": "puerto-bertrand",
+    "lat": -47.0212,
+    "lng": -72.825,
+    "tel": "131",
+    "nombre": {
+      "es": "Posta de Salud Puerto Bertrand",
+      "en": "Puerto Bertrand Health Post"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Posta de salud rural para primeros auxilios. Las urgencias mayores se derivan al hospital de Cochrane (50 km al sur).",
+      "en": "Rural health post for first aid. Major emergencies are referred to Cochrane hospital (50 km south)."
+    },
+    "como": {
+      "es": "Casco del pueblo.",
+      "en": "Village centre."
+    }
+  },
+  {
+    "id": 59,
+    "cat": "emergencia",
+    "localidad": "puerto-bertrand",
+    "lat": -47.0224,
+    "lng": -72.8244,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Retén Puerto Bertrand",
+      "en": "Police — Puerto Bertrand Outpost"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Emergencias policiales y coordinación de rescates en el río Baker y los senderos cercanos.",
+      "en": "Police emergencies and rescue coordination on the Baker River and nearby trails."
+    },
+    "como": {
+      "es": "Junto a la calle principal.",
+      "en": "By the main street."
+    }
+  },
+  {
+    "id": 60,
+    "cat": "atractivo",
+    "localidad": "villa-ohiggins",
+    "lat": -48.9,
+    "lng": -73.1,
+    "nombre": {
+      "es": "Glaciar O’Higgins (navegación por el lago)",
+      "en": "O’Higgins Glacier (lake cruise)"
+    },
+    "dist": {
+      "es": "Navegación de día completo",
+      "en": "Full-day boat trip"
+    },
+    "desc": {
+      "es": "Navegación por el lago O’Higgins hasta la pared de hielo del glaciar, en el Campo de Hielo Sur. Una de las excursiones más remotas y sobrecogedoras de la Patagonia chilena.",
+      "en": "A cruise across Lake O’Higgins to the glacier’s ice wall in the Southern Ice Field. One of the most remote and awe-inspiring excursions in Chilean Patagonia."
+    },
+    "como": {
+      "es": "Zarpes desde Bahía Bahamóndez (7 km del pueblo), en temporada y sujetos al clima. Reserva en el pueblo.",
+      "en": "Departures from Bahía Bahamóndez (7 km from the village), in season and weather permitting. Book in the village."
+    }
+  },
+  {
+    "id": 61,
+    "cat": "atractivo",
+    "localidad": "villa-ohiggins",
+    "lat": -48.517,
+    "lng": -72.586,
+    "nombre": {
+      "es": "Fin de la Carretera Austral (Bahía Bahamóndez)",
+      "en": "End of the Carretera Austral (Bahía Bahamóndez)"
+    },
+    "dist": {
+      "es": "7 km · 15 min en auto",
+      "en": "7 km · 15 min by car"
+    },
+    "desc": {
+      "es": "El hito del kilómetro final de la Carretera Austral, a orillas del lago O’Higgins: la meta clásica de ciclistas y viajeros que recorren la ruta completa desde Puerto Montt.",
+      "en": "The final-kilometre milestone of the Carretera Austral, on the shore of Lake O’Higgins: the classic finish line for cyclists and travellers riding the whole route from Puerto Montt."
+    },
+    "como": {
+      "es": "Último tramo de la Carretera Austral al sur del pueblo, hasta la rampa de Bahía Bahamóndez.",
+      "en": "Last stretch of the Carretera Austral south of the village, down to the Bahía Bahamóndez ramp."
+    }
+  },
+  {
+    "id": 62,
+    "cat": "atractivo",
+    "localidad": "villa-ohiggins",
+    "lat": -48.463,
+    "lng": -72.556,
+    "nombre": {
+      "es": "Mirador Cerro Santiago",
+      "en": "Cerro Santiago Viewpoint"
+    },
+    "dist": {
+      "es": "1 km · 45 min a pie",
+      "en": "1 km · 45 min on foot"
+    },
+    "desc": {
+      "es": "Sendero corto que sube por la ladera detrás del pueblo hasta miradores sobre Villa O’Higgins, el valle del río Mayer y los cordones del Campo de Hielo Sur.",
+      "en": "A short trail climbing the hillside behind the village to viewpoints over Villa O’Higgins, the Mayer River valley and the ranges of the Southern Ice Field."
+    },
+    "como": {
+      "es": "Inicio señalizado en el borde oriente del pueblo.",
+      "en": "Signposted trailhead on the eastern edge of the village."
+    }
+  },
+  {
+    "id": 63,
+    "cat": "alojamiento",
+    "localidad": "villa-ohiggins",
+    "lat": -48.468,
+    "lng": -72.561,
+    "tel": "+56 9 9999 0000",
+    "nombre": {
+      "es": "Hospedaje Fin de Ruta (ejemplo)",
+      "en": "End-of-the-Road Guesthouse (sample)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Hospedajes familiares, cabañas y camping para quienes culminan la Carretera. En temporada alta conviene reservar: la capacidad del pueblo es limitada. (Contenido de ejemplo).",
+      "en": "Family guesthouses, cabins and camping for those finishing the Carretera. Book ahead in high season: the village’s capacity is limited. (Sample content)."
+    },
+    "como": {
+      "es": "Casco del pueblo.",
+      "en": "Village centre."
+    }
+  },
+  {
+    "id": 64,
+    "cat": "comida",
+    "localidad": "villa-ohiggins",
+    "lat": -48.4685,
+    "lng": -72.5605,
+    "nombre": {
+      "es": "Cocinería El Viajero (ejemplo)",
+      "en": "El Viajero Eatery (sample)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Menú casero contundente para ciclistas y trekkers: cazuelas, asado y pan amasado. Horarios acotados fuera de temporada. (Contenido de ejemplo).",
+      "en": "Hearty home cooking for cyclists and trekkers: stews, roast lamb and fresh bread. Limited hours off-season. (Sample content)."
+    },
+    "como": {
+      "es": "Calle principal del pueblo.",
+      "en": "Main street of the village."
+    }
+  },
+  {
+    "id": 65,
+    "cat": "servicio",
+    "localidad": "villa-ohiggins",
+    "lat": -48.4677,
+    "lng": -72.5612,
+    "nombre": {
+      "es": "Combustible y almacenes",
+      "en": "Fuel and grocery stores"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Último punto de abastecimiento de la Carretera Austral: venta de combustible a pequeña escala y almacenes básicos. No hay banco ni cajero automático — trae efectivo desde Cochrane o Coyhaique.",
+      "en": "The last supply point on the Carretera Austral: small-scale fuel sales and basic grocery stores. There is no bank or ATM — bring cash from Cochrane or Coyhaique."
+    },
+    "como": {
+      "es": "Casco del pueblo; pregunta horarios en el almacén.",
+      "en": "Village centre; ask for opening hours at the store."
+    }
+  },
+  {
+    "id": 66,
+    "cat": "emergencia",
+    "localidad": "villa-ohiggins",
+    "lat": -48.4692,
+    "lng": -72.5597,
+    "tel": "131",
+    "nombre": {
+      "es": "Posta de Salud Villa O’Higgins",
+      "en": "Villa O’Higgins Health Post"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Posta de salud rural para primeros auxilios y urgencias básicas. Las evacuaciones mayores se coordinan vía aérea o hacia Cochrane (más de 220 km y un cruce en barcaza).",
+      "en": "Rural health post for first aid and basic emergencies. Major evacuations are coordinated by air or to Cochrane (over 220 km and a ferry crossing)."
+    },
+    "como": {
+      "es": "Casco del pueblo.",
+      "en": "Village centre."
+    }
+  },
+  {
+    "id": 67,
+    "cat": "emergencia",
+    "localidad": "villa-ohiggins",
+    "lat": -48.4681,
+    "lng": -72.5594,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Retén Villa O’Higgins",
+      "en": "Police — Villa O’Higgins Outpost"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Emergencias policiales, coordinación de rescates y registro recomendado para quienes siguen el cruce de frontera a pie hacia El Chaltén (Argentina).",
+      "en": "Police emergencies, rescue coordination and recommended check-in for those continuing the on-foot border crossing to El Chaltén (Argentina)."
+    },
+    "como": {
+      "es": "Casco del pueblo.",
+      "en": "Village centre."
+    }
   }
 ]
