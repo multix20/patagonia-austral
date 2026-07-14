@@ -6,3 +6,6 @@ dist/
 !.env.prod.example
 *.log
 .DS_Store
+
+# Grafo de conocimiento de graphify (artefacto local; se regenera con /graphify .)
+graphify-out/
