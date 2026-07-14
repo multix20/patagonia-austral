@@ -64,7 +64,9 @@ Ver `backend/SETUP.md` para el detalle de configuración.
   (Cochrane, Puerto Río Tranquilo y Caleta Tortel; `/api/localidades`,
   selector offline-first en la PWA y CRUD de localidades en el CMS)
 - **Fase 2 — Contenido:** poblar todas las localidades (atractivos, alojamiento,
-  comida, servicios, emergencias, rutas) en ES/EN.
+  comida, servicios, emergencias, rutas) en ES/EN. ✅
+  (9 localidades de Coyhaique a Villa O'Higgins, 67 lugares bilingües;
+  los negocios no verificables van marcados "(ejemplo)" hasta la Fase 3)
 - **Fase 3 — Capa comercial:** fichas destacadas, planes de negocio, analítica.
 - **Fase 4 — Publicación:** producción, dominio propio, PWA instalable, difusión.
 

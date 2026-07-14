@@ -139,9 +139,31 @@ se regeneró desde el seed del frontend, mantener esa dirección al editar.
 --seed` contra PostgreSQL 16 local y respuestas reales de `/api/places` y
 `/api/localidades` comprobadas con `php artisan serve`.
 
-### 3. Fase 2 — Contenido
-Poblar todas las localidades (atractivos, alojamiento, comida, servicios,
-emergencias, rutas) en ES/EN.
+### ✅ 3. Fase 2 — Contenido — HECHO (14-jul-2026)
+La ruta completa quedó poblada: **9 localidades** (norte→sur: Coyhaique 10 ·
+Villa Cerro Castillo 20 · Puerto Río Tranquilo 30 · Puerto Guadal 40 ·
+Chile Chico 45 · Puerto Bertrand 50 · Cochrane 60 · Caleta Tortel 70 ·
+Villa O'Higgins 80) y **67 lugares** bilingües ES/EN. Chile Chico usa orden 45
+(no está sobre la Carretera; es el desvío por la ribera sur del lago General
+Carrera entre Guadal y Bertrand).
+**Contenido nuevo (46 lugares, ids 22-67):** Coyhaique 8 · Villa Cerro
+Castillo 8 · Chile Chico 8 · Puerto Guadal 7 · Puerto Bertrand 7 · Villa
+O'Higgins 8. Cada pueblo cubre atractivos emblemáticos (Reserva Nacional
+Coyhaique, sendero Laguna Cerro Castillo, Paredón de las Manos, R.N. Lago
+Jeinimeni, nacimiento del Baker, glaciar O'Higgins, hito final de la
+Carretera…), alojamiento, comida, servicios y emergencias (posta/hospital +
+Carabineros en todos). Criterio conservador: nombres genéricos correctos y
+datos de viaje útiles (dónde hay combustible, banco/cajero, derivaciones de
+salud); los negocios no verificables van marcados **"(ejemplo)"** como en el
+seed de Cochrane, para reemplazarlos por comercios reales en la Fase 3.
+**Fuente de verdad de los seeds:** `frontend/src/data/places.js` →
+`backend/database/seeders/data/places.json` se regenera desde ahí
+(`JSON.stringify(LUGARES_SEED, null, 2)`); mantener esa dirección al editar.
+`LOCALIDADES_SEED` (frontend) y `LocalidadSeeder` (backend) también en espejo.
+**Verificado:** build+lint frontend OK; `php -l` OK; `migrate:fresh --seed` +
+**doble re-seed sin duplicados** (idempotencia) contra PostgreSQL 16 local;
+`/api/localidades` (9) y `/api/places` (67 con slug de localidad) comprobados
+con `php artisan serve`. Sin cambios de API: solo datos (compatible hacia atrás).
 
 ### 4. Fase 3 — Capa comercial
 Fichas destacadas, planes de negocio, analítica.
@@ -152,6 +174,18 @@ almacenamiento de imágenes en la nube (S3 o equivalente), difusión.
 Base lista: `docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`.
 
 ### Menores
+- **UX con 9 localidades (detectado en Fase 2, no resuelto a propósito):**
+  (a) la vista "Toda la ruta" ahora lista 67 lugares de corrido — convendría
+  agrupar por localidad (encabezados de sección) o priorizar la localidad más
+  cercana al GPS; (b) el `<select>` del header quedó con 10 opciones — evaluar
+  ordenarlas con indicación km norte→sur o un selector con búsqueda; (c) el
+  chatbot offline recibe `lugares` sin filtrar (los 67 de todos los pueblos
+  mezclados) y sus respuestas dicen "en Cochrane" hardcodeado
+  (`ChatBot.jsx`) — debería recibir `lugaresVisibles` y usar el nombre de la
+  localidad seleccionada.
+- **Contenido "(ejemplo)":** los alojamientos/restoranes marcados "(ejemplo)"
+  en las 9 localidades son marcadores de posición; se reemplazan por comercios
+  reales al levantar la capa comercial (Fase 3).
 - **Push en iOS (pendiente de probar):** iOS no dispara `appinstalled` y exige
   un gesto del usuario para pedir el permiso → hoy un iPhone no tiene vía para
   suscribirse. Solución diseñada: tarjeta única "¿Quieres recibir avisos?" que
