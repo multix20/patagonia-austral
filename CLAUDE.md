@@ -44,9 +44,19 @@ Guía completa: `DEPLOY.md`. Push a `main` = redeploy automático de Render y Ne
 
 Historial y decisiones: `ESTADO_Y_PENDIENTES.md`. Roadmap (README):
 - ✅ Fase 0 base · ✅ deploy Netlify+Render+Neon
-- **Fase 1 — Multi-localidad**: modelo `Localidad`, selector de pueblo, filtros ← SIGUIENTE
-- Fase 2 — Contenido de todas las localidades (ES/EN)
+- ✅ Fase 1 — Multi-localidad (modelo `Localidad`, selector, filtros)
+- ✅ Fase 2 — Contenido (9 localidades, 67 lugares, tramo Coyhaique→Villa O'Higgins)
+- **SIGUIENTE**: resolver pendientes de UX de Fase 2 (ver `ESTADO_Y_PENDIENTES.md`:
+  chatbot filtrado por localidad ← crítico; "Toda la ruta" ordenada por GPS;
+  selector con búsqueda), luego Fase 3.
 - Fase 3 — Capa comercial (fichas destacadas, planes, analítica)
 - Fase 4 — Producción definitiva (dominio propio, S3, respaldos, monitoreo)
+
+**Dato de negocio**: la ruta la recorren **100.000–150.000 turistas/año**
+(dimensiona la audiencia para la capa comercial de Fase 3).
+
+**Alcance futuro** (anotado, no inmediato): ampliar a **toda la Carretera Austral,
+de Puerto Montt a Villa O'Higgins** (sumar el tramo norte por fases; hoy la app
+dice "Coyhaique a Villa O'Higgins").
 
 Para trabajo de roadmap, usar el agente `roadmap` (`.claude/agents/roadmap.md`).

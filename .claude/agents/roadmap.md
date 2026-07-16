@@ -18,8 +18,14 @@ objetivos del sitio de forma incremental y verificada.
 2. Ubica la tarea dentro del roadmap (README → Roadmap). Si la petición no
    calza con ninguna fase, señálalo antes de codear.
 3. Revisa el código existente antes de escribir: este proyecto ya resolvió
-   offline-first (IndexedDB + seeds), i18n, push y CORS — reutiliza esos
-   patrones en vez de inventar paralelos.
+   offline-first (IndexedDB + seeds), i18n, push, multi-localidad y CORS —
+   reutiliza esos patrones en vez de inventar paralelos.
+
+## Prioridad: pendientes de UX antes que contenido nuevo
+
+Antes de generar contenido o features nuevas, revisa la sección de pendientes de
+`ESTADO_Y_PENDIENTES.md` y **resuelve primero los pendientes de UX que estén en
+alcance**. No acumules deuda de UX detrás de más contenido.
 
 ## Cómo trabajar
 
@@ -39,16 +45,36 @@ objetivos del sitio de forma incremental y verificada.
 - **Documenta el avance**: al completar un hito, actualiza
   `ESTADO_Y_PENDIENTES.md` (entrada fechada) y marca la fase en el README.
 
-## Guía específica de la Fase 1 (multi-localidad) — el siguiente objetivo
+## Estado actual y prioridades (jul-2026)
 
-- Modelo `Localidad` en el backend (nombre bilingüe, coordenadas, orden en la
-  ruta norte→sur), relación `Place belongsTo Localidad`, recurso Filament,
-  y exponerla en `/api/places` (y un `/api/localidades` si hace falta).
-- En la PWA: selector de localidad (el header ya contempla la idea de
-  "LOCALIDAD"), filtro por localidad en mapa y lista, centro del mapa por
-  localidad. El seed inicial cubre Cochrane; agregar 2-3 pueblos reales
-  (Caleta Tortel, Puerto Río Tranquilo) con datos mínimos verificables.
-- Migración de datos existente: los 15 lugares actuales pertenecen a Cochrane.
+Hecho: ✅ Fase 0 · ✅ deploy Netlify+Render+Neon · ✅ Fase 1 (multi-localidad) ·
+✅ Fase 2 (9 localidades, 67 lugares, tramo Coyhaique→Villa O'Higgins).
+
+**Prioridad inmediata — pendientes de UX de la Fase 2 (resolver ANTES de más contenido):**
+- (c) **[CRÍTICO] ChatBot offline** (`frontend/src/components/ChatBot.jsx`): hoy
+  recibe los 67 lugares sin filtrar y dice "en Cochrane" hardcodeado. Debe recibir
+  solo los lugares de la localidad seleccionada (`lugaresVisibles`) y usar el
+  nombre de esa localidad en sus respuestas. Da impresión de app a medio hacer.
+- (a) **"Toda la ruta"**: en vez de listar los 67 lugares de corrido, **mostrar
+  primero el pueblo más cercano al GPS** del usuario y luego el resto. Sin señal
+  GPS (o permiso denegado), orden por defecto norte→sur.
+- (b) **Selector de localidad del header**: convertirlo en un **selector con
+  búsqueda** (filtrar escribiendo) — hoy son 10 opciones y crecerá mucho.
+
+**Siguiente fase — Fase 3 (capa comercial):** fichas destacadas, planes para
+negocios, analítica. Reemplazar los alojamientos/restoranes marcados "(ejemplo)"
+por comercios reales. Dato de negocio para dimensionar la oferta a comercios:
+**100.000–150.000 turistas/año** recorren la ruta.
+
+## Alcance futuro (largo plazo — anotado, NO ejecutar de una)
+
+La meta es cubrir **toda la Carretera Austral, de Puerto Montt a Villa
+O'Higgins** — no solo el tramo Coyhaique→sur actual. Al ampliar hacia el norte
+(Hornopirén, Chaitén, Futaleufú, La Junta, Puyuhuapi, Puerto Cisnes, Puerto
+Aysén, etc.) se hace **por fases, pueblo por pueblo**. Implica actualizar la
+identidad de la app (título/subtítulo/i18n dicen "Coyhaique a Villa O'Higgins"
+→ pasaría a "Puerto Montt a Villa O'Higgins"). Es dirección futura, no tarea
+inmediata.
 
 ## Límites
 
