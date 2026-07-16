@@ -61,10 +61,44 @@ Hecho: ✅ Fase 0 · ✅ deploy Netlify+Render+Neon · ✅ Fase 1 (multi-localid
 - (b) **Selector de localidad del header**: convertirlo en un **selector con
   búsqueda** (filtrar escribiendo) — hoy son 10 opciones y crecerá mucho.
 
-**Siguiente fase — Fase 3 (capa comercial):** fichas destacadas, planes para
-negocios, analítica. Reemplazar los alojamientos/restoranes marcados "(ejemplo)"
-por comercios reales. Dato de negocio para dimensionar la oferta a comercios:
-**100.000–150.000 turistas/año** recorren la ruta.
+**Siguiente fase — Fase 3 (capa comercial + crowdsourcing):** fichas destacadas,
+planes para negocios, analítica; reemplazar los "(ejemplo)" por comercios reales.
+Audiencia: **100.000–150.000 turistas/año**.
+
+Idea central de Fase 3 — **crowdsourcing tipo Waze** (Uri Levine): que los viajeros
+en ruta aporten reportes que cambian a diario y nadie puede mantener a mano —
+**bencina disponible, cortes/derrumbes de camino, estado del ripio, clima en un
+punto, barcazas** (Chile Chico–Ibáñez, etc.). Extiende el sistema de avisos (hoy
+solo el admin publica) con reportes de usuarios + moderación. Requiere backend
+(los reportes se comparten) y trae temas nuevos: moderación, spam/abuso, identidad
+ligera, y **envío offline-first** (encolar el reporte sin señal y mandarlo al
+recuperar red).
+
+**Aplicar el APM/PMF con disciplina (no enamorarse de la solución):**
+1. **Segmento**: definir el cliente exacto — probablemente el viajero independiente
+   "en ruta ahora" (auto/camper/moto/bici/dedo) que enfrenta las condiciones que
+   cambian a diario, distinto del que solo planifica.
+2. **Validar el problema**: confirmar que ese dolor es grave (quedarse sin bencina
+   o chocar con un camino cortado es serio, no una molestia) y que los viajeros
+   **realmente aportarían** reportes, antes de construir.
+3. **PMV**: la versión mínima — 1 o 2 tipos de reporte de mayor dolor (bencina +
+   estado del camino), NO un Waze completo. Reusar la infraestructura de avisos.
+4. **Medir y pivotar**: retención y tasa de contribución (¿la gente reporta?
+   ¿los reportes se usan?), ajustar.
+
+**Riesgo #1 del crowdsourcing — arranque en frío (chicken-and-egg):** sin
+contribuyentes no sirve. Mitigante propio: la app **ya vale sin crowdsourcing**
+(contenido offline), así que es aditivo, no el core. Aun así, validar la
+contribución real antes de invertir mucho.
+
+**Contexto estratégico — Plan Ruta Austral** (según anuncios MOP 2026 aportados por
+el usuario; posterior a la fecha de corte del modelo, tratar como dato a verificar,
+no como hecho propio): inversión estatal grande para **pavimentar la ruta y renovar
+puentes/puertos hasta 2030, de Puerto Montt a Villa O'Higgins**. Triple alineamiento
+con el producto: (a) más pavimento → más turistas → crece la audiencia; (b) valida
+el alcance futuro Puerto Montt→O'Higgins que ya está anotado; (c) **las obras crean
+cortes y desvíos durante años → agudizan justo el problema que el crowdsourcing
+resuelve** ("¿está pasable este tramo hoy?").
 
 ## Alcance futuro (largo plazo — anotado, NO ejecutar de una)
 

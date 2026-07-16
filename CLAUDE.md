@@ -55,6 +55,16 @@ Historial y decisiones: `ESTADO_Y_PENDIENTES.md`. Roadmap (README):
 **Dato de negocio**: la ruta la recorren **100.000–150.000 turistas/año**
 (dimensiona la audiencia para la capa comercial de Fase 3).
 
+**Fase 3 — idea central**: crowdsourcing tipo Waze (los viajeros reportan bencina,
+cortes de camino, clima, barcazas) sobre el sistema de avisos, aplicando disciplina
+de **PMF/APM** (segmento → validar problema → PMV mínimo → medir/pivotar; ojo con el
+arranque en frío). Detalle en `.claude/agents/roadmap.md`.
+
+**Contexto estratégico** (dato del usuario, a verificar): el **Plan Ruta Austral**
+(MOP, pavimentación Puerto Montt→O'Higgins hasta 2030) es viento a favor — más
+turistas, valida el alcance futuro, y sus obras/cortes agudizan el problema que el
+crowdsourcing resuelve.
+
 **Alcance futuro** (anotado, no inmediato): ampliar a **toda la Carretera Austral,
 de Puerto Montt a Villa O'Higgins** (sumar el tramo norte por fases; hoy la app
 dice "Coyhaique a Villa O'Higgins").
