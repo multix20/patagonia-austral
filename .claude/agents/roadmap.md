@@ -91,14 +91,28 @@ contribuyentes no sirve. Mitigante propio: la app **ya vale sin crowdsourcing**
 (contenido offline), así que es aditivo, no el core. Aun así, validar la
 contribución real antes de invertir mucho.
 
-**Contexto estratégico — Plan Ruta Austral** (según anuncios MOP 2026 aportados por
-el usuario; posterior a la fecha de corte del modelo, tratar como dato a verificar,
-no como hecho propio): inversión estatal grande para **pavimentar la ruta y renovar
-puentes/puertos hasta 2030, de Puerto Montt a Villa O'Higgins**. Triple alineamiento
-con el producto: (a) más pavimento → más turistas → crece la audiencia; (b) valida
-el alcance futuro Puerto Montt→O'Higgins que ya está anotado; (c) **las obras crean
-cortes y desvíos durante años → agudizan justo el problema que el crowdsourcing
-resuelve** ("¿está pasable este tramo hoy?").
+**Contexto estratégico — Plan Ruta Austral** (MOP, "Soberanía que conecta",
+anunciado 30-abr-2026 por Kast/Arrau en Coyhaique; fuente: mop.gob.cl). Precisión
+importante: es un plan **enfocado en la Región de Aysén**, NO pavimentar toda la
+ruta Puerto Montt→O'Higgins para 2030. Datos exactos:
+- Inversión ~$800 mil millones CLP 2026–2030 ($758.858 MM MOP + $44.940 MM GORE/FNDR);
+  el promedio anual sube de $24.353 MM (2016–2025) a $139.902 MM (2026–2030), 5×.
+- **244 km** intervenidos, desde el límite regional hasta el **Lago Juncal**;
+  23 proyectos (20 viales + 3 marítimo-lacustres).
+- **150,4 km de pavimentación definitiva** (100,7 km por ejecutar + 49,7 en obra).
+- Puentes **Palena** y **Rosselot** (reinicio), ampliación puerto **Yungay**, y
+  **2 nuevas barcazas: lago General Carrera y lago O'Higgins**.
+- Contexto amplio: la Carretera Austral son 1.058 km (Puerto Montt→Villa O'Higgins),
+  58% pavimentada (614,5 km), faltan 443,5 km. En dic-2024 fue declarada **Ruta de
+  Belleza Escénica** y "puerta de entrada a la **Ruta de los Parques de la Patagonia**".
+
+Triple alineamiento con el producto: (a) más pavimento y mejor conectividad → más
+turismo → crece la audiencia; (b) reafirma que la ruta ES Puerto Montt→O'Higgins
+(valida el alcance futuro anotado); (c) **las obras 2026–2030 caen justo en Aysén,
+donde la app ya tiene TODO su contenido** (Coyhaique→O'Higgins) → años de cortes y
+desvíos que agudizan el problema que el crowdsourcing resuelve ("¿está pasable este
+tramo hoy?"). Además las 2 barcazas nuevas conectan directo con el tipo de reporte
+"barcazas" del PMV.
 
 ## Alcance futuro (largo plazo — anotado, NO ejecutar de una)
 

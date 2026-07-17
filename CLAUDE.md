@@ -60,10 +60,16 @@ cortes de camino, clima, barcazas) sobre el sistema de avisos, aplicando discipl
 de **PMF/APM** (segmento → validar problema → PMV mínimo → medir/pivotar; ojo con el
 arranque en frío). Detalle en `.claude/agents/roadmap.md`.
 
-**Contexto estratégico** (dato del usuario, a verificar): el **Plan Ruta Austral**
-(MOP, pavimentación Puerto Montt→O'Higgins hasta 2030) es viento a favor — más
-turistas, valida el alcance futuro, y sus obras/cortes agudizan el problema que el
-crowdsourcing resuelve.
+**Contexto estratégico — Plan Ruta Austral** (MOP, anunciado 30-abr-2026;
+fuente: mop.gob.cl). Inversión ~$800 mil millones CLP **2026–2030 enfocada en la
+Región de Aysén** (244 km, límite regional→Lago Juncal): 150,4 km de pavimentación
+definitiva, puentes Palena y Rosselot, **2 nuevas barcazas (lagos General Carrera y
+O'Higgins)**, puerto Yungay. Contexto amplio: la Carretera Austral (1.058 km, Puerto
+Montt→O'Higgins) está pavimentada al 58% (faltan 443,5 km). Viento a favor para el
+producto — y las obras 2026–2030 caen **justo en Aysén, donde la app ya tiene todo
+su contenido** → generan cortes/desvíos que agudizan el problema que el crowdsourcing
+resuelve. (Ojo: es un plan regional de Aysén, NO pavimentar todo Puerto Montt→O'Higgins
+para 2030.)
 
 **Alcance futuro** (anotado, no inmediato): ampliar a **toda la Carretera Austral,
 de Puerto Montt a Villa O'Higgins** (sumar el tramo norte por fases; hoy la app
