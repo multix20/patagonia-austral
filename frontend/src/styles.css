@@ -181,6 +181,31 @@ h1 small {
   border: 0;
 }
 
+/* Encabezado de sección por localidad en "Toda la ruta" (Fase 2) */
+.grupo-loc-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--verde-osc);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.grupo-loc-titulo span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.grupo-loc-km {
+  font-weight: 600;
+  color: var(--gris);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 .banner-offline {
   background: #8a3216;
   color: #fff;

@@ -16,6 +16,18 @@ const TIPOS_AVISO = {
   evento: { es: 'Evento', en: 'Event' },
 }
 
+// Distancia aproximada en km (haversine) para ordenar localidades por cercanía.
+function distanciaKm(a, b) {
+  const R = 6371
+  const rad = (x) => (x * Math.PI) / 180
+  const dLat = rad(b[0] - a[0])
+  const dLng = rad(b[1] - a[1])
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(rad(a[0])) * Math.cos(rad(b[0])) * Math.sin(dLng / 2) ** 2
+  return 2 * R * Math.asin(Math.sqrt(s))
+}
+
 function AppInterna() {
   const { t, lang, setLang } = useI18n()
   const [lugares, setLugares] = useState([])
@@ -27,6 +39,9 @@ function AppInterna() {
   // 'todas' = toda la Carretera Austral (sin filtro). Se persiste la elección.
   const [localidades, setLocalidades] = useState([])
   const [localidad, setLocalidad] = useState(() => localStorage.getItem('localidadSel') || 'todas')
+  // Ubicación del usuario para ordenar "Toda la ruta" por cercanía. Solo se pide
+  // si el permiso YA está concedido (no interrumpimos con un prompt sorpresa).
+  const [posUsuario, setPosUsuario] = useState(null)
 
   // Estado de conexión real del dispositivo
   const [sinRed, setSinRed] = useState(!navigator.onLine)
@@ -58,6 +73,30 @@ function AppInterna() {
     obtenerLugares().then(setLugares)
     obtenerAvisos().then(setAvisos)
     obtenerLocalidades().then(setLocalidades)
+  }, [])
+
+  // Ubicación para ordenar por cercanía. Solo si el permiso ya fue concedido
+  // (p. ej. el usuario tocó "centrar en mi ubicación" en el mapa): así no
+  // disparamos un prompt de geolocalización solo para ordenar la lista.
+  useEffect(() => {
+    if (!('geolocation' in navigator) || !navigator.permissions) return
+    navigator.permissions
+      .query({ name: 'geolocation' })
+      .then((res) => {
+        const pedir = () => {
+          if (res.state === 'granted') {
+            navigator.geolocation.getCurrentPosition(
+              (pos) => setPosUsuario([pos.coords.latitude, pos.coords.longitude]),
+              () => {},
+              { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+            )
+          }
+        }
+        pedir()
+        // Si el usuario concede el permiso más tarde (desde el mapa), reordenamos.
+        res.onchange = pedir
+      })
+      .catch(() => {})
   }, [])
 
   // Cuando llega un Web Push, el service worker avisa a la app (postMessage).
@@ -226,6 +265,33 @@ function AppInterna() {
 
   const lugaresFiltrados = lugaresVisibles.filter((l) => filtro === 'todos' || l.cat === filtro)
 
+  // Orden de localidades para la vista "Toda la ruta": por cercanía al GPS si
+  // está disponible; si no, por `orden` (norte→sur).
+  const localidadesOrdenadas = [...localidades].sort((a, b) =>
+    posUsuario
+      ? distanciaKm(posUsuario, [a.lat, a.lng]) - distanciaKm(posUsuario, [b.lat, b.lng])
+      : (a.orden ?? 0) - (b.orden ?? 0)
+  )
+
+  const renderTarjeta = (l) => {
+    const c = CATEGORIAS[l.cat]
+    return (
+      <div key={l.id} className="tarjeta" onClick={() => setSeleccionado(l.id)}>
+        <div className="icono" style={{ background: c.fondo, color: c.color }}>
+          <Icon nombre={c.icono} tam={20} />
+        </div>
+        <div className="info">
+          <div className="nombre">{l.nombre[lang]}</div>
+          <div className="meta">{c.nombre[lang]}</div>
+          <div className="sello">
+            <Icon nombre="download" tam={10} /> {t('guardadoOffline')}
+          </div>
+        </div>
+        <div className="dist">{l.dist[lang].split('·')[0]}</div>
+      </div>
+    )
+  }
+
   return (
     <div className={`app ${offline ? 'offline' : ''}`}>
       <header>
@@ -316,25 +382,29 @@ function AppInterna() {
         {lugaresFiltrados.length === 0 && (
           <div className="lista-vacia">{t('sinLugaresLocalidad')}</div>
         )}
-        {lugaresFiltrados
-          .map((l) => {
-            const c = CATEGORIAS[l.cat]
-            return (
-              <div key={l.id} className="tarjeta" onClick={() => setSeleccionado(l.id)}>
-                <div className="icono" style={{ background: c.fondo, color: c.color }}>
-                  <Icon nombre={c.icono} tam={20} />
-                </div>
-                <div className="info">
-                  <div className="nombre">{l.nombre[lang]}</div>
-                  <div className="meta">{c.nombre[lang]}</div>
-                  <div className="sello">
-                    <Icon nombre="download" tam={10} /> {t('guardadoOffline')}
+        {localidad === 'todas' && localidades.length > 0
+          ? localidadesOrdenadas.map((loc) => {
+              const items = lugaresFiltrados.filter(
+                (l) => (l.localidad || 'cochrane') === loc.slug
+              )
+              if (items.length === 0) return null
+              return (
+                <div key={loc.slug} className="grupo-loc">
+                  <div className="grupo-loc-titulo">
+                    <span>
+                      <Icon nombre="map-pin" tam={12} /> {loc.nombre[lang]}
+                    </span>
+                    {posUsuario && (
+                      <span className="grupo-loc-km">
+                        {Math.round(distanciaKm(posUsuario, [loc.lat, loc.lng]))} km
+                      </span>
+                    )}
                   </div>
+                  {items.map(renderTarjeta)}
                 </div>
-                <div className="dist">{l.dist[lang].split('·')[0]}</div>
-              </div>
-            )
-          })}
+              )
+            })
+          : lugaresFiltrados.map(renderTarjeta)}
       </div>
 
       {lugarSel && <PlaceDetail lugar={lugarSel} onCerrar={() => setSeleccionado(null)} />}
