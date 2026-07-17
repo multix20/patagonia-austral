@@ -7,6 +7,7 @@ import Icon from './components/Icon'
 import MapView from './components/MapView'
 import PlaceDetail from './components/PlaceDetail'
 import ChatBot from './components/ChatBot'
+import SelectorLocalidad from './components/SelectorLocalidad'
 
 // Etiquetas de tipo de aviso (coinciden con el CMS Filament)
 const TIPOS_AVISO = {
@@ -323,25 +324,12 @@ function AppInterna() {
           </div>
         </div>
 
-        {/* Selector de localidad (Fase 1): elige el pueblo de la ruta */}
-        <div className="selector-localidad">
-          <Icon nombre="map-pin" tam={14} />
-          <label className="visualmente-oculto" htmlFor="sel-localidad">
-            {t('localidad')}
-          </label>
-          <select
-            id="sel-localidad"
-            value={localidad}
-            onChange={(e) => cambiarLocalidad(e.target.value)}
-          >
-            <option value="todas">{t('todaLaRuta')}</option>
-            {localidades.map((l) => (
-              <option key={l.slug} value={l.slug}>
-                {l.nombre[lang]}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Selector de localidad con búsqueda (Fase 2): elige el pueblo de la ruta */}
+        <SelectorLocalidad
+          localidades={localidades}
+          valor={localidad}
+          onCambiar={cambiarLocalidad}
+        />
       </header>
 
       {offline && (

@@ -30,6 +30,8 @@ const RUTAS = {
   bot: 'M12 8V4H8M2 14h2M20 14h2M15 13v2M9 13v2',
   globe: 'M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z',
   locate: 'M2 12h3M19 12h3M12 2v3M12 19v3',
+  'chevron-down': 'm6 9 6 6 6-6',
+  search: 'm21 21-4.35-4.35',
 }
 
 // Formas adicionales (círculos/rects) por icono
@@ -40,6 +42,7 @@ const EXTRAS = {
   smartphone: [<rect key="r" width="14" height="20" x="5" y="2" rx="2" ry="2" />],
   bot: [<rect key="r" width="16" height="12" x="4" y="8" rx="2" />],
   globe: [<circle key="c" cx="12" cy="12" r="10" />],
+  search: [<circle key="c" cx="11" cy="11" r="8" />],
 }
 
 export default function Icon({ nombre, tam = 16, color = 'currentColor', ...props }) {
