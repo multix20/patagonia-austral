@@ -390,7 +390,12 @@ function AppInterna() {
         <span className="globito">{t('chatDudas')}</span>
       </button>
 
-      <ChatBot abierto={chatAbierto} onCerrar={() => setChatAbierto(false)} lugares={lugares} />
+      <ChatBot
+        abierto={chatAbierto}
+        onCerrar={() => setChatAbierto(false)}
+        lugares={lugaresVisibles}
+        localidadNombre={locActiva ? locActiva.nombre[lang] : null}
+      />
 
       {!bannerCerrado && (
         <div className="instalar">
