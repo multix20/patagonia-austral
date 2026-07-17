@@ -200,6 +200,36 @@ Base lista: `docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`.
 
 ---
 
+## Datos de mercado (temporada alta 2026 — fuente: Red de Informadores Turísticos, Patagonia Chilena)
+
+Dic 2025 – Mar 2026. Son atenciones de Oficinas de Información Turística (OIT) y
+conteo de "grupo de viaje" — un indicador/muestra, NO el total de turistas (la
+ruta completa mueve ~100–150 mil/año).
+
+- **Región de Aysén:** 16.998 personas (grupo de viaje); 6.357 atendidas en OIT.
+- **Atenciones por destino (Aysén):** Cochrane **1.312 (#1)**, Cisnes 1.301,
+  Chile Chico 1.213, Río Ibáñez 1.024, Coyhaique 720, O'Higgins 486, Aysén 178,
+  Lago Verde 102, **Tortel 21**.
+- **Subdestino Provincia Capitán Prat** (Cochrane/O'Higgins/Tortel): 5.477
+  personas; 1.819 atendidas (ene 653, feb 743, mar 423). Pico ene–feb.
+
+**Lecturas estratégicas:**
+- **Cochrane es el destino #1 de Aysén por atenciones OIT** → la zona base del
+  proyecto es la más consultada de la región. Fuerte para la capa comercial.
+- **Tortel: solo 21 atenciones OIT** pese a ser icónico → poca presencia de
+  oficina física. Oportunidad clara: la app como "OIT digital" de Tortel.
+- El eje **Capitán Prat** (donde opera el fundador) movió 5.477 personas en
+  temporada → mercado real y concreto para sus negocios.
+
+**Negocios reales del fundador → primeras fichas destacadas de Fase 3** (km 1020,
+entre Caleta Tortel y Cochrane):
+1. **Hamburguesería** (punto fijo, km 1020).
+2. **Transporte** (furgón 12 pax) **+ encomiendas Tortel↔Cochrane** (por lanzar).
+   Es además un caso real del problema de conectividad que la app aborda — insumo
+   directo para el PMV de crowdsourcing y para validar el segmento.
+
+---
+
 ## Archivos clave
 
 - CMS: `backend/app/Filament/Resources/{PlaceResource,NoticeResource}.php`

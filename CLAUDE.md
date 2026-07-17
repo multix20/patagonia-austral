@@ -52,8 +52,20 @@ Historial y decisiones: `ESTADO_Y_PENDIENTES.md`. Roadmap (README):
 - Fase 3 — Capa comercial (fichas destacadas, planes, analítica)
 - Fase 4 — Producción definitiva (dominio propio, S3, respaldos, monitoreo)
 
-**Dato de negocio**: la ruta la recorren **100.000–150.000 turistas/año**
-(dimensiona la audiencia para la capa comercial de Fase 3).
+**Datos de negocio**: ruta completa ~100.000–150.000 turistas/año (audiencia
+amplia). Temporada alta 2026 en Aysén (Dic25–Mar26, fuente Red de Informadores
+Turísticos): 16.998 personas (grupo de viaje), 6.357 atendidas en OIT.
+**Cochrane es el destino #1 de la región por atenciones OIT (1.312)** → la zona
+del proyecto es la más consultada de Aysén. Prov. Capitán Prat
+(Cochrane/O'Higgins/Tortel) = 5.477 personas; pico ene–feb. Tortel solo 21
+atenciones OIT pese a ser icónico → oportunidad: la app como "OIT digital" donde
+no hay oficina fuerte. Detalle y desglose en `ESTADO_Y_PENDIENTES.md`.
+
+**Negocios reales del fundador** (primeras fichas destacadas reales de Fase 3,
+reemplazan los "(ejemplo)"): hamburguesería en el km 1020 (entre Caleta Tortel y
+Cochrane) y un servicio de transporte (furgón 12 pax) + encomiendas Tortel↔Cochrane
+(por lanzar). El transporte/encomiendas es además un caso real del problema de
+conectividad que la app aborda.
 
 **Fase 3 — idea central**: crowdsourcing tipo Waze (los viajeros reportan bencina,
 cortes de camino, clima, barcazas) sobre el sistema de avisos, aplicando disciplina
