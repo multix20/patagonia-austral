@@ -174,15 +174,18 @@ almacenamiento de imágenes en la nube (S3 o equivalente), difusión.
 Base lista: `docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`.
 
 ### Menores
-- **UX con 9 localidades (detectado en Fase 2, no resuelto a propósito):**
-  (a) la vista "Toda la ruta" ahora lista 67 lugares de corrido — convendría
-  agrupar por localidad (encabezados de sección) o priorizar la localidad más
-  cercana al GPS; (b) el `<select>` del header quedó con 10 opciones — evaluar
-  ordenarlas con indicación km norte→sur o un selector con búsqueda; (c) el
-  chatbot offline recibe `lugares` sin filtrar (los 67 de todos los pueblos
-  mezclados) y sus respuestas dicen "en Cochrane" hardcodeado
-  (`ChatBot.jsx`) — debería recibir `lugaresVisibles` y usar el nombre de la
-  localidad seleccionada.
+- **✅ UX de multi-localidad (Fase 2) — RESUELTO (14-jul-2026):**
+  (a) "Toda la ruta" ahora se agrupa por localidad con encabezados de sección,
+  ordenados por **cercanía al GPS** del usuario (norte→sur si no hay ubicación;
+  el GPS solo se usa si el permiso ya fue concedido — sin prompt sorpresa, vía
+  `navigator.permissions`); (b) el `<select>` del header se reemplazó por un
+  **selector con búsqueda** (`components/SelectorLocalidad.jsx`); (c) el
+  **ChatBot** ahora recibe `lugaresVisibles` + el nombre de la localidad activa
+  — respuestas por pueblo con datos filtrados, y los consejos de prosa que
+  estaban cableados a Cochrane (bencina de Río Maitén, teléfonos, Tamango,
+  Festival Costumbrista) se generalizaron para no mentir en otros pueblos.
+  Iconos `chevron-down`/`search` añadidos a `Icon.jsx`. Verificado en navegador
+  (build/lint OK, Playwright: filtrado por localidad, orden GPS, buscador).
 - **Contenido "(ejemplo)":** los alojamientos/restoranes marcados "(ejemplo)"
   en las 9 localidades son marcadores de posición; se reemplazan por comercios
   reales al levantar la capa comercial (Fase 3).
