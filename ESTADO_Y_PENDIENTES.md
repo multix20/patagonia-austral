@@ -205,8 +205,21 @@ costanera/puerto, Piedra del Gato, río Cisnes (pesca con mosca de clase mundial
 P.N. Isla Magdalena, combustible+cajero (el servicio más completo del tramo),
 hospital, Carabineros y ejemplos. Total: **14 localidades, 106 lugares**.
 **Verificado:** build frontend OK, `php -l` OK, ids únicos 1-106, sin huérfanos.
-**Siguiente:** Puyuhuapi (orden 80, P.N. Queulat / Ventisquero Colgante) y La
-Junta (orden 70), subiendo por la Ruta 7.
+
+**Avance (19-jul-2026) — Entrega 4: Puyuhuapi (80) + La Junta (70).** Cierran el
+corredor norte de la **Región de Aysén**. Puyuhuapi: pueblo de herencia alemana
+(1935) en el fiordo, **9 lugares** (ids 107-115) — P.N. Queulat/Ventisquero
+Colgante, Termas del Ventisquero, fiordo y pueblo, Fábrica de Alfombras,
+combustible, posta, Carabineros y ejemplos. La Junta: cruce a Raúl Marín
+Balmaceda en la confluencia Rosselot/Palena, **9 lugares** (ids 116-124) — R.N.
+Lago Rosselot, confluencia de ríos, río Palena (pesca/rafting), desvío a Raúl
+Marín Balmaceda (costa/delfines), combustible+cajero confiable, hospital,
+Carabineros y ejemplos. Total: **16 localidades, 124 lugares**. **Verificado:**
+build frontend OK, `php -l` OK, ids únicos 1-124, sin huérfanos.
+**Hito:** completo el tramo norte de Aysén (Coyhaique → La Junta). **Siguiente
+milestone (Región de Los Lagos):** Villa Santa Lucía, Futaleufú, Palena, Chaitén,
+Parque Pumalín/Caleta Gonzalo, Hornopirén y Puerto Montt — incluye las **barcazas**
+del tramo y el **cambio de identidad** a "Puerto Montt a Villa O'Higgins".
 
 **Localidades de trabajo, norte→sur** (lista a afinar en la ejecución):
 - **Región de Los Lagos:** Puerto Montt (km 0) · Hornopirén (comuna Hualaihué) ·

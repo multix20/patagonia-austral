@@ -2472,5 +2472,423 @@
       "es": "En el centro.",
       "en": "Downtown."
     }
+  },
+  {
+    "id": 107,
+    "cat": "atractivo",
+    "localidad": "puyuhuapi",
+    "lat": -44.4989,
+    "lng": -72.5486,
+    "nombre": {
+      "es": "Parque Nacional Queulat — Ventisquero Colgante",
+      "en": "Queulat National Park — Hanging Glacier"
+    },
+    "dist": {
+      "es": "24 km · 30 min al sur",
+      "en": "24 km · 30 min south"
+    },
+    "desc": {
+      "es": "La joya del tramo: un glaciar suspendido entre paredones de selva desde el que caen dos cascadas al vacío. Miradores y un sendero hasta la laguna con témpanos; bosque siempreverde y catarata todo el año.",
+      "en": "The highlight of this stretch: a glacier suspended between rainforest cliffs, with two waterfalls plunging from it. Viewpoints and a trail to the iceberg lagoon; evergreen forest and falls all year."
+    },
+    "como": {
+      "es": "Ruta 7 al sur de Puyuhuapi; entrada CONAF y estacionamiento al inicio de los senderos.",
+      "en": "Route 7 south of Puyuhuapi; CONAF entrance and parking at the trailheads."
+    }
+  },
+  {
+    "id": 108,
+    "cat": "atractivo",
+    "localidad": "puyuhuapi",
+    "lat": -44.39,
+    "lng": -72.55,
+    "nombre": {
+      "es": "Termas del Ventisquero",
+      "en": "Ventisquero Hot Springs"
+    },
+    "dist": {
+      "es": "6 km · 10 min al sur",
+      "en": "6 km · 10 min south"
+    },
+    "desc": {
+      "es": "Piscinas termales al aire libre junto al fiordo, con vista al agua y al bosque. Un alto perfecto para descansar del ripio; acceso público a pasos de la Ruta 7 (a diferencia del lodge de termas, que se cruza en bote).",
+      "en": "Open-air thermal pools beside the fjord, facing the water and the forest. A perfect stop to rest from the gravel; public access right off Route 7 (unlike the spa lodge, reached by boat)."
+    },
+    "como": {
+      "es": "Sobre la Ruta 7, poco al sur del pueblo. Cobro de entrada; lleva efectivo.",
+      "en": "On Route 7, just south of the village. Entry fee; bring cash."
+    }
+  },
+  {
+    "id": 109,
+    "cat": "atractivo",
+    "localidad": "puyuhuapi",
+    "lat": -44.3286,
+    "lng": -72.5567,
+    "nombre": {
+      "es": "Fiordo y pueblo de Puyuhuapi",
+      "en": "Puyuhuapi Fjord & Village"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Caserío de casas de madera fundado por inmigrantes alemanes en 1935, asomado a la cabecera del fiordo Puyuhuapi. Costanera tranquila, arquitectura patrimonial y aire de fin de mundo.",
+      "en": "A village of wooden houses founded by German immigrants in 1935, at the head of the Puyuhuapi fjord. A calm waterfront, heritage architecture and an end-of-the-world feel."
+    },
+    "como": {
+      "es": "En el pueblo, sobre la Ruta 7.",
+      "en": "In the village, on Route 7."
+    }
+  },
+  {
+    "id": 110,
+    "cat": "atractivo",
+    "localidad": "puyuhuapi",
+    "lat": -44.328,
+    "lng": -72.557,
+    "nombre": {
+      "es": "Fábrica de Alfombras Puyuhuapi",
+      "en": "Puyuhuapi Carpet Factory"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Taller histórico donde aún se tejen a mano alfombras de lana desde los años 40, legado de los fundadores alemanes. Se puede visitar y ver el proceso; un pedazo vivo de la historia del pueblo.",
+      "en": "A historic workshop where wool carpets have been hand-woven since the 1940s, a legacy of the German founders. Open to visit and watch the process; a living piece of the village’s history."
+    },
+    "como": {
+      "es": "En el pueblo; consulta horarios de visita.",
+      "en": "In the village; check visiting hours."
+    }
+  },
+  {
+    "id": 111,
+    "cat": "servicio",
+    "localidad": "puyuhuapi",
+    "lat": -44.3282,
+    "lng": -72.5562,
+    "nombre": {
+      "es": "Combustible y servicios",
+      "en": "Fuel and services"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Combustible y comercio del pueblo. La disponibilidad puede ser intermitente; el punto de servicios más seguro cercano es La Junta, hacia el norte. Carga y confirma antes de seguir.",
+      "en": "Village fuel and shops. Availability can be intermittent; the most reliable nearby service point is La Junta, to the north. Fill up and confirm before continuing."
+    },
+    "como": {
+      "es": "En el pueblo, sobre la Ruta 7.",
+      "en": "In the village, on Route 7."
+    }
+  },
+  {
+    "id": 112,
+    "cat": "alojamiento",
+    "localidad": "puyuhuapi",
+    "lat": -44.329,
+    "lng": -72.5572,
+    "nombre": {
+      "es": "Alojamiento en Puyuhuapi (ejemplo)",
+      "en": "Lodging in Puyuhuapi (example)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Hospedajes, cabañas y hostales frente al fiordo, base ideal para visitar el Queulat. Se reemplazará por comercios reales.",
+      "en": "Sample placeholder. Guesthouses, cabins and hostels facing the fjord, an ideal base for visiting Queulat. To be replaced with real businesses."
+    },
+    "como": {
+      "es": "Varios en el pueblo.",
+      "en": "Several in the village."
+    }
+  },
+  {
+    "id": 113,
+    "cat": "comida",
+    "localidad": "puyuhuapi",
+    "lat": -44.3288,
+    "lng": -72.5558,
+    "nombre": {
+      "es": "Restaurante en Puyuhuapi (ejemplo)",
+      "en": "Restaurant in Puyuhuapi (example)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Cocina local con productos del mar del fiordo. Se reemplazará por locales reales.",
+      "en": "Sample placeholder. Local cooking with seafood from the fjord. To be replaced with real venues."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In the village."
+    }
+  },
+  {
+    "id": 114,
+    "cat": "emergencia",
+    "localidad": "puyuhuapi",
+    "lat": -44.3278,
+    "lng": -72.5575,
+    "tel": "131",
+    "nombre": {
+      "es": "Posta de Salud Rural Puyuhuapi",
+      "en": "Puyuhuapi Rural Health Post"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Posta rural para primeros auxilios y urgencias básicas. Las derivaciones mayores van al Hospital de Puerto Cisnes o al Hospital Regional de Coyhaique. SAMU 131.",
+      "en": "Rural post for first aid and basic emergencies. Major cases are referred to Puerto Cisnes Hospital or Coyhaique Regional Hospital. SAMU ambulance 131."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In the village."
+    }
+  },
+  {
+    "id": 115,
+    "cat": "emergencia",
+    "localidad": "puyuhuapi",
+    "lat": -44.3284,
+    "lng": -72.5564,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Puyuhuapi",
+      "en": "Police — Puyuhuapi"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Retén de Carabineros para emergencias policiales y coordinación de rescates en el tramo del Queulat. Marca 133.",
+      "en": "Police outpost for emergencies and rescue coordination on the Queulat stretch. Dial 133."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In the village."
+    }
+  },
+  {
+    "id": 116,
+    "cat": "atractivo",
+    "localidad": "la-junta",
+    "lat": -43.98,
+    "lng": -72.28,
+    "nombre": {
+      "es": "Reserva Nacional Lago Rosselot",
+      "en": "Lago Rosselot National Reserve"
+    },
+    "dist": {
+      "es": "12 km · 15 min al este",
+      "en": "12 km · 15 min east"
+    },
+    "desc": {
+      "es": "Lago de aguas profundas rodeado de bosque siempreverde, protegido por CONAF. Buena pesca, miradores y calma total; parada natural saliendo de La Junta hacia el este.",
+      "en": "A deep-water lake ringed by evergreen forest, protected by CONAF. Good fishing, viewpoints and total calm; a natural stop heading east out of La Junta."
+    },
+    "como": {
+      "es": "Camino al este de La Junta rumbo a Lago Verde, acceso señalizado.",
+      "en": "Road east of La Junta toward Lago Verde, signposted access."
+    }
+  },
+  {
+    "id": 117,
+    "cat": "atractivo",
+    "localidad": "la-junta",
+    "lat": -43.982,
+    "lng": -72.41,
+    "nombre": {
+      "es": "Confluencia de los ríos Rosselot y Palena",
+      "en": "Rosselot & Palena Rivers Confluence"
+    },
+    "dist": {
+      "es": "3 km · 5 min",
+      "en": "3 km · 5 min"
+    },
+    "desc": {
+      "es": "Punto donde el río Rosselot entrega sus aguas al Palena. Paisaje de ríos y bosque, mirador y buen sitio para observar aves; el origen del nombre del pueblo (“la junta” de los ríos).",
+      "en": "Where the Rosselot River meets the Palena. A river-and-forest landscape, a viewpoint and good birdwatching; the origin of the town’s name (“the junction” of the rivers)."
+    },
+    "como": {
+      "es": "A pasos del pueblo, señalizado.",
+      "en": "Just outside town, signposted."
+    }
+  },
+  {
+    "id": 118,
+    "cat": "atractivo",
+    "localidad": "la-junta",
+    "lat": -43.99,
+    "lng": -72.42,
+    "nombre": {
+      "es": "Río Palena",
+      "en": "Palena River"
+    },
+    "dist": {
+      "es": "Junto al pueblo",
+      "en": "Next to town"
+    },
+    "desc": {
+      "es": "Gran río de la Patagonia, célebre para la pesca con mosca y el rafting. Aguas potentes que bajan hacia el Pacífico; operadores locales ofrecen bajadas y jornadas de pesca en temporada.",
+      "en": "A great Patagonian river, famous for fly fishing and rafting. Powerful waters flowing to the Pacific; local operators offer descents and fishing days in season."
+    },
+    "como": {
+      "es": "Bordea el pueblo; consulta operadores, vedas y permisos.",
+      "en": "Runs alongside town; ask operators about closed seasons and permits."
+    }
+  },
+  {
+    "id": 119,
+    "cat": "atractivo",
+    "localidad": "la-junta",
+    "lat": -43.78,
+    "lng": -72.96,
+    "nombre": {
+      "es": "Desvío a Raúl Marín Balmaceda",
+      "en": "Detour to Raúl Marín Balmaceda"
+    },
+    "dist": {
+      "es": "74 km · 1 h 30 al oeste",
+      "en": "74 km · 1 h 30 west"
+    },
+    "desc": {
+      "es": "Aldea costera en la desembocadura del río Palena, entre bosque y mar, conocida por sus playas, aguas termales y avistamiento de delfines y lobos marinos. Un desvío que vale la pena desde La Junta.",
+      "en": "A coastal hamlet at the mouth of the Palena River, between forest and sea, known for its beaches, hot springs and dolphin and sea-lion sightings. A worthwhile detour from La Junta."
+    },
+    "como": {
+      "es": "Camino de ripio al oeste desde La Junta; incluye un cruce en barcaza por el río. Consulta horarios.",
+      "en": "Gravel road west from La Junta; includes a river ferry crossing. Check schedules."
+    }
+  },
+  {
+    "id": 120,
+    "cat": "servicio",
+    "localidad": "la-junta",
+    "lat": -43.9756,
+    "lng": -72.4058,
+    "nombre": {
+      "es": "Combustible y servicios",
+      "en": "Fuel and services"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "La Junta tiene estación de servicio, comercio y cajero — el punto de reabastecimiento confiable del norte de Aysén. Carga combustible y efectivo aquí antes de seguir hacia Los Lagos o hacia el sur.",
+      "en": "La Junta has a fuel station, shops and an ATM — the reliable resupply point in northern Aysén. Load up on fuel and cash here before heading to Los Lagos or south."
+    },
+    "como": {
+      "es": "En el centro, sobre la Ruta 7.",
+      "en": "Downtown, on Route 7."
+    }
+  },
+  {
+    "id": 121,
+    "cat": "alojamiento",
+    "localidad": "la-junta",
+    "lat": -43.976,
+    "lng": -72.4065,
+    "nombre": {
+      "es": "Alojamiento en La Junta (ejemplo)",
+      "en": "Lodging in La Junta (example)"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Hoteles, hostales y cabañas; buen punto para pernoctar entre Coyhaique y Chaitén. Se reemplazará por comercios reales.",
+      "en": "Sample placeholder. Hotels, hostels and cabins; a good place to overnight between Coyhaique and Chaitén. To be replaced with real businesses."
+    },
+    "como": {
+      "es": "Varios en el centro.",
+      "en": "Several downtown."
+    }
+  },
+  {
+    "id": 122,
+    "cat": "comida",
+    "localidad": "la-junta",
+    "lat": -43.9752,
+    "lng": -72.405,
+    "nombre": {
+      "es": "Restaurante en La Junta (ejemplo)",
+      "en": "Restaurant in La Junta (example)"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Cocina patagónica y platos para el viajero. Se reemplazará por locales reales.",
+      "en": "Sample placeholder. Patagonian cooking and traveller’s fare. To be replaced with real venues."
+    },
+    "como": {
+      "es": "En el centro.",
+      "en": "Downtown."
+    }
+  },
+  {
+    "id": 123,
+    "cat": "emergencia",
+    "localidad": "la-junta",
+    "lat": -43.9748,
+    "lng": -72.4068,
+    "tel": "131",
+    "nombre": {
+      "es": "Hospital de La Junta",
+      "en": "La Junta Hospital"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Hospital comunitario que atiende urgencias del norte de la comuna de Cisnes. Los casos graves se derivan al Hospital Regional de Coyhaique. SAMU 131.",
+      "en": "Community hospital handling emergencies for the northern Cisnes district. Serious cases are referred to Coyhaique Regional Hospital. SAMU ambulance 131."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In town."
+    }
+  },
+  {
+    "id": 124,
+    "cat": "emergencia",
+    "localidad": "la-junta",
+    "lat": -43.9754,
+    "lng": -72.406,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — La Junta",
+      "en": "Police — La Junta"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "Emergencias policiales y coordinación de rescates en el cruce hacia Raúl Marín Balmaceda y el límite con Los Lagos. Marca 133.",
+      "en": "Police emergencies and rescue coordination at the junction toward Raúl Marín Balmaceda and the Los Lagos boundary. Dial 133."
+    },
+    "como": {
+      "es": "En el centro.",
+      "en": "Downtown."
+    }
   }
 ]

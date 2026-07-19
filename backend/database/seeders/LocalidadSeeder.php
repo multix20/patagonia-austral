@@ -21,6 +21,22 @@ class LocalidadSeeder extends Seeder
     {
         $localidades = [
             [
+                'slug' => 'la-junta',
+                'nombre' => ['es' => 'La Junta', 'en' => 'La Junta'],
+                'lat' => -43.9756,
+                'lng' => -72.4058,
+                'zoom' => 14,
+                'orden' => 70,
+            ],
+            [
+                'slug' => 'puyuhuapi',
+                'nombre' => ['es' => 'Puyuhuapi', 'en' => 'Puyuhuapi'],
+                'lat' => -44.3286,
+                'lng' => -72.5567,
+                'zoom' => 14,
+                'orden' => 80,
+            ],
+            [
                 'slug' => 'villa-amengual',
                 'nombre' => ['es' => 'Villa Amengual', 'en' => 'Villa Amengual'],
                 'lat' => -44.7167,
