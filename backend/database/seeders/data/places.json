@@ -2101,5 +2101,376 @@
       "es": "En el pueblo.",
       "en": "In the village."
     }
+  },
+  {
+    "id": 91,
+    "cat": "atractivo",
+    "localidad": "villa-amengual",
+    "lat": -44.7167,
+    "lng": -72.1667,
+    "nombre": {
+      "es": "Iglesia de Villa Amengual",
+      "en": "Villa Amengual Church"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "La postal del pueblo: una pequeña iglesia de madera revestida en tejuela, de estilo patagón heredado de la tradición chilota. Una de las capillas rurales más fotografiadas del tramo.",
+      "en": "The village’s postcard: a small wooden church clad in shingles, in a Patagonian style inherited from Chiloé tradition. One of the most photographed rural chapels on this stretch."
+    },
+    "como": {
+      "es": "En el centro, junto a la Ruta 7.",
+      "en": "Downtown, along Route 7."
+    }
+  },
+  {
+    "id": 92,
+    "cat": "atractivo",
+    "localidad": "villa-amengual",
+    "lat": -44.95,
+    "lng": -72.05,
+    "nombre": {
+      "es": "Reserva Nacional Lago Las Torres",
+      "en": "Lago Las Torres National Reserve"
+    },
+    "dist": {
+      "es": "28 km · 30 min al sur",
+      "en": "28 km · 30 min south"
+    },
+    "desc": {
+      "es": "Lago de aguas verdes al pie de cerros con torreones de roca, rodeado de bosque siempreverde. Área CONAF con camping, sendero y buena pesca; parada tranquila sobre la Ruta 7.",
+      "en": "A green-water lake beneath rocky tower-like peaks, ringed by evergreen forest. A CONAF area with camping, a trail and good fishing; a calm stop along Route 7."
+    },
+    "como": {
+      "es": "Sobre la Ruta 7 al sur de Villa Amengual, acceso señalizado con entrada CONAF.",
+      "en": "On Route 7 south of Villa Amengual, signposted access with a CONAF entrance."
+    }
+  },
+  {
+    "id": 93,
+    "cat": "atractivo",
+    "localidad": "villa-amengual",
+    "lat": -44.71,
+    "lng": -72.17,
+    "nombre": {
+      "es": "Mirador Cerro Pirámide",
+      "en": "Cerro Pirámide Viewpoint"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Sendero local que sube al cerro que domina el pueblo, con vistas al valle y a los cordones nevados. Caminata corta de media dificultad para estirar las piernas en la ruta.",
+      "en": "A local trail up the hill overlooking the village, with views of the valley and snowy ranges. A short, moderate walk to stretch your legs on the road."
+    },
+    "como": {
+      "es": "Inicio señalizado en el pueblo; consulta el estado del sendero con lluvia.",
+      "en": "Signposted trailhead in the village; check the trail condition in wet weather."
+    }
+  },
+  {
+    "id": 94,
+    "cat": "servicio",
+    "localidad": "villa-amengual",
+    "lat": -44.7165,
+    "lng": -72.1665,
+    "nombre": {
+      "es": "Abastecimiento y combustible",
+      "en": "Supplies and fuel"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Almacenes del pueblo y combustible de venta informal (bidones) — no hay estación formal. En este tramo la bencina es intermitente: no cuentes con cargar aquí y confirma antes. La próxima segura hacia el norte es La Junta.",
+      "en": "Village shops and informally sold fuel (jerry cans) — there is no formal station. Fuel is intermittent on this stretch: don’t count on filling up here and confirm first. The next reliable stop north is La Junta."
+    },
+    "como": {
+      "es": "En el pueblo, sobre la Ruta 7.",
+      "en": "In the village, on Route 7."
+    }
+  },
+  {
+    "id": 95,
+    "cat": "alojamiento",
+    "localidad": "villa-amengual",
+    "lat": -44.717,
+    "lng": -72.167,
+    "nombre": {
+      "es": "Hospedaje en Villa Amengual (ejemplo)",
+      "en": "Guesthouse in Villa Amengual (example)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Hospedajes familiares y camping para pasar la noche a mitad del tramo norte. Se reemplazará por comercios reales.",
+      "en": "Sample placeholder. Family guesthouses and camping to spend the night midway on the northern stretch. To be replaced with real businesses."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In the village."
+    }
+  },
+  {
+    "id": 96,
+    "cat": "comida",
+    "localidad": "villa-amengual",
+    "lat": -44.7163,
+    "lng": -72.1662,
+    "nombre": {
+      "es": "Comedor en Villa Amengual (ejemplo)",
+      "en": "Eatery in Villa Amengual (example)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Cocina casera para el viajero de paso. Se reemplazará por locales reales.",
+      "en": "Sample placeholder. Home cooking for travellers passing through. To be replaced with real venues."
+    },
+    "como": {
+      "es": "En el centro.",
+      "en": "Downtown."
+    }
+  },
+  {
+    "id": 97,
+    "cat": "emergencia",
+    "localidad": "villa-amengual",
+    "lat": -44.716,
+    "lng": -72.1672,
+    "tel": "131",
+    "nombre": {
+      "es": "Posta de Salud Rural Villa Amengual",
+      "en": "Villa Amengual Rural Health Post"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Posta rural para primeros auxilios y urgencias básicas. Las derivaciones mayores van al Hospital de Puerto Cisnes o al Hospital Regional de Coyhaique. SAMU 131; Carabineros 133.",
+      "en": "Rural post for first aid and basic emergencies. Major cases are referred to Puerto Cisnes Hospital or Coyhaique Regional Hospital. SAMU ambulance 131; police 133."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In the village."
+    }
+  },
+  {
+    "id": 98,
+    "cat": "atractivo",
+    "localidad": "puerto-cisnes",
+    "lat": -44.743,
+    "lng": -72.69,
+    "nombre": {
+      "es": "Costanera y puerto de Puerto Cisnes",
+      "en": "Puerto Cisnes Waterfront & Harbour"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "El frente costero de este pueblo pesquero asomado al canal Puyuhuapi, con vista a los fiordos y la isla Magdalena. Caleta, embarcaciones y el ir y venir de la pesca y la salmonicultura.",
+      "en": "The seafront of this fishing town facing the Puyuhuapi channel, with views of the fjords and Magdalena Island. A cove, fishing boats and the comings and goings of fishing and salmon farming."
+    },
+    "como": {
+      "es": "En el centro, frente al mar.",
+      "en": "Downtown, on the seafront."
+    }
+  },
+  {
+    "id": 99,
+    "cat": "atractivo",
+    "localidad": "puerto-cisnes",
+    "lat": -44.72,
+    "lng": -72.4,
+    "nombre": {
+      "es": "Piedra del Gato",
+      "en": "Piedra del Gato"
+    },
+    "dist": {
+      "es": "En el camino de acceso",
+      "en": "On the access road"
+    },
+    "desc": {
+      "es": "Angostura de roca donde el camino se abre paso pegado al río Cisnes, encajonado entre paredones. Un paso escénico y célebre por lo difícil que fue construirlo; buen punto para detenerse a mirar el río.",
+      "en": "A rocky narrows where the road squeezes alongside the Cisnes River, boxed in by cliffs. A scenic pass famous for how hard it was to build; a good spot to stop and watch the river."
+    },
+    "como": {
+      "es": "Sobre el camino que une la Ruta 7 con Puerto Cisnes, siguiendo el río Cisnes.",
+      "en": "On the road linking Route 7 with Puerto Cisnes, following the Cisnes River."
+    }
+  },
+  {
+    "id": 100,
+    "cat": "atractivo",
+    "localidad": "puerto-cisnes",
+    "lat": -44.74,
+    "lng": -72.55,
+    "nombre": {
+      "es": "Río Cisnes",
+      "en": "Cisnes River"
+    },
+    "dist": {
+      "es": "En la ruta de acceso",
+      "en": "On the access road"
+    },
+    "desc": {
+      "es": "Uno de los ríos más largos y valorados de la Patagonia para la pesca con mosca: aguas cristalinas, truchas grandes y paisaje de bosque. Referencia mundial entre los pescadores.",
+      "en": "One of Patagonia’s longest and most prized rivers for fly fishing: crystal-clear water, big trout and forest scenery. A world reference among anglers."
+    },
+    "como": {
+      "es": "Acompaña el camino de acceso desde la Ruta 7; consulta vedas y permisos de pesca.",
+      "en": "Follows the access road from Route 7; check fishing closed seasons and permits."
+    }
+  },
+  {
+    "id": 101,
+    "cat": "atractivo",
+    "localidad": "puerto-cisnes",
+    "lat": -44.7,
+    "lng": -72.9,
+    "nombre": {
+      "es": "Parque Nacional Isla Magdalena",
+      "en": "Isla Magdalena National Park"
+    },
+    "dist": {
+      "es": "En bote desde el puerto",
+      "en": "By boat from the harbour"
+    },
+    "desc": {
+      "es": "Isla montañosa cubierta de selva valdiviana virgen frente a Puerto Cisnes, con volcán, fiordos y fauna marina. Naturaleza prácticamente inexplorada; se visita por mar con operadores locales.",
+      "en": "A mountainous island cloaked in pristine Valdivian rainforest across from Puerto Cisnes, with a volcano, fjords and marine wildlife. Almost untouched nature, visited by sea with local operators."
+    },
+    "como": {
+      "es": "Cruce en embarcación desde el puerto; coordina con operadores del pueblo.",
+      "en": "Boat crossing from the harbour; arrange with village operators."
+    }
+  },
+  {
+    "id": 102,
+    "cat": "servicio",
+    "localidad": "puerto-cisnes",
+    "lat": -44.7425,
+    "lng": -72.6885,
+    "nombre": {
+      "es": "Combustible y servicios",
+      "en": "Fuel and services"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "Puerto Cisnes tiene estación de servicio, comercio y cajero — el punto de servicios más completo del tramo entre Coyhaique y La Junta. Vale el desvío para cargar combustible y efectivo.",
+      "en": "Puerto Cisnes has a fuel station, shops and an ATM — the most complete service point on the stretch between Coyhaique and La Junta. The detour is worth it to load up on fuel and cash."
+    },
+    "como": {
+      "es": "En el centro del pueblo.",
+      "en": "In the town centre."
+    }
+  },
+  {
+    "id": 103,
+    "cat": "alojamiento",
+    "localidad": "puerto-cisnes",
+    "lat": -44.742,
+    "lng": -72.6895,
+    "nombre": {
+      "es": "Alojamiento en Puerto Cisnes (ejemplo)",
+      "en": "Lodging in Puerto Cisnes (example)"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Hoteles, hostales y cabañas frente al canal. Se reemplazará por comercios reales.",
+      "en": "Sample placeholder. Hotels, hostels and cabins facing the channel. To be replaced with real businesses."
+    },
+    "como": {
+      "es": "Varios en el centro y la costanera.",
+      "en": "Several downtown and on the waterfront."
+    }
+  },
+  {
+    "id": 104,
+    "cat": "comida",
+    "localidad": "puerto-cisnes",
+    "lat": -44.7428,
+    "lng": -72.6892,
+    "nombre": {
+      "es": "Marisquería en Puerto Cisnes (ejemplo)",
+      "en": "Seafood eatery in Puerto Cisnes (example)"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Pescados y mariscos frescos del canal. Se reemplazará por locales reales.",
+      "en": "Sample placeholder. Fresh fish and shellfish from the channel. To be replaced with real venues."
+    },
+    "como": {
+      "es": "En la costanera.",
+      "en": "On the waterfront."
+    }
+  },
+  {
+    "id": 105,
+    "cat": "emergencia",
+    "localidad": "puerto-cisnes",
+    "lat": -44.7415,
+    "lng": -72.688,
+    "tel": "131",
+    "nombre": {
+      "es": "Hospital de Puerto Cisnes",
+      "en": "Puerto Cisnes Hospital"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Hospital comunitario que atiende urgencias de la comuna de Cisnes. Los casos graves se derivan al Hospital Regional de Coyhaique. SAMU 131.",
+      "en": "Community hospital handling emergencies for the Cisnes district. Serious cases are referred to Coyhaique Regional Hospital. SAMU ambulance 131."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In town."
+    }
+  },
+  {
+    "id": 106,
+    "cat": "emergencia",
+    "localidad": "puerto-cisnes",
+    "lat": -44.7422,
+    "lng": -72.6888,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Puerto Cisnes",
+      "en": "Police — Puerto Cisnes"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "Emergencias policiales y coordinación de rescates en la comuna de Cisnes. Marca 133.",
+      "en": "Police emergencies and rescue coordination in the Cisnes district. Dial 133."
+    },
+    "como": {
+      "es": "En el centro.",
+      "en": "Downtown."
+    }
   }
 ]

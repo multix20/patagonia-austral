@@ -193,8 +193,20 @@ Mañihuales (huemul), río Mañihuales (pesca con mosca), plaza/iglesia, combust
 y abastecimiento (con aviso de que al norte no hay bencina confiable hasta La
 Junta, ~150 km), posta rural, Carabineros, y ejemplos de alojamiento/comida.
 Total del proyecto: **12 localidades, 90 lugares**. **Verificado:** build+lint
-frontend OK, `php -l` OK, ids únicos 1-90, sin huérfanos. **Siguiente:** Villa
-Amengual (orden 90) y Puerto Cisnes (desvío, orden 95), subiendo por la Ruta 7.
+frontend OK, `php -l` OK, ids únicos 1-90, sin huérfanos.
+
+**Avance (19-jul-2026) — Entrega 3: Villa Amengual (90) + Puerto Cisnes (95).**
+Villa Amengual: pueblo de colonización sobre la Ruta 7, **7 lugares** (ids 91-97):
+iglesia de tejuela, Reserva Nacional Lago Las Torres, mirador Cerro Pirámide,
+abastecimiento/combustible (informal, aviso de intermitencia), posta rural y
+ejemplos de alojamiento/comida. Puerto Cisnes: capital de comuna en la costa del
+canal Puyuhuapi, **desvío oeste ~35 km** por la Ruta 7, **9 lugares** (ids 98-106):
+costanera/puerto, Piedra del Gato, río Cisnes (pesca con mosca de clase mundial),
+P.N. Isla Magdalena, combustible+cajero (el servicio más completo del tramo),
+hospital, Carabineros y ejemplos. Total: **14 localidades, 106 lugares**.
+**Verificado:** build frontend OK, `php -l` OK, ids únicos 1-106, sin huérfanos.
+**Siguiente:** Puyuhuapi (orden 80, P.N. Queulat / Ventisquero Colgante) y La
+Junta (orden 70), subiendo por la Ruta 7.
 
 **Localidades de trabajo, norte→sur** (lista a afinar en la ejecución):
 - **Región de Los Lagos:** Puerto Montt (km 0) · Hornopirén (comuna Hualaihué) ·
