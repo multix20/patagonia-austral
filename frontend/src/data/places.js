@@ -13,6 +13,11 @@
 // sur del lago General Carrera entre Puerto Guadal y Puerto Bertrand.
 export const LOCALIDADES_SEED = [
   {
+    slug: 'villa-manihuales',
+    nombre: { es: 'Villa Mañihuales', en: 'Villa Mañihuales' },
+    lat: -45.2103, lng: -72.1547, zoom: 15, orden: 100,
+  },
+  {
     slug: 'puerto-aysen',
     nombre: { es: 'Puerto Aysén', en: 'Puerto Aysén' },
     lat: -45.4033, lng: -72.6947, zoom: 14, orden: 110,
@@ -1003,6 +1008,96 @@ export const LUGARES_SEED = [
       en: 'Police outpost (133) at the port; major medical care is at Puerto Aysén Hospital, 15 km away. SAMU ambulance 131.',
     },
     como: { es: 'En el puerto.', en: 'At the port.' },
+  },
+
+  // ── Fase 2.5 · Tramo norte · Villa Mañihuales (ids 83-90) ────────────────
+  // Primer pueblo sobre la Ruta 7 al norte del cruce a Aysén; parada de
+  // servicios clave (combustible) en el largo tramo Coyhaique → La Junta.
+  {
+    id: 83, cat: 'atractivo', localidad: 'villa-manihuales', lat: -45.19, lng: -72.16,
+    nombre: { es: 'Reserva Nacional Mañihuales', en: 'Mañihuales National Reserve' },
+    dist: { es: '5 km · 10 min en auto', en: '5 km · 10 min by car' },
+    desc: {
+      es: 'Área protegida por CONAF creada para resguardar al huemul, el ciervo nativo en peligro y símbolo del escudo de Chile. Bosque siempreverde y senderos de baja dificultad junto al pueblo.',
+      en: 'A CONAF-protected reserve created to safeguard the huemul, the endangered native deer on Chile’s coat of arms. Evergreen forest and easy trails next to the village.',
+    },
+    como: {
+      es: 'Acceso señalizado desde la Ruta 7, a la salida norte del pueblo; entrada CONAF.',
+      en: 'Signposted access from Route 7 at the northern exit of the village; CONAF entrance.',
+    },
+  },
+  {
+    id: 84, cat: 'atractivo', localidad: 'villa-manihuales', lat: -45.212, lng: -72.156,
+    nombre: { es: 'Río Mañihuales', en: 'Mañihuales River' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'El río que da nombre al pueblo, de aguas claras y buen caudal, reconocido para la pesca con mosca de trucha en temporada. Paisaje de ribera y aves acuáticas junto al puente.',
+      en: 'The river that gives the village its name — clear and full-flowing, known for fly fishing for trout in season. Riverside scenery and waterbirds by the bridge.',
+    },
+    como: {
+      es: 'Cruza junto al pueblo por el puente de la Ruta 7; consulta vedas y permisos de pesca.',
+      en: 'Crosses beside the village on the Route 7 bridge; check fishing closed seasons and permits.',
+    },
+  },
+  {
+    id: 85, cat: 'atractivo', localidad: 'villa-manihuales', lat: -45.2103, lng: -72.1547,
+    nombre: { es: 'Plaza e iglesia de Villa Mañihuales', en: 'Villa Mañihuales Square & Church' },
+    dist: { es: 'En el centro', en: 'Downtown' },
+    desc: {
+      es: 'El corazón de este pueblo de colonización, punto de descanso y reabastecimiento a mitad de camino entre Coyhaique y La Junta. Buen lugar para estirar las piernas y tomar algo.',
+      en: 'The heart of this settler village, a rest and resupply stop halfway between Coyhaique and La Junta. A good place to stretch your legs and grab a bite.',
+    },
+    como: { es: 'En el centro, junto a la Ruta 7.', en: 'Downtown, along Route 7.' },
+  },
+  {
+    id: 86, cat: 'servicio', localidad: 'villa-manihuales', lat: -45.211, lng: -72.154,
+    nombre: { es: 'Combustible y abastecimiento', en: 'Fuel and supplies' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Punto de combustible y almacenes del pueblo — parada importante en un tramo largo: hacia el norte no hay bencina confiable hasta La Junta (unos 150 km). Carga antes de seguir y confirma disponibilidad, que en zonas rurales puede ser intermitente.',
+      en: 'Village fuel point and shops — an important stop on a long stretch: heading north there is no reliable fuel until La Junta (about 150 km). Fill up before continuing and confirm availability, which can be intermittent in rural areas.',
+    },
+    como: { es: 'Sobre la Ruta 7, en el pueblo.', en: 'On Route 7, in the village.' },
+  },
+  {
+    id: 87, cat: 'alojamiento', localidad: 'villa-manihuales', lat: -45.2098, lng: -72.155,
+    nombre: { es: 'Hospedaje en Villa Mañihuales (ejemplo)', en: 'Guesthouse in Villa Mañihuales (example)' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Marcador de ejemplo. El pueblo ofrece hospedajes y cabañas sencillas para partir el viaje entre Coyhaique y el norte de la Carretera. Se reemplazará por comercios reales.',
+      en: 'Sample placeholder. The village offers simple guesthouses and cabins to break up the trip between Coyhaique and the northern highway. To be replaced with real businesses.',
+    },
+    como: { es: 'Varios en el pueblo.', en: 'Several in the village.' },
+  },
+  {
+    id: 88, cat: 'comida', localidad: 'villa-manihuales', lat: -45.2107, lng: -72.1543,
+    nombre: { es: 'Comedor en Villa Mañihuales (ejemplo)', en: 'Eatery in Villa Mañihuales (example)' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Marcador de ejemplo. Cocina casera y sándwiches para el viajero de paso. Se reemplazará por locales reales.',
+      en: 'Sample placeholder. Home cooking and sandwiches for travellers passing through. To be replaced with real venues.',
+    },
+    como: { es: 'En el centro.', en: 'Downtown.' },
+  },
+  {
+    id: 89, cat: 'emergencia', localidad: 'villa-manihuales', lat: -45.2095, lng: -72.1552, tel: '131',
+    nombre: { es: 'Posta de Salud Rural Villa Mañihuales', en: 'Villa Mañihuales Rural Health Post' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Posta de salud rural para primeros auxilios y urgencias básicas. Las derivaciones mayores van al Hospital de Puerto Aysén o al Hospital Regional de Coyhaique. SAMU 131.',
+      en: 'Rural health post for first aid and basic emergencies. Major cases are referred to Puerto Aysén Hospital or Coyhaique Regional Hospital. SAMU ambulance 131.',
+    },
+    como: { es: 'En el pueblo.', en: 'In the village.' },
+  },
+  {
+    id: 90, cat: 'emergencia', localidad: 'villa-manihuales', lat: -45.21, lng: -72.1549, tel: '133',
+    nombre: { es: 'Carabineros de Chile — Villa Mañihuales', en: 'Police — Villa Mañihuales' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Retén de Carabineros para emergencias policiales y coordinación de rescates en el tramo norte de la Ruta 7. Marca 133.',
+      en: 'Police outpost for emergencies and rescue coordination on the northern stretch of Route 7. Dial 133.',
+    },
+    como: { es: 'En el pueblo.', en: 'In the village.' },
   },
 ]
 

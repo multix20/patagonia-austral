@@ -21,6 +21,14 @@ class LocalidadSeeder extends Seeder
     {
         $localidades = [
             [
+                'slug' => 'villa-manihuales',
+                'nombre' => ['es' => 'Villa Mañihuales', 'en' => 'Villa Mañihuales'],
+                'lat' => -45.2103,
+                'lng' => -72.1547,
+                'zoom' => 15,
+                'orden' => 100,
+            ],
+            [
                 'slug' => 'puerto-aysen',
                 'nombre' => ['es' => 'Puerto Aysén', 'en' => 'Puerto Aysén'],
                 'lat' => -45.4033,

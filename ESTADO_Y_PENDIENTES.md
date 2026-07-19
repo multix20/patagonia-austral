@@ -184,8 +184,17 @@ pueblos del norte por cargar. `LOCALIDADES_SEED`/`LocalidadSeeder` y
 `places.js`/`places.json` en espejo. **Verificado:** build+lint frontend OK,
 `php -l` OK, ids únicos 1-82, sin lugares huérfanos, orden norte→sur correcto.
 La identidad de la app sigue en "Coyhaique a Villa O'Higgins" (se cambia a
-"Puerto Montt a Villa O'Higgins" al completar el tramo). **Siguiente:** Villa
-Mañihuales (orden 100) y seguir subiendo por la Ruta 7.
+"Puerto Montt a Villa O'Higgins" al completar el tramo).
+
+**Avance (19-jul-2026) — Entrega 2: Villa Mañihuales** (orden 100). Primer pueblo
+sobre la Ruta 7 al norte del cruce a Aysén; parada de servicios clave en el largo
+tramo Coyhaique → La Junta. **8 lugares nuevos** (ids 83-90): Reserva Nacional
+Mañihuales (huemul), río Mañihuales (pesca con mosca), plaza/iglesia, combustible
+y abastecimiento (con aviso de que al norte no hay bencina confiable hasta La
+Junta, ~150 km), posta rural, Carabineros, y ejemplos de alojamiento/comida.
+Total del proyecto: **12 localidades, 90 lugares**. **Verificado:** build+lint
+frontend OK, `php -l` OK, ids únicos 1-90, sin huérfanos. **Siguiente:** Villa
+Amengual (orden 90) y Puerto Cisnes (desvío, orden 95), subiendo por la Ruta 7.
 
 **Localidades de trabajo, norte→sur** (lista a afinar en la ejecución):
 - **Región de Los Lagos:** Puerto Montt (km 0) · Hornopirén (comuna Hualaihué) ·
