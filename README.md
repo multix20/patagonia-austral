@@ -9,10 +9,18 @@ dónde dormir, dónde comer, servicios, rutas y emergencias — todo funcionando
 > Producto propio (comercial). Base técnica heredada de la PWA de Cochrane.
 > Stack: **React 18 + Vite** · **Laravel (PHP 8.x) + Filament** · **PostgreSQL**.
 
-## Alcance geográfico (Región de Aysén, Ruta 7, norte a sur)
+## Alcance geográfico (Ruta 7, norte a sur)
 
-Coyhaique · Villa Cerro Castillo · Puerto Río Tranquilo · Puerto Guadal /
-Chile Chico · Puerto Bertrand · Cochrane · Caleta Tortel · Villa O'Higgins.
+**Cubierto hoy (Región de Aysén, Coyhaique → sur):** Coyhaique · Villa Cerro
+Castillo · Puerto Río Tranquilo · Puerto Guadal / Chile Chico · Puerto Bertrand ·
+Cochrane · Caleta Tortel · Villa O'Higgins.
+
+**En incorporación (Fase 2.5 — tramo norte, Coyhaique → Puerto Montt):**
+Puerto Aysén / Puerto Chacabuco · Villa Mañihuales · Puerto Cisnes · Villa
+Amengual · Puyuhuapi · La Junta · Palena · Futaleufú · Villa Santa Lucía ·
+Chaitén · Parque Pumalín / Caleta Gonzalo · Hornopirén · Puerto Montt (km 0).
+Al completarlo, la app cubre **toda la Carretera Austral, Puerto Montt → Villa
+O'Higgins**.
 
 ## Estructura del repositorio
 
@@ -67,6 +75,11 @@ Ver `backend/SETUP.md` para el detalle de configuración.
   comida, servicios, emergencias, rutas) en ES/EN. ✅
   (9 localidades de Coyhaique a Villa O'Higgins, 67 lugares bilingües;
   los negocios no verificables van marcados "(ejemplo)" hasta la Fase 3)
+- **Fase 2.5 — Contenido tramo norte (Coyhaique → Puerto Montt):** extender la
+  cobertura por la Ruta 7 hacia el norte hasta el km 0 de la Carretera Austral,
+  completando la ruta entera. Mismo patrón que la Fase 2 (localidades + lugares
+  bilingües ES/EN; "(ejemplo)" para negocios no verificables). Incluye actualizar
+  la identidad de la app a "Puerto Montt a Villa O'Higgins" al completarlo.
 - **Fase 3 — Capa comercial:** fichas destacadas, planes de negocio, analítica.
 - **Fase 4 — Publicación:** producción, dominio propio, PWA instalable, difusión.
 

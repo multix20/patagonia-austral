@@ -46,9 +46,11 @@ Historial y decisiones: `ESTADO_Y_PENDIENTES.md`. Roadmap (README):
 - ✅ Fase 0 base · ✅ deploy Netlify+Render+Neon
 - ✅ Fase 1 — Multi-localidad (modelo `Localidad`, selector, filtros)
 - ✅ Fase 2 — Contenido (9 localidades, 67 lugares, tramo Coyhaique→Villa O'Higgins)
-- **SIGUIENTE**: resolver pendientes de UX de Fase 2 (ver `ESTADO_Y_PENDIENTES.md`:
-  chatbot filtrado por localidad ← crítico; "Toda la ruta" ordenada por GPS;
-  selector con búsqueda), luego Fase 3.
+  y su UX (chatbot filtrado por localidad, "Toda la ruta" por GPS, selector con búsqueda)
+- **SIGUIENTE**: Fase 2.5 — Contenido tramo norte (Coyhaique→Puerto Montt): sumar
+  las localidades del norte de la Ruta 7 hasta el km 0 de la CA (Puerto Montt),
+  pueblo por pueblo, y actualizar la identidad a "Puerto Montt a Villa O'Higgins".
+  Va **antes** de la Fase 3. Detalle en `ESTADO_Y_PENDIENTES.md`.
 - Fase 3 — Capa comercial (fichas destacadas, planes, analítica)
 - Fase 4 — Producción definitiva (dominio propio, S3, respaldos, monitoreo)
 
@@ -83,8 +85,10 @@ su contenido** → generan cortes/desvíos que agudizan el problema que el crowd
 resuelve. (Ojo: es un plan regional de Aysén, NO pavimentar todo Puerto Montt→O'Higgins
 para 2030.)
 
-**Alcance futuro** (anotado, no inmediato): ampliar a **toda la Carretera Austral,
-de Puerto Montt a Villa O'Higgins** (sumar el tramo norte por fases; hoy la app
-dice "Coyhaique a Villa O'Higgins").
+**Alcance norte — ahora es la Fase 2.5** (ya no es solo "futuro"): ampliar a **toda
+la Carretera Austral, de Puerto Montt a Villa O'Higgins**, sumando el tramo norte
+por fases (pueblo por pueblo) desde Coyhaique hasta el km 0 en Puerto Montt. Al
+completarlo, la identidad de la app pasa de "Coyhaique a Villa O'Higgins" a
+"Puerto Montt a Villa O'Higgins". Detalle en `ESTADO_Y_PENDIENTES.md` (Fase 2.5).
 
 Para trabajo de roadmap, usar el agente `roadmap` (`.claude/agents/roadmap.md`).

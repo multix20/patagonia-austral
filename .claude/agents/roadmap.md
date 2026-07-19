@@ -48,18 +48,27 @@ alcance**. No acumules deuda de UX detrás de más contenido.
 ## Estado actual y prioridades (jul-2026)
 
 Hecho: ✅ Fase 0 · ✅ deploy Netlify+Render+Neon · ✅ Fase 1 (multi-localidad) ·
-✅ Fase 2 (9 localidades, 67 lugares, tramo Coyhaique→Villa O'Higgins).
+✅ Fase 2 (9 localidades, 67 lugares, tramo Coyhaique→Villa O'Higgins) · ✅ UX de
+Fase 2 (ChatBot filtrado por localidad, "Toda la ruta" ordenada por GPS, selector
+con búsqueda) — todo en `main`/producción.
 
-**Prioridad inmediata — pendientes de UX de la Fase 2 (resolver ANTES de más contenido):**
-- (c) **[CRÍTICO] ChatBot offline** (`frontend/src/components/ChatBot.jsx`): hoy
-  recibe los 67 lugares sin filtrar y dice "en Cochrane" hardcodeado. Debe recibir
-  solo los lugares de la localidad seleccionada (`lugaresVisibles`) y usar el
-  nombre de esa localidad en sus respuestas. Da impresión de app a medio hacer.
-- (a) **"Toda la ruta"**: en vez de listar los 67 lugares de corrido, **mostrar
-  primero el pueblo más cercano al GPS** del usuario y luego el resto. Sin señal
-  GPS (o permiso denegado), orden por defecto norte→sur.
-- (b) **Selector de localidad del header**: convertirlo en un **selector con
-  búsqueda** (filtrar escribiendo) — hoy son 10 opciones y crecerá mucho.
+**Prioridad inmediata — Fase 2.5: Contenido tramo norte (Coyhaique → Puerto Montt).**
+Extender el contenido por la Ruta 7 hacia el **norte** hasta el km 0 de la CA
+(Puerto Montt), completando la ruta entera **antes** de la capa comercial. Mismo
+patrón que la Fase 2. Se hace **por fases, pueblo por pueblo**.
+- Localidades norte→sur (a afinar): **Los Lagos** — Puerto Montt (km 0) ·
+  Hornopirén · Parque Pumalín/Caleta Gonzalo · Chaitén · El Amarillo · Villa Santa
+  Lucía · Futaleufú · Palena; **Aysén norte** — La Junta · Puyuhuapi (P.N. Queulat) ·
+  Villa Amengual · Puerto Cisnes · Villa Mañihuales · Puerto Aysén · Puerto
+  Chacabuco → empalma con Coyhaique.
+- **`orden`**: hoy Coyhaique=10 es la más al norte (decenas 10…80). Las nuevas van
+  al norte → **reasignar el rango** para toda la cadena (Puerto Montt la menor);
+  idempotencia por slug intacta, seeds front/back en espejo.
+- **Identidad**: al completar, cambiar "Coyhaique a Villa O'Higgins" →
+  "Puerto Montt a Villa O'Higgins" (README, `i18n.jsx`, manifest, docs).
+- **Barcazas** del tramo (La Arena–Caleta Puelche, Hornopirén–Caleta Gonzalo):
+  dato de viaje offline y semilla del reporte "barcazas" del crowdsourcing.
+- Detalle completo en `ESTADO_Y_PENDIENTES.md` (Fase 2.5).
 
 **Siguiente fase — Fase 3 (capa comercial + crowdsourcing):** fichas destacadas,
 planes para negocios, analítica; reemplazar los "(ejemplo)" por comercios reales.
@@ -114,15 +123,14 @@ desvíos que agudizan el problema que el crowdsourcing resuelve ("¿está pasabl
 tramo hoy?"). Además las 2 barcazas nuevas conectan directo con el tipo de reporte
 "barcazas" del PMV.
 
-## Alcance futuro (largo plazo — anotado, NO ejecutar de una)
+## Alcance norte — ahora es la Fase 2.5 (prioridad inmediata, ver arriba)
 
-La meta es cubrir **toda la Carretera Austral, de Puerto Montt a Villa
-O'Higgins** — no solo el tramo Coyhaique→sur actual. Al ampliar hacia el norte
-(Hornopirén, Chaitén, Futaleufú, La Junta, Puyuhuapi, Puerto Cisnes, Puerto
-Aysén, etc.) se hace **por fases, pueblo por pueblo**. Implica actualizar la
-identidad de la app (título/subtítulo/i18n dicen "Coyhaique a Villa O'Higgins"
-→ pasaría a "Puerto Montt a Villa O'Higgins"). Es dirección futura, no tarea
-inmediata.
+La meta de cubrir **toda la Carretera Austral, de Puerto Montt a Villa O'Higgins**
+dejó de ser "futuro anotado": es la **Fase 2.5**, que va **antes de la Fase 3**.
+Se ejecuta por fases, pueblo por pueblo, e incluye actualizar la identidad de la
+app a "Puerto Montt a Villa O'Higgins" al completar el tramo. Detalle y lista de
+localidades: sección "Estado actual y prioridades" (arriba) y
+`ESTADO_Y_PENDIENTES.md` (Fase 2.5).
 
 ## Límites
 

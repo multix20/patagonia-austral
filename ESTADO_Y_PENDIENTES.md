@@ -165,10 +165,49 @@ seed de Cochrane, para reemplazarlos por comercios reales en la Fase 3.
 `/api/localidades` (9) y `/api/places` (67 con slug de localidad) comprobados
 con `php artisan serve`. Sin cambios de API: solo datos (compatible hacia atrás).
 
-### 4. Fase 3 — Capa comercial
+### 4. Fase 2.5 — Contenido tramo norte (Coyhaique → Puerto Montt) — PLANIFICADA (19-jul-2026)
+Extender el contenido hacia el **norte** por la Ruta 7, desde Coyhaique hasta
+**Puerto Montt** (el km 0 de la Carretera Austral), completando la ruta entera.
+Es una continuación directa de la Fase 2 (mismo patrón de datos), **antes** de la
+capa comercial (Fase 3). Se ejecuta **por fases, pueblo por pueblo**.
+
+**Localidades de trabajo, norte→sur** (lista a afinar en la ejecución):
+- **Región de Los Lagos:** Puerto Montt (km 0) · Hornopirén (comuna Hualaihué) ·
+  Parque Pumalín / Caleta Gonzalo · Chaitén · El Amarillo (Termas del Amarillo) ·
+  Villa Santa Lucía · Futaleufú (desvío este, rafting) · Palena (desvío).
+- **Región de Aysén (norte, antes de Coyhaique):** La Junta · Puyuhuapi (P.N.
+  Queulat / Ventisquero Colgante) · Villa Amengual · Puerto Cisnes (desvío oeste) ·
+  Villa Mañihuales · Puerto Aysén · Puerto Chacabuco → **empalma con Coyhaique**
+  (contenido actual).
+- Adyacente/opcional: Puerto Varas es un hub turístico junto a Puerto Montt pero
+  está sobre la Ruta 5, no la Ruta 7 — evaluar si entra como referencia.
+
+**Notas técnicas para la ejecución:**
+- **`orden` de localidades:** hoy Coyhaique = 10 es la más al norte y el esquema
+  va en decenas (10, 20, … 80). Las nuevas quedan **al norte de Coyhaique**, así
+  que no caben en el rango actual → hay que **reasignar el rango de `orden`** para
+  toda la cadena (p. ej. Puerto Montt como la menor). La idempotencia por slug se
+  mantiene; `LocalidadSeeder` (backend) y `LOCALIDADES_SEED` (frontend) siguen en
+  espejo. Ojo con `localStorage.localidadSel` en clientes ya instalados (sigue
+  siendo un slug, no cambia).
+- **Identidad de la app:** al completar el tramo, cambiar título/subtítulo/i18n de
+  **"Coyhaique a Villa O'Higgins" → "Puerto Montt a Villa O'Higgins"** (README,
+  `frontend/src/i18n.jsx`, manifest/`vite.config`, este doc y `CLAUDE.md`).
+- **Barcazas del tramo** (dato de viaje clave y offline): **La Arena–Caleta
+  Puelche** y **Hornopirén–Caleta Gonzalo** (cruza el Parque Pumalín, ~5 h,
+  estacional/con reserva). Encaja directo con el reporte "barcazas" del
+  crowdsourcing de Fase 3.
+- **Fuente de verdad de seeds** igual que Fase 2: editar
+  `frontend/src/data/places.js` y regenerar
+  `backend/database/seeders/data/places.json` desde ahí; mantener esa dirección.
+- **Criterio de contenido** igual que Fase 2: nombres genéricos correctos y datos
+  de viaje útiles (combustible, banco/cajero, salud, Carabineros); negocios no
+  verificables marcados **"(ejemplo)"** hasta la Fase 3.
+
+### 5. Fase 3 — Capa comercial
 Fichas destacadas, planes de negocio, analítica.
 
-### 5. Fase 4 — Producción definitiva
+### 6. Fase 4 — Producción definitiva
 Dominio propio + SSL, respaldos + restauración, logs y monitoreo,
 almacenamiento de imágenes en la nube (S3 o equivalente), difusión.
 Base lista: `docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`.
