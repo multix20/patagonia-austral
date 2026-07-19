@@ -165,11 +165,27 @@ seed de Cochrane, para reemplazarlos por comercios reales en la Fase 3.
 `/api/localidades` (9) y `/api/places` (67 con slug de localidad) comprobados
 con `php artisan serve`. Sin cambios de API: solo datos (compatible hacia atrás).
 
-### 4. Fase 2.5 — Contenido tramo norte (Coyhaique → Puerto Montt) — PLANIFICADA (19-jul-2026)
+### 4. Fase 2.5 — Contenido tramo norte (Coyhaique → Puerto Montt) — EN CURSO (19-jul-2026)
 Extender el contenido hacia el **norte** por la Ruta 7, desde Coyhaique hasta
 **Puerto Montt** (el km 0 de la Carretera Austral), completando la ruta entera.
 Es una continuación directa de la Fase 2 (mismo patrón de datos), **antes** de la
 capa comercial (Fase 3). Se ejecuta **por fases, pueblo por pueblo**.
+
+**Avance (19-jul-2026) — Entrega 1: Puerto Aysén + Puerto Chacabuco.** Primeras
+dos localidades del tramo (desvío oeste por la Ruta 240, el puerto marítimo de la
+región): **15 lugares nuevos** (ids 68-82) — Puerto Aysén 9 (Puente Presidente
+Ibáñez, R.N. Río Simpson, Laguna Los Palos, costanera/plaza, combustible+bancos,
+hospital, Carabineros, ejemplos de comida/alojamiento) y Puerto Chacabuco 6
+(el puerto y sus ferries a Puerto Montt/Quellón, navegación a Laguna San Rafael,
+terminal, emergencias, ejemplos). **`orden` reasignado a la ruta completa**:
+Puerto Aysén=110, Chacabuco=115, y toda la cadena sur corrida a 120-190
+(Coyhaique=120 … Villa O'Higgins=190), dejando 10-100 reservados para los
+pueblos del norte por cargar. `LOCALIDADES_SEED`/`LocalidadSeeder` y
+`places.js`/`places.json` en espejo. **Verificado:** build+lint frontend OK,
+`php -l` OK, ids únicos 1-82, sin lugares huérfanos, orden norte→sur correcto.
+La identidad de la app sigue en "Coyhaique a Villa O'Higgins" (se cambia a
+"Puerto Montt a Villa O'Higgins" al completar el tramo). **Siguiente:** Villa
+Mañihuales (orden 100) y seguir subiendo por la Ruta 7.
 
 **Localidades de trabajo, norte→sur** (lista a afinar en la ejecución):
 - **Región de Los Lagos:** Puerto Montt (km 0) · Hornopirén (comuna Hualaihué) ·

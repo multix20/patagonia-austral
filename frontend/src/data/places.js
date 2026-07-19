@@ -2,56 +2,70 @@
 // En producción estos contenidos provienen de la API Laravel (/api/places)
 // y son administrados por funcionarios municipales desde el CMS.
 
-// Localidades de la Carretera Austral sur (Fases 1 y 2 — multi-localidad).
+// Localidades de la Carretera Austral (multi-localidad, Fases 1, 2 y 2.5).
 // El slug es la clave estable que une lugares ↔ localidades (igual al backend).
 // `orden` va norte → sur en decenas para poder intercalar pueblos después.
-// Chile Chico (45) no está sobre la Carretera pero es el desvío clásico por la
-// ribera sur del lago General Carrera, entre Puerto Guadal y Puerto Bertrand.
+// Fase 2.5 (tramo norte, Coyhaique → Puerto Montt): se reasignó el rango de
+// `orden` a la ruta completa dejando reservados los pueblos del norte aún por
+// cargar (10 Puerto Montt … 100 Villa Mañihuales). Puerto Aysén (110) y Puerto
+// Chacabuco (115) son un desvío oeste por la Ruta 240 desde Coyhaique (el puerto
+// marítimo de la región), igual que Chile Chico (155) es el desvío por la ribera
+// sur del lago General Carrera entre Puerto Guadal y Puerto Bertrand.
 export const LOCALIDADES_SEED = [
+  {
+    slug: 'puerto-aysen',
+    nombre: { es: 'Puerto Aysén', en: 'Puerto Aysén' },
+    lat: -45.4033, lng: -72.6947, zoom: 14, orden: 110,
+  },
+  {
+    slug: 'puerto-chacabuco',
+    nombre: { es: 'Puerto Chacabuco', en: 'Puerto Chacabuco' },
+    lat: -45.4667, lng: -72.8167, zoom: 15, orden: 115,
+  },
   {
     slug: 'coyhaique',
     nombre: { es: 'Coyhaique', en: 'Coyhaique' },
-    lat: -45.5719, lng: -72.0683, zoom: 13, orden: 10,
+    lat: -45.5719, lng: -72.0683, zoom: 13, orden: 120,
   },
   {
     slug: 'villa-cerro-castillo',
     nombre: { es: 'Villa Cerro Castillo', en: 'Villa Cerro Castillo' },
-    lat: -46.1216, lng: -72.1636, zoom: 15, orden: 20,
+    lat: -46.1216, lng: -72.1636, zoom: 15, orden: 130,
   },
   {
     slug: 'puerto-rio-tranquilo',
     nombre: { es: 'Puerto Río Tranquilo', en: 'Puerto Río Tranquilo' },
-    lat: -46.6252, lng: -72.6735, zoom: 14, orden: 30,
+    lat: -46.6252, lng: -72.6735, zoom: 14, orden: 140,
   },
   {
     slug: 'puerto-guadal',
     nombre: { es: 'Puerto Guadal', en: 'Puerto Guadal' },
-    lat: -46.8442, lng: -72.7027, zoom: 15, orden: 40,
+    lat: -46.8442, lng: -72.7027, zoom: 15, orden: 150,
   },
   {
     slug: 'chile-chico',
     nombre: { es: 'Chile Chico', en: 'Chile Chico' },
-    lat: -46.5399, lng: -71.7288, zoom: 14, orden: 45,
+    lat: -46.5399, lng: -71.7288, zoom: 14, orden: 155,
   },
   {
     slug: 'puerto-bertrand',
     nombre: { es: 'Puerto Bertrand', en: 'Puerto Bertrand' },
-    lat: -47.0219, lng: -72.8247, zoom: 15, orden: 50,
+    lat: -47.0219, lng: -72.8247, zoom: 15, orden: 160,
   },
   {
     slug: 'cochrane',
     nombre: { es: 'Cochrane', en: 'Cochrane' },
-    lat: -47.2539, lng: -72.5732, zoom: 13, orden: 60,
+    lat: -47.2539, lng: -72.5732, zoom: 13, orden: 170,
   },
   {
     slug: 'caleta-tortel',
     nombre: { es: 'Caleta Tortel', en: 'Caleta Tortel' },
-    lat: -47.7967, lng: -73.536, zoom: 15, orden: 70,
+    lat: -47.7967, lng: -73.536, zoom: 15, orden: 180,
   },
   {
     slug: 'villa-ohiggins',
     nombre: { es: "Villa O'Higgins", en: "Villa O'Higgins" },
-    lat: -48.4686, lng: -72.5601, zoom: 14, orden: 80,
+    lat: -48.4686, lng: -72.5601, zoom: 14, orden: 190,
   },
 ]
 
@@ -819,6 +833,176 @@ export const LUGARES_SEED = [
       en: 'Police emergencies, rescue coordination and recommended check-in for those continuing the on-foot border crossing to El Chaltén (Argentina).',
     },
     como: { es: 'Casco del pueblo.', en: 'Village centre.' },
+  },
+
+  // ── Fase 2.5 · Tramo norte ──────────────────────────────────────────────
+  // Puerto Aysén (ids 68-76) y Puerto Chacabuco (ids 77-82): desvío oeste por la
+  // Ruta 240 desde Coyhaique; el puerto marítimo y la puerta de entrada por mar
+  // de la Región de Aysén. Primeras localidades del tramo Coyhaique → Puerto Montt.
+  {
+    id: 68, cat: 'atractivo', localidad: 'puerto-aysen', lat: -45.403, lng: -72.7,
+    nombre: { es: 'Puente Presidente Ibáñez', en: 'Presidente Ibáñez Bridge' },
+    dist: { es: 'En Puerto Aysén', en: 'In Puerto Aysén' },
+    desc: {
+      es: 'Emblema de Puerto Aysén: puente colgante sobre el río Aysén inaugurado en 1966, en su época el más largo de Chile. Hoy es el mejor mirador del río y la postal clásica de la ciudad.',
+      en: 'Puerto Aysén’s landmark: a suspension bridge over the Aysén River opened in 1966, then the longest in Chile. Today it is the best viewpoint over the river and the city’s classic postcard.',
+    },
+    como: {
+      es: 'En el acceso sur de la ciudad, cruzando el río Aysén. Se recorre a pie.',
+      en: 'At the southern entrance to town, crossing the Aysén River. Best explored on foot.',
+    },
+  },
+  {
+    id: 69, cat: 'atractivo', localidad: 'puerto-aysen', lat: -45.49, lng: -72.36,
+    nombre: { es: 'Reserva Nacional Río Simpson', en: 'Río Simpson National Reserve' },
+    dist: { es: '35 km · 30 min hacia Coyhaique', en: '35 km · 30 min toward Coyhaique' },
+    desc: {
+      es: 'Área protegida por CONAF a lo largo del camino Coyhaique–Puerto Aysén, con bosque siempreverde y saltos de agua como la Cascada de la Virgen y el Velo de la Novia, visibles desde la ruta.',
+      en: 'A CONAF-protected reserve along the Coyhaique–Puerto Aysén road, with evergreen forest and waterfalls such as Cascada de la Virgen and Velo de la Novia, visible from the road.',
+    },
+    como: {
+      es: 'Ruta 240 hacia Coyhaique; los saltos están señalizados al costado del camino, con centro de visitantes CONAF.',
+      en: 'Route 240 toward Coyhaique; the falls are signposted along the road, with a CONAF visitor centre.',
+    },
+  },
+  {
+    id: 70, cat: 'atractivo', localidad: 'puerto-aysen', lat: -45.46, lng: -72.63,
+    nombre: { es: 'Laguna Los Palos', en: 'Los Palos Lagoon' },
+    dist: { es: '18 km · 25 min en auto', en: '18 km · 25 min by car' },
+    desc: {
+      es: 'Laguna tranquila rodeada de bosque, popular para picnic, pesca deportiva y kayak en verano. Un panorama local sencillo cerca de la ciudad.',
+      en: 'A calm lagoon surrounded by forest, popular for picnics, sport fishing and kayaking in summer. An easy local outing near town.',
+    },
+    como: {
+      es: 'Camino secundario al noreste de Puerto Aysén; consulta el estado del ripio en época de lluvias.',
+      en: 'Secondary road northeast of Puerto Aysén; check the gravel condition in the rainy season.',
+    },
+  },
+  {
+    id: 71, cat: 'atractivo', localidad: 'puerto-aysen', lat: -45.4033, lng: -72.6947,
+    nombre: { es: 'Costanera y Plaza de Puerto Aysén', en: 'Puerto Aysén Riverfront & Main Square' },
+    dist: { es: 'En el centro', en: 'Downtown' },
+    desc: {
+      es: 'El corazón de la ciudad portuaria: plaza, iglesia y la ribera del río Aysén. Buen punto para caminar, comprar provisiones y orientarse antes de seguir a Chacabuco o al sur por la Carretera.',
+      en: 'The heart of the port town: main square, church and the Aysén riverfront. A good place to walk, stock up and get your bearings before heading to Chacabuco or south on the highway.',
+    },
+    como: { es: 'En el centro, en torno a la plaza.', en: 'Downtown, around the main square.' },
+  },
+  {
+    id: 72, cat: 'alojamiento', localidad: 'puerto-aysen', lat: -45.404, lng: -72.695,
+    nombre: { es: 'Hospedaje en Puerto Aysén (ejemplo)', en: 'Guesthouse in Puerto Aysén (example)' },
+    dist: { es: 'En el centro', en: 'Downtown' },
+    desc: {
+      es: 'Marcador de alojamiento de ejemplo. Puerto Aysén tiene hoteles, hostales y cabañas para pasar la noche antes o después de tomar la barcaza en Chacabuco. Se reemplazará por comercios reales.',
+      en: 'Sample lodging placeholder. Puerto Aysén has hotels, hostels and cabins for a night before or after taking the ferry at Chacabuco. To be replaced with real businesses.',
+    },
+    como: { es: 'Varios en el centro y hacia la costanera.', en: 'Several downtown and toward the riverfront.' },
+  },
+  {
+    id: 73, cat: 'comida', localidad: 'puerto-aysen', lat: -45.4028, lng: -72.694,
+    nombre: { es: 'Restaurante en Puerto Aysén (ejemplo)', en: 'Restaurant in Puerto Aysén (example)' },
+    dist: { es: 'En el centro', en: 'Downtown' },
+    desc: {
+      es: 'Marcador de ejemplo. La zona es fuerte en productos del mar (salmón, merluza austral, mariscos). Se reemplazará por locales reales.',
+      en: 'Sample placeholder. The area is strong in seafood (salmon, southern hake, shellfish). To be replaced with real venues.',
+    },
+    como: { es: 'En el centro.', en: 'Downtown.' },
+  },
+  {
+    id: 74, cat: 'servicio', localidad: 'puerto-aysen', lat: -45.405, lng: -72.696,
+    nombre: { es: 'Combustible y servicios', en: 'Fuel and services' },
+    dist: { es: 'En el centro', en: 'Downtown' },
+    desc: {
+      es: 'Puerto Aysén tiene estación de servicio, bancos y cajeros automáticos — uno de los últimos puntos con servicios completos antes de internarse al norte por la Carretera Austral. Carga combustible y efectivo aquí.',
+      en: 'Puerto Aysén has a fuel station, banks and ATMs — one of the last spots with full services before heading north on the Carretera Austral. Fill up on fuel and cash here.',
+    },
+    como: { es: 'Estación y bancos en el centro.', en: 'Station and banks downtown.' },
+  },
+  {
+    id: 75, cat: 'emergencia', localidad: 'puerto-aysen', lat: -45.401, lng: -72.698, tel: '131',
+    nombre: { es: 'Hospital de Puerto Aysén (Dr. Jorge Ibar)', en: 'Puerto Aysén Hospital (Dr. Jorge Ibar)' },
+    dist: { es: 'En Puerto Aysén', en: 'In Puerto Aysén' },
+    desc: {
+      es: 'Hospital comunitario que atiende urgencias de la provincia. Para casos graves, la derivación mayor es al Hospital Regional de Coyhaique (~65 km). SAMU 131.',
+      en: 'Community hospital handling emergencies for the province. Serious cases are referred to Coyhaique Regional Hospital (~65 km). SAMU ambulance 131.',
+    },
+    como: { es: 'En la ciudad.', en: 'In town.' },
+  },
+  {
+    id: 76, cat: 'emergencia', localidad: 'puerto-aysen', lat: -45.4038, lng: -72.6952, tel: '133',
+    nombre: { es: 'Carabineros de Chile — Puerto Aysén', en: 'Police — Puerto Aysén' },
+    dist: { es: 'En el centro', en: 'Downtown' },
+    desc: {
+      es: 'Emergencias policiales y coordinación de rescates en la provincia de Aysén. Marca 133.',
+      en: 'Police emergencies and rescue coordination in Aysén province. Dial 133.',
+    },
+    como: { es: 'En el centro.', en: 'Downtown.' },
+  },
+  {
+    id: 77, cat: 'atractivo', localidad: 'puerto-chacabuco', lat: -45.4667, lng: -72.8167,
+    nombre: { es: 'Puerto Chacabuco', en: 'Puerto Chacabuco' },
+    dist: { es: '15 km · 20 min desde Puerto Aysén', en: '15 km · 20 min from Puerto Aysén' },
+    desc: {
+      es: 'El principal puerto marítimo de la Región de Aysén y su puerta de entrada por mar: desde aquí zarpan los transbordadores hacia Quellón y Puerto Montt y las navegaciones a la Laguna San Rafael. Reemplazó a Puerto Aysén cuando su río se sedimentó.',
+      en: 'The main seaport of the Aysén Region and its gateway by sea: ferries to Quellón and Puerto Montt and cruises to Laguna San Rafael depart from here. It replaced Puerto Aysén when its river silted up.',
+    },
+    como: {
+      es: 'A 15 km al oeste de Puerto Aysén por la Ruta 240.',
+      en: '15 km west of Puerto Aysén on Route 240.',
+    },
+  },
+  {
+    id: 78, cat: 'atractivo', localidad: 'puerto-chacabuco', lat: -45.465, lng: -72.818,
+    nombre: { es: 'Navegación al Glaciar San Rafael', en: 'San Rafael Glacier cruise' },
+    dist: { es: 'Zarpe desde el terminal', en: 'Departs from the terminal' },
+    desc: {
+      es: 'Excursión estrella de la zona: catamarán por los fiordos hasta el ventisquero San Rafael, en el Parque Nacional Laguna San Rafael (Campo de Hielo Norte), donde el glaciar cae al mar entre témpanos. Salidas por el día en temporada.',
+      en: 'The area’s flagship excursion: a catamaran through the fjords to the San Rafael glacier in Laguna San Rafael National Park (Northern Ice Field), where the ice calves into the sea among icebergs. Day departures in season.',
+    },
+    como: {
+      es: 'Zarpe desde el terminal de Puerto Chacabuco; se contrata con operadores locales.',
+      en: 'Departs from the Puerto Chacabuco terminal; booked with local operators.',
+    },
+  },
+  {
+    id: 79, cat: 'alojamiento', localidad: 'puerto-chacabuco', lat: -45.467, lng: -72.816,
+    nombre: { es: 'Alojamiento en Puerto Chacabuco (ejemplo)', en: 'Lodging in Puerto Chacabuco (example)' },
+    dist: { es: 'Junto al puerto', en: 'By the port' },
+    desc: {
+      es: 'Marcador de ejemplo. Hay hoteles y hospedajes junto al puerto, útiles para embarques o desembarques de madrugada. Se reemplazará por comercios reales.',
+      en: 'Sample placeholder. There are hotels and guesthouses by the port, handy for early-morning departures or arrivals. To be replaced with real businesses.',
+    },
+    como: { es: 'Junto al puerto.', en: 'By the port.' },
+  },
+  {
+    id: 80, cat: 'comida', localidad: 'puerto-chacabuco', lat: -45.4665, lng: -72.817,
+    nombre: { es: 'Marisquería en Puerto Chacabuco (ejemplo)', en: 'Seafood eatery in Puerto Chacabuco (example)' },
+    dist: { es: 'Junto al puerto', en: 'By the port' },
+    desc: {
+      es: 'Marcador de ejemplo. Cocina de mar junto al muelle. Se reemplazará por locales reales.',
+      en: 'Sample placeholder. Seafood cooking by the pier. To be replaced with real venues.',
+    },
+    como: { es: 'Junto al puerto.', en: 'By the port.' },
+  },
+  {
+    id: 81, cat: 'servicio', localidad: 'puerto-chacabuco', lat: -45.4655, lng: -72.8178,
+    nombre: { es: 'Terminal de transbordadores — barcazas y ferries', en: 'Ferry terminal — barges and ferries' },
+    dist: { es: 'En el terminal del puerto', en: 'At the port terminal' },
+    desc: {
+      es: 'Punto de embarque de los ferries a Puerto Montt y Quellón (Naviera Austral, Navimag) y de las navegaciones a San Rafael. Confirma horarios y reserva con anticipación en temporada alta; los zarpes dependen del clima.',
+      en: 'Boarding point for ferries to Puerto Montt and Quellón (Naviera Austral, Navimag) and San Rafael cruises. Confirm schedules and book ahead in high season; departures depend on the weather.',
+    },
+    como: { es: 'En el terminal del puerto.', en: 'At the port terminal.' },
+  },
+  {
+    id: 82, cat: 'emergencia', localidad: 'puerto-chacabuco', lat: -45.4668, lng: -72.8165, tel: '133',
+    nombre: { es: 'Emergencias — Puerto Chacabuco', en: 'Emergencies — Puerto Chacabuco' },
+    dist: { es: 'En el puerto', en: 'At the port' },
+    desc: {
+      es: 'Retén de Carabineros (133) en el puerto; la atención de salud mayor está en el Hospital de Puerto Aysén, a 15 km. SAMU 131.',
+      en: 'Police outpost (133) at the port; major medical care is at Puerto Aysén Hospital, 15 km away. SAMU ambulance 131.',
+    },
+    como: { es: 'En el puerto.', en: 'At the port.' },
   },
 ]
 

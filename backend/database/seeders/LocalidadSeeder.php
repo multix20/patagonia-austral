@@ -5,25 +5,44 @@ namespace Database\Seeders;
 use App\Models\Localidad;
 use Illuminate\Database\Seeder;
 
-// Localidades de la Carretera Austral sur (Fases 1 y 2 — multi-localidad).
+// Localidades de la Carretera Austral (multi-localidad, Fases 1, 2 y 2.5).
 // Idempotente: updateOrCreate por slug; corre en cada arranque del contenedor.
-// `orden` va norte → sur en decenas para poder intercalar pueblos después
-// (Coyhaique=10 · Cerro Castillo=20 · Río Tranquilo=30 · Guadal=40 ·
-//  Chile Chico=45 · Bertrand=50 · Cochrane=60 · Tortel=70 · Villa O'Higgins=80).
-// Chile Chico va en 45: no está sobre la Carretera pero es el desvío clásico
-// por la ribera sur del lago General Carrera, entre Guadal y Bertrand.
+// `orden` va norte → sur en decenas para poder intercalar pueblos después.
+// Fase 2.5 (tramo norte, Coyhaique → Puerto Montt): se reasignó el rango de
+// `orden` a la ruta completa, dejando reservados los pueblos del norte aún por
+// cargar (10 Puerto Montt … 100 Villa Mañihuales). Puerto Aysén (110) y Puerto
+// Chacabuco (115) son el desvío oeste por la Ruta 240 desde Coyhaique (el puerto
+// marítimo de la región); Chile Chico (155) es el desvío por la ribera sur del
+// lago General Carrera entre Guadal y Bertrand. Mantener en espejo con
+// LOCALIDADES_SEED de frontend/src/data/places.js.
 class LocalidadSeeder extends Seeder
 {
     public function run(): void
     {
         $localidades = [
             [
+                'slug' => 'puerto-aysen',
+                'nombre' => ['es' => 'Puerto Aysén', 'en' => 'Puerto Aysén'],
+                'lat' => -45.4033,
+                'lng' => -72.6947,
+                'zoom' => 14,
+                'orden' => 110,
+            ],
+            [
+                'slug' => 'puerto-chacabuco',
+                'nombre' => ['es' => 'Puerto Chacabuco', 'en' => 'Puerto Chacabuco'],
+                'lat' => -45.4667,
+                'lng' => -72.8167,
+                'zoom' => 15,
+                'orden' => 115,
+            ],
+            [
                 'slug' => 'coyhaique',
                 'nombre' => ['es' => 'Coyhaique', 'en' => 'Coyhaique'],
                 'lat' => -45.5719,
                 'lng' => -72.0683,
                 'zoom' => 13,
-                'orden' => 10,
+                'orden' => 120,
             ],
             [
                 'slug' => 'villa-cerro-castillo',
@@ -31,7 +50,7 @@ class LocalidadSeeder extends Seeder
                 'lat' => -46.1216,
                 'lng' => -72.1636,
                 'zoom' => 15,
-                'orden' => 20,
+                'orden' => 130,
             ],
             [
                 'slug' => 'puerto-rio-tranquilo',
@@ -39,7 +58,7 @@ class LocalidadSeeder extends Seeder
                 'lat' => -46.6252,
                 'lng' => -72.6735,
                 'zoom' => 14,
-                'orden' => 30,
+                'orden' => 140,
             ],
             [
                 'slug' => 'puerto-guadal',
@@ -47,7 +66,7 @@ class LocalidadSeeder extends Seeder
                 'lat' => -46.8442,
                 'lng' => -72.7027,
                 'zoom' => 15,
-                'orden' => 40,
+                'orden' => 150,
             ],
             [
                 'slug' => 'chile-chico',
@@ -55,7 +74,7 @@ class LocalidadSeeder extends Seeder
                 'lat' => -46.5399,
                 'lng' => -71.7288,
                 'zoom' => 14,
-                'orden' => 45,
+                'orden' => 155,
             ],
             [
                 'slug' => 'puerto-bertrand',
@@ -63,7 +82,7 @@ class LocalidadSeeder extends Seeder
                 'lat' => -47.0219,
                 'lng' => -72.8247,
                 'zoom' => 15,
-                'orden' => 50,
+                'orden' => 160,
             ],
             [
                 'slug' => 'cochrane',
@@ -71,7 +90,7 @@ class LocalidadSeeder extends Seeder
                 'lat' => -47.2539,
                 'lng' => -72.5732,
                 'zoom' => 13,
-                'orden' => 60,
+                'orden' => 170,
             ],
             [
                 'slug' => 'caleta-tortel',
@@ -79,7 +98,7 @@ class LocalidadSeeder extends Seeder
                 'lat' => -47.7967,
                 'lng' => -73.5360,
                 'zoom' => 15,
-                'orden' => 70,
+                'orden' => 180,
             ],
             [
                 'slug' => 'villa-ohiggins',
@@ -87,7 +106,7 @@ class LocalidadSeeder extends Seeder
                 'lat' => -48.4686,
                 'lng' => -72.5601,
                 'zoom' => 14,
-                'orden' => 80,
+                'orden' => 190,
             ],
         ];
 
