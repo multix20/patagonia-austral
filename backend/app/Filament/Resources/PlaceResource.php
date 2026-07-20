@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class PlaceResource extends Resource
 {
@@ -140,8 +141,8 @@ class PlaceResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tel')
                     ->label('Teléfono')->toggleable()->placeholder('—'),
-                Tables\Columns\IconColumn::make('publicado')
-                    ->label('Publicado')->boolean()->sortable(),
+                Tables\Columns\ToggleColumn::make('publicado')
+                    ->label('Publicado')->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Actualizado')->dateTime('d/m/Y H:i')->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -159,6 +160,20 @@ class PlaceResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('publicar')
+                        ->label('Publicar')
+                        ->icon('heroicon-o-eye')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->deselectRecordsAfterCompletion()
+                        ->action(fn (Collection $records) => $records->toQuery()->update(['publicado' => true])),
+                    Tables\Actions\BulkAction::make('despublicar')
+                        ->label('Despublicar')
+                        ->icon('heroicon-o-eye-slash')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->deselectRecordsAfterCompletion()
+                        ->action(fn (Collection $records) => $records->toQuery()->update(['publicado' => false])),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
