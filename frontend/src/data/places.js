@@ -13,6 +13,16 @@
 // sur del lago General Carrera entre Puerto Guadal y Puerto Bertrand.
 export const LOCALIDADES_SEED = [
   {
+    slug: 'chaiten',
+    nombre: { es: 'Chaitén', en: 'Chaitén' },
+    lat: -42.9169, lng: -72.7086, zoom: 14, orden: 40,
+  },
+  {
+    slug: 'el-amarillo',
+    nombre: { es: 'El Amarillo', en: 'El Amarillo' },
+    lat: -42.9333, lng: -72.5333, zoom: 15, orden: 45,
+  },
+  {
     slug: 'villa-santa-lucia',
     nombre: { es: 'Villa Santa Lucía', en: 'Villa Santa Lucía' },
     lat: -43.4167, lng: -72.3667, zoom: 15, orden: 50,
@@ -1810,6 +1820,189 @@ export const LUGARES_SEED = [
       en: 'Police emergencies, rural rescues and Río Encuentro border control. Dial 133.',
     },
     como: { es: 'En el pueblo.', en: 'In the village.' },
+  },
+
+  // ── Fase 2.5 · Tramo norte · Chaitén (ids 150-158) ───────────────────────
+  // Capital de la comuna y puerta marítima del tramo norte: ferries a Puerto
+  // Montt y a Chiloé. Reconstruida tras la erupción del volcán Chaitén (2008).
+  {
+    id: 150, cat: 'atractivo', localidad: 'chaiten', lat: -42.837, lng: -72.647,
+    nombre: { es: 'Volcán Chaitén — sendero al cráter', en: 'Chaitén Volcano — crater trail' },
+    dist: { es: '25 km · 30 min al norte', en: '25 km · 30 min north' },
+    desc: {
+      es: 'Subida al borde del cráter del volcán que despertó en 2008 y cubrió el pueblo de ceniza. El bosque quemado en regeneración y el domo humeante hacen de esta una de las caminatas más impactantes de la ruta (3-4 h ida y vuelta).',
+      en: 'A climb to the crater rim of the volcano that awoke in 2008 and blanketed the town in ash. The regenerating burnt forest and steaming dome make this one of the route’s most striking hikes (3-4 h round trip).',
+    },
+    como: {
+      es: 'Inicio señalizado sobre el camino a Caleta Gonzalo (sector P.N. Pumalín).',
+      en: 'Signposted trailhead on the Caleta Gonzalo road (Pumalín N.P. sector).',
+    },
+  },
+  {
+    id: 151, cat: 'atractivo', localidad: 'chaiten', lat: -42.9169, lng: -72.7086,
+    nombre: { es: 'Costanera de Chaitén', en: 'Chaitén Waterfront' },
+    dist: { es: 'En el pueblo', en: 'In town' },
+    desc: {
+      es: 'El frente de mar del pueblo que renació tras la erupción de 2008: playa de arena volcánica, vista al golfo Corcovado y atardeceres largos. La historia reciente de Chaitén es parte del atractivo.',
+      en: 'The seafront of the town reborn after the 2008 eruption: volcanic-sand beach, views over the Corcovado gulf and long sunsets. Chaitén’s recent history is part of the draw.',
+    },
+    como: { es: 'Frente al pueblo.', en: 'Along the town shore.' },
+  },
+  {
+    id: 152, cat: 'atractivo', localidad: 'chaiten', lat: -42.87, lng: -72.78,
+    nombre: { es: 'Playa Santa Bárbara', en: 'Santa Bárbara Beach' },
+    dist: { es: '10 km · 15 min al norte', en: '10 km · 15 min north' },
+    desc: {
+      es: 'Playa de arena negra flanqueada de bosque, considerada una de las más bonitas del litoral norte de la ruta. Camping y caminatas por la orilla; a veces se ven toninas.',
+      en: 'A black-sand beach flanked by forest, considered one of the prettiest on the route’s northern coast. Camping and shoreline walks; dolphins sometimes appear.',
+    },
+    como: {
+      es: 'Desvío señalizado desde el camino a Caleta Gonzalo.',
+      en: 'Signposted turnoff from the Caleta Gonzalo road.',
+    },
+  },
+  {
+    id: 153, cat: 'servicio', localidad: 'chaiten', lat: -42.918, lng: -72.71,
+    nombre: { es: 'Terminal de transbordadores de Chaitén', en: 'Chaitén Ferry Terminal' },
+    dist: { es: 'En el pueblo', en: 'In town' },
+    desc: {
+      es: 'Puerta marítima del tramo norte: ferries a Puerto Montt y a Chiloé (Quellón/Castro, Naviera Austral). Alternativa que evita las barcazas del tramo Hornopirén; reserva con anticipación y confirma zarpes, que dependen del clima.',
+      en: 'The northern stretch’s sea gateway: ferries to Puerto Montt and Chiloé (Quellón/Castro, Naviera Austral). An alternative that skips the Hornopirén ferries; book ahead and confirm departures, which depend on the weather.',
+    },
+    como: { es: 'Rampa en la costanera del pueblo.', en: 'Ramp on the town waterfront.' },
+  },
+  {
+    id: 154, cat: 'servicio', localidad: 'chaiten', lat: -42.9165, lng: -72.708,
+    nombre: { es: 'Combustible y servicios', en: 'Fuel and services' },
+    dist: { es: 'En el pueblo', en: 'In town' },
+    desc: {
+      es: 'Chaitén tiene combustible, comercio y cajero — el punto de reabastecimiento del tramo entre Hornopirén y La Junta. Carga combustible y efectivo: hacia el sur el siguiente punto confiable es La Junta.',
+      en: 'Chaitén has fuel, shops and an ATM — the resupply point between Hornopirén and La Junta. Load up on fuel and cash: heading south the next reliable stop is La Junta.',
+    },
+    como: { es: 'En el pueblo.', en: 'In town.' },
+  },
+  {
+    id: 155, cat: 'alojamiento', localidad: 'chaiten', lat: -42.9172, lng: -72.709,
+    nombre: { es: 'Alojamiento en Chaitén (ejemplo)', en: 'Lodging in Chaitén (example)' },
+    dist: { es: 'En el pueblo', en: 'In town' },
+    desc: {
+      es: 'Marcador de ejemplo. Hospedajes, cabañas y residenciales; conviene reservar cuando llegan los ferries. Se reemplazará por comercios reales.',
+      en: 'Sample placeholder. Guesthouses, cabins and lodges; book ahead around ferry arrivals. To be replaced with real businesses.',
+    },
+    como: { es: 'Varios en el pueblo.', en: 'Several in town.' },
+  },
+  {
+    id: 156, cat: 'comida', localidad: 'chaiten', lat: -42.9167, lng: -72.7082,
+    nombre: { es: 'Restaurante en Chaitén (ejemplo)', en: 'Restaurant in Chaitén (example)' },
+    dist: { es: 'En el pueblo', en: 'In town' },
+    desc: {
+      es: 'Marcador de ejemplo. Cocina de mar y platos patagones. Se reemplazará por locales reales.',
+      en: 'Sample placeholder. Seafood and Patagonian dishes. To be replaced with real venues.',
+    },
+    como: { es: 'En el centro.', en: 'Downtown.' },
+  },
+  {
+    id: 157, cat: 'emergencia', localidad: 'chaiten', lat: -42.9155, lng: -72.7075, tel: '131',
+    nombre: { es: 'Hospital de Chaitén', en: 'Chaitén Hospital' },
+    dist: { es: 'En el pueblo', en: 'In town' },
+    desc: {
+      es: 'Hospital comunitario que atiende las urgencias de toda la comuna (incluye Villa Santa Lucía y El Amarillo). Casos graves se derivan a Puerto Montt, por mar o aire. SAMU 131.',
+      en: 'Community hospital covering emergencies for the whole district (including Villa Santa Lucía and El Amarillo). Serious cases are referred to Puerto Montt by sea or air. SAMU ambulance 131.',
+    },
+    como: { es: 'En el pueblo.', en: 'In town.' },
+  },
+  {
+    id: 158, cat: 'emergencia', localidad: 'chaiten', lat: -42.9171, lng: -72.7088, tel: '133',
+    nombre: { es: 'Carabineros de Chile — Chaitén', en: 'Police — Chaitén' },
+    dist: { es: 'En el pueblo', en: 'In town' },
+    desc: {
+      es: 'Emergencias policiales y coordinación de rescates en la comuna de Chaitén. Marca 133.',
+      en: 'Police emergencies and rescue coordination in the Chaitén district. Dial 133.',
+    },
+    como: { es: 'En el centro.', en: 'Downtown.' },
+  },
+
+  // ── Fase 2.5 · Tramo norte · El Amarillo (ids 159-165) ───────────────────
+  // Aldea al pie del volcán Michinmahuida, 25 km al sureste de Chaitén; portal
+  // sur del Parque Nacional Pumalín y sus termas.
+  {
+    id: 159, cat: 'atractivo', localidad: 'el-amarillo', lat: -42.92, lng: -72.5,
+    nombre: { es: 'P.N. Pumalín — portal El Amarillo', en: 'Pumalín N.P. — El Amarillo gateway' },
+    dist: { es: '3 km · 5 min', en: '3 km · 5 min' },
+    desc: {
+      es: 'Entrada sur del Parque Nacional Pumalín Douglas Tompkins: senderos al ventisquero del Michinmahuida, campings de diseño impecable y bosque siempreverde al pie del volcán.',
+      en: 'The southern gateway to Pumalín Douglas Tompkins National Park: trails to the Michinmahuida glacier, beautifully kept campgrounds and evergreen forest at the volcano’s foot.',
+    },
+    como: {
+      es: 'Acceso señalizado desde la aldea; portería del parque.',
+      en: 'Signposted access from the hamlet; park gatehouse.',
+    },
+  },
+  {
+    id: 160, cat: 'atractivo', localidad: 'el-amarillo', lat: -42.9, lng: -72.46,
+    nombre: { es: 'Termas El Amarillo', en: 'El Amarillo Hot Springs' },
+    dist: { es: '5 km · 10 min', en: '5 km · 10 min' },
+    desc: {
+      es: 'Piscinas termales sencillas en plena selva valdiviana, alimentadas por las aguas calientes del Michinmahuida. Clásico alto reparador del tramo.',
+      en: 'Simple thermal pools deep in Valdivian rainforest, fed by the Michinmahuida’s hot waters. A classic restorative stop on this stretch.',
+    },
+    como: {
+      es: 'Camino señalizado desde la aldea; cobro de entrada, lleva efectivo.',
+      en: 'Signposted road from the hamlet; entry fee, bring cash.',
+    },
+  },
+  {
+    id: 161, cat: 'atractivo', localidad: 'el-amarillo', lat: -42.89, lng: -72.43,
+    nombre: { es: 'Volcán Michinmahuida y su ventisquero', en: 'Michinmahuida Volcano & Glacier' },
+    dist: { es: 'Sendero desde el portal', en: 'Trail from the gateway' },
+    desc: {
+      es: 'Macizo nevado que domina el horizonte de El Amarillo. El sendero al ventisquero avanza por el valle del río Amarillo hasta la lengua de hielo; jornada completa, paisaje mayor.',
+      en: 'The snowy massif dominating El Amarillo’s horizon. The glacier trail follows the Amarillo river valley to the ice tongue; a full-day walk with big scenery.',
+    },
+    como: {
+      es: 'Desde el portal El Amarillo del P.N. Pumalín; consulta condiciones en portería.',
+      en: 'From Pumalín’s El Amarillo gateway; check conditions at the gatehouse.',
+    },
+  },
+  {
+    id: 162, cat: 'servicio', localidad: 'el-amarillo', lat: -42.9333, lng: -72.5333,
+    nombre: { es: 'Abastecimiento en El Amarillo', en: 'Supplies in El Amarillo' },
+    dist: { es: 'En la aldea', en: 'In the hamlet' },
+    desc: {
+      es: 'Almacenes básicos; sin estación de combustible ni cajero — los servicios completos están en Chaitén, a 25 km. Abastécete antes de venir.',
+      en: 'Basic shops; no fuel station or ATM — full services are in Chaitén, 25 km away. Stock up before coming.',
+    },
+    como: { es: 'En la aldea, sobre la Ruta 7.', en: 'In the hamlet, on Route 7.' },
+  },
+  {
+    id: 163, cat: 'alojamiento', localidad: 'el-amarillo', lat: -42.9335, lng: -72.5335,
+    nombre: { es: 'Hospedaje en El Amarillo (ejemplo)', en: 'Guesthouse in El Amarillo (example)' },
+    dist: { es: 'En la aldea', en: 'In the hamlet' },
+    desc: {
+      es: 'Marcador de ejemplo. Cabañas y hospedajes rurales al pie del volcán, además de los campings del parque. Se reemplazará por comercios reales.',
+      en: 'Sample placeholder. Rural cabins and guesthouses at the volcano’s foot, plus the park campgrounds. To be replaced with real businesses.',
+    },
+    como: { es: 'En la aldea.', en: 'In the hamlet.' },
+  },
+  {
+    id: 164, cat: 'comida', localidad: 'el-amarillo', lat: -42.9331, lng: -72.5331,
+    nombre: { es: 'Comedor en El Amarillo (ejemplo)', en: 'Eatery in El Amarillo (example)' },
+    dist: { es: 'En la aldea', en: 'In the hamlet' },
+    desc: {
+      es: 'Marcador de ejemplo. Cocina casera de campo. Se reemplazará por locales reales.',
+      en: 'Sample placeholder. Country home cooking. To be replaced with real venues.',
+    },
+    como: { es: 'En la aldea.', en: 'In the hamlet.' },
+  },
+  {
+    id: 165, cat: 'emergencia', localidad: 'el-amarillo', lat: -42.933, lng: -72.5337, tel: '131',
+    nombre: { es: 'Posta de Salud Rural El Amarillo', en: 'El Amarillo Rural Health Post' },
+    dist: { es: 'En la aldea', en: 'In the hamlet' },
+    desc: {
+      es: 'Posta rural para primeros auxilios; las urgencias mayores se derivan al Hospital de Chaitén (25 km). SAMU 131; Carabineros en Chaitén, 133.',
+      en: 'Rural post for first aid; major emergencies are referred to Chaitén Hospital (25 km). SAMU ambulance 131; police in Chaitén, dial 133.',
+    },
+    como: { es: 'En la aldea.', en: 'In the hamlet.' },
   },
 ]
 

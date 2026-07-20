@@ -21,6 +21,22 @@ class LocalidadSeeder extends Seeder
     {
         $localidades = [
             [
+                'slug' => 'chaiten',
+                'nombre' => ['es' => 'Chaitén', 'en' => 'Chaitén'],
+                'lat' => -42.9169,
+                'lng' => -72.7086,
+                'zoom' => 14,
+                'orden' => 40,
+            ],
+            [
+                'slug' => 'el-amarillo',
+                'nombre' => ['es' => 'El Amarillo', 'en' => 'El Amarillo'],
+                'lat' => -42.9333,
+                'lng' => -72.5333,
+                'zoom' => 15,
+                'orden' => 45,
+            ],
+            [
                 'slug' => 'villa-santa-lucia',
                 'nombre' => ['es' => 'Villa Santa Lucía', 'en' => 'Villa Santa Lucía'],
                 'lat' => -43.4167,
