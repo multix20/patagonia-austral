@@ -444,7 +444,7 @@ function AppInterna() {
       )}
 
       <button className="fab-chat" onClick={() => setChatAbierto(true)} aria-label={t('chatNombre')}>
-        <Icon nombre="message-circle" tam={26} />
+        <Icon nombre="spark" tam={26} />
         <span className="globito">{t('chatDudas')}</span>
       </button>
 

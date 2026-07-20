@@ -32,6 +32,8 @@ const RUTAS = {
   locate: 'M2 12h3M19 12h3M12 2v3M12 19v3',
   'chevron-down': 'm6 9 6 6 6-6',
   search: 'm21 21-4.35-4.35',
+  // Asterisco de 8 puntas (estilo "spark" de Claude Code) — avatar del chatbot
+  spark: 'M12 3v18M3 12h18M5.64 5.64l12.72 12.72M18.36 5.64L5.64 18.36',
 }
 
 // Formas adicionales (círculos/rects) por icono

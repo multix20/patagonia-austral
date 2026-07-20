@@ -205,7 +205,7 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
     <div className="chat" role="dialog" aria-label={t('chatNombre')}>
       <div className="chat-header">
         <div className="avatar">
-          <Icon nombre="bot" tam={22} />
+          <Icon nombre="spark" tam={22} />
         </div>
         <div className="ch-info">
           <div className="ch-nombre">{t('chatNombre')}</div>
