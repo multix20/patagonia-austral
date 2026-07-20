@@ -1,7 +1,7 @@
 # Estado del proyecto y pendientes — Patagonia Austral
 
 **Proyecto personal/comercial propio.** PWA de turismo offline-first para la
-**Carretera Austral** (Coyhaique a Villa O'Higgins) + CMS (Filament).
+**Carretera Austral completa** (Puerto Montt a Villa O'Higgins) + CMS (Filament).
 Stack: **React 18 (Vite) + Laravel (PHP 8.x) + PostgreSQL 16**.
 
 Repo: https://github.com/multix20/patagonia-austral — rama `main`.
@@ -165,7 +165,7 @@ seed de Cochrane, para reemplazarlos por comercios reales en la Fase 3.
 `/api/localidades` (9) y `/api/places` (67 con slug de localidad) comprobados
 con `php artisan serve`. Sin cambios de API: solo datos (compatible hacia atrás).
 
-### 4. Fase 2.5 — Contenido tramo norte (Coyhaique → Puerto Montt) — EN CURSO (19-jul-2026)
+### ✅ 4. Fase 2.5 — Contenido tramo norte (Coyhaique → Puerto Montt) — HECHA (20-jul-2026)
 Extender el contenido hacia el **norte** por la Ruta 7, desde Coyhaique hasta
 **Puerto Montt** (el km 0 de la Carretera Austral), completando la ruta entera.
 Es una continuación directa de la Fase 2 (mismo patrón de datos), **antes** de la
@@ -233,9 +233,38 @@ combustible+cajero, hospital, Carabineros y ejemplos. Palena, **8 lugares**
 Encuentro, abastecimiento (variable — aviso), posta, Carabineros y ejemplos.
 Total: **19 localidades, 149 lugares**. **Verificado:** build frontend OK,
 `php -l` OK, ids únicos 1-149, sin huérfanos, cadena de `orden` correcta.
-**Siguiente:** Chaitén (40) + El Amarillo (45), luego Parque Pumalín/Caleta
-Gonzalo (30), Hornopirén (20) y Puerto Montt (10) con las **barcazas** y el
-**cambio de identidad** a "Puerto Montt a Villa O'Higgins".
+
+**Avance (20-jul-2026) — Entrega 6: Chaitén (40) + El Amarillo (45).** Chaitén,
+**9 lugares** (ids 150-158): volcán Chaitén y sendero al cráter, costanera del
+pueblo renacido tras 2008, playa Santa Bárbara, **terminal de transbordadores**
+(ferries a Puerto Montt y Chiloé — la alternativa que evita las barcazas),
+combustible+cajero, hospital, Carabineros y ejemplos. El Amarillo, **7 lugares**
+(ids 159-165): portal sur del P.N. Pumalín, Termas El Amarillo, volcán
+Michinmahuida y su ventisquero, abastecimiento básico (aviso), posta rural y
+ejemplos.
+
+**Avance (20-jul-2026) — Entrega 7 (cierre): Caleta Gonzalo/Pumalín (30) +
+Hornopirén (20) + Puerto Montt (10).** Caleta Gonzalo, **7 lugares** (ids
+166-172): P.N. Pumalín Douglas Tompkins, senderos Cascadas y Alerces, **rampa de
+barcazas del cruce bimodal** (Caleta Gonzalo–Fiordo Largo / Leptepu–Hornopirén,
+~5 h, temporada+reserva), cabañas/camping y cafetería del parque (infraestructura
+real, sin "(ejemplo)"), y emergencias vía guardaparques (sin posta ni señal).
+Hornopirén, **9 lugares** (ids 173-181): P.N. Hornopirén, Termas de Llancahué,
+costanera/fiordos, **rampa norte del cruce bimodal**, combustible (aviso de
+cajero), salud, Carabineros y ejemplos. Puerto Montt, **11 lugares** (ids
+182-192): **Hito Cero de la Carretera Austral**, Angelmó, centro/costanera,
+P.N. Alerce Andino, **barcaza La Arena–Caleta Puelche** (el primer cruce de la
+ruta), terminales de ferries (a Chaitén y Chacabuco), últimas compras/servicios
+de ciudad, hospital regional, Carabineros y ejemplos.
+
+**Identidad actualizada (20-jul-2026):** "Coyhaique a Villa O'Higgins" →
+**"Puerto Montt a Villa O'Higgins"** en `i18n.jsx` (subtítulo ES/EN),
+`vite.config.js` (manifest PWA), `index.html` (meta description), README,
+CLAUDE.md y el agente roadmap.
+
+**TOTAL FINAL Fase 2.5: 24 localidades, 192 lugares** (15 localidades y 125
+lugares nuevos en la fase). Cadena de `orden` norte→sur: 10 Puerto Montt …
+190 Villa O'Higgins.
 
 **Localidades de trabajo, norte→sur** (lista a afinar en la ejecución):
 - **Región de Los Lagos:** Puerto Montt (km 0) · Hornopirén (comuna Hualaihué) ·

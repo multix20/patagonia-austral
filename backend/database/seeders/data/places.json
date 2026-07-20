@@ -3842,5 +3842,630 @@
       "es": "En la aldea.",
       "en": "In the hamlet."
     }
+  },
+  {
+    "id": 166,
+    "cat": "atractivo",
+    "localidad": "caleta-gonzalo",
+    "lat": -42.5633,
+    "lng": -72.5989,
+    "nombre": {
+      "es": "Parque Nacional Pumalín Douglas Tompkins",
+      "en": "Pumalín Douglas Tompkins National Park"
+    },
+    "dist": {
+      "es": "Alrededor de la caleta",
+      "en": "All around the cove"
+    },
+    "desc": {
+      "es": "Uno de los grandes parques de la Patagonia: selva valdiviana intacta, alerces milenarios, fiordos y volcanes, legado de la familia Tompkins donado a Chile. Caleta Gonzalo es su corazón, con senderos, campings y centro de información.",
+      "en": "One of Patagonia’s great parks: intact Valdivian rainforest, millennia-old alerce trees, fjords and volcanoes — the Tompkins family legacy donated to Chile. Caleta Gonzalo is its heart, with trails, campgrounds and an info centre."
+    },
+    "como": {
+      "es": "La Ruta 7 cruza el parque; portería en la caleta.",
+      "en": "Route 7 crosses the park; gatehouse at the cove."
+    }
+  },
+  {
+    "id": 167,
+    "cat": "atractivo",
+    "localidad": "caleta-gonzalo",
+    "lat": -42.58,
+    "lng": -72.6,
+    "nombre": {
+      "es": "Sendero Cascadas",
+      "en": "Cascadas Trail"
+    },
+    "dist": {
+      "es": "Desde la caleta",
+      "en": "From the cove"
+    },
+    "desc": {
+      "es": "Caminata clásica de Caleta Gonzalo: pasarelas y escaleras por selva densa hasta una cascada escondida entre paredes de nalcas y helechos (5,6 km ida y vuelta).",
+      "en": "Caleta Gonzalo’s classic walk: boardwalks and stairs through dense rainforest to a waterfall hidden among nalca plants and ferns (5.6 km round trip)."
+    },
+    "como": {
+      "es": "Inicio junto a la caleta.",
+      "en": "Trailhead by the cove."
+    }
+  },
+  {
+    "id": 168,
+    "cat": "atractivo",
+    "localidad": "caleta-gonzalo",
+    "lat": -42.63,
+    "lng": -72.6,
+    "nombre": {
+      "es": "Sendero Alerces",
+      "en": "Alerces Trail"
+    },
+    "dist": {
+      "es": "12 km · 15 min al sur",
+      "en": "12 km · 15 min south"
+    },
+    "desc": {
+      "es": "Paseo corto y llano entre alerces de miles de años, los gigantes protegidos que definen a Pumalín. Uno de los accesos más fáciles del mundo a un bosque de alerce milenario.",
+      "en": "A short, flat walk among alerce trees thousands of years old — the protected giants that define Pumalín. One of the world’s easiest ways into an ancient alerce forest."
+    },
+    "como": {
+      "es": "Sobre la Ruta 7 al sur de la caleta, señalizado.",
+      "en": "On Route 7 south of the cove, signposted."
+    }
+  },
+  {
+    "id": 169,
+    "cat": "servicio",
+    "localidad": "caleta-gonzalo",
+    "lat": -42.5628,
+    "lng": -72.5995,
+    "nombre": {
+      "es": "Rampa de barcazas Caleta Gonzalo (a Hornopirén)",
+      "en": "Caleta Gonzalo ferry ramp (to Hornopirén)"
+    },
+    "dist": {
+      "es": "En la caleta",
+      "en": "At the cove"
+    },
+    "desc": {
+      "es": "Extremo sur del cruce bimodal a Hornopirén: barcaza Caleta Gonzalo–Fiordo Largo, tramo corto por tierra hasta Leptepu y segunda barcaza a Hornopirén (~5 h en total). Opera principalmente en temporada y con reserva — imprescindible confirmar horarios y reservar con días de anticipación.",
+      "en": "The southern end of the bimodal crossing to Hornopirén: ferry Caleta Gonzalo–Fiordo Largo, a short land link to Leptepu and a second ferry to Hornopirén (~5 h in total). Runs mainly in season and by reservation — confirming schedules and booking days ahead is essential."
+    },
+    "como": {
+      "es": "Rampa en la caleta; reserva pasajes con anticipación.",
+      "en": "Ramp at the cove; book tickets in advance."
+    }
+  },
+  {
+    "id": 170,
+    "cat": "alojamiento",
+    "localidad": "caleta-gonzalo",
+    "lat": -42.5635,
+    "lng": -72.5985,
+    "nombre": {
+      "es": "Cabañas y camping de Caleta Gonzalo",
+      "en": "Caleta Gonzalo Cabins & Campground"
+    },
+    "dist": {
+      "es": "En la caleta",
+      "en": "At the cove"
+    },
+    "desc": {
+      "es": "Infraestructura del parque: cabañas frente al fiordo Reñihué y campings de diseño cuidado. Cupos limitados — reserva en temporada y consulta apertura fuera de ella.",
+      "en": "Park infrastructure: cabins facing the Reñihué fjord and carefully designed campgrounds. Limited capacity — book in season and check availability outside it."
+    },
+    "como": {
+      "es": "En la caleta; consulta con la administración del parque.",
+      "en": "At the cove; check with the park administration."
+    }
+  },
+  {
+    "id": 171,
+    "cat": "comida",
+    "localidad": "caleta-gonzalo",
+    "lat": -42.563,
+    "lng": -72.5987,
+    "nombre": {
+      "es": "Cafetería de Caleta Gonzalo",
+      "en": "Caleta Gonzalo Café"
+    },
+    "dist": {
+      "es": "En la caleta",
+      "en": "At the cove"
+    },
+    "desc": {
+      "es": "El único punto de comida del sector: café del parque junto a la rampa, con horario de temporada. Fuera de él, viaja abastecido — no hay más servicios hasta Chaitén o Hornopirén.",
+      "en": "The only food stop in the area: the park café by the ramp, open in season. Otherwise travel supplied — there are no more services until Chaitén or Hornopirén."
+    },
+    "como": {
+      "es": "Junto a la rampa; horario de temporada.",
+      "en": "By the ramp; seasonal hours."
+    }
+  },
+  {
+    "id": 172,
+    "cat": "emergencia",
+    "localidad": "caleta-gonzalo",
+    "lat": -42.5631,
+    "lng": -72.5991,
+    "nombre": {
+      "es": "Emergencias — guardaparques Pumalín",
+      "en": "Emergencies — Pumalín park rangers"
+    },
+    "dist": {
+      "es": "En la caleta",
+      "en": "At the cove"
+    },
+    "desc": {
+      "es": "No hay posta en el sector: ante emergencias, acude a los guardaparques (portería/caleta), que coordinan por radio. La atención de salud más cercana está en Chaitén (56 km al sur) y en Hornopirén (vía barcaza). Sin señal de celular en gran parte del parque.",
+      "en": "There is no health post here: in an emergency go to the park rangers (gatehouse/cove), who coordinate by radio. The nearest medical care is in Chaitén (56 km south) and Hornopirén (via ferry). No cell signal in much of the park."
+    },
+    "como": {
+      "es": "Portería del parque, en la caleta.",
+      "en": "Park gatehouse, at the cove."
+    }
+  },
+  {
+    "id": 173,
+    "cat": "atractivo",
+    "localidad": "hornopiren",
+    "lat": -41.9,
+    "lng": -72.3,
+    "nombre": {
+      "es": "Parque Nacional Hornopirén",
+      "en": "Hornopirén National Park"
+    },
+    "dist": {
+      "es": "16 km · 40 min",
+      "en": "16 km · 40 min"
+    },
+    "desc": {
+      "es": "Parque de montaña poco visitado: bosques de alerce, lagos Cabrera y Pinto Concha y las faldas de los volcanes Hornopirén y Yates. Senderos exigentes con paisaje andino-patagónico de primera.",
+      "en": "A little-visited mountain park: alerce forests, Cabrera and Pinto Concha lakes and the slopes of the Hornopirén and Yates volcanoes. Demanding trails with first-rate Andean-Patagonian scenery."
+    },
+    "como": {
+      "es": "Acceso por camino interior desde el pueblo; consulta condiciones en la municipalidad o CONAF.",
+      "en": "Inland road from town; check conditions with the municipality or CONAF."
+    }
+  },
+  {
+    "id": 174,
+    "cat": "atractivo",
+    "localidad": "hornopiren",
+    "lat": -42,
+    "lng": -72.5,
+    "nombre": {
+      "es": "Termas de Llancahué",
+      "en": "Llancahué Hot Springs"
+    },
+    "dist": {
+      "es": "En bote desde el pueblo",
+      "en": "By boat from town"
+    },
+    "desc": {
+      "es": "Aguas termales en la isla Llancahué, frente a Hornopirén: baño caliente entre el bosque y el mar interior. Se cruza en lancha en pocos minutos; ideal como excursión de medio día.",
+      "en": "Hot springs on Llancahué Island opposite Hornopirén: a warm soak between forest and inland sea. A short boat hop away; ideal as a half-day trip."
+    },
+    "como": {
+      "es": "Lanchas desde la costanera; coordina con operadores locales.",
+      "en": "Boats from the waterfront; arrange with local operators."
+    }
+  },
+  {
+    "id": 175,
+    "cat": "atractivo",
+    "localidad": "hornopiren",
+    "lat": -41.9578,
+    "lng": -72.4372,
+    "nombre": {
+      "es": "Costanera y fiordos de Hornopirén",
+      "en": "Hornopirén Waterfront & Fjords"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "El pueblo se asoma al fiordo Comau con el volcán Hornopirén de telón: caleta pesquera, gaviotas y el vaivén de las barcazas. Buen lugar para esperar el zarpe con un paseo por la orilla.",
+      "en": "The town overlooks the Comau fjord with the Hornopirén volcano behind: a fishing cove, gulls and the coming and going of ferries. A fine place to wait for your sailing with a shoreline stroll."
+    },
+    "como": {
+      "es": "Frente al pueblo.",
+      "en": "Along the town shore."
+    }
+  },
+  {
+    "id": 176,
+    "cat": "servicio",
+    "localidad": "hornopiren",
+    "lat": -41.9583,
+    "lng": -72.4378,
+    "nombre": {
+      "es": "Rampa de barcazas Hornopirén (a Caleta Gonzalo)",
+      "en": "Hornopirén ferry ramp (to Caleta Gonzalo)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Extremo norte del cruce bimodal: barcaza Hornopirén–Leptepu, tramo corto por tierra y segunda barcaza Fiordo Largo–Caleta Gonzalo (~5 h). Reserva obligada en temporada alta y confirma el horario del día anterior; el cruce navega fiordos y depende del clima.",
+      "en": "The northern end of the bimodal crossing: ferry Hornopirén–Leptepu, a short land link and a second ferry Fiordo Largo–Caleta Gonzalo (~5 h). Booking is a must in high season and reconfirm the day before; the crossing sails fjords and depends on the weather."
+    },
+    "como": {
+      "es": "Rampa en la costanera.",
+      "en": "Ramp on the waterfront."
+    }
+  },
+  {
+    "id": 177,
+    "cat": "servicio",
+    "localidad": "hornopiren",
+    "lat": -41.9575,
+    "lng": -72.4368,
+    "nombre": {
+      "es": "Combustible y servicios",
+      "en": "Fuel and services"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Hornopirén tiene combustible y comercio; el cajero puede quedarse sin efectivo en temporada, así que trae respaldo. Último reabastecimiento antes de embarcar hacia Pumalín.",
+      "en": "Hornopirén has fuel and shops; the ATM can run out of cash in season, so bring backup. The last resupply before boarding toward Pumalín."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In town."
+    }
+  },
+  {
+    "id": 178,
+    "cat": "alojamiento",
+    "localidad": "hornopiren",
+    "lat": -41.958,
+    "lng": -72.4375,
+    "nombre": {
+      "es": "Alojamiento en Hornopirén (ejemplo)",
+      "en": "Lodging in Hornopirén (example)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Hospedajes, cabañas y campings; útil pernoctar la víspera del zarpe temprano. Se reemplazará por comercios reales.",
+      "en": "Sample placeholder. Guesthouses, cabins and campgrounds; handy the night before an early ferry. To be replaced with real businesses."
+    },
+    "como": {
+      "es": "Varios en el pueblo.",
+      "en": "Several in town."
+    }
+  },
+  {
+    "id": 179,
+    "cat": "comida",
+    "localidad": "hornopiren",
+    "lat": -41.9576,
+    "lng": -72.437,
+    "nombre": {
+      "es": "Restaurante en Hornopirén (ejemplo)",
+      "en": "Restaurant in Hornopirén (example)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Pescados, mariscos y cocina de Hualaihué. Se reemplazará por locales reales.",
+      "en": "Sample placeholder. Fish, shellfish and Hualaihué cooking. To be replaced with real venues."
+    },
+    "como": {
+      "es": "En el centro y la costanera.",
+      "en": "Downtown and on the waterfront."
+    }
+  },
+  {
+    "id": 180,
+    "cat": "emergencia",
+    "localidad": "hornopiren",
+    "lat": -41.9572,
+    "lng": -72.4365,
+    "tel": "131",
+    "nombre": {
+      "es": "Salud y urgencias — Hornopirén",
+      "en": "Health & emergencies — Hornopirén"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Centro de salud de la comuna de Hualaihué para atención primaria y urgencias básicas; los casos graves se derivan a Puerto Montt. SAMU 131.",
+      "en": "Hualaihué district health centre for primary care and basic emergencies; serious cases are referred to Puerto Montt. SAMU ambulance 131."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In town."
+    }
+  },
+  {
+    "id": 181,
+    "cat": "emergencia",
+    "localidad": "hornopiren",
+    "lat": -41.9579,
+    "lng": -72.4374,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Hornopirén",
+      "en": "Police — Hornopirén"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Emergencias policiales y coordinación de rescates en la comuna de Hualaihué. Marca 133.",
+      "en": "Police emergencies and rescue coordination in the Hualaihué district. Dial 133."
+    },
+    "como": {
+      "es": "En el centro.",
+      "en": "Downtown."
+    }
+  },
+  {
+    "id": 182,
+    "cat": "atractivo",
+    "localidad": "puerto-montt",
+    "lat": -41.4842,
+    "lng": -72.9337,
+    "nombre": {
+      "es": "Hito Cero — inicio de la Carretera Austral",
+      "en": "Kilometre Zero — start of the Carretera Austral"
+    },
+    "dist": {
+      "es": "Salida sureste de la ciudad",
+      "en": "Southeast exit of the city"
+    },
+    "desc": {
+      "es": "Aquí parte la Ruta 7: el kilómetro cero de los 1.240 km que terminan en Villa O'Higgins. La foto obligada del inicio (o del final) del gran viaje por la Patagonia.",
+      "en": "Route 7 starts here: kilometre zero of the 1,240 km that end in Villa O'Higgins. The must-take photo at the start (or finish) of the great Patagonian journey."
+    },
+    "como": {
+      "es": "En el acceso sureste de Puerto Montt, inicio señalizado de la Ruta 7.",
+      "en": "At Puerto Montt’s southeast exit, the signposted start of Route 7."
+    }
+  },
+  {
+    "id": 183,
+    "cat": "atractivo",
+    "localidad": "puerto-montt",
+    "lat": -41.4857,
+    "lng": -72.9614,
+    "nombre": {
+      "es": "Caleta y mercado de Angelmó",
+      "en": "Angelmó Cove & Market"
+    },
+    "dist": {
+      "es": "3 km · 10 min del centro",
+      "en": "3 km · 10 min from downtown"
+    },
+    "desc": {
+      "es": "El mercado costero más famoso del sur de Chile: cocinerías de curanto y mariscos, artesanía en lana y madera, y el bullicio de la caleta. La despedida gastronómica perfecta antes de partir al sur.",
+      "en": "Southern Chile’s most famous seaside market: curanto and shellfish eateries, wool and wood crafts, and the bustle of the cove. The perfect culinary send-off before heading south."
+    },
+    "como": {
+      "es": "Costanera al oeste del centro.",
+      "en": "Waterfront west of downtown."
+    }
+  },
+  {
+    "id": 184,
+    "cat": "atractivo",
+    "localidad": "puerto-montt",
+    "lat": -41.4693,
+    "lng": -72.9424,
+    "nombre": {
+      "es": "Centro y costanera de Puerto Montt",
+      "en": "Puerto Montt Downtown & Waterfront"
+    },
+    "dist": {
+      "es": "En el centro",
+      "en": "Downtown"
+    },
+    "desc": {
+      "es": "Plaza de Armas, catedral de alerce (1856) y la costanera del seno de Reloncaví con la escultura \"Sentados frente al mar\". Capital de Los Lagos y base logística natural del viaje.",
+      "en": "The main square, the alerce-wood cathedral (1856) and the Reloncaví sound waterfront with the “Sitting by the Sea” sculpture. Los Lagos’ capital and the trip’s natural logistics base."
+    },
+    "como": {
+      "es": "Centro de la ciudad.",
+      "en": "City centre."
+    }
+  },
+  {
+    "id": 185,
+    "cat": "atractivo",
+    "localidad": "puerto-montt",
+    "lat": -41.5,
+    "lng": -72.6,
+    "nombre": {
+      "es": "Parque Nacional Alerce Andino",
+      "en": "Alerce Andino National Park"
+    },
+    "dist": {
+      "es": "40 km · 50 min",
+      "en": "40 km · 50 min"
+    },
+    "desc": {
+      "es": "A un paso del inicio de la Ruta 7: alerces milenarios, decenas de lagunas de montaña y selva valdiviana. Un anticipo perfecto de lo que espera camino al sur.",
+      "en": "Right off the start of Route 7: ancient alerce trees, dozens of mountain lagoons and Valdivian rainforest. A perfect preview of what awaits down south."
+    },
+    "como": {
+      "es": "Accesos por Correntoso y Chamiza, señalizados desde la Ruta 7; entrada CONAF.",
+      "en": "Correntoso and Chamiza accesses, signposted from Route 7; CONAF entrance."
+    }
+  },
+  {
+    "id": 186,
+    "cat": "servicio",
+    "localidad": "puerto-montt",
+    "lat": -41.62,
+    "lng": -72.66,
+    "nombre": {
+      "es": "Barcaza La Arena — Caleta Puelche",
+      "en": "La Arena — Caleta Puelche ferry"
+    },
+    "dist": {
+      "es": "45 km · 1 h al sureste",
+      "en": "45 km · 1 h southeast"
+    },
+    "desc": {
+      "es": "El primer cruce de la Carretera Austral: barcaza de ~30-45 min por el estuario de Reloncaví, con salidas frecuentes todo el día y todo el año. En temporada alta llega temprano — la fila puede ser larga.",
+      "en": "The Carretera Austral’s first crossing: a ~30-45 min ferry over the Reloncaví estuary, with frequent departures all day, year-round. In high season arrive early — the queue can be long."
+    },
+    "como": {
+      "es": "Ruta 7 hasta la rampa de La Arena; pago a bordo o en rampa.",
+      "en": "Route 7 to the La Arena ramp; pay on board or at the ramp."
+    }
+  },
+  {
+    "id": 187,
+    "cat": "servicio",
+    "localidad": "puerto-montt",
+    "lat": -41.4865,
+    "lng": -72.9655,
+    "nombre": {
+      "es": "Terminales de ferries de Puerto Montt",
+      "en": "Puerto Montt Ferry Terminals"
+    },
+    "dist": {
+      "es": "Sector Angelmó",
+      "en": "Angelmó area"
+    },
+    "desc": {
+      "es": "Puerto de partida de los ferries que acortan la ruta: a Chaitén (evita las barcazas de Hornopirén) y a Puerto Chacabuco (Navimag/Naviera Austral, entra directo a Aysén). Reserva con anticipación, sobre todo con vehículo.",
+      "en": "Departure port for the ferries that shortcut the route: to Chaitén (skipping the Hornopirén ferries) and to Puerto Chacabuco (Navimag/Naviera Austral, straight into Aysén). Book ahead, especially with a vehicle."
+    },
+    "como": {
+      "es": "Terminal de transbordadores, sector Angelmó.",
+      "en": "Ferry terminal, Angelmó area."
+    }
+  },
+  {
+    "id": 188,
+    "cat": "servicio",
+    "localidad": "puerto-montt",
+    "lat": -41.47,
+    "lng": -72.9415,
+    "nombre": {
+      "es": "Últimas compras — servicios de ciudad",
+      "en": "Last shopping — full city services"
+    },
+    "dist": {
+      "es": "En la ciudad",
+      "en": "In the city"
+    },
+    "desc": {
+      "es": "Puerto Montt tiene de todo: supermercados grandes, bancos, farmacias, repuestos, equipamiento outdoor y aeropuerto (El Tepual). Es EL lugar para armar el viaje: hacia el sur los servicios se espacian cada vez más.",
+      "en": "Puerto Montt has everything: big supermarkets, banks, pharmacies, spare parts, outdoor gear and an airport (El Tepual). This is THE place to set up your trip: services thin out steadily to the south."
+    },
+    "como": {
+      "es": "Por toda la ciudad.",
+      "en": "Throughout the city."
+    }
+  },
+  {
+    "id": 189,
+    "cat": "alojamiento",
+    "localidad": "puerto-montt",
+    "lat": -41.4695,
+    "lng": -72.943,
+    "nombre": {
+      "es": "Alojamiento en Puerto Montt (ejemplo)",
+      "en": "Lodging in Puerto Montt (example)"
+    },
+    "dist": {
+      "es": "En la ciudad",
+      "en": "In the city"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Oferta completa de ciudad, de hostales a hoteles; útil la noche previa al inicio de la ruta o al ferry. Se reemplazará por comercios reales.",
+      "en": "Sample placeholder. A full city offer, hostels to hotels; useful the night before starting the route or catching a ferry. To be replaced with real businesses."
+    },
+    "como": {
+      "es": "En toda la ciudad.",
+      "en": "Citywide."
+    }
+  },
+  {
+    "id": 190,
+    "cat": "comida",
+    "localidad": "puerto-montt",
+    "lat": -41.486,
+    "lng": -72.9618,
+    "nombre": {
+      "es": "Cocinerías de Angelmó (ejemplo)",
+      "en": "Angelmó eateries (example)"
+    },
+    "dist": {
+      "es": "Sector Angelmó",
+      "en": "Angelmó area"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. El curanto y los mariscos de las cocinerías del mercado son el clásico local. Se reemplazará por locales reales.",
+      "en": "Sample placeholder. Curanto and shellfish at the market eateries are the local classic. To be replaced with real venues."
+    },
+    "como": {
+      "es": "Mercado de Angelmó.",
+      "en": "Angelmó market."
+    }
+  },
+  {
+    "id": 191,
+    "cat": "emergencia",
+    "localidad": "puerto-montt",
+    "lat": -41.4635,
+    "lng": -72.9585,
+    "tel": "131",
+    "nombre": {
+      "es": "Hospital de Puerto Montt",
+      "en": "Puerto Montt Hospital"
+    },
+    "dist": {
+      "es": "En la ciudad",
+      "en": "In the city"
+    },
+    "desc": {
+      "es": "Hospital regional de alta complejidad — el centro de derivación mayor de todo el tramo norte de la Carretera Austral. SAMU 131.",
+      "en": "A high-complexity regional hospital — the main referral centre for the entire northern Carretera Austral. SAMU ambulance 131."
+    },
+    "como": {
+      "es": "En la ciudad.",
+      "en": "In the city."
+    }
+  },
+  {
+    "id": 192,
+    "cat": "emergencia",
+    "localidad": "puerto-montt",
+    "lat": -41.4696,
+    "lng": -72.9426,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Puerto Montt",
+      "en": "Police — Puerto Montt"
+    },
+    "dist": {
+      "es": "En la ciudad",
+      "en": "In the city"
+    },
+    "desc": {
+      "es": "Prefectura con cobertura completa de la ciudad y el inicio de la Ruta 7. Marca 133.",
+      "en": "Full police coverage for the city and the start of Route 7. Dial 133."
+    },
+    "como": {
+      "es": "Unidades en toda la ciudad.",
+      "en": "Stations citywide."
+    }
   }
 ]

@@ -1,7 +1,8 @@
 # Patagonia Austral Turismo
 
 Aplicación Web Progresiva (PWA) **offline-first** que es la guía turística de
-referencia de la **Carretera Austral**, desde **Coyhaique hasta Villa O'Higgins**.
+referencia de la **Carretera Austral completa**, desde **Puerto Montt (km 0)
+hasta Villa O'Higgins**.
 El viajero elige una localidad o explora un mapa regional y encuentra qué visitar,
 dónde dormir, dónde comer, servicios, rutas y emergencias — todo funcionando
 **sin señal**, clave en las zonas rurales y de montaña de la Patagonia.
@@ -9,18 +10,19 @@ dónde dormir, dónde comer, servicios, rutas y emergencias — todo funcionando
 > Producto propio (comercial). Base técnica heredada de la PWA de Cochrane.
 > Stack: **React 18 + Vite** · **Laravel (PHP 8.x) + Filament** · **PostgreSQL**.
 
-## Alcance geográfico (Ruta 7, norte a sur)
+## Alcance geográfico (Ruta 7 completa, norte a sur)
 
-**Cubierto hoy (Región de Aysén, Coyhaique → sur):** Coyhaique · Villa Cerro
-Castillo · Puerto Río Tranquilo · Puerto Guadal / Chile Chico · Puerto Bertrand ·
-Cochrane · Caleta Tortel · Villa O'Higgins.
+**Región de Los Lagos:** Puerto Montt (km 0) · Hornopirén · Caleta Gonzalo
+(P.N. Pumalín) · Chaitén · El Amarillo · Villa Santa Lucía · Futaleufú / Palena
+(ramal este).
+**Región de Aysén:** La Junta · Puyuhuapi (P.N. Queulat) · Villa Amengual ·
+Puerto Cisnes (desvío costero) · Villa Mañihuales · Puerto Aysén / Puerto
+Chacabuco (Ruta 240) · Coyhaique · Villa Cerro Castillo · Puerto Río Tranquilo ·
+Puerto Guadal / Chile Chico · Puerto Bertrand · Cochrane · Caleta Tortel ·
+Villa O'Higgins.
 
-**En incorporación (Fase 2.5 — tramo norte, Coyhaique → Puerto Montt):**
-Puerto Aysén / Puerto Chacabuco · Villa Mañihuales · Puerto Cisnes · Villa
-Amengual · Puyuhuapi · La Junta · Palena · Futaleufú · Villa Santa Lucía ·
-Chaitén · Parque Pumalín / Caleta Gonzalo · Hornopirén · Puerto Montt (km 0).
-Al completarlo, la app cubre **toda la Carretera Austral, Puerto Montt → Villa
-O'Higgins**.
+Incluye los datos de viaje críticos del tramo norte: las **barcazas** La
+Arena–Caleta Puelche y Hornopirén–Caleta Gonzalo (cruce bimodal por Pumalín).
 
 ## Estructura del repositorio
 
@@ -77,9 +79,9 @@ Ver `backend/SETUP.md` para el detalle de configuración.
   los negocios no verificables van marcados "(ejemplo)" hasta la Fase 3)
 - **Fase 2.5 — Contenido tramo norte (Coyhaique → Puerto Montt):** extender la
   cobertura por la Ruta 7 hacia el norte hasta el km 0 de la Carretera Austral,
-  completando la ruta entera. Mismo patrón que la Fase 2 (localidades + lugares
-  bilingües ES/EN; "(ejemplo)" para negocios no verificables). Incluye actualizar
-  la identidad de la app a "Puerto Montt a Villa O'Higgins" al completarlo.
+  completando la ruta entera. ✅
+  (15 localidades nuevas y 125 lugares del tramo norte — 24 localidades y 192
+  lugares en total; identidad actualizada a "Puerto Montt a Villa O'Higgins")
 - **Fase 3 — Capa comercial:** fichas destacadas, planes de negocio, analítica.
 - **Fase 4 — Publicación:** producción, dominio propio, PWA instalable, difusión.
 

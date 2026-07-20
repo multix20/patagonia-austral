@@ -5,7 +5,7 @@ import { createContext, useContext, useState, useCallback } from 'react'
 const DICCIONARIO = {
   es: {
     titulo: 'Patagonia Austral',
-    subtitulo: 'Carretera Austral · Coyhaique a Villa O\'Higgins',
+    subtitulo: 'Carretera Austral · Puerto Montt a Villa O\'Higgins',
     enLinea: 'En línea',
     sinConexion: 'Sin conexión',
     bannerOffline: 'Sin conexión — mostrando información guardada en tu teléfono',
@@ -31,7 +31,7 @@ const DICCIONARIO = {
   },
   en: {
     titulo: 'Patagonia Austral',
-    subtitulo: 'Carretera Austral · Coyhaique to Villa O\'Higgins',
+    subtitulo: 'Carretera Austral · Puerto Montt to Villa O\'Higgins',
     enLinea: 'Online',
     sinConexion: 'Offline',
     bannerOffline: 'Offline — showing information saved on your phone',

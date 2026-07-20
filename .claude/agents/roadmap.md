@@ -48,29 +48,15 @@ alcance**. No acumules deuda de UX detrás de más contenido.
 ## Estado actual y prioridades (jul-2026)
 
 Hecho: ✅ Fase 0 · ✅ deploy Netlify+Render+Neon · ✅ Fase 1 (multi-localidad) ·
-✅ Fase 2 (9 localidades, 67 lugares, tramo Coyhaique→Villa O'Higgins) · ✅ UX de
-Fase 2 (ChatBot filtrado por localidad, "Toda la ruta" ordenada por GPS, selector
-con búsqueda) — todo en `main`/producción.
+✅ Fase 2 (contenido Coyhaique→Villa O'Higgins) + su UX · ✅ **Fase 2.5** (tramo
+norte Coyhaique→Puerto Montt): la app cubre la **Carretera Austral completa** con
+**24 localidades y 192 lugares** (orden norte→sur 10 Puerto Montt … 190 Villa
+O'Higgins; desvíos con valores intermedios), las **barcazas** del tramo norte
+(La Arena–Caleta Puelche y el cruce bimodal Hornopirén–Caleta Gonzalo) y la
+identidad actualizada a **"Puerto Montt a Villa O'Higgins"** (i18n, manifest,
+index.html, docs).
 
-**Prioridad inmediata — Fase 2.5: Contenido tramo norte (Coyhaique → Puerto Montt).**
-Extender el contenido por la Ruta 7 hacia el **norte** hasta el km 0 de la CA
-(Puerto Montt), completando la ruta entera **antes** de la capa comercial. Mismo
-patrón que la Fase 2. Se hace **por fases, pueblo por pueblo**.
-- Localidades norte→sur (a afinar): **Los Lagos** — Puerto Montt (km 0) ·
-  Hornopirén · Parque Pumalín/Caleta Gonzalo · Chaitén · El Amarillo · Villa Santa
-  Lucía · Futaleufú · Palena; **Aysén norte** — La Junta · Puyuhuapi (P.N. Queulat) ·
-  Villa Amengual · Puerto Cisnes · Villa Mañihuales · Puerto Aysén · Puerto
-  Chacabuco → empalma con Coyhaique.
-- **`orden`**: hoy Coyhaique=10 es la más al norte (decenas 10…80). Las nuevas van
-  al norte → **reasignar el rango** para toda la cadena (Puerto Montt la menor);
-  idempotencia por slug intacta, seeds front/back en espejo.
-- **Identidad**: al completar, cambiar "Coyhaique a Villa O'Higgins" →
-  "Puerto Montt a Villa O'Higgins" (README, `i18n.jsx`, manifest, docs).
-- **Barcazas** del tramo (La Arena–Caleta Puelche, Hornopirén–Caleta Gonzalo):
-  dato de viaje offline y semilla del reporte "barcazas" del crowdsourcing.
-- Detalle completo en `ESTADO_Y_PENDIENTES.md` (Fase 2.5).
-
-**Siguiente fase — Fase 3 (capa comercial + crowdsourcing):** fichas destacadas,
+**Prioridad inmediata — Fase 3 (capa comercial + crowdsourcing):** fichas destacadas,
 planes para negocios, analítica; reemplazar los "(ejemplo)" por comercios reales.
 Audiencia: **100.000–150.000 turistas/año**.
 
@@ -118,19 +104,16 @@ ruta Puerto Montt→O'Higgins para 2030. Datos exactos:
 Triple alineamiento con el producto: (a) más pavimento y mejor conectividad → más
 turismo → crece la audiencia; (b) reafirma que la ruta ES Puerto Montt→O'Higgins
 (valida el alcance futuro anotado); (c) **las obras 2026–2030 caen justo en Aysén,
-donde la app ya tiene TODO su contenido** (Coyhaique→O'Higgins) → años de cortes y
+donde la app tiene su contenido más maduro** (y desde la Fase 2.5, la ruta completa) → años de cortes y
 desvíos que agudizan el problema que el crowdsourcing resuelve ("¿está pasable este
 tramo hoy?"). Además las 2 barcazas nuevas conectan directo con el tipo de reporte
 "barcazas" del PMV.
 
-## Alcance norte — ahora es la Fase 2.5 (prioridad inmediata, ver arriba)
+## Alcance norte — COMPLETADO (Fase 2.5, jul-2026)
 
-La meta de cubrir **toda la Carretera Austral, de Puerto Montt a Villa O'Higgins**
-dejó de ser "futuro anotado": es la **Fase 2.5**, que va **antes de la Fase 3**.
-Se ejecuta por fases, pueblo por pueblo, e incluye actualizar la identidad de la
-app a "Puerto Montt a Villa O'Higgins" al completar el tramo. Detalle y lista de
-localidades: sección "Estado actual y prioridades" (arriba) y
-`ESTADO_Y_PENDIENTES.md` (Fase 2.5).
+La app cubre **toda la Carretera Austral, de Puerto Montt a Villa O'Higgins**.
+Los negocios "(ejemplo)" del tramo norte se reemplazan por comercios reales en
+la Fase 3, igual que los del tramo sur. Detalle: `ESTADO_Y_PENDIENTES.md`.
 
 ## Límites
 

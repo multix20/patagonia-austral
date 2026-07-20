@@ -5,21 +5,45 @@ namespace Database\Seeders;
 use App\Models\Localidad;
 use Illuminate\Database\Seeder;
 
-// Localidades de la Carretera Austral (multi-localidad, Fases 1, 2 y 2.5).
-// Idempotente: updateOrCreate por slug; corre en cada arranque del contenedor.
-// `orden` va norte → sur en decenas para poder intercalar pueblos después.
-// Fase 2.5 (tramo norte, Coyhaique → Puerto Montt): se reasignó el rango de
-// `orden` a la ruta completa, dejando reservados los pueblos del norte aún por
-// cargar (10 Puerto Montt … 100 Villa Mañihuales). Puerto Aysén (110) y Puerto
-// Chacabuco (115) son el desvío oeste por la Ruta 240 desde Coyhaique (el puerto
-// marítimo de la región); Chile Chico (155) es el desvío por la ribera sur del
-// lago General Carrera entre Guadal y Bertrand. Mantener en espejo con
+// Localidades de la Carretera Austral completa, Puerto Montt → Villa O'Higgins
+// (multi-localidad, Fases 1, 2 y 2.5). Idempotente: updateOrCreate por slug;
+// corre en cada arranque del contenedor. `orden` va norte → sur en decenas
+// (10 Puerto Montt … 190 Villa O'Higgins) para poder intercalar pueblos.
+// Los desvíos usan valores intermedios: Caleta Gonzalo (30) es el corazón de
+// Pumalín entre las barcazas; Futaleufú (55) y Palena (58) son el ramal este
+// desde Villa Santa Lucía; Puerto Cisnes (95) el desvío costero; Puerto Aysén
+// (110) y Chacabuco (115) la Ruta 240 desde Coyhaique; Chile Chico (155) la
+// ribera sur del lago General Carrera. Mantener en espejo con
 // LOCALIDADES_SEED de frontend/src/data/places.js.
 class LocalidadSeeder extends Seeder
 {
     public function run(): void
     {
         $localidades = [
+            [
+                'slug' => 'puerto-montt',
+                'nombre' => ['es' => 'Puerto Montt', 'en' => 'Puerto Montt'],
+                'lat' => -41.4693,
+                'lng' => -72.9424,
+                'zoom' => 13,
+                'orden' => 10,
+            ],
+            [
+                'slug' => 'hornopiren',
+                'nombre' => ['es' => 'Hornopirén', 'en' => 'Hornopirén'],
+                'lat' => -41.9578,
+                'lng' => -72.4372,
+                'zoom' => 14,
+                'orden' => 20,
+            ],
+            [
+                'slug' => 'caleta-gonzalo',
+                'nombre' => ['es' => 'Caleta Gonzalo (Pumalín)', 'en' => 'Caleta Gonzalo (Pumalín)'],
+                'lat' => -42.5633,
+                'lng' => -72.5989,
+                'zoom' => 14,
+                'orden' => 30,
+            ],
             [
                 'slug' => 'chaiten',
                 'nombre' => ['es' => 'Chaitén', 'en' => 'Chaitén'],

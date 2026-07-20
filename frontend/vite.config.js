@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// PWA Patagonia Austral Turismo - Carretera Austral (Coyhaique a Villa O'Higgins)
+// PWA Patagonia Austral Turismo - Carretera Austral (Puerto Montt a Villa O'Higgins)
 // Offline-first: precache del app shell + cache de teselas OSM + cache de API
 export default defineConfig({
   plugins: [
@@ -14,7 +14,7 @@ export default defineConfig({
         name: 'Patagonia Austral Turismo',
         short_name: 'Patagonia',
         description:
-          'Guia turistica de la Carretera Austral, de Coyhaique a Villa O Higgins. Funciona sin conexion.',
+          'Guia turistica de la Carretera Austral, de Puerto Montt a Villa O Higgins. Funciona sin conexion.',
         lang: 'es',
         theme_color: '#0F6E56',
         background_color: '#F7F5F0',

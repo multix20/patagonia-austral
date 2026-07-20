@@ -1,7 +1,7 @@
 # Patagonia Austral — contexto del proyecto
 
-PWA de turismo **offline-first** de la Carretera Austral (Coyhaique a Villa
-O'Higgins). **Proyecto personal/comercial propio** — NO se rige por bases de
+PWA de turismo **offline-first** de la Carretera Austral completa (Puerto Montt
+a Villa O'Higgins). **Proyecto personal/comercial propio** — NO se rige por bases de
 licitación (nació como fork de `multix20/cochrane-turismo`, que sigue vivo y
 desplegado por separado; no interferir con sus servicios).
 
@@ -47,11 +47,11 @@ Historial y decisiones: `ESTADO_Y_PENDIENTES.md`. Roadmap (README):
 - ✅ Fase 1 — Multi-localidad (modelo `Localidad`, selector, filtros)
 - ✅ Fase 2 — Contenido (9 localidades, 67 lugares, tramo Coyhaique→Villa O'Higgins)
   y su UX (chatbot filtrado por localidad, "Toda la ruta" por GPS, selector con búsqueda)
-- **SIGUIENTE**: Fase 2.5 — Contenido tramo norte (Coyhaique→Puerto Montt): sumar
-  las localidades del norte de la Ruta 7 hasta el km 0 de la CA (Puerto Montt),
-  pueblo por pueblo, y actualizar la identidad a "Puerto Montt a Villa O'Higgins".
-  Va **antes** de la Fase 3. Detalle en `ESTADO_Y_PENDIENTES.md`.
-- Fase 3 — Capa comercial (fichas destacadas, planes, analítica)
+- ✅ Fase 2.5 — Contenido tramo norte (Coyhaique→Puerto Montt): 15 localidades y
+  125 lugares nuevos (24 localidades, 192 lugares en total), barcazas del tramo
+  e identidad actualizada a "Puerto Montt a Villa O'Higgins".
+- **SIGUIENTE**: Fase 3 — Capa comercial (fichas destacadas, planes, analítica)
+  + crowdsourcing tipo Waze. Primeras fichas reales: los negocios del fundador.
 - Fase 4 — Producción definitiva (dominio propio, S3, respaldos, monitoreo)
 
 **Datos de negocio**: ruta completa ~100.000–150.000 turistas/año (audiencia
@@ -85,10 +85,9 @@ su contenido** → generan cortes/desvíos que agudizan el problema que el crowd
 resuelve. (Ojo: es un plan regional de Aysén, NO pavimentar todo Puerto Montt→O'Higgins
 para 2030.)
 
-**Alcance norte — ahora es la Fase 2.5** (ya no es solo "futuro"): ampliar a **toda
-la Carretera Austral, de Puerto Montt a Villa O'Higgins**, sumando el tramo norte
-por fases (pueblo por pueblo) desde Coyhaique hasta el km 0 en Puerto Montt. Al
-completarlo, la identidad de la app pasa de "Coyhaique a Villa O'Higgins" a
-"Puerto Montt a Villa O'Higgins". Detalle en `ESTADO_Y_PENDIENTES.md` (Fase 2.5).
+**Alcance norte — COMPLETADO (Fase 2.5, jul-2026)**: la app cubre **toda la
+Carretera Austral, de Puerto Montt a Villa O'Higgins** (24 localidades, 192
+lugares, barcazas incluidas). La identidad ya dice "Puerto Montt a Villa
+O'Higgins" en i18n, manifest e index.html. Detalle en `ESTADO_Y_PENDIENTES.md`.
 
 Para trabajo de roadmap, usar el agente `roadmap` (`.claude/agents/roadmap.md`).
