@@ -284,6 +284,45 @@ def textos_como_llegar(slug: str, direccion: str) -> tuple[str, str]:
 
 
 # --------------------------------------------------------------------------- #
+# Corrección de coordenadas placeholder de SERNATUR
+# --------------------------------------------------------------------------- #
+# El dato de SERNATUR trae coordenadas "por defecto" repetidas por muchos
+# servicios (p.ej. 20 alojamientos de Tortel con la misma coord, a ~60 km del
+# pueblo). Se detectan por: MISMA coordenada compartida por ≥3 servicios Y a
+# >15 km del centro de su localidad. A esos se les reubica al centro del pueblo
+# con una dispersión en espiral (para que no queden apilados). Los lugares
+# realmente apartados (coordenada única, p.ej. Parque Patagonia) NO se tocan.
+UMBRAL_PLACEHOLDER_KM = 15
+MIN_COMPARTEN = 3
+
+
+def corrige_placeholders(registros: list[dict]) -> int:
+    grupos: dict[tuple, list[dict]] = {}
+    for r in registros:
+        grupos.setdefault((round(r["lat"], 4), round(r["lng"], 4)), []).append(r)
+
+    por_localidad: dict[str, int] = {}
+    corregidos = 0
+    for coord, items in grupos.items():
+        slug = items[0]["localidad"]
+        nombre, clat, clng = LOCALIDADES[slug]
+        if len(items) < MIN_COMPARTEN:
+            continue
+        if haversine_km(coord[0], coord[1], clat, clng) <= UMBRAL_PLACEHOLDER_KM:
+            continue
+        for r in sorted(items, key=lambda z: z["id"]):
+            i = por_localidad.get(slug, 0)
+            por_localidad[slug] = i + 1
+            ang = math.radians(i * 137.508)          # ángulo áureo → espiral pareja
+            rad = 0.0009 * math.sqrt(i)              # ~100 m · √i (hasta ~450 m)
+            r["lat"] = round(clat + rad * math.cos(ang), 6)
+            r["lng"] = round(clng + rad * math.sin(ang), 6)
+            r["dist"] = {"es": f"En {nombre}", "en": f"In {nombre}"}
+            corregidos += 1
+    return corregidos
+
+
+# --------------------------------------------------------------------------- #
 # Carga y combinación de los dos CSV
 # --------------------------------------------------------------------------- #
 def _detecta(campos, candidatos):
@@ -410,6 +449,9 @@ def main() -> None:
         print(f"[{idx+1}/{len(coords)}] {idv} · {nombre[:40]} → {slug} "
               f"(tel {'✔' if tel else '—'})")
 
+    # Reubica al centro del pueblo los servicios con coordenada placeholder.
+    corregidos = corrige_placeholders(registros)
+
     # ---- JSON para el seeder (forma exacta de places.json) ---------------- #
     lugares_json = [{
         "id": r["id"], "cat": r["cat"], "localidad": r["localidad"],
@@ -428,6 +470,7 @@ def main() -> None:
     print(f"  Excel: {XLSX_SALIDA.name}")
     print(f"  JSON seeder: {JSON_SALIDA.name}  (publicado={PUBLICAR})")
     print(f"  Asignación de localidad por método: {por_metodo}")
+    print(f"  Coordenadas placeholder reubicadas al centro del pueblo: {corregidos}")
     print("    (ciudad = por nombre · coords = por cercanía · override = regla fija)")
     if aprox_coords:
         print(f"\n⚠ {len(aprox_coords)} sin coordenadas: ubicados en el centro de su "
