@@ -1,0 +1,6 @@
+# Datos de entrada/salida — no versionar (contienen datos crudos de SERNATUR)
+*.csv
+*.xlsx
+sernatur_places.json
+.venv/
+__pycache__/
