@@ -309,6 +309,17 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
   email por ficha, generación de descripciones ES/EN + distancias, seeder
   `SernaturPlaceSeeder`). Textos base autogenerados por tipo → personalizar los
   destacados. Deshacer: `Place::whereBetween('id',[2000,2181])->delete()`.
+  - **Publicados (20-jul-2026)** vía acción en lote nueva del CMS (toggle +
+    "Publicar/Despublicar" en `PlaceResource`).
+  - **⚠ Coordenadas placeholder:** ~41% de los servicios traían coordenadas por
+    defecto de SERNATUR (repetidas, hasta ~160 km del pueblo). El script 2 ahora
+    las detecta (misma coord compartida por ≥3 y a >15 km del centro) y las
+    reubica al centro del pueblo con dispersión. En producción se corrigieron 67
+    con SQL puntual. **Pendiente:** coordenadas reales precisas (las direcciones
+    de SERNATUR son vagas, "Sector rincón s/n" → no geocodificables gratis);
+    ubicar a mano al menos las fichas destacadas.
+  - **Pendiente:** revisar/personalizar las descripciones base (son plantillas
+    por tipo, no marketing final).
 
 > **⚠ Bloqueo de infraestructura para el crowdsourcing:** los reportes en vivo
 > (bencina, cortes, clima, barcazas) necesitan **worker de colas + scheduler**,
