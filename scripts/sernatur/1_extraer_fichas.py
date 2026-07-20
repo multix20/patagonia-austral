@@ -67,11 +67,16 @@ COL_ID = ["id_sernatur", "id", "id sernatur"]
 COL_URL = ["url", "enlace", "link", "ficha"]
 COL_NOMBRE = ["nombre", "name", "servicio"]
 
+# Si el CSV NO trae columna URL, se construye la URL de la ficha a partir del
+# id_sernatur y un slug del nombre. SERNATUR enruta por el ID numérico, así que
+# el texto del slug suele ser indiferente. Ajusta si el patrón real cambia.
+URL_TEMPLATE = "https://serviciosturisticos.sernatur.cl/{id}-{slug}"
+
 # Columnas del CSV de salida.
 CAMPOS_SALIDA = [
     "id_sernatur", "nombre", "url",
     "telefono", "email", "direccion",
-    "estado",   # OK | SIN_DATOS | ERROR
+    "estado",   # OK | SIN_DATOS | ERROR | SIN_ID
 ]
 
 # --------------------------------------------------------------------------- #
@@ -87,6 +92,24 @@ RE_TEL = re.compile(
 
 def normaliza(s: str) -> str:
     return re.sub(r"\s+", " ", (s or "").strip())
+
+
+def normaliza_id(valor: str) -> str:
+    """'47283.0' → '47283'. Deja el id como entero-texto para casar entre CSV."""
+    v = normaliza(valor)
+    try:
+        return str(int(float(v)))
+    except (TypeError, ValueError):
+        return v
+
+
+def slugify(texto: str) -> str:
+    """Convierte 'Cabañas José' → 'cabanas-jose' para armar la URL de la ficha."""
+    import unicodedata
+    t = unicodedata.normalize("NFD", texto or "")
+    t = "".join(c for c in t if unicodedata.category(c) != "Mn").lower()
+    t = re.sub(r"[^a-z0-9]+", "-", t).strip("-")
+    return t or "s"
 
 
 def detecta_columna(campos: list[str], candidatos: list[str]) -> str | None:
@@ -262,12 +285,15 @@ def main() -> None:
     col_id = detecta_columna(campos, COL_ID)
     col_url = detecta_columna(campos, COL_URL)
     col_nombre = detecta_columna(campos, COL_NOMBRE)
-    if not col_id or not col_url:
-        sys.exit(f"No pude detectar columnas ID/URL en {campos}.\n"
-                 f"Edita COL_ID / COL_URL al inicio del script.")
+    # Basta con tener URL directa, o bien id (+nombre) para construir la URL.
+    if not col_url and not col_id:
+        sys.exit(f"No pude detectar columna URL ni ID en {campos}.\n"
+                 f"Edita COL_URL / COL_ID al inicio del script.")
+    if not col_url:
+        print("Sin columna URL: construyo la URL desde id_sernatur + nombre.\n")
 
     ya = carga_ya_hechos()
-    pendientes = [r for r in filas if normaliza(r.get(col_id, "")) not in ya]
+    pendientes = [r for r in filas if normaliza_id(r.get(col_id, "")) not in ya]
     print(f"Total: {len(filas)} · ya hechos: {len(ya)} · pendientes: {len(pendientes)}\n")
     if not pendientes:
         print("✔ Nada pendiente. CSV completo en", SALIDA)
@@ -282,12 +308,23 @@ def main() -> None:
             page = contexto.new_page()
 
             for i, fila in enumerate(pendientes, 1):
-                idv = normaliza(fila.get(col_id, ""))
-                url = normaliza(fila.get(col_url, ""))
+                idv = normaliza_id(fila.get(col_id, "")) if col_id else ""
                 nombre = normaliza(fila.get(col_nombre, "")) if col_nombre else ""
+                url = normaliza(fila.get(col_url, "")) if col_url else ""
+
+                # Sin URL directa: construirla desde el id (SERNATUR enruta por id).
                 if not url:
-                    print(f"[{i}/{len(pendientes)}] {idv} sin URL — omitido")
-                    continue
+                    if not idv:
+                        print(f"[{i}/{len(pendientes)}] {nombre[:45]} — sin id, no se puede abrir la ficha")
+                        escritor.writerow({
+                            "id_sernatur": "", "nombre": nombre, "url": "",
+                            "telefono": "", "email": "", "direccion": "",
+                            "estado": "SIN_ID",
+                        })
+                        f_out.flush()
+                        sin += 1
+                        continue
+                    url = URL_TEMPLATE.format(id=idv, slug=slugify(nombre))
                 if not url.startswith("http"):
                     url = "https://" + url.lstrip("/")
 

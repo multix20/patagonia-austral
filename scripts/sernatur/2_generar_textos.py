@@ -89,20 +89,58 @@ def sin_acentos(s: str) -> str:
     ).lower().strip()
 
 
+def normaliza_id(valor) -> str:
+    """'47283.0' → '47283'. Iguala el id entre los dos CSV (evita fallos de merge)."""
+    v = str(valor or "").strip()
+    try:
+        return str(int(float(v)))
+    except (TypeError, ValueError):
+        return v
+
+
 # Índice normalizado (nombre sin acentos → slug) para mapear la columna "ciudad".
 _NOMBRE_A_SLUG = {sin_acentos(n): slug for slug, (n, *_ ) in LOCALIDADES.items()}
 _NOMBRE_A_SLUG.update({sin_acentos(slug.replace("-", " ")): slug for slug in LOCALIDADES})
 
+# Comunas que NO son un pueblo único: abarcan varias localidades de la app.
+# Para estas se asigna por CERCANÍA de coordenadas, no por el nombre de la comuna.
+# (Río Ibáñez → Cerro Castillo / Río Tranquilo; Cisnes → Puerto Cisnes / Puyuhuapi /
+#  La Junta; Aysén → Puerto Aysén / Chacabuco.)
+COMUNAS_MULTIPLES = {"rio ibanez", "cisnes", "aysen"}
 
-def resuelve_slug(ciudad: str) -> str | None:
+# Comunas sin una localidad propia en la app → se mapean a la más cercana/lógica.
+OVERRIDE_CIUDAD = {"lago verde": "la-junta"}
+
+
+def localidad_mas_cercana(lat: float, lng: float) -> str:
+    """Slug de la localidad cuyo centro está más cerca de (lat, lng)."""
+    return min(
+        LOCALIDADES,
+        key=lambda s: haversine_km(lat, lng, LOCALIDADES[s][1], LOCALIDADES[s][2]),
+    )
+
+
+def resuelve_slug(ciudad: str, lat=None, lng=None) -> tuple[str | None, str]:
+    """Devuelve (slug, método). método ∈ ciudad|override|coords|coords-fallback."""
     key = sin_acentos(ciudad)
+    hay_coords = isinstance(lat, (int, float)) and isinstance(lng, (int, float))
+
+    if key in OVERRIDE_CIUDAD:
+        return OVERRIDE_CIUDAD[key], "override"
+    if key in COMUNAS_MULTIPLES and hay_coords:
+        return localidad_mas_cercana(lat, lng), "coords"
+
+    # Coincidencia por nombre de ciudad (exacta o parcial en cualquier sentido).
     if key in _NOMBRE_A_SLUG:
-        return _NOMBRE_A_SLUG[key]
-    # Coincidencia parcial (p.ej. "Cochrane, Aysén" → cochrane).
+        return _NOMBRE_A_SLUG[key], "ciudad"
     for nombre_norm, slug in _NOMBRE_A_SLUG.items():
-        if nombre_norm and nombre_norm in key:
-            return slug
-    return None
+        if nombre_norm and (nombre_norm in key or key in nombre_norm):
+            return slug, "ciudad"
+
+    # Sin match por nombre: cae a la localidad más cercana por coordenadas.
+    if hay_coords:
+        return localidad_mas_cercana(lat, lng), "coords-fallback"
+    return None, "sin-match"
 
 
 # --------------------------------------------------------------------------- #
@@ -282,7 +320,7 @@ def carga_fichas() -> dict[str, dict]:
     for f in filas:
         if str(f.get("estado", "")).startswith("ERROR"):
             continue
-        por_id[str(f["id_sernatur"]).strip()] = {
+        por_id[normaliza_id(f.get("id_sernatur"))] = {
             "telefono": (f.get("telefono") or "").strip(),
             "email": (f.get("email") or "").strip(),
             "direccion": (f.get("direccion") or "").strip(),
@@ -311,25 +349,33 @@ def main() -> None:
         sys.exit(f"Faltan columnas en {CSV_COORDS.name}: {faltan}. Detectadas: {campos}")
 
     # Orden determinista por id → ids del seeder estables entre corridas.
-    coords.sort(key=lambda r: str(r.get(c_id, "")))
+    coords.sort(key=lambda r: normaliza_id(r.get(c_id, "")))
 
-    registros, sin_loc, sin_coord = [], [], []
+    registros, sin_loc, aprox_coords = [], [], []
+    por_metodo = {}
     for idx, r in enumerate(coords):
-        idv = str(r.get(c_id, "")).strip()
+        idv = normaliza_id(r.get(c_id, ""))
         nombre = re.sub(r"\s+", " ", (r.get(c_nombre) or "").strip())
         ciudad = (r.get(c_ciudad) or "").strip()
         categoria = (r.get(c_cat) or "").strip() if c_cat else ""
 
-        slug = resuelve_slug(ciudad)
-        if not slug:
-            sin_loc.append((idv, ciudad))
-            continue
+        # Coordenadas primero: sirven para desambiguar comunas con varias localidades.
         try:
             lat = float(str(r.get(c_lat)).replace(",", "."))
             lng = float(str(r.get(c_lng)).replace(",", "."))
         except (TypeError, ValueError):
-            sin_coord.append(idv)
+            lat = lng = None
+
+        slug, metodo = resuelve_slug(ciudad, lat, lng)
+        if not slug:
+            sin_loc.append((idv or nombre, ciudad))
             continue
+        por_metodo[metodo] = por_metodo.get(metodo, 0) + 1
+
+        # Sin coordenadas: ubica el lugar en el centro de la localidad (aproximado).
+        if lat is None or lng is None:
+            _, lat, lng = LOCALIDADES[slug]
+            aprox_coords.append(idv or nombre)
 
         contacto = fichas.get(idv, {})
         tel = contacto.get("telefono", "")
@@ -381,12 +427,15 @@ def main() -> None:
     print(f"\n✔ {len(registros)} servicios procesados.")
     print(f"  Excel: {XLSX_SALIDA.name}")
     print(f"  JSON seeder: {JSON_SALIDA.name}  (publicado={PUBLICAR})")
+    print(f"  Asignación de localidad por método: {por_metodo}")
+    print("    (ciudad = por nombre · coords = por cercanía · override = regla fija)")
+    if aprox_coords:
+        print(f"\n⚠ {len(aprox_coords)} sin coordenadas: ubicados en el centro de su "
+              f"localidad (revísalos): {aprox_coords[:15]}")
     if sin_loc:
         print(f"\n⚠ {len(sin_loc)} sin localidad reconocida (revisa la columna ciudad):")
         for idv, ciudad in sin_loc[:15]:
             print(f"    {idv}: '{ciudad}'")
-    if sin_coord:
-        print(f"⚠ {len(sin_coord)} sin coordenadas válidas: {sin_coord[:15]}")
 
 
 def escribe_excel(registros: list[dict]) -> None:

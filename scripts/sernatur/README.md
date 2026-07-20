@@ -30,11 +30,16 @@ pip install -r requirements.txt
 playwright install chromium
 ```
 
-Copia tus dos archivos a esta carpeta: **`con_coordenadas.csv`**
-(y opcionalmente el xlsx). El CSV debe tener al menos columnas de
-**ID, nombre, ciudad y URL** — los nombres exactos se autodetectan
-(`ID_SERNATUR`, `nombre`, `ciudad`/`localidad`/`comuna`, `URL`, `categoria`,
-`lat`/`latitud`, `lng`/`longitud`).
+Copia tu **`con_coordenadas.csv`** a esta carpeta. Los nombres de columna se
+autodetectan: `id_sernatur`, `nombre`, `ciudad`/`localidad`/`comuna`,
+`categoria`, `lat`/`latitud`, `lng`/`longitud` y (opcional) `URL`.
+
+- **No hace falta columna `URL`**: si no está, la URL de la ficha se construye
+  desde `id_sernatur` + un slug del nombre (SERNATUR enruta por el ID). Si tu CSV
+  sí trae `URL`, se usa esa.
+- Los servicios **sin `id_sernatur`** (p.ej. varios de Coyhaique y Puerto Aysén)
+  no tienen ficha que visitar: se marcan `SIN_ID` y no obtienen teléfono/email,
+  pero igual pasan al paso 2 con el resto de sus datos.
 
 ---
 
@@ -75,6 +80,11 @@ python 2_generar_textos.py
 - **Distancia** calculada con haversine desde el centro de la localidad usando
   **tus coordenadas** (sin Google Maps ni Nominatim).
 - **Cómo llegar** a partir de la dirección + la localidad.
+- **Mapeo a las 24 localidades de la app**: por nombre de ciudad cuando coincide;
+  para comunas que abarcan varios pueblos (Río Ibáñez, Cisnes) se asigna por
+  **cercanía de coordenadas**; Lago Verde (sin localidad propia) va a La Junta.
+  Al final el script imprime cuántos se asignaron por cada método para que los
+  revises. Los que quedan sin coordenadas se ubican en el centro de su localidad.
 
 Salidas:
 - **`servicios_completos.xlsx`** — todos los campos, uno por fila, para revisar y
