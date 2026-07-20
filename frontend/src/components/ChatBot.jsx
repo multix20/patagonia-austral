@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
+import Huemul from './Huemul'
 import { useI18n } from '../i18n'
 
 // Asistente turístico offline: motor de reglas que responde con los
@@ -205,7 +206,7 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
     <div className="chat" role="dialog" aria-label={t('chatNombre')}>
       <div className="chat-header">
         <div className="avatar">
-          <Icon nombre="spark" tam={22} />
+          <Huemul tam={24} />
         </div>
         <div className="ch-info">
           <div className="ch-nombre">{t('chatNombre')}</div>

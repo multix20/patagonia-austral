@@ -4,6 +4,7 @@ import { CATEGORIAS } from './data/places'
 import { obtenerLugares, obtenerAvisos, obtenerLocalidades } from './api/client'
 import { activarPush, pushSoportado } from './push'
 import Icon from './components/Icon'
+import Huemul from './components/Huemul'
 import MapView from './components/MapView'
 import PlaceDetail from './components/PlaceDetail'
 import ChatBot from './components/ChatBot'
@@ -444,9 +445,9 @@ function AppInterna() {
       )}
 
       <button className="fab-chat" onClick={() => setChatAbierto(true)} aria-label={t('chatNombre')}>
-        {/* Crossfade: la cordillera (Aysén) aparece y desaparece alternando con el spark */}
+        {/* Crossfade: el huemul (emblema de Aysén) aparece y desaparece alternando con el spark */}
         <span className="fab-iconos" aria-hidden="true">
-          <Icon nombre="mountain" tam={26} />
+          <Huemul tam={27} />
           <Icon nombre="spark" tam={26} />
         </span>
         <span className="globito">{t('chatDudas')}</span>

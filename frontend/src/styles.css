@@ -848,7 +848,7 @@ h1 small {
 .fab-chat:active {
   transform: scale(0.95);
 }
-/* Crossfade del FAB: la cordillera de Aysén aparece y desaparece
+/* Crossfade del FAB: el huemul (emblema de Aysén) aparece y desaparece
    alternando con el spark del asistente (ciclo de 7 s) */
 .fab-iconos {
   position: relative;
