@@ -21,6 +21,30 @@ class LocalidadSeeder extends Seeder
     {
         $localidades = [
             [
+                'slug' => 'villa-santa-lucia',
+                'nombre' => ['es' => 'Villa Santa Lucía', 'en' => 'Villa Santa Lucía'],
+                'lat' => -43.4167,
+                'lng' => -72.3667,
+                'zoom' => 15,
+                'orden' => 50,
+            ],
+            [
+                'slug' => 'futaleufu',
+                'nombre' => ['es' => 'Futaleufú', 'en' => 'Futaleufú'],
+                'lat' => -43.1847,
+                'lng' => -71.8697,
+                'zoom' => 14,
+                'orden' => 55,
+            ],
+            [
+                'slug' => 'palena',
+                'nombre' => ['es' => 'Palena', 'en' => 'Palena'],
+                'lat' => -43.6167,
+                'lng' => -71.8000,
+                'zoom' => 15,
+                'orden' => 58,
+            ],
+            [
                 'slug' => 'la-junta',
                 'nombre' => ['es' => 'La Junta', 'en' => 'La Junta'],
                 'lat' => -43.9756,

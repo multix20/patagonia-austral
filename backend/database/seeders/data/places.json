@@ -2890,5 +2890,586 @@
       "es": "En el centro.",
       "en": "Downtown."
     }
+  },
+  {
+    "id": 125,
+    "cat": "atractivo",
+    "localidad": "villa-santa-lucia",
+    "lat": -43.4167,
+    "lng": -72.3667,
+    "nombre": {
+      "es": "Villa Santa Lucía — el cruce",
+      "en": "Villa Santa Lucía — the junction"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Pueblo-cruce donde la Ruta 7 se encuentra con el camino a Futaleufú y Palena. Reconstruido con enorme resiliencia tras el aluvión de 2017, que se recuerda con un memorial; hoy es parada obligada para orientarse y decidir ruta.",
+      "en": "A junction village where Route 7 meets the road to Futaleufú and Palena. Rebuilt with great resilience after the 2017 landslide, remembered with a memorial; today it is the natural stop to get oriented and choose your route."
+    },
+    "como": {
+      "es": "Sobre la Ruta 7, en el cruce.",
+      "en": "On Route 7, at the junction."
+    }
+  },
+  {
+    "id": 126,
+    "cat": "atractivo",
+    "localidad": "villa-santa-lucia",
+    "lat": -43.3,
+    "lng": -72.32,
+    "nombre": {
+      "es": "Lago Yelcho",
+      "en": "Yelcho Lake"
+    },
+    "dist": {
+      "es": "15 km · 20 min al norte",
+      "en": "15 km · 20 min north"
+    },
+    "desc": {
+      "es": "Gran lago color esmeralda encajonado entre montañas selváticas, famoso mundialmente por la pesca de truchas y salmones. La Ruta 7 lo bordea; el puente Yelcho y sus orillas son paradas clásicas de foto.",
+      "en": "A big emerald lake boxed in by rainforest mountains, world-famous for trout and salmon fishing. Route 7 skirts its shore; the Yelcho bridge and lakeside pull-offs are classic photo stops."
+    },
+    "como": {
+      "es": "Sobre la Ruta 7 al norte del pueblo; lodges y accesos señalizados.",
+      "en": "On Route 7 north of the village; lodges and signposted accesses."
+    }
+  },
+  {
+    "id": 127,
+    "cat": "atractivo",
+    "localidad": "villa-santa-lucia",
+    "lat": -43.36,
+    "lng": -72.42,
+    "nombre": {
+      "es": "Sendero Ventisquero Yelcho",
+      "en": "Yelcho Glacier Trail"
+    },
+    "dist": {
+      "es": "20 km · 30 min al norte",
+      "en": "20 km · 30 min north"
+    },
+    "desc": {
+      "es": "Caminata por bosque siempreverde hasta el mirador del ventisquero que cuelga sobre el valle del Yelcho. Sendero de media dificultad, ida y vuelta en unas 4 horas.",
+      "en": "A walk through evergreen forest to the viewpoint of the glacier hanging above the Yelcho valley. A moderate trail, about 4 hours round trip."
+    },
+    "como": {
+      "es": "Inicio señalizado sobre la Ruta 7, cerca del puente Yelcho.",
+      "en": "Signposted trailhead on Route 7, near the Yelcho bridge."
+    }
+  },
+  {
+    "id": 128,
+    "cat": "servicio",
+    "localidad": "villa-santa-lucia",
+    "lat": -43.4165,
+    "lng": -72.3665,
+    "nombre": {
+      "es": "Abastecimiento en el cruce",
+      "en": "Supplies at the junction"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Almacenes básicos y venta informal de combustible — no hay estación de servicio. Los puntos confiables más cercanos son La Junta (al sur), Chaitén (al norte) y Futaleufú (por el desvío). Planifica el estanque en este tramo.",
+      "en": "Basic shops and informally sold fuel — there is no service station. The nearest reliable stops are La Junta (south), Chaitén (north) and Futaleufú (via the detour). Plan your tank on this stretch."
+    },
+    "como": {
+      "es": "En el pueblo, sobre la Ruta 7.",
+      "en": "In the village, on Route 7."
+    }
+  },
+  {
+    "id": 129,
+    "cat": "alojamiento",
+    "localidad": "villa-santa-lucia",
+    "lat": -43.417,
+    "lng": -72.367,
+    "nombre": {
+      "es": "Hospedaje en Villa Santa Lucía (ejemplo)",
+      "en": "Guesthouse in Villa Santa Lucía (example)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Hospedajes familiares sencillos en el cruce. Se reemplazará por comercios reales.",
+      "en": "Sample placeholder. Simple family guesthouses at the junction. To be replaced with real businesses."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In the village."
+    }
+  },
+  {
+    "id": 130,
+    "cat": "comida",
+    "localidad": "villa-santa-lucia",
+    "lat": -43.4163,
+    "lng": -72.3662,
+    "nombre": {
+      "es": "Comedor en Villa Santa Lucía (ejemplo)",
+      "en": "Eatery in Villa Santa Lucía (example)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Cocina casera para el viajero que cruza entre la Ruta 7 y Futaleufú/Palena. Se reemplazará por locales reales.",
+      "en": "Sample placeholder. Home cooking for travellers switching between Route 7 and Futaleufú/Palena. To be replaced with real venues."
+    },
+    "como": {
+      "es": "En el cruce.",
+      "en": "At the junction."
+    }
+  },
+  {
+    "id": 131,
+    "cat": "emergencia",
+    "localidad": "villa-santa-lucia",
+    "lat": -43.416,
+    "lng": -72.3672,
+    "tel": "131",
+    "nombre": {
+      "es": "Posta de Salud Rural Villa Santa Lucía",
+      "en": "Villa Santa Lucía Rural Health Post"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Posta rural para primeros auxilios y urgencias básicas. Las derivaciones mayores van al Hospital de Chaitén. SAMU 131.",
+      "en": "Rural post for first aid and basic emergencies. Major cases are referred to Chaitén Hospital. SAMU ambulance 131."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In the village."
+    }
+  },
+  {
+    "id": 132,
+    "cat": "emergencia",
+    "localidad": "villa-santa-lucia",
+    "lat": -43.4164,
+    "lng": -72.3664,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Villa Santa Lucía",
+      "en": "Police — Villa Santa Lucía"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Retén de Carabineros en el cruce hacia Futaleufú y Palena. Marca 133.",
+      "en": "Police outpost at the junction toward Futaleufú and Palena. Dial 133."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In the village."
+    }
+  },
+  {
+    "id": 133,
+    "cat": "atractivo",
+    "localidad": "futaleufu",
+    "lat": -43.19,
+    "lng": -71.9,
+    "nombre": {
+      "es": "Río Futaleufú — rafting y kayak",
+      "en": "Futaleufú River — rafting & kayaking"
+    },
+    "dist": {
+      "es": "Junto al pueblo",
+      "en": "Next to town"
+    },
+    "desc": {
+      "es": "Aguas turquesas y rápidos de clase mundial: el \"Futa\" figura entre los mejores ríos del planeta para rafting y kayak. Operadores locales ofrecen bajadas de todos los niveles en temporada, además de flotadas suaves para ver el cañón.",
+      "en": "Turquoise water and world-class rapids: the “Futa” ranks among the planet’s best rivers for rafting and kayaking. Local operators run descents for all levels in season, plus gentle floats to see the canyon."
+    },
+    "como": {
+      "es": "Salidas desde el pueblo con operadores certificados; reserva en temporada alta.",
+      "en": "Trips depart from town with certified operators; book ahead in high season."
+    }
+  },
+  {
+    "id": 134,
+    "cat": "atractivo",
+    "localidad": "futaleufu",
+    "lat": -43.2,
+    "lng": -71.95,
+    "nombre": {
+      "es": "Lago Espolón",
+      "en": "Espolón Lake"
+    },
+    "dist": {
+      "es": "8 km · 15 min",
+      "en": "8 km · 15 min"
+    },
+    "desc": {
+      "es": "Lago tranquilo de aguas templadas en verano, rodeado de cerros y campos; playa, camping y kayak suave. El contrapunto sereno a los rápidos del Futaleufú.",
+      "en": "A calm lake, warm-ish in summer, ringed by hills and farmland; beach, camping and easy kayaking. The serene counterpoint to the Futaleufú rapids."
+    },
+    "como": {
+      "es": "Camino señalizado desde el acceso al pueblo.",
+      "en": "Signposted road from the town access."
+    }
+  },
+  {
+    "id": 135,
+    "cat": "atractivo",
+    "localidad": "futaleufu",
+    "lat": -43.25,
+    "lng": -71.85,
+    "nombre": {
+      "es": "Reserva Nacional Futaleufú",
+      "en": "Futaleufú National Reserve"
+    },
+    "dist": {
+      "es": "10 km · 20 min al sur",
+      "en": "10 km · 20 min south"
+    },
+    "desc": {
+      "es": "Bosques de ciprés de la cordillera y lenga que protegen al huemul, con senderos y miradores sobre el valle del río. Área CONAF poco visitada, ideal para caminatas tranquilas.",
+      "en": "Mountain-cypress and lenga forests protecting the huemul deer, with trails and viewpoints over the river valley. A little-visited CONAF area, ideal for quiet hikes."
+    },
+    "como": {
+      "es": "Acceso señalizado al sur del pueblo; entrada CONAF.",
+      "en": "Signposted access south of town; CONAF entrance."
+    }
+  },
+  {
+    "id": 136,
+    "cat": "atractivo",
+    "localidad": "futaleufu",
+    "lat": -43.18,
+    "lng": -71.8,
+    "nombre": {
+      "es": "Paso fronterizo Futaleufú (Argentina)",
+      "en": "Futaleufú border crossing (Argentina)"
+    },
+    "dist": {
+      "es": "10 km · 15 min al este",
+      "en": "10 km · 15 min east"
+    },
+    "desc": {
+      "es": "Cruce internacional hacia Trevelin y Esquel, en la Patagonia argentina — una de las entradas y salidas clásicas de la Carretera Austral. Trámite ágil en temporada; revisa horarios de atención y documentos del vehículo.",
+      "en": "International crossing to Trevelin and Esquel in Argentine Patagonia — one of the classic ways in and out of the Carretera Austral. Usually quick in season; check opening hours and vehicle paperwork."
+    },
+    "como": {
+      "es": "Camino al este desde el pueblo hasta el complejo fronterizo.",
+      "en": "Road east from town to the border complex."
+    }
+  },
+  {
+    "id": 137,
+    "cat": "servicio",
+    "localidad": "futaleufu",
+    "lat": -43.1845,
+    "lng": -71.8695,
+    "nombre": {
+      "es": "Combustible y servicios",
+      "en": "Fuel and services"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Futaleufú tiene combustible, comercio y cajero — el punto de servicios del ramal este. Carga aquí si sigues a Palena o vuelves a la Ruta 7; confirma efectivo antes de fines de semana largos.",
+      "en": "Futaleufú has fuel, shops and an ATM — the service point of the eastern branch. Fill up here if continuing to Palena or returning to Route 7; secure cash before long weekends."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In town."
+    }
+  },
+  {
+    "id": 138,
+    "cat": "alojamiento",
+    "localidad": "futaleufu",
+    "lat": -43.185,
+    "lng": -71.87,
+    "nombre": {
+      "es": "Alojamiento en Futaleufú (ejemplo)",
+      "en": "Lodging in Futaleufú (example)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Del camping al lodge de río: Futaleufú tiene la oferta más variada del ramal, empujada por el turismo de aventura. Se reemplazará por comercios reales.",
+      "en": "Sample placeholder. From campsites to river lodges, Futaleufú has the branch’s most varied offer, driven by adventure tourism. To be replaced with real businesses."
+    },
+    "como": {
+      "es": "Varios en el pueblo y junto al río.",
+      "en": "Several in town and by the river."
+    }
+  },
+  {
+    "id": 139,
+    "cat": "comida",
+    "localidad": "futaleufu",
+    "lat": -43.1843,
+    "lng": -71.8692,
+    "nombre": {
+      "es": "Restaurante en Futaleufú (ejemplo)",
+      "en": "Restaurant in Futaleufú (example)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Cocina cordillerana y cafés para el después del río. Se reemplazará por locales reales.",
+      "en": "Sample placeholder. Mountain cooking and cafés for after the river. To be replaced with real venues."
+    },
+    "como": {
+      "es": "En torno a la plaza.",
+      "en": "Around the square."
+    }
+  },
+  {
+    "id": 140,
+    "cat": "emergencia",
+    "localidad": "futaleufu",
+    "lat": -43.184,
+    "lng": -71.8705,
+    "tel": "131",
+    "nombre": {
+      "es": "Hospital de Futaleufú",
+      "en": "Futaleufú Hospital"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Hospital comunitario para urgencias de la comuna; primer punto de atención ante accidentes de río o montaña. Casos graves se derivan a Puerto Montt (vía aérea) o Esquel. SAMU 131.",
+      "en": "Community hospital for the district; the first stop for river or mountain accidents. Serious cases are referred to Puerto Montt (by air) or Esquel. SAMU ambulance 131."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In town."
+    }
+  },
+  {
+    "id": 141,
+    "cat": "emergencia",
+    "localidad": "futaleufu",
+    "lat": -43.1846,
+    "lng": -71.8694,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Futaleufú",
+      "en": "Police — Futaleufú"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In town"
+    },
+    "desc": {
+      "es": "Emergencias policiales, coordinación de rescates de río y control del paso fronterizo. Marca 133.",
+      "en": "Police emergencies, river-rescue coordination and border-crossing control. Dial 133."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In town."
+    }
+  },
+  {
+    "id": 142,
+    "cat": "atractivo",
+    "localidad": "palena",
+    "lat": -43.6167,
+    "lng": -71.8,
+    "nombre": {
+      "es": "Palena — pueblo huaso y su rodeo",
+      "en": "Palena — cowboy village & rodeo"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Pueblo ganadero del alto valle del Palena que conserva viva la cultura huasa y pionera: rodeos, jineteadas y fiestas costumbristas de verano, entre cerros y campos de pastoreo.",
+      "en": "A ranching village in the upper Palena valley that keeps pioneer and huaso culture alive: rodeos, horse-taming shows and summer folk festivals, set among hills and grazing land."
+    },
+    "como": {
+      "es": "En el pueblo; la medialuna está junto al casco.",
+      "en": "In the village; the rodeo ring sits by the centre."
+    }
+  },
+  {
+    "id": 143,
+    "cat": "atractivo",
+    "localidad": "palena",
+    "lat": -43.6,
+    "lng": -71.85,
+    "nombre": {
+      "es": "Alto río Palena — valle y cabalgatas",
+      "en": "Upper Palena River — valley & horse rides"
+    },
+    "dist": {
+      "es": "En torno al pueblo",
+      "en": "Around the village"
+    },
+    "desc": {
+      "es": "El tramo alto del río Palena corre entre praderas y montañas: pesca tranquila, cabalgatas con arrieros locales y rutas camperas que son la esencia de la Patagonia continental.",
+      "en": "The upper Palena flows between meadows and mountains: quiet fishing, horse rides with local herdsmen and country routes that capture inland Patagonia’s essence."
+    },
+    "como": {
+      "es": "Excursiones coordinadas con guías y arrieros del pueblo.",
+      "en": "Trips arranged with village guides and herdsmen."
+    }
+  },
+  {
+    "id": 144,
+    "cat": "atractivo",
+    "localidad": "palena",
+    "lat": -43.63,
+    "lng": -71.73,
+    "nombre": {
+      "es": "Paso fronterizo Río Encuentro (Argentina)",
+      "en": "Río Encuentro border crossing (Argentina)"
+    },
+    "dist": {
+      "es": "8 km · 15 min al este",
+      "en": "8 km · 15 min east"
+    },
+    "desc": {
+      "es": "Cruce internacional tranquilo hacia Carrenleufú y la Patagonia argentina. Alternativa poco transitada al paso de Futaleufú; revisa horarios antes de ir.",
+      "en": "A quiet international crossing to Carrenleufú and Argentine Patagonia. A low-traffic alternative to the Futaleufú pass; check opening hours before going."
+    },
+    "como": {
+      "es": "Camino al este del pueblo hasta el límite.",
+      "en": "Road east of the village to the border."
+    }
+  },
+  {
+    "id": 145,
+    "cat": "servicio",
+    "localidad": "palena",
+    "lat": -43.6165,
+    "lng": -71.7995,
+    "nombre": {
+      "es": "Abastecimiento y combustible",
+      "en": "Supplies and fuel"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Almacenes y venta local de combustible; la disponibilidad puede variar, así que confirma antes de contar con ella. El punto seguro del ramal es Futaleufú.",
+      "en": "Shops and locally sold fuel; availability can vary, so confirm before counting on it. The branch’s reliable stop is Futaleufú."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In the village."
+    }
+  },
+  {
+    "id": 146,
+    "cat": "alojamiento",
+    "localidad": "palena",
+    "lat": -43.617,
+    "lng": -71.8005,
+    "nombre": {
+      "es": "Hospedaje en Palena (ejemplo)",
+      "en": "Guesthouse in Palena (example)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Hospedajes y cabañas familiares de ambiente campero. Se reemplazará por comercios reales.",
+      "en": "Sample placeholder. Family guesthouses and cabins with a country feel. To be replaced with real businesses."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In the village."
+    }
+  },
+  {
+    "id": 147,
+    "cat": "comida",
+    "localidad": "palena",
+    "lat": -43.6163,
+    "lng": -71.7992,
+    "nombre": {
+      "es": "Comedor en Palena (ejemplo)",
+      "en": "Eatery in Palena (example)"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Marcador de ejemplo. Cocina casera de campo — asado, sopaipillas, repostería. Se reemplazará por locales reales.",
+      "en": "Sample placeholder. Country home cooking — barbecue, sopaipillas, pastries. To be replaced with real venues."
+    },
+    "como": {
+      "es": "En el centro.",
+      "en": "Downtown."
+    }
+  },
+  {
+    "id": 148,
+    "cat": "emergencia",
+    "localidad": "palena",
+    "lat": -43.616,
+    "lng": -71.8002,
+    "tel": "131",
+    "nombre": {
+      "es": "Posta de Salud Palena",
+      "en": "Palena Health Post"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Atención primaria y urgencias básicas del alto valle. Las derivaciones mayores van a Futaleufú o Chaitén, y los casos graves a Puerto Montt. SAMU 131.",
+      "en": "Primary care and basic emergencies for the upper valley. Major cases go to Futaleufú or Chaitén, and serious ones to Puerto Montt. SAMU ambulance 131."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In the village."
+    }
+  },
+  {
+    "id": 149,
+    "cat": "emergencia",
+    "localidad": "palena",
+    "lat": -43.6164,
+    "lng": -71.7998,
+    "tel": "133",
+    "nombre": {
+      "es": "Carabineros de Chile — Palena",
+      "en": "Police — Palena"
+    },
+    "dist": {
+      "es": "En el pueblo",
+      "en": "In the village"
+    },
+    "desc": {
+      "es": "Emergencias policiales, rescates rurales y control del paso Río Encuentro. Marca 133.",
+      "en": "Police emergencies, rural rescues and Río Encuentro border control. Dial 133."
+    },
+    "como": {
+      "es": "En el pueblo.",
+      "en": "In the village."
+    }
   }
 ]

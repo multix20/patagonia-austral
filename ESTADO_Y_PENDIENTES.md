@@ -216,10 +216,26 @@ Lago Rosselot, confluencia de ríos, río Palena (pesca/rafting), desvío a Raú
 Marín Balmaceda (costa/delfines), combustible+cajero confiable, hospital,
 Carabineros y ejemplos. Total: **16 localidades, 124 lugares**. **Verificado:**
 build frontend OK, `php -l` OK, ids únicos 1-124, sin huérfanos.
-**Hito:** completo el tramo norte de Aysén (Coyhaique → La Junta). **Siguiente
-milestone (Región de Los Lagos):** Villa Santa Lucía, Futaleufú, Palena, Chaitén,
-Parque Pumalín/Caleta Gonzalo, Hornopirén y Puerto Montt — incluye las **barcazas**
-del tramo y el **cambio de identidad** a "Puerto Montt a Villa O'Higgins".
+**Hito:** completo el tramo norte de Aysén (Coyhaique → La Junta). **Mergeado a
+`main` y desplegado (20-jul-2026)**: el bloque Aysén completo (entregas 1-4,
+verificado además en navegador con Playwright: selector con los pueblos nuevos,
+búsqueda, filtrado por localidad sin fugas, sin errores JS).
+
+**Avance (20-jul-2026) — Entrega 5: Villa Santa Lucía (50) + Futaleufú (55) +
+Palena (58).** Primer clúster de la **Región de Los Lagos**: el cruce de la Ruta 7
+y su ramal este (bifurcación en Puerto Ramírez). Villa Santa Lucía, **8 lugares**
+(ids 125-132): el cruce y su memorial del aluvión 2017, lago Yelcho, sendero
+Ventisquero Yelcho, abastecimiento (sin estación — aviso), posta, Carabineros y
+ejemplos. Futaleufú, **9 lugares** (ids 133-141): río Futaleufú (rafting/kayak de
+clase mundial), lago Espolón, R.N. Futaleufú, paso fronterizo a Argentina,
+combustible+cajero, hospital, Carabineros y ejemplos. Palena, **8 lugares**
+(ids 142-149): pueblo huaso y rodeo, alto valle del Palena (cabalgatas), paso Río
+Encuentro, abastecimiento (variable — aviso), posta, Carabineros y ejemplos.
+Total: **19 localidades, 149 lugares**. **Verificado:** build frontend OK,
+`php -l` OK, ids únicos 1-149, sin huérfanos, cadena de `orden` correcta.
+**Siguiente:** Chaitén (40) + El Amarillo (45), luego Parque Pumalín/Caleta
+Gonzalo (30), Hornopirén (20) y Puerto Montt (10) con las **barcazas** y el
+**cambio de identidad** a "Puerto Montt a Villa O'Higgins".
 
 **Localidades de trabajo, norte→sur** (lista a afinar en la ejecución):
 - **Región de Los Lagos:** Puerto Montt (km 0) · Hornopirén (comuna Hualaihué) ·
