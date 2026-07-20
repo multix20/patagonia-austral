@@ -1,0 +1,44 @@
+# CI de Patagonia Austral — corre en cada Pull Request hacia main y en push a main.
+# Frontend: instala, lint (oxlint) y build (vite) — la regla del proyecto es que
+# `npm run build` debe pasar antes de integrar. Backend: valida composer y hace
+# lint de sintaxis PHP (sin base de datos, para que sea rápido y sin secretos).
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  frontend:
+    name: Frontend (lint + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+  backend:
+    name: Backend (PHP lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+      - name: Validar composer.json
+        working-directory: backend
+        run: composer validate --no-check-publish
+      - name: Lint de sintaxis PHP
+        working-directory: backend
+        run: find app database routes config -name '*.php' -print0 | xargs -0 -n1 -P4 php -l

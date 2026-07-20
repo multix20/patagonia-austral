@@ -29,8 +29,9 @@ Guía completa: `DEPLOY.md`. Push a `main` = redeploy automático de Render y Ne
   APP_KEY, VAPID_PRIVATE_KEY, DB_URL y ADMIN_PASSWORD viven solo en dashboards.
 - **Idioma**: código y docs en español; contenido de la app bilingüe ES/EN
   (diccionario en `frontend/src/i18n.jsx`).
-- **Flujo git**: rama de trabajo → merge fast-forward a `main` → push (el push
-  a `main` despliega). No crear PRs salvo pedido explícito.
+- **Flujo git**: rama de trabajo → **Pull Request** hacia `main` → CI (build +
+  lint) en verde → merge (rebase, historial lineal). El merge a `main` despliega.
+  CI en `.github/workflows/ci.yml`.
 - El usuario semilla `test@example.com` solo existe fuera de producción; el
   seeder lo elimina en producción y crea el admin desde `ADMIN_EMAIL`/`ADMIN_PASSWORD`.
 - Push: el permiso se pide al instalar la PWA (`appinstalled`) + red de
