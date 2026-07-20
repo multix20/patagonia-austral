@@ -444,7 +444,11 @@ function AppInterna() {
       )}
 
       <button className="fab-chat" onClick={() => setChatAbierto(true)} aria-label={t('chatNombre')}>
-        <Icon nombre="spark" tam={26} />
+        {/* Crossfade: la cordillera (Aysén) aparece y desaparece alternando con el spark */}
+        <span className="fab-iconos" aria-hidden="true">
+          <Icon nombre="mountain" tam={26} />
+          <Icon nombre="spark" tam={26} />
+        </span>
         <span className="globito">{t('chatDudas')}</span>
       </button>
 

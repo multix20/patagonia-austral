@@ -228,9 +228,7 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
         ))}
         {escribiendo && (
           <div className="escribiendo">
-            <span />
-            <span />
-            <span />
+            <Icon nombre="spark" tam={16} />
           </div>
         )}
       </div>
