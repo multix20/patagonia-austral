@@ -300,12 +300,46 @@ lugares nuevos en la fase). Cadena de `orden` norte→sur: 10 Puerto Montt …
   verificables marcados **"(ejemplo)"** hasta la Fase 3.
 
 ### 5. Fase 3 — Capa comercial
-Fichas destacadas, planes de negocio, analítica.
+Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
+
+- **Contenido SERNATUR importado (20-jul-2026):** 182 servicios de alojamiento
+  de la Región de Aysén (9 comunas) cargados a producción **en borrador**
+  (`publicado=false`, ids 2000–2181), pendientes de revisión y publicación desde
+  `/admin`. Pipeline reproducible en `scripts/sernatur/` (scraping de teléfono/
+  email por ficha, generación de descripciones ES/EN + distancias, seeder
+  `SernaturPlaceSeeder`). Textos base autogenerados por tipo → personalizar los
+  destacados. Deshacer: `Place::whereBetween('id',[2000,2181])->delete()`.
+
+> **⚠ Bloqueo de infraestructura para el crowdsourcing:** los reportes en vivo
+> (bencina, cortes, clima, barcazas) necesitan **worker de colas + scheduler**,
+> que en **Render free NO corren**, y el arranque en frío (~50s al dormirse a los
+> 15 min) es incompatible con algo casi-tiempo-real. → Requiere el always-on de
+> la Fase 4 ANTES de encender la Fase 3 en serio. Parche mientras tanto:
+> keep-alive con ping a `/up` cada ~10 min (cron-job.org).
 
 ### 6. Fase 4 — Producción definitiva
 Dominio propio + SSL, respaldos + restauración, logs y monitoreo,
 almacenamiento de imágenes en la nube (S3 o equivalente), difusión.
 Base lista: `docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`.
+
+**Plan de migración de infraestructura (anotado 20-jul-2026).** Veredicto: el
+stack de frameworks (React/Vite/PWA + Laravel/Filament + Postgres) es el
+adecuado — NO reescribir. La mejora real está en el deploy, y se vuelve
+necesaria justo al arrancar la Fase 3:
+
+- **Sacar el backend del plan gratis de Render a un host *always-on*.** Es la
+  mejora que mueve la aguja: elimina los arranques en frío **y** habilita el
+  scheduler (avisos programados) + el worker de colas (crowdsourcing).
+- **Camino ya preparado:** VPS de ~5–6 USD/mes (Hetzner/DigitalOcean) con el
+  `docker-compose.prod.yml` existente (Caddy+SSL) → backend + Postgres + worker
+  + scheduler, sin dormirse y con control total.
+- **Imágenes de reportes/fichas:** almacenamiento S3-compatible; **Cloudflare R2**
+  (egress gratis) como opción más barata.
+- **Observabilidad:** Sentry (free) para errores antes de tener usuarios reales.
+- **Respaldos:** PITR/backups del Postgres (Neon los da parcialmente; en VPS,
+  automatizar dump + retención).
+- **NO hacer:** migrar a Next.js/TypeScript/backend JS (no resuelve nada real y
+  tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
 - **✅ UX de multi-localidad (Fase 2) — RESUELTO (14-jul-2026):**
