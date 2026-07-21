@@ -1,5 +1,7 @@
 *.log
 .DS_Store
+# Dato fuente SERNATUR: se genera con scripts/sernatur y no se versiona
+/database/seeders/data/sernatur_places.json
 .env
 .env.backup
 .env.production
