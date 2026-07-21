@@ -134,10 +134,12 @@ export const LOCALIDADES_SEED = [
   },
 ]
 
+// El orden de las claves define el orden de los botones de categoría en la app:
+// "Dónde dormir" y "Dónde comer" primero, que es lo que más busca el turista.
 export const CATEGORIAS = {
-  atractivo: { nombre: { es: 'Qué visitar', en: 'What to visit' }, icono: 'mountain', fondo: '#E1F5EE', color: '#0F6E56' },
   alojamiento: { nombre: { es: 'Dónde dormir', en: 'Where to sleep' }, icono: 'bed', fondo: '#EEEDFE', color: '#534AB7' },
   comida: { nombre: { es: 'Dónde comer', en: 'Where to eat' }, icono: 'utensils', fondo: '#FAECE7', color: '#D85A30' },
+  atractivo: { nombre: { es: 'Qué visitar', en: 'What to visit' }, icono: 'mountain', fondo: '#E1F5EE', color: '#0F6E56' },
   servicio: { nombre: { es: 'Servicios', en: 'Services' }, icono: 'fuel', fondo: '#E6F1FB', color: '#185FA5' },
   evento: { nombre: { es: 'Eventos', en: 'Events' }, icono: 'calendar', fondo: '#FBEAF0', color: '#D4537E' },
   emergencia: { nombre: { es: 'Emergencias', en: 'Emergencies' }, icono: 'cross', fondo: '#FCEBEB', color: '#A32D2D' },
