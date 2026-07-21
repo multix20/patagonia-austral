@@ -47,9 +47,12 @@ JSON_SALIDA = AQUI / "sernatur_places.json"
 # updateOrCreate por id, así que estos ids deben ser estables entre corridas.
 BASE_ID = 2000
 
-# ¿Publicar de inmediato o dejar en borrador para revisar en /admin?
-# Recomendado: False → el fundador revisa las descripciones y luego publica.
-PUBLICAR = False
+# Siembra gratis de Fase 3: de CADA localidad se PUBLICAN los N alojamientos con
+# los datos más completos (teléfono / dirección / email); el resto queda en
+# BORRADOR para revisarlo o venderlo después. El seeder lee este flag por-lugar.
+#   TOP_POR_LOCALIDAD = 10 → top 10 por localidad publicados.
+#   TOP_POR_LOCALIDAD = 0  → todo en borrador (no publica nada).
+TOP_POR_LOCALIDAD = 10
 
 # --------------------------------------------------------------------------- #
 # Localidades (slug + coordenadas del centro) — en espejo con LocalidadSeeder.php
@@ -323,6 +326,54 @@ def corrige_placeholders(registros: list[dict]) -> int:
 
 
 # --------------------------------------------------------------------------- #
+# Selección "siembra gratis": top N por localidad según completitud de datos
+# --------------------------------------------------------------------------- #
+# Se prioriza el alojamiento con la ficha más útil para el viajero: teléfono
+# (lo más importante en un directorio), luego dirección y email. El puntaje es
+# solo para ordenar dentro de cada localidad; a igualdad, orden alfabético
+# (determinista entre corridas).
+def puntua_completitud(r: dict) -> int:
+    return 3 * bool(r.get("tel")) + 2 * bool(r.get("direccion")) + 1 * bool(r.get("email"))
+
+
+def selecciona_publicables(registros: list[dict]) -> dict[str, tuple[int, int]]:
+    """Marca r['publicado'] = True para los TOP_POR_LOCALIDAD mejores de cada
+    localidad; el resto False. Devuelve {slug: (publicados, total)} para el reporte.
+    Anota r['score'] y r['rank_loc'] (1-based) en cada registro."""
+    por_loc: dict[str, list[dict]] = {}
+    for r in registros:
+        por_loc.setdefault(r["localidad"], []).append(r)
+
+    resumen: dict[str, tuple[int, int]] = {}
+    for slug, items in por_loc.items():
+        items.sort(key=lambda r: (-puntua_completitud(r), sin_acentos(r["nombre"]["es"])))
+        for i, r in enumerate(items):
+            r["score"] = puntua_completitud(r)
+            r["rank_loc"] = i + 1
+            r["publicado"] = i < TOP_POR_LOCALIDAD
+        resumen[slug] = (sum(1 for r in items if r["publicado"]), len(items))
+    return resumen
+
+
+def escribe_reporte(registros: list[dict]) -> Path:
+    """CSV de auditoría de la selección: qué se publica y por qué, por localidad."""
+    ruta = AQUI / "seleccion_gratis.csv"
+    filas = sorted(registros, key=lambda r: (r["localidad"], r["rank_loc"]))
+    with open(ruta, "w", encoding="utf-8-sig", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["localidad", "rank", "publicado", "score", "tel", "email",
+                    "direccion", "id", "id_sernatur", "nombre"])
+        for r in filas:
+            w.writerow([
+                r["localidad"], r["rank_loc"], "SI" if r["publicado"] else "borrador",
+                r["score"], "✔" if r.get("tel") else "", "✔" if r.get("email") else "",
+                "✔" if r.get("direccion") else "", r["id"], r["id_sernatur"],
+                r["nombre"]["es"],
+            ])
+    return ruta
+
+
+# --------------------------------------------------------------------------- #
 # Carga y combinación de los dos CSV
 # --------------------------------------------------------------------------- #
 def _detecta(campos, candidatos):
@@ -452,23 +503,35 @@ def main() -> None:
     # Reubica al centro del pueblo los servicios con coordenada placeholder.
     corregidos = corrige_placeholders(registros)
 
-    # ---- JSON para el seeder (forma exacta de places.json) ---------------- #
+    # Siembra gratis: publica los N con mejores datos de cada localidad.
+    resumen_sel = selecciona_publicables(registros)
+    publicados = sum(p for p, _ in resumen_sel.values())
+
+    # ---- JSON para el seeder (forma exacta de places.json + publicado) ---- #
     lugares_json = [{
         "id": r["id"], "cat": r["cat"], "localidad": r["localidad"],
         "lat": r["lat"], "lng": r["lng"],
         **({"tel": r["tel"]} if r["tel"] else {}),
         "nombre": r["nombre"], "desc": r["desc"],
         "como": r["como"], "dist": r["dist"],
+        "publicado": r["publicado"],
     } for r in registros]
     JSON_SALIDA.write_text(
         json.dumps(lugares_json, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    # ---- Excel de revisión ------------------------------------------------ #
+    # ---- Excel + reporte de la selección ---------------------------------- #
     escribe_excel(registros)
+    ruta_reporte = escribe_reporte(registros)
 
     print(f"\n✔ {len(registros)} servicios procesados.")
     print(f"  Excel: {XLSX_SALIDA.name}")
-    print(f"  JSON seeder: {JSON_SALIDA.name}  (publicado={PUBLICAR})")
+    print(f"  JSON seeder: {JSON_SALIDA.name}")
+    print(f"  Reporte selección: {ruta_reporte.name}")
+    print(f"  Publicados (top {TOP_POR_LOCALIDAD}/localidad): {publicados} · "
+          f"borrador: {len(registros) - publicados}")
+    for slug in sorted(resumen_sel):
+        pub, tot = resumen_sel[slug]
+        print(f"    {slug:22} {pub:2}/{tot}")
     print(f"  Asignación de localidad por método: {por_metodo}")
     print(f"  Coordenadas placeholder reubicadas al centro del pueblo: {corregidos}")
     print("    (ciudad = por nombre · coords = por cercanía · override = regla fija)")
@@ -493,6 +556,7 @@ def escribe_excel(registros: list[dict]) -> None:
     ws.title = "servicios"
     cols = [
         "id", "id_sernatur", "cat", "localidad", "categoria_sernatur",
+        "publicado", "score", "rank_loc",
         "lat", "lng", "tel", "email", "direccion",
         "nombre_es", "nombre_en", "desc_es", "desc_en",
         "como_es", "como_en", "dist_es", "dist_en",
@@ -503,6 +567,7 @@ def escribe_excel(registros: list[dict]) -> None:
     for r in registros:
         ws.append([
             r["id"], r["id_sernatur"], r["cat"], r["localidad"], r["categoria_sernatur"],
+            "SI" if r.get("publicado") else "borrador", r.get("score", ""), r.get("rank_loc", ""),
             r["lat"], r["lng"], r["tel"] or "", r["email"], r["direccion"],
             r["nombre"]["es"], r["nombre"]["en"], r["desc"]["es"], r["desc"]["en"],
             r["como"]["es"], r["como"]["en"], r["dist"]["es"], r["dist"]["en"],

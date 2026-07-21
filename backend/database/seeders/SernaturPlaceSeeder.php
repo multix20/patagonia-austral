@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\DB;
 // con los ids semilla ni con los que crea el CMS).
 class SernaturPlaceSeeder extends Seeder
 {
-    // Publicar de inmediato (true) o dejar en borrador para revisar en /admin (false).
+    // Respaldo cuando un registro del JSON no trae su propio flag 'publicado'
+    // (JSON antiguos, previos a la selección "siembra gratis" del paso 2).
     private const PUBLICAR = false;
 
     public function run(): void
@@ -41,7 +42,7 @@ class SernaturPlaceSeeder extends Seeder
         // Mapa slug → id de localidad (LocalidadSeeder debe haber corrido antes).
         $localidades = Localidad::pluck('id', 'slug');
 
-        $creados = $omitidos = 0;
+        $creados = $omitidos = $publicados = 0;
         foreach ($lugares as $l) {
             $slug = $l['localidad'] ?? null;
             if (! $slug || ! isset($localidades[$slug])) {
@@ -50,6 +51,10 @@ class SernaturPlaceSeeder extends Seeder
 
                 continue;
             }
+
+            // 'publicado' por-lugar (siembra gratis: top N de cada localidad).
+            // Si el JSON no lo trae, cae al respaldo global.
+            $publicado = $l['publicado'] ?? self::PUBLICAR;
 
             Place::updateOrCreate(
                 ['id' => $l['id']],
@@ -63,10 +68,11 @@ class SernaturPlaceSeeder extends Seeder
                     'como' => $l['como'],
                     'dist' => $l['dist'],
                     'localidad_id' => $localidades[$slug],
-                    'publicado' => self::PUBLICAR,
+                    'publicado' => $publicado,
                 ]
             );
             $creados++;
+            $publicados += $publicado ? 1 : 0;
         }
 
         // Sembrar con ids explícitos no avanza la secuencia de PostgreSQL:
@@ -75,7 +81,7 @@ class SernaturPlaceSeeder extends Seeder
             DB::statement("SELECT setval(pg_get_serial_sequence('places', 'id'), (SELECT COALESCE(MAX(id), 1) FROM places))");
         }
 
-        $estado = self::PUBLICAR ? 'publicados' : 'en borrador';
-        $this->command->info("SERNATUR: $creados servicios importados ($estado), $omitidos omitidos.");
+        $borrador = $creados - $publicados;
+        $this->command->info("SERNATUR: $creados servicios importados ($publicados publicados, $borrador en borrador), $omitidos omitidos.");
     }
 }

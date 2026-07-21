@@ -14,10 +14,12 @@ con_coordenadas.csv ─┐
                      └──────────────────────────────────────────────┤
                                                                       ▼
                                               [2] generar textos ─▶ servicios_completos.xlsx
-                                                  (ES/EN, distancias)  sernatur_places.json
+                                                  (ES/EN, distancias,   sernatur_places.json
+                                                   top 10/localidad)    seleccion_gratis.csv
                                                                       │
                                                                       ▼
                                               [3] SernaturPlaceSeeder ─▶ base de datos / PWA
+                                                  (top 10 publicados,     (resto en borrador)
 ```
 
 ## Requisitos (Windows, Python 3.11+)
@@ -86,14 +88,24 @@ python 2_generar_textos.py
   Al final el script imprime cuántos se asignaron por cada método para que los
   revises. Los que quedan sin coordenadas se ubican en el centro de su localidad.
 
+**Siembra gratis (Fase 3):** en vez de publicar todos o ninguno, de **cada
+localidad** se marcan como publicados los **`TOP_POR_LOCALIDAD` (por defecto 10)**
+alojamientos con la **ficha más completa** — puntaje `3·teléfono + 2·dirección +
+1·email`, y a igualdad, orden alfabético. El resto entra en **borrador** para
+revisar/ampliar (o vender) después. Pon `TOP_POR_LOCALIDAD = 0` para dejar todo
+en borrador.
+
 Salidas:
-- **`servicios_completos.xlsx`** — todos los campos, uno por fila, para revisar y
-  editar los textos a mano antes de publicar.
+- **`servicios_completos.xlsx`** — todos los campos (incluye `publicado`, `score`
+  y `rank_loc`), uno por fila, para revisar y editar los textos a mano.
 - **`sernatur_places.json`** — con la forma exacta de
-  `backend/database/seeders/data/places.json`, para el seeder.
+  `backend/database/seeders/data/places.json` **más un `publicado` por lugar**,
+  para el seeder.
+- **`seleccion_gratis.csv`** — reporte de auditoría: qué se publica en cada
+  localidad y por qué (rank, score, qué datos tiene cada ficha).
 
 Ajustes al inicio del script: `BASE_ID` (id inicial, por defecto `2000`) y
-`PUBLICAR` (por defecto `False` → entran como borrador).
+`TOP_POR_LOCALIDAD` (por defecto `10`).
 
 > **Sobre el email:** el modelo `Place` de la PWA hoy **no tiene columna email**
 > (solo `tel`). El email se conserva en el Excel y el JSON, pero el seeder no lo
@@ -118,9 +130,11 @@ Ajustes al inicio del script: `BASE_ID` (id inicial, por defecto `2000`) y
    php artisan db:seed --class=Database\\Seeders\\SernaturPlaceSeeder
    ```
 
-- Entran como **borrador** (`publicado = false`) para que los revises en `/admin`
-  y publiques cuando estén listos. Para publicarlos directo, pon
-  `PUBLICAR = True` en el paso 2 **y** `self::PUBLICAR = true` en el seeder.
+- El `publicado` de cada lugar lo decide la **selección del paso 2** (top
+  `TOP_POR_LOCALIDAD` por localidad = publicados; el resto en borrador). El seeder
+  respeta ese flag por-lugar; `self::PUBLICAR` solo se usa como respaldo si el
+  JSON no lo trae (JSON antiguos). Revisa los borradores en `/admin` y publícalos
+  cuando quieras.
 - Los ids arrancan en **2000** para no chocar con los ids semilla (~192) ni con
   los que crea el CMS.
 
