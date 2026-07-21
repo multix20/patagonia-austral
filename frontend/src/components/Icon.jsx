@@ -36,6 +36,8 @@ const RUTAS = {
   spark: 'M12 3v18M3 12h18M5.64 5.64l12.72 12.72M18.36 5.64L5.64 18.36',
   // Estrella (sello de ficha destacada — capa comercial Fase 3)
   star: 'M11.5 2.3a.6.6 0 0 1 1 0l2.6 5.3 5.8.8a.6.6 0 0 1 .3 1l-4.2 4.1 1 5.8a.6.6 0 0 1-.9.6L12 17.3l-5.2 2.7a.6.6 0 0 1-.9-.6l1-5.8L2.7 9.5a.6.6 0 0 1 .3-1l5.8-.8 2.6-5.3z',
+  // Compartir (nodos conectados, estilo Lucide share-2)
+  share: 'M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98',
 }
 
 // Formas adicionales (círculos/rects) por icono
@@ -47,6 +49,15 @@ const EXTRAS = {
   bot: [<rect key="r" width="16" height="12" x="4" y="8" rx="2" />],
   globe: [<circle key="c" cx="12" cy="12" r="10" />],
   search: [<circle key="c" cx="11" cy="11" r="8" />],
+  locate: [
+    <circle key="a" cx="12" cy="12" r="7" />,
+    <circle key="b" cx="12" cy="12" r="1.5" />,
+  ],
+  share: [
+    <circle key="a" cx="18" cy="5" r="3" />,
+    <circle key="b" cx="6" cy="12" r="3" />,
+    <circle key="c" cx="18" cy="19" r="3" />,
+  ],
 }
 
 export default function Icon({ nombre, tam = 16, color = 'currentColor', ...props }) {
