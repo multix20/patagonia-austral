@@ -383,6 +383,24 @@ h1 small {
 .pin-lugar svg {
   display: block;
 }
+/* Pin activo (el que sigue a la lista): más grande, al frente, con brinco. */
+.pin-lugar.pin-activo {
+  transform: scale(1.35);
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.42));
+  animation: pin-brinco 0.35s ease;
+}
+@keyframes pin-brinco {
+  0% {
+    transform: scale(1);
+  }
+  60% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1.35);
+  }
+}
 
 /* ---------- Selector de mapa base (Mapa / Satélite) ---------- */
 .mapa-capas {
@@ -554,6 +572,11 @@ h1 small {
 }
 .tarjeta:active {
   background: #faf9f5;
+}
+/* Card activa (sincronizada con el pin que el mapa está siguiendo). */
+.tarjeta.es-activo {
+  border-left: 3px solid var(--verde);
+  background: #eef6f2;
 }
 .icono {
   width: 42px;

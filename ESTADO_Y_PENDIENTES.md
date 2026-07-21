@@ -419,6 +419,25 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
   se quiere evitar la dependencia. Los pines ya usan icono por categoría (no solo
   color), así que esto es solo la agrupación. **Siguiente PR de UX del mapa.**
 
+- **Mejoras por componente (análisis Figma AI, 21-jul-2026), por priorizar.**
+  Lote de sugerencias de UX; se irán haciendo en PRs chicos y enfocados:
+  - **ChatBot (🔴 alta):** renderizar los mensajes como **Markdown simple**
+    (negritas/viñetas) para que las listas de lugares se lean bien; **historial en
+    `sessionStorage`** (no perder la conversación al cerrar/reabrir); `inputMode`/
+    `autocomplete="off"` en el input (evitar autocorrección de nombres patagónicos).
+  - **PlaceDetail (🟡 media):** **CTA "Cómo llegar" prominente** (botón principal,
+    no al mismo nivel que la descripción); si no hay foto, mostrar el **icono de
+    categoría grande centrado** en el gradiente; **botón compartir** (enviar la
+    ubicación a alguien).
+  - **SelectorLocalidad (🟢 baja):** **highlight** del texto que coincide con la
+    búsqueda; **contador** sutil ("N localidades") en el panel; **punto verde** en
+    el disparador cuando hay una localidad activa (vs "Toda la ruta").
+  - **MapView (menores):** feedback del botón *ubicarme* (spinner/texto mientras
+    busca, porque en móvil el `title` no se ve); **fade** de la línea de ruta al
+    deseleccionar.
+  - **Icon (trivial):** falta `locate` en `EXTRAS` del componente React (los
+    círculos del crosshair sí están en `iconoHTML` pero no en `<Icon>`).
+
 - **Selector de localidad por km / mini-mapa de ruta (21-jul-2026), backlog.** Hoy
   el selector es un dropdown con búsqueda por nombre: el viajero tiene que saber
   los nombres de los pueblos. Idea: progresión por kilómetro (km 0 Puerto Montt →
@@ -464,6 +483,17 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ Mapa sincronizado con la lista — RESUELTO (21-jul-2026):** con una
+  localidad elegida (modo `mapa-grande`), la card de más arriba en la lista es la
+  "activa" y **el mapa la sigue**: al hacer scroll o filtrar, panea (paneo suave,
+  mismo zoom) al pin del lugar activo y lo **resalta** (pin más grande, al frente,
+  con brinco). La card activa se marca con borde/fondo verde (`.es-activo`).
+  `App.jsx` calcula el activo con un listener de scroll sobre `.lista` (la card
+  cuyo borde superior queda más cerca del tope); `MapView.jsx` recibe `activo` y
+  hace `panTo` (con guarda para no interrumpir el `flyTo` al cambiar de
+  localidad). En "Toda la ruta" se apaga (ahí manda la lista agrupada).
+  Verificado en navegador (Playwright): al scrollear la lista cambia el activo
+  (id 1→5), el mapa panea y el pin resaltado se mueve, sin errores JS; build+lint OK.
 - **✅ Pulido UX (lote quick-wins) — RESUELTO (21-jul-2026):** a partir de un
   análisis de UX. (#1) Header: subtítulo a **una sola línea sutil con elipsis**
   (`h1 small`) para que no compita con el título. (#4) Card: **nombre más grande**

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { I18nProvider, useI18n } from './i18n'
 import { CATEGORIAS } from './data/places'
 import { obtenerLugares, obtenerAvisos, obtenerLocalidades } from './api/client'
@@ -36,6 +36,12 @@ function AppInterna() {
   const [filtro, setFiltro] = useState('todos')
   const [seleccionado, setSeleccionado] = useState(null)
   const [chatAbierto, setChatAbierto] = useState(false)
+
+  // Sincronización lista ↔ mapa (solo con una localidad elegida): la card que
+  // está arriba en la lista es la "activa"; el mapa la sigue (centra + resalta
+  // su pin) al hacer scroll o filtrar. `listaRef` observa el scroll de la lista.
+  const [activo, setActivo] = useState(null)
+  const listaRef = useRef(null)
 
   // Multi-localidad (Fase 1): pueblos de la ruta sincronizados offline-first.
   // 'todas' = toda la Carretera Austral (sin filtro). Se persiste la elección.
@@ -90,6 +96,35 @@ function AppInterna() {
     obtenerAvisos().then(setAvisos)
     obtenerLocalidades().then(setLocalidades)
   }, [])
+
+  // Determina la card "activa" (la de más arriba visible en la lista) para que
+  // el mapa la siga. Solo con una localidad elegida; en "Toda la ruta" se apaga.
+  useEffect(() => {
+    if (localidad === 'todas') {
+      setActivo(null)
+      return
+    }
+    const root = listaRef.current
+    if (!root) return
+    const calcular = () => {
+      const tope = root.getBoundingClientRect().top
+      let mejor = null
+      let mejorDist = Infinity
+      root.querySelectorAll('.tarjeta[data-id]').forEach((c) => {
+        const d = c.getBoundingClientRect().top - tope
+        // el primer card cuyo borde superior queda en/apenas bajo el tope
+        if (d >= -24 && d < mejorDist) {
+          mejorDist = d
+          mejor = c
+        }
+      })
+      if (mejor) setActivo(Number(mejor.dataset.id))
+    }
+    calcular()
+    root.addEventListener('scroll', calcular, { passive: true })
+    return () => root.removeEventListener('scroll', calcular)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localidad, filtro, lugares])
 
   // Ubicación para ordenar por cercanía. Solo si el permiso ya fue concedido
   // (p. ej. el usuario tocó "centrar en mi ubicación" en el mapa): así no
@@ -320,7 +355,10 @@ function AppInterna() {
     return (
       <div
         key={l.id}
-        className={`tarjeta ${l.destacado ? 'es-destacado' : ''}`}
+        data-id={l.id}
+        className={`tarjeta ${l.destacado ? 'es-destacado' : ''} ${
+          activo === l.id ? 'es-activo' : ''
+        }`}
         onClick={() => setSeleccionado(l.id)}
       >
         <div className="icono" style={{ background: c.fondo, color: c.color }}>
@@ -401,9 +439,10 @@ function AppInterna() {
         offline={offline}
         centro={locActiva ? [locActiva.lat, locActiva.lng] : null}
         zoom={locActiva?.zoom}
+        activo={localidad !== 'todas' ? activo : null}
       />
 
-      <div className="lista">
+      <div className="lista" ref={listaRef}>
         {lugaresFiltrados.length === 0 && (
           <div className="lista-vacia">{t('sinLugaresLocalidad')}</div>
         )}
