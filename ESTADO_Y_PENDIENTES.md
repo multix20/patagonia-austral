@@ -412,6 +412,25 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
     solo los de la zona + globales (el push sí va filtrado; el panel puede ser más
     permisivo para no ocultar información de ruta).
 
+- **Clustering de pines en el mapa (21-jul-2026), por construir.** En zonas
+  densas (Cochrane) los pines se amontonan y se solapan. Agrupar en clusters con
+  el número de puntos, que se despliegan al hacer zoom. Opción estándar:
+  `leaflet.markercluster` (libre, sin costo) — o una agrupación propia liviana si
+  se quiere evitar la dependencia. Los pines ya usan icono por categoría (no solo
+  color), así que esto es solo la agrupación. **Siguiente PR de UX del mapa.**
+
+- **Selector de localidad por km / mini-mapa de ruta (21-jul-2026), backlog.** Hoy
+  el selector es un dropdown con búsqueda por nombre: el viajero tiene que saber
+  los nombres de los pueblos. Idea: progresión por kilómetro (km 0 Puerto Montt →
+  km ~1240 Villa O'Higgins) o un mini-mapa horizontal de la ruta como selector,
+  más intuitivo. **Bloqueante de datos:** no tenemos el km de ruta por localidad
+  (hoy solo `orden` en decenas); habría que calcularlo/cargarlo. Diseño a definir.
+
+- **Card como bottom-sheet con swipe (21-jul-2026), backlog.** Darle a la tarjeta
+  de resultado un handle de arrastre para expandirla (más alto visible, más
+  jerarquía) en vez de la lista fija actual. Interacción nueva (gesto), evaluar
+  contra la simplicidad actual.
+
 - **Avisos de actualizaciones de contenido (21-jul-2026), por construir.** Avisar
   por la campanita cuando hay contenido nuevo (nueva localidad publicada, tanda de
   lugares nuevos, mejora del mapa offline). Bajo esfuerzo: disciplina editorial
@@ -445,6 +464,17 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ Pulido UX (lote quick-wins) — RESUELTO (21-jul-2026):** a partir de un
+  análisis de UX. (#1) Header: subtítulo a **una sola línea sutil con elipsis**
+  (`h1 small`) para que no compita con el título. (#4) Card: **nombre más grande**
+  (15px/700), **distancia como chip gris neutro** (antes texto verde suelto) y
+  **sello "Destacado" suavizado** (tinte coral en vez de bloque sólido). (#5) FAB
+  del chat **solo-ícono** (se quitó el globito "¿Dudas?") y más pequeño (48px).
+  (#6) Tab de categoría activo **más marcado**: además del color y tinte, un
+  **indicador superior** (`.cat-btn.activo::before`). (#7) Offline: ya estaba
+  cubierto (banner + el pill "En línea"→"Sin conexión" con color); se mantiene.
+  Verificado en navegador (Playwright): header sin recortes, card, FAB y tab OK,
+  sin errores JS; build+lint OK.
 - **✅ UX "el mapa es la app" — RESUELTO (21-jul-2026):** rediseño de la vista
   principal para que el mapa sea el protagonista (lo que el turista más mira).
   (a) Al elegir una localidad, el mapa crece a `56vh` (clase `mapa-grande` en

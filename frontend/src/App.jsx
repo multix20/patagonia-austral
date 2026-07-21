@@ -506,10 +506,9 @@ function AppInterna() {
       <button className="fab-chat" onClick={() => setChatAbierto(true)} aria-label={t('chatNombre')}>
         {/* Crossfade: el huemul (emblema de Aysén) aparece y desaparece alternando con el spark */}
         <span className="fab-iconos" aria-hidden="true">
-          <Huemul tam={27} />
-          <Icon nombre="spark" tam={26} />
+          <Huemul tam={25} />
+          <Icon nombre="spark" tam={24} />
         </span>
-        <span className="globito">{t('chatDudas')}</span>
       </button>
 
       <ChatBot

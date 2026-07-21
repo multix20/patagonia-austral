@@ -76,14 +76,21 @@ header {
 }
 h1 {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.2px;
+  min-width: 0;
 }
+/* Subtítulo secundario: una sola línea discreta que no compite con el título. */
 h1 small {
   display: block;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 400;
-  opacity: 0.85;
+  opacity: 0.7;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 62vw;
 }
 .acciones-header {
   display: flex;
@@ -483,6 +490,7 @@ h1 small {
   display: none;
 }
 .cat-btn {
+  position: relative;
   flex: 1 0 auto;
   min-width: 62px;
   display: flex;
@@ -490,7 +498,7 @@ h1 small {
   align-items: center;
   justify-content: center;
   gap: 3px;
-  padding: 6px 8px;
+  padding: 8px 8px 6px;
   border: none;
   background: none;
   color: var(--gris);
@@ -503,6 +511,18 @@ h1 small {
 .cat-btn.activo {
   color: var(--cat-color, var(--verde));
   background: color-mix(in srgb, var(--cat-color, var(--verde)) 12%, transparent);
+}
+/* Indicador superior del tab activo (además del color + tinte de fondo). */
+.cat-btn.activo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--cat-color, var(--verde));
 }
 .cat-btn.activo svg {
   transform: scale(1.05);
@@ -549,20 +569,25 @@ h1 small {
   min-width: 0;
 }
 .info .nombre {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--tinta);
+  line-height: 1.25;
 }
 .info .meta {
   font-size: 12px;
   color: var(--gris);
   margin-top: 2px;
 }
+/* Distancia como chip neutro (gris), no como texto verde suelto. */
 .dist {
   font-size: 11px;
-  color: var(--verde);
+  color: var(--gris);
   font-weight: 600;
   white-space: nowrap;
+  background: #f0efe9;
+  padding: 3px 8px;
+  border-radius: 999px;
 }
 .sello {
   font-size: 9px;
@@ -586,10 +611,10 @@ h1 small {
   gap: 3px;
   vertical-align: middle;
   margin-left: 6px;
-  padding: 1px 6px;
+  padding: 1px 7px;
   border-radius: 999px;
-  background: var(--claude);
-  color: #fff;
+  background: rgba(217, 119, 87, 0.14);
+  color: #b0502e;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -946,8 +971,8 @@ h1 small {
   position: absolute;
   bottom: calc(var(--barra-cat-h) + 16px);
   right: 14px;
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: var(--claude);
   color: #fff;
@@ -1042,19 +1067,6 @@ h1 small {
     transform: none;
   }
 }
-.fab-chat .globito {
-  position: absolute;
-  top: -4px;
-  right: -2px;
-  background: var(--verde);
-  color: #fff;
-  font-size: 9px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 10px;
-  border: 2px solid var(--crema);
-}
-
 .chat {
   position: absolute;
   inset: 0;
