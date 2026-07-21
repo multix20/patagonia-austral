@@ -245,6 +245,39 @@ h1 small {
   color: var(--verde-osc);
   font-weight: 700;
 }
+/* Resalte de la coincidencia de búsqueda */
+.sl-opcion mark {
+  background: #e1f5ee;
+  color: var(--verde-osc);
+  border-radius: 3px;
+  padding: 0 1px;
+  font-weight: 700;
+}
+/* Pin con punto verde cuando hay una localidad activa */
+.sl-pin {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.sl-punto {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2ecc71;
+  border: 1.5px solid var(--verde);
+}
+/* Contador de localidades (pie sutil del panel) */
+.sl-contador {
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--gris);
+  border-top: 1px solid var(--borde);
+  background: #fafaf7;
+}
 .sl-vacio {
   padding: 12px;
   font-size: 13px;

@@ -421,9 +421,11 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
   - **✅ PlaceDetail (🟡 media) — HECHO (21-jul-2026):** CTA "Cómo llegar"
     prominente, icono de categoría grande en el gradiente y botón compartir. Ver
     detalle en "Menores".
-  - **SelectorLocalidad (🟢 baja):** **highlight** del texto que coincide con la
-    búsqueda; **contador** sutil ("N localidades") en el panel; **punto verde** en
-    el disparador cuando hay una localidad activa (vs "Toda la ruta").
+  - **✅ SelectorLocalidad (🟢 baja) — HECHO (21-jul-2026):** highlight de
+    búsqueda, contador y punto verde. Ver detalle en "Menores".
+  - **Nota:** con esto queda **completo el análisis de Figma AI** (todos los
+    componentes). Lo único de UX que sigue en backlog aparte son el selector por
+    km / mini-mapa y la card como bottom-sheet (más abajo).
   - **MapView (menores):** feedback del botón *ubicarme* (spinner/texto mientras
     busca, porque en móvil el `title` no se ve); **fade** de la línea de ruta al
     deseleccionar.
@@ -475,6 +477,16 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ SelectorLocalidad: highlight, contador y punto — RESUELTO (21-jul-2026):**
+  cierra el análisis de Figma. (a) **Highlight** en `<mark>` de la parte del nombre
+  que coincide con la búsqueda (los nombres se normalizan sin tildes para comparar,
+  pero cada letra acentuada del español mapea 1:1 a su base, así que los índices
+  calzan con el original). (b) **Contador** sutil "N localidades en la ruta" al pie
+  del panel. (c) **Punto verde** en el disparador cuando hay una localidad activa
+  (vs "Toda la ruta"). Estilos `.sl-pin`/`.sl-punto`/`.sl-contador`/`.sl-opcion mark`
+  en `styles.css`. Verificado en navegador (Playwright): punto con localidad activa,
+  "Aysén" resaltado al buscar "aysen", contador "3 localidades", sin errores JS;
+  build+lint OK.
 - **✅ PlaceDetail: CTA, icono y compartir — RESUELTO (21-jul-2026):** en la ficha
   de un lugar, (a) **icono grande de la categoría** como marca de agua en el
   gradiente del encabezado (`.ficha-foto-ico`) — identidad visual mientras no hay
