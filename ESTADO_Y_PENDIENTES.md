@@ -379,6 +379,47 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
 > la Fase 4 ANTES de encender la Fase 3 en serio. Parche mientras tanto:
 > keep-alive con ping a `/up` cada ~10 min (cron-job.org).
 
+### Backlog de features (anotar aquí las ideas; se priorizan al planificar)
+
+- **Avisos segmentados por zona — diseño acordado (21-jul-2026), por construir.**
+  Que la campanita/push avise de "actividades en tu zona" sin rastrear a nadie.
+  Puente entre los avisos actuales (el admin publica a todos) y el crowdsourcing
+  (mismo rail de segmentación por el que después corren los reportes Waze).
+  - **Diseño elegido — opción (b), segmentar por localidad elegida, cero GPS
+    almacenado:** la suscripción push del dispositivo se **etiqueta con el slug**
+    de la localidad elegida en el selector (`localStorage.localidadSel`); cambiar
+    de localidad = re-registrar (el POST `/api/push/subscribe` ya hace
+    `updateOrCreate` por endpoint, así que es gratis). El aviso lleva **localidad
+    + radio en km** (default 100) opcionales; el backend calcula qué localidades
+    caen dentro del radio (haversine entre los centros de `localidades`, que ya
+    tienen lat/lng) y `WebPushSender` envía **solo** a las suscripciones de esas
+    localidades. **Privacidad:** no se guarda ubicación de nadie — solo "me
+    interesa la zona de X".
+  - **Reglas:** aviso **sin** localidad = global (llega a todos: actualizaciones
+    de la app, nuevas localidades, mapas). Suscripción con "Toda la ruta"
+    (`todas`) = recibe todo. Aviso con localidad+radio = solo a la zona.
+  - **Piezas:** columna `localidad_slug` (nullable) en `push_subscriptions` +
+    aceptarla en `PushController`; campos `localidad_id`/`radio_km` (nullable) en
+    `notices` + en el CMS (`NoticeResource`); filtro por distancia en
+    `WebPushSender`; frontend re-registra la suscripción al cambiar localidad.
+  - **No bloqueado por infra:** va por el envío inmediato del `NoticeObserver`
+    (sin scheduler) → funciona en Render free.
+  - **Decisión abierta:** el selector también se usa para *ojear* otros pueblos
+    ("estoy en Chile Chico pero miro Tortel") — definir si la zona de push sigue
+    al selector siempre (más simple, deriva del uso) o se fija aparte ("mi zona")
+    con un control propio. Partir por la simple y medir.
+  - **Panel de la campanita:** decidir al construir si muestra todos los avisos o
+    solo los de la zona + globales (el push sí va filtrado; el panel puede ser más
+    permisivo para no ocultar información de ruta).
+
+- **Avisos de actualizaciones de contenido (21-jul-2026), por construir.** Avisar
+  por la campanita cuando hay contenido nuevo (nueva localidad publicada, tanda de
+  lugares nuevos, mejora del mapa offline). Bajo esfuerzo: disciplina editorial
+  (publicar el aviso junto con el contenido) o un observer al publicar `Localidad`
+  (cuidando no spamear: agrupar por tanda, no un push por lugar). Los avisos de
+  este tipo son **globales** (sin zona). Funciona ya con la infraestructura
+  actual.
+
 ### 6. Fase 4 — Producción definitiva
 Dominio propio + SSL, respaldos + restauración, logs y monitoreo,
 almacenamiento de imágenes en la nube (S3 o equivalente), difusión.
