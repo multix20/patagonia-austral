@@ -827,6 +827,56 @@ h1 small {
   display: flex;
 }
 
+/* Tarjeta de push (respaldo iOS/Android): misma base que el banner de instalar,
+   con el acento del asistente para distinguirla. Aparece solo en standalone con
+   el permiso pendiente. */
+.tarjeta-push {
+  position: absolute;
+  bottom: 14px;
+  left: 12px;
+  right: 12px;
+  background: var(--claude);
+  color: #fff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 910;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.tarjeta-push .tp-ico {
+  display: flex;
+}
+.tarjeta-push .tp-txt {
+  flex: 1;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.tarjeta-push .tp-txt b {
+  font-size: 13px;
+}
+.tarjeta-push button {
+  background: #fff;
+  color: var(--claude);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.tarjeta-push button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.tarjeta-push .cerrar {
+  background: none;
+  color: #fff;
+  padding: 4px 6px;
+  display: flex;
+}
+
 /* ---------- Chatbot ---------- */
 .fab-chat {
   position: absolute;

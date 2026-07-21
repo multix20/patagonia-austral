@@ -389,11 +389,21 @@ necesaria justo al arrancar la Fase 3:
 - **Contenido "(ejemplo)":** los alojamientos/restoranes marcados "(ejemplo)"
   en las 9 localidades son marcadores de posición; se reemplazan por comercios
   reales al levantar la capa comercial (Fase 3).
-- **Push en iOS (pendiente de probar):** iOS no dispara `appinstalled` y exige
-  un gesto del usuario para pedir el permiso → hoy un iPhone no tiene vía para
-  suscribirse. Solución diseñada: tarjeta única "¿Quieres recibir avisos?" que
-  aparece solo en modo standalone con permiso pendiente (sirve también como
-  respaldo en Android).
+- **✅ Push en iOS — RESUELTO (21-jul-2026):** iOS no dispara `appinstalled` y
+  exige un gesto del usuario para pedir el permiso → un iPhone instalado no tenía
+  vía para suscribirse. Se añadió la **tarjeta única "¿Quieres recibir avisos?"**
+  (`App.jsx` + `.tarjeta-push` en `styles.css`, textos ES/EN en `i18n.jsx`): sale
+  **solo en modo standalone** (`display-mode: standalone` o
+  `navigator.standalone`), con push soportado y permiso **pendiente** (`default`);
+  al tocar "Activar avisos" pide el permiso (el gesto habilita `requestPermission`
+  en iOS) y suscribe vía `activarPush()`; se conceda o se deniegue, la tarjeta se
+  cierra y no vuelve (persistido en `localStorage.tarjetaPushCerrada`). Es
+  contextual, única y descartable — **no** es el viejo botón visible de activación
+  (que sigue prohibido). Sirve también como **respaldo en Android** si el flujo de
+  `appinstalled` no alcanzó a pedir el permiso. De paso, el banner "Instalar" se
+  oculta cuando la app ya corre instalada (antes salía dentro del standalone, sin
+  sentido). Verificado en navegador (Playwright): oculta en pestaña normal,
+  visible en standalone con permiso pendiente, sin errores JS; build+lint OK.
 - Revisar categorías del directorio para el producto propio (¿rutas
   patrimoniales? ¿comercios locales?).
 - Mantener el peso inicial de la PWA bajo (~20 MB) para instalabilidad.
