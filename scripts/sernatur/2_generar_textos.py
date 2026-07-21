@@ -336,6 +336,28 @@ def puntua_completitud(r: dict) -> int:
     return 3 * bool(r.get("tel")) + 2 * bool(r.get("direccion")) + 1 * bool(r.get("email"))
 
 
+def clave_dup(localidad: str, nombre_es: str) -> tuple[str, str]:
+    """Clave de duplicado: (localidad, nombre normalizado sin acentos ni espacios extra)."""
+    return (localidad, sin_acentos(re.sub(r"\s+", " ", nombre_es)))
+
+
+def dedup_lote(registros: list[dict]) -> tuple[list[dict], int]:
+    """Quita duplicados DENTRO del lote SERNATUR (mismo nombre+localidad). Ante un
+    duplicado conserva el de ficha más completa. Devuelve (únicos, nº quitados)."""
+    vistos: set[tuple[str, str]] = set()
+    unicos: list[dict] = []
+    dups = 0
+    for r in sorted(registros, key=lambda r: -puntua_completitud(r)):
+        clave = clave_dup(r["localidad"], r["nombre"]["es"])
+        if clave in vistos:
+            dups += 1
+            continue
+        vistos.add(clave)
+        unicos.append(r)
+    unicos.sort(key=lambda r: r["id"])   # restaura orden estable por id
+    return unicos, dups
+
+
 def selecciona_publicables(registros: list[dict]) -> dict[str, tuple[int, int]]:
     """Marca r['publicado'] = True para los TOP_POR_LOCALIDAD mejores de cada
     localidad; el resto False. Devuelve {slug: (publicados, total)} para el reporte.
@@ -503,6 +525,9 @@ def main() -> None:
     # Reubica al centro del pueblo los servicios con coordenada placeholder.
     corregidos = corrige_placeholders(registros)
 
+    # Quita duplicados dentro del propio lote SERNATUR (mismo nombre+localidad).
+    registros, dup_lote = dedup_lote(registros)
+
     # Siembra gratis: publica los N con mejores datos de cada localidad.
     resumen_sel = selecciona_publicables(registros)
     publicados = sum(p for p, _ in resumen_sel.values())
@@ -527,6 +552,7 @@ def main() -> None:
     print(f"  Excel: {XLSX_SALIDA.name}")
     print(f"  JSON seeder: {JSON_SALIDA.name}")
     print(f"  Reporte selección: {ruta_reporte.name}")
+    print(f"  Duplicados quitados dentro del lote: {dup_lote}")
     print(f"  Publicados (top {TOP_POR_LOCALIDAD}/localidad): {publicados} · "
           f"borrador: {len(registros) - publicados}")
     for slug in sorted(resumen_sel):

@@ -42,12 +42,34 @@ class SernaturPlaceSeeder extends Seeder
         // Mapa slug → id de localidad (LocalidadSeeder debe haber corrido antes).
         $localidades = Localidad::pluck('id', 'slug');
 
-        $creados = $omitidos = $publicados = 0;
+        // Índice de lugares YA existentes que NO son de este lote (los que cargó
+        // el fundador a mano en el CMS, p.ej. Tortel y Villa O'Higgins). Sirve
+        // para no duplicar: clave = nombre normalizado + localidad_id.
+        $idsLote = array_column($lugares, 'id');
+        $existentes = [];
+        Place::whereNotIn('id', $idsLote ?: [0])
+            ->get(['nombre', 'localidad_id'])
+            ->each(function ($p) use (&$existentes) {
+                $nombre = $p->nombre['es'] ?? '';
+                $existentes[$this->claveDup($nombre, $p->localidad_id)] = true;
+            });
+
+        $creados = $omitidos = $publicados = $duplicados = 0;
         foreach ($lugares as $l) {
             $slug = $l['localidad'] ?? null;
             if (! $slug || ! isset($localidades[$slug])) {
                 $this->command->warn("Localidad no encontrada para id {$l['id']}: '$slug' — omitido.");
                 $omitidos++;
+
+                continue;
+            }
+
+            // Deduplicación: si ya existe un lugar con el mismo nombre en la misma
+            // localidad (cargado a mano), se omite para no duplicarlo.
+            $clave = $this->claveDup($l['nombre']['es'] ?? '', $localidades[$slug]);
+            if (isset($existentes[$clave])) {
+                $this->command->warn("Duplicado (ya existe): {$l['nombre']['es']} en $slug — omitido.");
+                $duplicados++;
 
                 continue;
             }
@@ -82,6 +104,18 @@ class SernaturPlaceSeeder extends Seeder
         }
 
         $borrador = $creados - $publicados;
-        $this->command->info("SERNATUR: $creados servicios importados ($publicados publicados, $borrador en borrador), $omitidos omitidos.");
+        $this->command->info("SERNATUR: $creados servicios importados ($publicados publicados, $borrador en borrador), $duplicados duplicados omitidos, $omitidos sin localidad.");
+    }
+
+    // Clave de deduplicación: nombre normalizado (minúsculas, sin acentos ni
+    // símbolos, espacios colapsados) + id de localidad.
+    private function claveDup(string $nombre, ?int $localidadId): string
+    {
+        $n = mb_strtolower(trim($nombre));
+        $n = strtr($n, ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ñ' => 'n', 'ü' => 'u']);
+        $n = preg_replace('/[^a-z0-9]+/', ' ', $n);
+        $n = trim(preg_replace('/\s+/', ' ', $n));
+
+        return $n.'|'.($localidadId ?? '');
     }
 }
