@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
+import 'leaflet.markercluster'
 import { CATEGORIAS } from '../data/places'
 import { iconoHTML } from './Icon'
 import { useI18n } from '../i18n'
@@ -56,6 +57,7 @@ export default function MapView({
   const baseRef = useRef(null) // capa base (teselas) actual
   const yoRef = useRef(null) // marcador de la ubicación del usuario
   const rutaRef = useRef(null) // línea de ruta usuario → lugar
+  const activoMarkerRef = useRef(null) // marcador del lugar activo (fuera del cluster)
   const volandoRef = useRef(0) // timestamp del último flyTo por cambio de localidad
   const [pos, setPos] = useState(null) // [lat, lng] del usuario en vivo
   const [capa, setCapa] = useState('mapa') // 'mapa' | 'satelite'
@@ -67,7 +69,19 @@ export default function MapView({
     const mapa = L.map(contRef.current, { zoomControl: false }).setView(COCHRANE, 13)
     baseRef.current = L.tileLayer(BASEMAPS.mapa.url, BASEMAPS.mapa.options).addTo(mapa)
     L.control.zoom({ position: 'topright' }).addTo(mapa)
-    capaRef.current = L.layerGroup().addTo(mapa)
+    // Agrupa los pines cercanos en un cluster (útil en zonas densas como Cochrane;
+    // se separan al hacer zoom). Icono de cluster propio, en el verde de la marca.
+    capaRef.current = L.markerClusterGroup({
+      maxClusterRadius: 45,
+      showCoverageOnHover: false,
+      spiderfyOnMaxZoom: true,
+      iconCreateFunction: (cluster) =>
+        L.divIcon({
+          html: `<div class="cluster-pin">${cluster.getChildCount()}</div>`,
+          className: '',
+          iconSize: [38, 38],
+        }),
+    }).addTo(mapa)
     mapaRef.current = mapa
     return () => {
       mapa.remove()
@@ -131,11 +145,18 @@ export default function MapView({
     else yoRef.current = L.marker(pos, { icon, zIndexOffset: 1000, keyboard: false }).addTo(mapa)
   }, [pos])
 
-  // Marcadores de lugares (según filtro de categoría)
+  // Marcadores de lugares (según filtro de categoría). El activo se dibuja FUERA
+  // del cluster (marcador directo en el mapa) para que nunca quede escondido en
+  // un grupo y conserve su resalte; el resto va al cluster.
   useEffect(() => {
-    const capaLugares = capaRef.current
-    if (!capaLugares) return
-    capaLugares.clearLayers()
+    const cluster = capaRef.current
+    const mapa = mapaRef.current
+    if (!cluster || !mapa) return
+    cluster.clearLayers()
+    if (activoMarkerRef.current) {
+      mapa.removeLayer(activoMarkerRef.current)
+      activoMarkerRef.current = null
+    }
     lugares
       .filter((l) => filtro === 'todos' || l.cat === filtro)
       .forEach((l) => {
@@ -150,9 +171,16 @@ export default function MapView({
           iconSize: [24, 31],
           iconAnchor: [12, 29],
         })
-        L.marker([l.lat, l.lng], { icon: icono, zIndexOffset: esActivo ? 600 : 0 })
-          .addTo(capaLugares)
-          .on('click', () => onSeleccionar(l.id))
+        const m = L.marker([l.lat, l.lng], {
+          icon: icono,
+          zIndexOffset: esActivo ? 600 : 0,
+        }).on('click', () => onSeleccionar(l.id))
+        if (esActivo) {
+          m.addTo(mapa)
+          activoMarkerRef.current = m
+        } else {
+          cluster.addLayer(m)
+        }
       })
   }, [lugares, filtro, onSeleccionar, activo])
 
