@@ -25,11 +25,49 @@ function listaLugares(lugares, cat, lang, conTel = false) {
   return lugares
     .filter((l) => l.cat === cat)
     .map((l) => {
-      let linea = `• ${l.nombre[lang]} — ${l.dist[lang].split('·')[0].trim()}`
+      // El nombre en **negrita** lo resalta el render Markdown de los mensajes.
+      let linea = `• **${l.nombre[lang]}** — ${l.dist[lang].split('·')[0].trim()}`
       if (conTel && l.tel) linea += ` · Tel: ${l.tel}`
       return linea
     })
     .join('\n')
+}
+
+// Render de Markdown simple para los mensajes del bot: **negrita**, viñetas
+// (líneas con • o -) como lista, y líneas en blanco como separación. Sin
+// dependencias — el contenido lo generamos nosotros, así que el subset es acotado.
+function inline(texto) {
+  return texto.split(/(\*\*[^*]+\*\*)/g).map((seg, i) =>
+    /^\*\*[^*]+\*\*$/.test(seg) ? <strong key={i}>{seg.slice(2, -2)}</strong> : seg
+  )
+}
+
+function Markdown({ texto }) {
+  const bloques = []
+  let items = null
+  const cerrarLista = (k) => {
+    if (items) {
+      bloques.push(
+        <ul key={`ul-${k}`} className="md-lista">
+          {items}
+        </ul>
+      )
+      items = null
+    }
+  }
+  texto.split('\n').forEach((ln, i) => {
+    const limpio = ln.trimStart()
+    if (limpio.startsWith('• ') || limpio.startsWith('- ')) {
+      if (!items) items = []
+      items.push(<li key={`li-${i}`}>{inline(limpio.replace(/^[•-]\s+/, ''))}</li>)
+    } else {
+      cerrarLista(i)
+      if (limpio === '') bloques.push(<div key={`sp-${i}`} className="md-sp" />)
+      else bloques.push(<p key={`p-${i}`}>{inline(ln)}</p>)
+    }
+  })
+  cerrarLista('fin')
+  return bloques
 }
 
 // Lista los lugares de una categoría o, si no hay, un aviso claro para esa localidad.
@@ -161,7 +199,15 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
   const { t, lang } = useI18n()
   const loc =
     localidadNombre || (lang === 'es' ? 'la Carretera Austral' : 'the Carretera Austral')
-  const [mensajes, setMensajes] = useState([])
+  // Historial persistente por sesión: si el usuario cierra y reabre el chat (el
+  // componente se desmonta al cerrar), la conversación se conserva.
+  const [mensajes, setMensajes] = useState(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem('chatHistorial')) || []
+    } catch {
+      return []
+    }
+  })
   const [sugerencias, setSugerencias] = useState(SUGERENCIAS[lang])
   const [texto, setTexto] = useState('')
   const [escribiendo, setEscribiendo] = useState(false)
@@ -181,6 +227,15 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
   useEffect(() => {
     setSugerencias(SUGERENCIAS[lang])
   }, [lang])
+
+  // Persiste la conversación en la sesión (se limpia al cerrar la pestaña).
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('chatHistorial', JSON.stringify(mensajes))
+    } catch {
+      // sessionStorage lleno o no disponible: el chat sigue funcionando en memoria.
+    }
+  }, [mensajes])
 
   useEffect(() => {
     msgsRef.current?.scrollTo(0, msgsRef.current.scrollHeight)
@@ -224,7 +279,7 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
       <div className="chat-msgs" ref={msgsRef}>
         {mensajes.map((m, i) => (
           <div key={i} className={`msg ${m.quien}`}>
-            {m.texto}
+            {m.quien === 'bot' ? <Markdown texto={m.texto} /> : m.texto}
           </div>
         ))}
         {escribiendo && (
@@ -243,6 +298,11 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
       <div className="chat-input">
         <input
           type="text"
+          inputMode="text"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="sentences"
+          spellCheck={false}
           value={texto}
           placeholder={t('chatPlaceholder')}
           onChange={(e) => setTexto(e.target.value)}
