@@ -43,6 +43,7 @@ class PlaceSeeder extends Seeder
                     'dist' => $l['dist'],
                     'localidad_id' => $localidades[$l['localidad'] ?? 'cochrane'] ?? null,
                     'publicado' => true,
+                    'destacado' => $l['destacado'] ?? false,
                 ]
             );
         }

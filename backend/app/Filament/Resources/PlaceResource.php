@@ -66,6 +66,11 @@ class PlaceResource extends Resource
                         ->label('Publicado en la app')
                         ->default(true)
                         ->inline(false),
+                    Forms\Components\Toggle::make('destacado')
+                        ->label('Destacado (ficha comercial)')
+                        ->helperText('Resalta el lugar en la app: aparece primero en su localidad y con un sello.')
+                        ->default(false)
+                        ->inline(false),
                     Forms\Components\TextInput::make('lat')
                         ->label('Latitud')
                         ->numeric()
@@ -143,6 +148,8 @@ class PlaceResource extends Resource
                     ->label('Teléfono')->toggleable()->placeholder('—'),
                 Tables\Columns\ToggleColumn::make('publicado')
                     ->label('Publicado')->sortable(),
+                Tables\Columns\ToggleColumn::make('destacado')
+                    ->label('Destacado')->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Actualizado')->dateTime('d/m/Y H:i')->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -153,6 +160,8 @@ class PlaceResource extends Resource
                     ->label('Categoría')->options(self::CATEGORIAS),
                 Tables\Filters\TernaryFilter::make('publicado')
                     ->label('Publicado'),
+                Tables\Filters\TernaryFilter::make('destacado')
+                    ->label('Destacado'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -174,6 +183,20 @@ class PlaceResource extends Resource
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion()
                         ->action(fn (Collection $records) => $records->toQuery()->update(['publicado' => false])),
+                    Tables\Actions\BulkAction::make('destacar')
+                        ->label('Destacar')
+                        ->icon('heroicon-o-star')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->deselectRecordsAfterCompletion()
+                        ->action(fn (Collection $records) => $records->toQuery()->update(['destacado' => true])),
+                    Tables\Actions\BulkAction::make('quitar_destacado')
+                        ->label('Quitar destacado')
+                        ->icon('heroicon-o-star')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->deselectRecordsAfterCompletion()
+                        ->action(fn (Collection $records) => $records->toQuery()->update(['destacado' => false])),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
