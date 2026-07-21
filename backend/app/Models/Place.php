@@ -9,7 +9,7 @@ class Place extends Model
 {
     protected $fillable = [
         'cat', 'lat', 'lng', 'tel', 'nombre', 'descripcion', 'como', 'dist', 'publicado',
-        'localidad_id',
+        'destacado', 'localidad_id',
     ];
 
     protected $casts = [
@@ -20,6 +20,7 @@ class Place extends Model
         'lat' => 'float',
         'lng' => 'float',
         'publicado' => 'boolean',
+        'destacado' => 'boolean',
     ];
 
     public function localidad(): BelongsTo
@@ -44,6 +45,7 @@ class Place extends Model
             'desc' => $this->descripcion,
             'como' => $this->como,
             'dist' => $this->dist,
+            'destacado' => $this->destacado,
             'localidad' => $this->localidad?->slug,
         ];
     }

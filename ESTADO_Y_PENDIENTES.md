@@ -302,6 +302,36 @@ lugares nuevos en la fase). Cadena de `orden` norte→sur: 10 Puerto Montt …
 ### 5. Fase 3 — Capa comercial
 Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
 
+- **✅ Fichas destacadas — base implementada (21-jul-2026):** primer ladrillo de
+  la capa comercial. Un lugar puede marcarse **destacado** y en la app aparece
+  **primero dentro de su localidad** y con un **sello coral "Destacado/Featured"**.
+  - **Backend:** migración `2026_07_21_000001_add_destacado_to_places_table`
+    (`boolean destacado default false`, indexada, aditiva/compatible hacia atrás);
+    `destacado` en fillable + cast boolean del modelo `Place` y en `toApi()` (fluye
+    solo a la PWA porque `client.js` guarda tal cual la respuesta de la API).
+  - **CMS Filament (`PlaceResource`):** toggle en el formulario, `ToggleColumn` y
+    `TernaryFilter` en la lista, y acciones en lote **Destacar / Quitar destacado**
+    (junto a Publicar/Despublicar).
+  - **Frontend:** `App.jsx` sube los destacados al inicio (sort estable, respeta
+    grupos de localidad) y pinta el sello; icono `star` en `Icon.jsx`, textos ES/EN
+    `destacado` en `i18n.jsx`, estilos `.tarjeta.es-destacado` + `.sello-destacado`
+    (acento `--claude`) en `styles.css`. Los lugares sin el campo (seeds/caché
+    viejos) se tratan como no destacados.
+  - **Deploy:** la migración se aplica sola (`docker/start.sh` corre
+    `migrate --force --seed`). **Ojo:** el seeder re-siembra en cada deploy con
+    `destacado = $l['destacado'] ?? false`, así que un lugar **semilla** marcado
+    destacado solo por el CMS se resetea al redesplegar (igual que ya pasa con
+    `publicado`). Para que un semilla quede destacado de forma persistente, marcarlo
+    en `frontend/src/data/places.js` → regenerar `places.json` (espejo). Los
+    negocios reales (filas nuevas del CMS, fuera de `places.json`) no se tocan.
+  - **Verificado:** build+lint frontend OK; `php -l` en los 4 PHP tocados OK;
+    navegador (Playwright con API simulada): el destacado sube al primer lugar y
+    muestra el sello, sin errores JS.
+  - **Pendiente (siguiente):** que los negocios reales del fundador
+    (hamburguesería km 1020 + transporte/encomiendas Tortel↔Cochrane) sean las
+    primeras fichas destacadas reales; luego resalte también en el marcador del
+    mapa y en la ficha de detalle, planes de pago y analítica.
+
 - **Giro de arranque — siembra gratis (21-jul-2026):** antes de la capa de pago,
   poblar el directorio con datos reales gratis para vencer el arranque en frío.
   - **Selección top 10 por localidad:** el paso 2 (`2_generar_textos.py`) rankea

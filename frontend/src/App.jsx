@@ -299,7 +299,13 @@ function AppInterna() {
       ? lugares
       : lugares.filter((l) => (l.localidad || 'cochrane') === localidad)
 
-  const lugaresFiltrados = lugaresVisibles.filter((l) => filtro === 'todos' || l.cat === filtro)
+  // Filtra por categoría y sube los destacados al inicio (capa comercial Fase 3).
+  // El sort es estable, así que dentro de cada grupo de localidad los destacados
+  // quedan primero y el resto conserva su orden. Opera sobre una copia (filter +
+  // sort) para no mutar `lugares`/`lugaresVisibles`.
+  const lugaresFiltrados = lugaresVisibles
+    .filter((l) => filtro === 'todos' || l.cat === filtro)
+    .sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0))
 
   // Orden de localidades para la vista "Toda la ruta": por cercanía al GPS si
   // está disponible; si no, por `orden` (norte→sur).
@@ -312,12 +318,23 @@ function AppInterna() {
   const renderTarjeta = (l) => {
     const c = CATEGORIAS[l.cat]
     return (
-      <div key={l.id} className="tarjeta" onClick={() => setSeleccionado(l.id)}>
+      <div
+        key={l.id}
+        className={`tarjeta ${l.destacado ? 'es-destacado' : ''}`}
+        onClick={() => setSeleccionado(l.id)}
+      >
         <div className="icono" style={{ background: c.fondo, color: c.color }}>
           <Icon nombre={c.icono} tam={20} />
         </div>
         <div className="info">
-          <div className="nombre">{l.nombre[lang]}</div>
+          <div className="nombre">
+            {l.nombre[lang]}
+            {l.destacado && (
+              <span className="sello-destacado">
+                <Icon nombre="star" tam={10} /> {t('destacado')}
+              </span>
+            )}
+          </div>
           <div className="meta">{c.nombre[lang]}</div>
           <div className="sello">
             <Icon nombre="download" tam={10} /> {t('guardadoOffline')}

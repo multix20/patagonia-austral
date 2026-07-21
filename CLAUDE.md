@@ -32,6 +32,14 @@ Guía completa: `DEPLOY.md`. Push a `main` = redeploy automático de Render y Ne
 - **Flujo git**: rama de trabajo → **Pull Request** hacia `main` → CI (build +
   lint) en verde → merge (rebase, historial lineal). El merge a `main` despliega.
   CI en `.github/workflows/ci.yml`.
+- **Estructura y dónde trabajar**: **monorepo único** (`frontend/` + `backend/`
+  van siempre juntos; un cambio que toca ambos = un solo PR atómico) — no dividir
+  en repos separados. Se puede desarrollar **en local** (ideal para lo que necesita
+  la app corriendo: backend, Postgres, probar push/SW, sembrar Neon con el pipeline
+  SERNATUR) **o en la web (Claude Code)** para delegar tareas; ambos empujan a las
+  mismas ramas del mismo repo. Regla para no chocar: **una rama = un tema**, partir
+  siempre de `main` actualizado (`git checkout main && git pull`), y pushear/pullear
+  antes de tocar en paralelo el mismo archivo desde los dos lados.
 - El usuario semilla `test@example.com` solo existe fuera de producción; el
   seeder lo elimina en producción y crea el admin desde `ADMIN_EMAIL`/`ADMIN_PASSWORD`.
 - Push: el permiso se pide al instalar la PWA (`appinstalled`) + red de

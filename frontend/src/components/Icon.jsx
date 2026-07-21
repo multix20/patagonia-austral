@@ -34,6 +34,8 @@ const RUTAS = {
   search: 'm21 21-4.35-4.35',
   // Asterisco de 8 puntas (estilo "spark" de Claude Code) — avatar del chatbot
   spark: 'M12 3v18M3 12h18M5.64 5.64l12.72 12.72M18.36 5.64L5.64 18.36',
+  // Estrella (sello de ficha destacada — capa comercial Fase 3)
+  star: 'M11.5 2.3a.6.6 0 0 1 1 0l2.6 5.3 5.8.8a.6.6 0 0 1 .3 1l-4.2 4.1 1 5.8a.6.6 0 0 1-.9.6L12 17.3l-5.2 2.7a.6.6 0 0 1-.9-.6l1-5.8L2.7 9.5a.6.6 0 0 1 .3-1l5.8-.8 2.6-5.3z',
 }
 
 // Formas adicionales (círculos/rects) por icono
