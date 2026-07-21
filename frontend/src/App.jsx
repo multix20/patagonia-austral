@@ -65,6 +65,20 @@ function AppInterna() {
   // Web Push real (suscripción del dispositivo a los avisos municipales)
   const [pushEstado, setPushEstado] = useState('idle') // idle|activando|activado|error
 
+  // Tarjeta de push (respaldo iOS/Android). iOS no dispara `appinstalled` y exige
+  // un gesto del usuario para pedir el permiso → un iPhone instalado no tiene otra
+  // vía para suscribirse. Mostramos UNA tarjeta, solo en modo standalone y con el
+  // permiso pendiente; al decidir (o cerrarla) desaparece. No es el botón "Activar
+  // notificaciones" de siempre: es contextual, único y descartable.
+  const [instaladaStandalone] = useState(
+    () =>
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true
+  )
+  const [tarjetaPushCerrada, setTarjetaPushCerrada] = useState(
+    () => localStorage.getItem('tarjetaPushCerrada') === '1'
+  )
+
   // Instalación PWA (beforeinstallprompt real)
   const [promptInstalar, setPromptInstalar] = useState(null)
   const [bannerCerrado, setBannerCerrado] = useState(
@@ -214,14 +228,34 @@ function AppInterna() {
   // el permiso se dio a nivel de sistema pero el POST nunca ocurrió). Silencioso
   // y sin duplicados: el backend hace updateOrCreate por endpoint.
   useEffect(() => {
-    const instalada =
-      window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone
-    if (instalada && pushSoportado() && Notification.permission === 'granted') {
+    if (instaladaStandalone && pushSoportado() && Notification.permission === 'granted') {
       activarPush()
         .then(() => setPushEstado('activado'))
         .catch(() => {})
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const cerrarTarjetaPush = () => {
+    setTarjetaPushCerrada(true)
+    localStorage.setItem('tarjetaPushCerrada', '1')
+  }
+
+  // El gesto del usuario (toque) permite pedir el permiso también en iOS. Se
+  // conceda o se deniegue, no volvemos a mostrar la tarjeta.
+  const activarPushDesdeTarjeta = async () => {
+    await habilitarPush()
+    cerrarTarjetaPush()
+  }
+
+  // Solo en standalone, con push soportado y permiso PENDIENTE (default): iOS ≥16.4
+  // instalado, o Android donde el flujo de `appinstalled` no llegó a pedirlo.
+  const mostrarTarjetaPush =
+    instaladaStandalone &&
+    !tarjetaPushCerrada &&
+    pushEstado !== 'activado' &&
+    pushSoportado() &&
+    Notification.permission === 'default'
 
   // Avisos no leídos = los que aún no se han visto (contador de la campanita)
   const noLeidos = avisos.filter((a) => !avisosVistos.includes(a.id)).length
@@ -460,7 +494,30 @@ function AppInterna() {
         localidadNombre={locActiva ? locActiva.nombre[lang] : null}
       />
 
-      {!bannerCerrado && (
+      {mostrarTarjetaPush && (
+        <div className="tarjeta-push">
+          <span className="tp-ico">
+            <Icon nombre="bell" tam={22} />
+          </span>
+          <div className="tp-txt">
+            <b>{t('pushTitulo')}</b>
+            <br />
+            {t('pushTexto')}
+          </div>
+          <button onClick={activarPushDesdeTarjeta} disabled={pushEstado === 'activando'}>
+            {t('pushActivar')}
+          </button>
+          <button
+            className="cerrar"
+            onClick={cerrarTarjetaPush}
+            aria-label={lang === 'es' ? 'Cerrar' : 'Close'}
+          >
+            <Icon nombre="x" tam={14} />
+          </button>
+        </div>
+      )}
+
+      {!bannerCerrado && !instaladaStandalone && (
         <div className="instalar">
           <Icon nombre="smartphone" tam={24} />
           <div className="i-txt">
