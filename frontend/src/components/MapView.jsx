@@ -48,6 +48,7 @@ export default function MapView({
   offline,
   centro = null,
   zoom = null,
+  activo = null,
 }) {
   const contRef = useRef(null)
   const mapaRef = useRef(null)
@@ -55,6 +56,7 @@ export default function MapView({
   const baseRef = useRef(null) // capa base (teselas) actual
   const yoRef = useRef(null) // marcador de la ubicación del usuario
   const rutaRef = useRef(null) // línea de ruta usuario → lugar
+  const volandoRef = useRef(0) // timestamp del último flyTo por cambio de localidad
   const [pos, setPos] = useState(null) // [lat, lng] del usuario en vivo
   const [capa, setCapa] = useState('mapa') // 'mapa' | 'satelite'
   const { t, lang } = useI18n()
@@ -77,9 +79,23 @@ export default function MapView({
   useEffect(() => {
     const mapa = mapaRef.current
     if (!mapa || !centro) return
+    volandoRef.current = Date.now()
     mapa.flyTo(centro, zoom || 13, { duration: 0.8 })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [centro?.[0], centro?.[1], zoom])
+
+  // Sincronización lista → mapa: el mapa sigue (paneo suave, mismo zoom) al lugar
+  // "activo" (la card de más arriba en la lista). Se omite el paneo justo tras un
+  // flyTo de cambio de localidad, para no interrumpir esa animación.
+  useEffect(() => {
+    const mapa = mapaRef.current
+    if (!mapa || !activo) return
+    if (Date.now() - volandoRef.current < 1000) return
+    const lugar = lugares.find((l) => l.id === activo)
+    if (!lugar) return
+    mapa.panTo([lugar.lat, lugar.lng], { animate: true, duration: 0.5 })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activo])
 
   // Cambia el mapa base (Mapa ↔ Satélite)
   useEffect(() => {
@@ -124,20 +140,21 @@ export default function MapView({
       .filter((l) => filtro === 'todos' || l.cat === filtro)
       .forEach((l) => {
         const c = CATEGORIAS[l.cat]
+        const esActivo = l.id === activo
         // Pin estilo señalética outdoor: gota SVG en el color de la categoría,
-        // borde blanco fino y el icono calado en blanco. Más pequeño que el
-        // marcador anterior para que el mapa respire con muchos lugares.
+        // borde blanco fino y el icono calado en blanco. El pin activo (el que
+        // sigue a la lista) se agranda y sube al frente.
         const icono = L.divIcon({
-          html: `<div class="pin-lugar"><svg width="24" height="31" viewBox="0 0 26 34"><path d="M13 1C6.4 1 1 6.5 1 13.1 1 22 13 33 13 33s12-11 12-19.9C25 6.5 19.6 1 13 1z" fill="${c.color}" stroke="#fff" stroke-width="1.6"/></svg><span class="pin-ico">${iconoHTML(c.icono, 11, '#fff')}</span></div>`,
+          html: `<div class="pin-lugar${esActivo ? ' pin-activo' : ''}"><svg width="24" height="31" viewBox="0 0 26 34"><path d="M13 1C6.4 1 1 6.5 1 13.1 1 22 13 33 13 33s12-11 12-19.9C25 6.5 19.6 1 13 1z" fill="${c.color}" stroke="#fff" stroke-width="1.6"/></svg><span class="pin-ico">${iconoHTML(c.icono, 11, '#fff')}</span></div>`,
           className: '',
           iconSize: [24, 31],
           iconAnchor: [12, 29],
         })
-        L.marker([l.lat, l.lng], { icon: icono })
+        L.marker([l.lat, l.lng], { icon: icono, zIndexOffset: esActivo ? 600 : 0 })
           .addTo(capaLugares)
           .on('click', () => onSeleccionar(l.id))
       })
-  }, [lugares, filtro, onSeleccionar])
+  }, [lugares, filtro, onSeleccionar, activo])
 
   // Traza la ruta (línea + distancia) desde el usuario al lugar seleccionado
   useEffect(() => {
