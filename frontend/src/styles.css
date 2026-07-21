@@ -501,6 +501,37 @@ h1 small {
 .btn-como-llegar:active {
   transform: scale(0.98);
 }
+/* Fila de acciones de la ficha: "Cómo llegar" es el CTA principal (ocupa el
+   ancho) y "Compartir" el secundario. */
+.ficha-acciones {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0 4px;
+}
+.ficha-acciones .btn-como-llegar {
+  flex: 1;
+  margin: 0;
+  padding: 13px 14px;
+  font-size: 15px;
+}
+.btn-compartir {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 13px 14px;
+  background: #fff;
+  color: var(--verde);
+  border: 1.5px solid var(--verde);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-compartir:active {
+  transform: scale(0.98);
+}
 
 /* ---------- Chips ---------- */
 /* Barra de categorías en la zona del pulgar (reemplaza los chips superiores).
@@ -682,6 +713,17 @@ h1 small {
   font-size: 22px;
   font-weight: 700;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 1;
+}
+/* Icono grande de la categoría como identidad visual (no hay foto real). */
+.ficha-foto-ico {
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  transform: translateY(-62%);
+  color: rgba(255, 255, 255, 0.3);
+  display: flex;
 }
 .volver {
   position: absolute;

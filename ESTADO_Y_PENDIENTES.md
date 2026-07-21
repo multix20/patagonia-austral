@@ -418,18 +418,17 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
   Lote de sugerencias de UX; se irán haciendo en PRs chicos y enfocados:
   - **✅ ChatBot (🔴 alta) — HECHO (21-jul-2026):** Markdown en mensajes +
     historial en `sessionStorage` + atributos del input. Ver detalle en "Menores".
-  - **PlaceDetail (🟡 media):** **CTA "Cómo llegar" prominente** (botón principal,
-    no al mismo nivel que la descripción); si no hay foto, mostrar el **icono de
-    categoría grande centrado** en el gradiente; **botón compartir** (enviar la
-    ubicación a alguien).
+  - **✅ PlaceDetail (🟡 media) — HECHO (21-jul-2026):** CTA "Cómo llegar"
+    prominente, icono de categoría grande en el gradiente y botón compartir. Ver
+    detalle en "Menores".
   - **SelectorLocalidad (🟢 baja):** **highlight** del texto que coincide con la
     búsqueda; **contador** sutil ("N localidades") en el panel; **punto verde** en
     el disparador cuando hay una localidad activa (vs "Toda la ruta").
   - **MapView (menores):** feedback del botón *ubicarme* (spinner/texto mientras
     busca, porque en móvil el `title` no se ve); **fade** de la línea de ruta al
     deseleccionar.
-  - **Icon (trivial):** falta `locate` en `EXTRAS` del componente React (los
-    círculos del crosshair sí están en `iconoHTML` pero no en `<Icon>`).
+  - **✅ Icon (trivial) — HECHO (21-jul-2026):** `locate` añadido a `EXTRAS` del
+    componente React (los círculos del crosshair que ya estaban en `iconoHTML`).
 
 - **Selector de localidad por km / mini-mapa de ruta (21-jul-2026), backlog.** Hoy
   el selector es un dropdown con búsqueda por nombre: el viajero tiene que saber
@@ -476,6 +475,17 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ PlaceDetail: CTA, icono y compartir — RESUELTO (21-jul-2026):** en la ficha
+  de un lugar, (a) **icono grande de la categoría** como marca de agua en el
+  gradiente del encabezado (`.ficha-foto-ico`) — identidad visual mientras no hay
+  fotos reales; (b) **"Cómo llegar" como CTA principal** (ocupa el ancho) junto a
+  un **botón "Compartir" secundario** (`.ficha-acciones`); compartir usa
+  `navigator.share` (diálogo nativo del móvil) y, si no está, copia el enlace de
+  Google Maps al portapapeles con aviso "Enlace copiado". Iconos `share` y
+  `locate` (círculos que faltaban en `EXTRAS` del componente) añadidos a
+  `Icon.jsx`; textos ES/EN `compartir`/`enlaceCopiado` en `i18n.jsx`. Verificado
+  en navegador (Playwright): icono grande, CTA y compartir presentes, sin errores
+  JS; build+lint OK.
 - **✅ ChatBot: Markdown, historial e input — RESUELTO (21-jul-2026):** los
   mensajes del bot se renderizan como **Markdown simple** (`**negrita**` en los
   nombres de lugares, viñetas `•`/`-` como lista, líneas en blanco como
