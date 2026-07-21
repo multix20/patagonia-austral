@@ -1193,6 +1193,26 @@ h1 small {
   line-height: 1.5;
   white-space: pre-line;
 }
+/* Markdown simple dentro de los mensajes del bot */
+.msg p {
+  margin: 0;
+}
+.msg strong {
+  font-weight: 700;
+}
+.msg .md-lista {
+  margin: 4px 0;
+  padding-left: 18px;
+}
+.msg .md-lista li {
+  margin: 2px 0;
+}
+.msg .md-lista li::marker {
+  color: var(--verde);
+}
+.msg .md-sp {
+  height: 7px;
+}
 .msg.bot {
   background: #fff;
   border: 1px solid var(--borde);

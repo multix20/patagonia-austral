@@ -416,10 +416,8 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
 
 - **Mejoras por componente (análisis Figma AI, 21-jul-2026), por priorizar.**
   Lote de sugerencias de UX; se irán haciendo en PRs chicos y enfocados:
-  - **ChatBot (🔴 alta):** renderizar los mensajes como **Markdown simple**
-    (negritas/viñetas) para que las listas de lugares se lean bien; **historial en
-    `sessionStorage`** (no perder la conversación al cerrar/reabrir); `inputMode`/
-    `autocomplete="off"` en el input (evitar autocorrección de nombres patagónicos).
+  - **✅ ChatBot (🔴 alta) — HECHO (21-jul-2026):** Markdown en mensajes +
+    historial en `sessionStorage` + atributos del input. Ver detalle en "Menores".
   - **PlaceDetail (🟡 media):** **CTA "Cómo llegar" prominente** (botón principal,
     no al mismo nivel que la descripción); si no hay foto, mostrar el **icono de
     categoría grande centrado** en el gradiente; **botón compartir** (enviar la
@@ -478,6 +476,16 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ ChatBot: Markdown, historial e input — RESUELTO (21-jul-2026):** los
+  mensajes del bot se renderizan como **Markdown simple** (`**negrita**` en los
+  nombres de lugares, viñetas `•`/`-` como lista, líneas en blanco como
+  separación) — render propio sin dependencias (`inline`/`Markdown` en
+  `ChatBot.jsx`, estilos `.msg .md-lista`/`.md-sp` en `styles.css`). **Historial
+  persistente** en `sessionStorage` (`chatHistorial`): al cerrar y reabrir el chat
+  la conversación se conserva (el componente se desmonta al cerrar). Input con
+  `inputMode`/`autoComplete=off`/`autoCorrect=off`/`spellCheck=false` para no
+  autocorregir nombres patagónicos. Verificado en navegador (Playwright): negritas
+  y lista en la respuesta, 3 mensajes tras cerrar/reabrir, sin errores JS; build+lint OK.
 - **✅ Clustering de pines en el mapa — RESUELTO (21-jul-2026):** en zonas densas
   los pines se agrupan en un **cluster con el número** de lugares (icono propio en
   verde de la marca); al hacer zoom se separan (spiderfy al máximo). Se usó
