@@ -445,6 +445,24 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ UX "el mapa es la app" — RESUELTO (21-jul-2026):** rediseño de la vista
+  principal para que el mapa sea el protagonista (lo que el turista más mira).
+  (a) Al elegir una localidad, el mapa crece a `56vh` (clase `mapa-grande` en
+  `.app`) y la lista queda de apoyo debajo; en "Toda la ruta" el mapa queda
+  compacto (`230px`) porque ahí manda la lista agrupada. (b) **Pines
+  rediseñados** a estilo señalética outdoor: gota SVG en el color de la categoría
+  con el icono calado en blanco y sombra (`.pin-lugar` en `styles.css`,
+  `MapView.jsx`), más chicos que el marcador cuadrado anterior. (c) Los filtros
+  de categoría pasaron de chips arriba a una **barra inferior en la zona del
+  pulgar** (`.barra-cat`/`.cat-btn`, icono + etiqueta, tinte del color de la
+  categoría activa); los flotantes (FAB, banner instalar, tarjeta push) se
+  elevaron sobre la barra con `--barra-cat-h`. (d) **Reordenadas las
+  categorías**: "Dónde dormir" y "Dónde comer" primero (es lo que más busca el
+  turista), luego "Qué visitar", servicios, eventos, emergencias — el orden sale
+  del objeto `CATEGORIAS` en `data/places.js`. Verificado en navegador
+  (Playwright, 390×780): ambas vistas, orden de botones, pines y sin errores JS;
+  build+lint OK. Pendiente: afinar detalles visuales según revisión en el deploy
+  preview.
 - **✅ UX de multi-localidad (Fase 2) — RESUELTO (14-jul-2026):**
   (a) "Toda la ruta" ahora se agrupa por localidad con encabezados de sección,
   ordenados por **cercanía al GPS** del usuario (norte→sur si no hay ubicación;

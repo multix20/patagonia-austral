@@ -124,11 +124,14 @@ export default function MapView({
       .filter((l) => filtro === 'todos' || l.cat === filtro)
       .forEach((l) => {
         const c = CATEGORIAS[l.cat]
+        // Pin estilo señalética outdoor: gota SVG en el color de la categoría,
+        // borde blanco fino y el icono calado en blanco. Más pequeño que el
+        // marcador anterior para que el mapa respire con muchos lugares.
         const icono = L.divIcon({
-          html: `<div style="background:${c.color};width:30px;height:30px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)"><span style="transform:rotate(45deg);display:flex">${iconoHTML(c.icono, 14)}</span></div>`,
+          html: `<div class="pin-lugar"><svg width="24" height="31" viewBox="0 0 26 34"><path d="M13 1C6.4 1 1 6.5 1 13.1 1 22 13 33 13 33s12-11 12-19.9C25 6.5 19.6 1 13 1z" fill="${c.color}" stroke="#fff" stroke-width="1.6"/></svg><span class="pin-ico">${iconoHTML(c.icono, 11, '#fff')}</span></div>`,
           className: '',
-          iconSize: [30, 30],
-          iconAnchor: [15, 28],
+          iconSize: [24, 31],
+          iconAnchor: [12, 29],
         })
         L.marker([l.lat, l.lng], { icon: icono })
           .addTo(capaLugares)

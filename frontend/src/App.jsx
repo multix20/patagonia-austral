@@ -346,7 +346,10 @@ function AppInterna() {
   }
 
   return (
-    <div className={`app ${offline ? 'offline' : ''}`}>
+    // Con una localidad elegida el mapa es el protagonista (`mapa-grande`):
+    // ocupa la mayor parte de la pantalla y la lista queda debajo. En "Toda la
+    // ruta" manda la lista agrupada por cercanía, así que el mapa queda compacto.
+    <div className={`app ${offline ? 'offline' : ''} ${localidad !== 'todas' ? 'mapa-grande' : ''}`}>
       <header>
         <div className="fila-top">
           <h1>
@@ -400,24 +403,6 @@ function AppInterna() {
         zoom={locActiva?.zoom}
       />
 
-      <div className="chips">
-        <button
-          className={`chip ${filtro === 'todos' ? 'activo' : ''}`}
-          onClick={() => setFiltro('todos')}
-        >
-          {t('todos')}
-        </button>
-        {Object.entries(CATEGORIAS).map(([clave, c]) => (
-          <button
-            key={clave}
-            className={`chip ${filtro === clave ? 'activo' : ''}`}
-            onClick={() => setFiltro(clave)}
-          >
-            <Icon nombre={c.icono} tam={13} /> {c.nombre[lang]}
-          </button>
-        ))}
-      </div>
-
       <div className="lista">
         {lugaresFiltrados.length === 0 && (
           <div className="lista-vacia">{t('sinLugaresLocalidad')}</div>
@@ -446,6 +431,29 @@ function AppInterna() {
             })
           : lugaresFiltrados.map(renderTarjeta)}
       </div>
+
+      {/* Barra de categorías en la zona del pulgar. "Dónde dormir" y "Dónde comer"
+          van primero (orden de CATEGORIAS): es lo que más busca el turista. */}
+      <nav className="barra-cat" aria-label={lang === 'es' ? 'Filtrar por categoría' : 'Filter by category'}>
+        <button
+          className={`cat-btn ${filtro === 'todos' ? 'activo' : ''}`}
+          onClick={() => setFiltro('todos')}
+        >
+          <Icon nombre="map" tam={18} />
+          <span>{t('todos')}</span>
+        </button>
+        {Object.entries(CATEGORIAS).map(([clave, c]) => (
+          <button
+            key={clave}
+            className={`cat-btn ${filtro === clave ? 'activo' : ''}`}
+            onClick={() => setFiltro(clave)}
+            style={filtro === clave ? { '--cat-color': c.color } : undefined}
+          >
+            <Icon nombre={c.icono} tam={18} />
+            <span>{c.nombre[lang]}</span>
+          </button>
+        ))}
+      </nav>
 
       {lugarSel && <PlaceDetail lugar={lugarSel} onCerrar={() => setSeleccionado(null)} />}
 
