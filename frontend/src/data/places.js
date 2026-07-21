@@ -197,46 +197,6 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 5, cat: 'alojamiento', localidad: 'cochrane', lat: -47.2536, lng: -72.5725, tel: '+56 9 1234 5678',
-    nombre: { es: 'Hostal Patagonia (ejemplo)', en: 'Hostal Patagonia (sample)' },
-    dist: { es: '200 m del centro', en: '200 m from downtown' },
-    desc: {
-      es: 'Habitaciones simples y dobles con desayuno casero. Estacionamiento y bicicletas para huéspedes. (Contenido de ejemplo).',
-      en: 'Single and double rooms with homemade breakfast. Parking and bikes for guests. (Sample content).',
-    },
-    como: { es: 'Calle Tehuelches 361, a dos cuadras de la plaza.', en: 'Tehuelches St. 361, two blocks from the square.' },
-  },
-  {
-    id: 6, cat: 'alojamiento', localidad: 'cochrane', lat: -47.258, lng: -72.578, tel: '+56 9 8765 4321',
-    nombre: { es: 'Cabañas Río Baker (ejemplo)', en: 'Río Baker Cabins (sample)' },
-    dist: { es: '800 m del centro', en: '800 m from downtown' },
-    desc: {
-      es: 'Cabañas equipadas para 2 a 6 personas con vista al río. Ideal para familias. (Contenido de ejemplo).',
-      en: 'Fully equipped cabins for 2–6 people with river views. Great for families. (Sample content).',
-    },
-    como: { es: 'Salida sur del pueblo, camino a la costanera.', en: 'South exit of town, on the riverside road.' },
-  },
-  {
-    id: 7, cat: 'comida', localidad: 'cochrane', lat: -47.2549, lng: -72.5738, tel: '+56 9 5555 1111',
-    nombre: { es: 'Restaurante El Fogón (ejemplo)', en: 'El Fogón Restaurant (sample)' },
-    dist: { es: 'Frente a la plaza', en: 'Facing the square' },
-    desc: {
-      es: 'Cordero al palo, cazuelas y platos patagones. Atención de 12:30 a 22:00. (Contenido de ejemplo).',
-      en: 'Spit-roasted lamb, stews and Patagonian dishes. Open 12:30–22:00. (Sample content).',
-    },
-    como: { es: 'Calle Esmeralda, frente a la Plaza de Armas.', en: 'Esmeralda St., facing the main square.' },
-  },
-  {
-    id: 8, cat: 'comida', localidad: 'cochrane', lat: -47.2531, lng: -72.5749,
-    nombre: { es: 'Café del Sur (ejemplo)', en: 'Café del Sur (sample)' },
-    dist: { es: '100 m de la plaza', en: '100 m from the square' },
-    desc: {
-      es: 'Café de especialidad, kuchen casero y sándwiches. Wifi para viajeros. (Contenido de ejemplo).',
-      en: 'Specialty coffee, homemade kuchen and sandwiches. Wifi for travellers. (Sample content).',
-    },
-    como: { es: 'Calle Dr. Steffens esquina San Valentín.', en: 'Dr. Steffens St. at San Valentín corner.' },
-  },
-  {
     id: 9, cat: 'servicio', localidad: 'cochrane', lat: -47.2565, lng: -72.572,
     nombre: { es: 'Estación de servicio (combustible)', en: 'Petrol station (fuel)' },
     dist: { es: '400 m del centro', en: '400 m from downtown' },
@@ -430,26 +390,6 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 25, cat: 'alojamiento', localidad: 'coyhaique', lat: -45.5731, lng: -72.0699, tel: '+56 9 1111 2222',
-    nombre: { es: 'Hostal del Centro (ejemplo)', en: 'Downtown Hostel (sample)' },
-    dist: { es: '300 m de la plaza', en: '300 m from the square' },
-    desc: {
-      es: 'Coyhaique concentra la mayor oferta de alojamiento de la región: hostales, hoteles y cabañas para todos los presupuestos. (Contenido de ejemplo).',
-      en: 'Coyhaique has the region’s widest range of lodging: hostels, hotels and cabins for every budget. (Sample content).',
-    },
-    como: { es: 'A pasos de la Plaza de Armas.', en: 'Steps from the main square.' },
-  },
-  {
-    id: 26, cat: 'comida', localidad: 'coyhaique', lat: -45.5713, lng: -72.0668,
-    nombre: { es: 'Restaurante Patagón (ejemplo)', en: 'Patagón Restaurant (sample)' },
-    dist: { es: 'Frente a la plaza', en: 'Facing the square' },
-    desc: {
-      es: 'Cordero, carnes a la parrilla y cerveza artesanal ayseninas. El centro reúne decenas de restaurantes y cafés. (Contenido de ejemplo).',
-      en: 'Lamb, grilled meats and Aysén craft beer. Downtown has dozens of restaurants and cafés. (Sample content).',
-    },
-    como: { es: 'Sector Plaza de Armas.', en: 'Main square area.' },
-  },
-  {
     id: 27, cat: 'servicio', localidad: 'coyhaique', lat: -45.5725, lng: -72.066,
     nombre: { es: 'Combustible, bancos y supermercados', en: 'Fuel, banks and supermarkets' },
     dist: { es: 'En el centro y accesos', en: 'Downtown and city exits' },
@@ -521,26 +461,6 @@ export const LUGARES_SEED = [
     como: { es: 'Calle principal del pueblo (avenida O’Higgins).', en: 'Main street of the village (O’Higgins Avenue).' },
   },
   {
-    id: 33, cat: 'alojamiento', localidad: 'villa-cerro-castillo', lat: -46.1219, lng: -72.1645, tel: '+56 9 3333 4444',
-    nombre: { es: 'Hospedaje La Villa (ejemplo)', en: 'La Villa Guesthouse (sample)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Hospedajes familiares, cabañas y campings para los trekkers del cerro Castillo. Reserva con anticipación en temporada alta. (Contenido de ejemplo).',
-      en: 'Family guesthouses, cabins and campsites for Cerro Castillo trekkers. Book ahead in high season. (Sample content).',
-    },
-    como: { es: 'Casco del pueblo, junto a la Carretera Austral.', en: 'Village centre, next to the Carretera Austral.' },
-  },
-  {
-    id: 34, cat: 'comida', localidad: 'villa-cerro-castillo', lat: -46.1213, lng: -72.1629,
-    nombre: { es: 'Cocinería del valle (ejemplo)', en: 'Valley eatery (sample)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Cocinerías y cafés de ruta con menú casero: cazuelas, asado y kuchen. (Contenido de ejemplo).',
-      en: 'Roadside eateries and cafés with home cooking: stews, roast lamb and kuchen. (Sample content).',
-    },
-    como: { es: 'Sobre la calle principal.', en: 'On the main street.' },
-  },
-  {
     id: 35, cat: 'servicio', localidad: 'villa-cerro-castillo', lat: -46.1216, lng: -72.1633,
     nombre: { es: 'Almacenes y provisiones', en: 'Grocery stores and supplies' },
     dist: { es: 'En el pueblo', en: 'In the village' },
@@ -594,26 +514,6 @@ export const LUGARES_SEED = [
       es: 'Camino de ripio hacia el sur desde Chile Chico. Sin combustible ni señal en la ruta: sal preparado.',
       en: 'Gravel road south from Chile Chico. No fuel or phone signal on the way: leave prepared.',
     },
-  },
-  {
-    id: 40, cat: 'alojamiento', localidad: 'chile-chico', lat: -46.5402, lng: -71.7263, tel: '+56 9 5555 6666',
-    nombre: { es: 'Hostería del Sol (ejemplo)', en: 'Hostería del Sol (sample)' },
-    dist: { es: '200 m del centro', en: '200 m from downtown' },
-    desc: {
-      es: 'Hosterías, cabañas y residenciales familiares; el microclima hace agradable la estadía todo el año. (Contenido de ejemplo).',
-      en: 'Inns, cabins and family guesthouses; the microclimate makes for a pleasant stay year-round. (Sample content).',
-    },
-    como: { es: 'Sector céntrico.', en: 'Central area.' },
-  },
-  {
-    id: 41, cat: 'comida', localidad: 'chile-chico', lat: -46.5396, lng: -71.7248,
-    nombre: { es: 'Restaurante frente al lago (ejemplo)', en: 'Lakefront restaurant (sample)' },
-    dist: { es: 'En el centro', en: 'Downtown' },
-    desc: {
-      es: 'Cocina casera y productos del microclima local: cerezas, duraznos y hortalizas de los huertos del pueblo. (Contenido de ejemplo).',
-      en: 'Home cooking and produce from the local microclimate: cherries, peaches and vegetables from the town’s orchards. (Sample content).',
-    },
-    como: { es: 'Sector céntrico, cerca de la costanera.', en: 'Central area, near the waterfront.' },
   },
   {
     id: 42, cat: 'servicio', localidad: 'chile-chico', lat: -46.5405, lng: -71.729,
@@ -684,26 +584,6 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 48, cat: 'alojamiento', localidad: 'puerto-guadal', lat: -46.844, lng: -72.704, tel: '+56 9 7777 8888',
-    nombre: { es: 'Cabañas del Lago (ejemplo)', en: 'Lakeside Cabins (sample)' },
-    dist: { es: 'En el pueblo', en: 'In town' },
-    desc: {
-      es: 'Cabañas, hospedajes y campings frente al lago, varios con vista a las montañas. (Contenido de ejemplo).',
-      en: 'Cabins, guesthouses and campsites facing the lake, several with mountain views. (Sample content).',
-    },
-    como: { es: 'Sector costanera.', en: 'Waterfront area.' },
-  },
-  {
-    id: 49, cat: 'comida', localidad: 'puerto-guadal', lat: -46.8445, lng: -72.7025,
-    nombre: { es: 'Café-restaurante del pueblo (ejemplo)', en: 'Village café-restaurant (sample)' },
-    dist: { es: 'En el pueblo', en: 'In town' },
-    desc: {
-      es: 'Cocina casera y repostería en un circuito pequeño de cafés y cocinerías de temporada. (Contenido de ejemplo).',
-      en: 'Home cooking and pastries in a small circuit of seasonal cafés and eateries. (Sample content).',
-    },
-    como: { es: 'Casco del pueblo.', en: 'Village centre.' },
-  },
-  {
     id: 50, cat: 'servicio', localidad: 'puerto-guadal', lat: -46.8438, lng: -72.7022,
     nombre: { es: 'Almacenes y abastecimiento', en: 'Grocery stores and supplies' },
     dist: { es: 'En el pueblo', en: 'In town' },
@@ -760,26 +640,6 @@ export const LUGARES_SEED = [
       es: 'Operadores en el pueblo; salidas sujetas al caudal y al clima.',
       en: 'Operators in the village; departures depend on river flow and weather.',
     },
-  },
-  {
-    id: 55, cat: 'alojamiento', localidad: 'puerto-bertrand', lat: -47.0215, lng: -72.8245, tel: '+56 9 2222 3333',
-    nombre: { es: 'Cabañas junto al lago (ejemplo)', en: 'Lakeside cabins (sample)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Cabañas y hospedajes pequeños frente al lago Bertrand, muchos orientados a pescadores. (Contenido de ejemplo).',
-      en: 'Small cabins and guesthouses facing Lake Bertrand, many geared to anglers. (Sample content).',
-    },
-    como: { es: 'Casco del pueblo, frente al lago.', en: 'Village centre, facing the lake.' },
-  },
-  {
-    id: 56, cat: 'comida', localidad: 'puerto-bertrand', lat: -47.0221, lng: -72.8242,
-    nombre: { es: 'Cocinería del pueblo (ejemplo)', en: 'Village eatery (sample)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Oferta pequeña y de temporada: cocinerías caseras y algún café. Fuera de temporada conviene llevar provisiones. (Contenido de ejemplo).',
-      en: 'A small, seasonal offering: home-style eateries and the odd café. Off-season, carry your own provisions. (Sample content).',
-    },
-    como: { es: 'Calle principal.', en: 'Main street.' },
   },
   {
     id: 57, cat: 'servicio', localidad: 'puerto-bertrand', lat: -47.0218, lng: -72.8248,
@@ -848,26 +708,6 @@ export const LUGARES_SEED = [
       en: 'A short trail climbing the hillside behind the village to viewpoints over Villa O’Higgins, the Mayer River valley and the ranges of the Southern Ice Field.',
     },
     como: { es: 'Inicio señalizado en el borde oriente del pueblo.', en: 'Signposted trailhead on the eastern edge of the village.' },
-  },
-  {
-    id: 63, cat: 'alojamiento', localidad: 'villa-ohiggins', lat: -48.468, lng: -72.561, tel: '+56 9 9999 0000',
-    nombre: { es: 'Hospedaje Fin de Ruta (ejemplo)', en: 'End-of-the-Road Guesthouse (sample)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Hospedajes familiares, cabañas y camping para quienes culminan la Carretera. En temporada alta conviene reservar: la capacidad del pueblo es limitada. (Contenido de ejemplo).',
-      en: 'Family guesthouses, cabins and camping for those finishing the Carretera. Book ahead in high season: the village’s capacity is limited. (Sample content).',
-    },
-    como: { es: 'Casco del pueblo.', en: 'Village centre.' },
-  },
-  {
-    id: 64, cat: 'comida', localidad: 'villa-ohiggins', lat: -48.4685, lng: -72.5605,
-    nombre: { es: 'Cocinería El Viajero (ejemplo)', en: 'El Viajero Eatery (sample)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Menú casero contundente para ciclistas y trekkers: cazuelas, asado y pan amasado. Horarios acotados fuera de temporada. (Contenido de ejemplo).',
-      en: 'Hearty home cooking for cyclists and trekkers: stews, roast lamb and fresh bread. Limited hours off-season. (Sample content).',
-    },
-    como: { es: 'Calle principal del pueblo.', en: 'Main street of the village.' },
   },
   {
     id: 65, cat: 'servicio', localidad: 'villa-ohiggins', lat: -48.4677, lng: -72.5612,
@@ -954,26 +794,6 @@ export const LUGARES_SEED = [
     como: { es: 'En el centro, en torno a la plaza.', en: 'Downtown, around the main square.' },
   },
   {
-    id: 72, cat: 'alojamiento', localidad: 'puerto-aysen', lat: -45.404, lng: -72.695,
-    nombre: { es: 'Hospedaje en Puerto Aysén (ejemplo)', en: 'Guesthouse in Puerto Aysén (example)' },
-    dist: { es: 'En el centro', en: 'Downtown' },
-    desc: {
-      es: 'Marcador de alojamiento de ejemplo. Puerto Aysén tiene hoteles, hostales y cabañas para pasar la noche antes o después de tomar la barcaza en Chacabuco. Se reemplazará por comercios reales.',
-      en: 'Sample lodging placeholder. Puerto Aysén has hotels, hostels and cabins for a night before or after taking the ferry at Chacabuco. To be replaced with real businesses.',
-    },
-    como: { es: 'Varios en el centro y hacia la costanera.', en: 'Several downtown and toward the riverfront.' },
-  },
-  {
-    id: 73, cat: 'comida', localidad: 'puerto-aysen', lat: -45.4028, lng: -72.694,
-    nombre: { es: 'Restaurante en Puerto Aysén (ejemplo)', en: 'Restaurant in Puerto Aysén (example)' },
-    dist: { es: 'En el centro', en: 'Downtown' },
-    desc: {
-      es: 'Marcador de ejemplo. La zona es fuerte en productos del mar (salmón, merluza austral, mariscos). Se reemplazará por locales reales.',
-      en: 'Sample placeholder. The area is strong in seafood (salmon, southern hake, shellfish). To be replaced with real venues.',
-    },
-    como: { es: 'En el centro.', en: 'Downtown.' },
-  },
-  {
     id: 74, cat: 'servicio', localidad: 'puerto-aysen', lat: -45.405, lng: -72.696,
     nombre: { es: 'Combustible y servicios', en: 'Fuel and services' },
     dist: { es: 'En el centro', en: 'Downtown' },
@@ -1028,26 +848,6 @@ export const LUGARES_SEED = [
       es: 'Zarpe desde el terminal de Puerto Chacabuco; se contrata con operadores locales.',
       en: 'Departs from the Puerto Chacabuco terminal; booked with local operators.',
     },
-  },
-  {
-    id: 79, cat: 'alojamiento', localidad: 'puerto-chacabuco', lat: -45.467, lng: -72.816,
-    nombre: { es: 'Alojamiento en Puerto Chacabuco (ejemplo)', en: 'Lodging in Puerto Chacabuco (example)' },
-    dist: { es: 'Junto al puerto', en: 'By the port' },
-    desc: {
-      es: 'Marcador de ejemplo. Hay hoteles y hospedajes junto al puerto, útiles para embarques o desembarques de madrugada. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. There are hotels and guesthouses by the port, handy for early-morning departures or arrivals. To be replaced with real businesses.',
-    },
-    como: { es: 'Junto al puerto.', en: 'By the port.' },
-  },
-  {
-    id: 80, cat: 'comida', localidad: 'puerto-chacabuco', lat: -45.4665, lng: -72.817,
-    nombre: { es: 'Marisquería en Puerto Chacabuco (ejemplo)', en: 'Seafood eatery in Puerto Chacabuco (example)' },
-    dist: { es: 'Junto al puerto', en: 'By the port' },
-    desc: {
-      es: 'Marcador de ejemplo. Cocina de mar junto al muelle. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Seafood cooking by the pier. To be replaced with real venues.',
-    },
-    como: { es: 'Junto al puerto.', en: 'By the port.' },
   },
   {
     id: 81, cat: 'servicio', localidad: 'puerto-chacabuco', lat: -45.4655, lng: -72.8178,
@@ -1120,26 +920,6 @@ export const LUGARES_SEED = [
     como: { es: 'Sobre la Ruta 7, en el pueblo.', en: 'On Route 7, in the village.' },
   },
   {
-    id: 87, cat: 'alojamiento', localidad: 'villa-manihuales', lat: -45.2098, lng: -72.155,
-    nombre: { es: 'Hospedaje en Villa Mañihuales (ejemplo)', en: 'Guesthouse in Villa Mañihuales (example)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Marcador de ejemplo. El pueblo ofrece hospedajes y cabañas sencillas para partir el viaje entre Coyhaique y el norte de la Carretera. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. The village offers simple guesthouses and cabins to break up the trip between Coyhaique and the northern highway. To be replaced with real businesses.',
-    },
-    como: { es: 'Varios en el pueblo.', en: 'Several in the village.' },
-  },
-  {
-    id: 88, cat: 'comida', localidad: 'villa-manihuales', lat: -45.2107, lng: -72.1543,
-    nombre: { es: 'Comedor en Villa Mañihuales (ejemplo)', en: 'Eatery in Villa Mañihuales (example)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Marcador de ejemplo. Cocina casera y sándwiches para el viajero de paso. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Home cooking and sandwiches for travellers passing through. To be replaced with real venues.',
-    },
-    como: { es: 'En el centro.', en: 'Downtown.' },
-  },
-  {
     id: 89, cat: 'emergencia', localidad: 'villa-manihuales', lat: -45.2095, lng: -72.1552, tel: '131',
     nombre: { es: 'Posta de Salud Rural Villa Mañihuales', en: 'Villa Mañihuales Rural Health Post' },
     dist: { es: 'En el pueblo', en: 'In the village' },
@@ -1208,26 +988,6 @@ export const LUGARES_SEED = [
       en: 'Village shops and informally sold fuel (jerry cans) — there is no formal station. Fuel is intermittent on this stretch: don’t count on filling up here and confirm first. The next reliable stop north is La Junta.',
     },
     como: { es: 'En el pueblo, sobre la Ruta 7.', en: 'In the village, on Route 7.' },
-  },
-  {
-    id: 95, cat: 'alojamiento', localidad: 'villa-amengual', lat: -44.717, lng: -72.167,
-    nombre: { es: 'Hospedaje en Villa Amengual (ejemplo)', en: 'Guesthouse in Villa Amengual (example)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Marcador de ejemplo. Hospedajes familiares y camping para pasar la noche a mitad del tramo norte. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. Family guesthouses and camping to spend the night midway on the northern stretch. To be replaced with real businesses.',
-    },
-    como: { es: 'En el pueblo.', en: 'In the village.' },
-  },
-  {
-    id: 96, cat: 'comida', localidad: 'villa-amengual', lat: -44.7163, lng: -72.1662,
-    nombre: { es: 'Comedor en Villa Amengual (ejemplo)', en: 'Eatery in Villa Amengual (example)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Marcador de ejemplo. Cocina casera para el viajero de paso. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Home cooking for travellers passing through. To be replaced with real venues.',
-    },
-    como: { es: 'En el centro.', en: 'Downtown.' },
   },
   {
     id: 97, cat: 'emergencia', localidad: 'villa-amengual', lat: -44.716, lng: -72.1672, tel: '131',
@@ -1302,26 +1062,6 @@ export const LUGARES_SEED = [
       en: 'Puerto Cisnes has a fuel station, shops and an ATM — the most complete service point on the stretch between Coyhaique and La Junta. The detour is worth it to load up on fuel and cash.',
     },
     como: { es: 'En el centro del pueblo.', en: 'In the town centre.' },
-  },
-  {
-    id: 103, cat: 'alojamiento', localidad: 'puerto-cisnes', lat: -44.742, lng: -72.6895,
-    nombre: { es: 'Alojamiento en Puerto Cisnes (ejemplo)', en: 'Lodging in Puerto Cisnes (example)' },
-    dist: { es: 'En el centro', en: 'Downtown' },
-    desc: {
-      es: 'Marcador de ejemplo. Hoteles, hostales y cabañas frente al canal. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. Hotels, hostels and cabins facing the channel. To be replaced with real businesses.',
-    },
-    como: { es: 'Varios en el centro y la costanera.', en: 'Several downtown and on the waterfront.' },
-  },
-  {
-    id: 104, cat: 'comida', localidad: 'puerto-cisnes', lat: -44.7428, lng: -72.6892,
-    nombre: { es: 'Marisquería en Puerto Cisnes (ejemplo)', en: 'Seafood eatery in Puerto Cisnes (example)' },
-    dist: { es: 'En el centro', en: 'Downtown' },
-    desc: {
-      es: 'Marcador de ejemplo. Pescados y mariscos frescos del canal. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Fresh fish and shellfish from the channel. To be replaced with real venues.',
-    },
-    como: { es: 'En la costanera.', en: 'On the waterfront.' },
   },
   {
     id: 105, cat: 'emergencia', localidad: 'puerto-cisnes', lat: -44.7415, lng: -72.688, tel: '131',
@@ -1402,26 +1142,6 @@ export const LUGARES_SEED = [
       en: 'Village fuel and shops. Availability can be intermittent; the most reliable nearby service point is La Junta, to the north. Fill up and confirm before continuing.',
     },
     como: { es: 'En el pueblo, sobre la Ruta 7.', en: 'In the village, on Route 7.' },
-  },
-  {
-    id: 112, cat: 'alojamiento', localidad: 'puyuhuapi', lat: -44.329, lng: -72.5572,
-    nombre: { es: 'Alojamiento en Puyuhuapi (ejemplo)', en: 'Lodging in Puyuhuapi (example)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Marcador de ejemplo. Hospedajes, cabañas y hostales frente al fiordo, base ideal para visitar el Queulat. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. Guesthouses, cabins and hostels facing the fjord, an ideal base for visiting Queulat. To be replaced with real businesses.',
-    },
-    como: { es: 'Varios en el pueblo.', en: 'Several in the village.' },
-  },
-  {
-    id: 113, cat: 'comida', localidad: 'puyuhuapi', lat: -44.3288, lng: -72.5558,
-    nombre: { es: 'Restaurante en Puyuhuapi (ejemplo)', en: 'Restaurant in Puyuhuapi (example)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Marcador de ejemplo. Cocina local con productos del mar del fiordo. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Local cooking with seafood from the fjord. To be replaced with real venues.',
-    },
-    como: { es: 'En el pueblo.', en: 'In the village.' },
   },
   {
     id: 114, cat: 'emergencia', localidad: 'puyuhuapi', lat: -44.3278, lng: -72.5575, tel: '131',
@@ -1508,26 +1228,6 @@ export const LUGARES_SEED = [
     como: { es: 'En el centro, sobre la Ruta 7.', en: 'Downtown, on Route 7.' },
   },
   {
-    id: 121, cat: 'alojamiento', localidad: 'la-junta', lat: -43.976, lng: -72.4065,
-    nombre: { es: 'Alojamiento en La Junta (ejemplo)', en: 'Lodging in La Junta (example)' },
-    dist: { es: 'En el centro', en: 'Downtown' },
-    desc: {
-      es: 'Marcador de ejemplo. Hoteles, hostales y cabañas; buen punto para pernoctar entre Coyhaique y Chaitén. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. Hotels, hostels and cabins; a good place to overnight between Coyhaique and Chaitén. To be replaced with real businesses.',
-    },
-    como: { es: 'Varios en el centro.', en: 'Several downtown.' },
-  },
-  {
-    id: 122, cat: 'comida', localidad: 'la-junta', lat: -43.9752, lng: -72.405,
-    nombre: { es: 'Restaurante en La Junta (ejemplo)', en: 'Restaurant in La Junta (example)' },
-    dist: { es: 'En el centro', en: 'Downtown' },
-    desc: {
-      es: 'Marcador de ejemplo. Cocina patagónica y platos para el viajero. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Patagonian cooking and traveller’s fare. To be replaced with real venues.',
-    },
-    como: { es: 'En el centro.', en: 'Downtown.' },
-  },
-  {
     id: 123, cat: 'emergencia', localidad: 'la-junta', lat: -43.9748, lng: -72.4068, tel: '131',
     nombre: { es: 'Hospital de La Junta', en: 'La Junta Hospital' },
     dist: { es: 'En el pueblo', en: 'In town' },
@@ -1597,26 +1297,6 @@ export const LUGARES_SEED = [
       en: 'Basic shops and informally sold fuel — there is no service station. The nearest reliable stops are La Junta (south), Chaitén (north) and Futaleufú (via the detour). Plan your tank on this stretch.',
     },
     como: { es: 'En el pueblo, sobre la Ruta 7.', en: 'In the village, on Route 7.' },
-  },
-  {
-    id: 129, cat: 'alojamiento', localidad: 'villa-santa-lucia', lat: -43.417, lng: -72.367,
-    nombre: { es: 'Hospedaje en Villa Santa Lucía (ejemplo)', en: 'Guesthouse in Villa Santa Lucía (example)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Marcador de ejemplo. Hospedajes familiares sencillos en el cruce. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. Simple family guesthouses at the junction. To be replaced with real businesses.',
-    },
-    como: { es: 'En el pueblo.', en: 'In the village.' },
-  },
-  {
-    id: 130, cat: 'comida', localidad: 'villa-santa-lucia', lat: -43.4163, lng: -72.3662,
-    nombre: { es: 'Comedor en Villa Santa Lucía (ejemplo)', en: 'Eatery in Villa Santa Lucía (example)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Marcador de ejemplo. Cocina casera para el viajero que cruza entre la Ruta 7 y Futaleufú/Palena. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Home cooking for travellers switching between Route 7 and Futaleufú/Palena. To be replaced with real venues.',
-    },
-    como: { es: 'En el cruce.', en: 'At the junction.' },
   },
   {
     id: 131, cat: 'emergencia', localidad: 'villa-santa-lucia', lat: -43.416, lng: -72.3672, tel: '131',
@@ -1706,26 +1386,6 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo.', en: 'In town.' },
   },
   {
-    id: 138, cat: 'alojamiento', localidad: 'futaleufu', lat: -43.185, lng: -71.87,
-    nombre: { es: 'Alojamiento en Futaleufú (ejemplo)', en: 'Lodging in Futaleufú (example)' },
-    dist: { es: 'En el pueblo', en: 'In town' },
-    desc: {
-      es: 'Marcador de ejemplo. Del camping al lodge de río: Futaleufú tiene la oferta más variada del ramal, empujada por el turismo de aventura. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. From campsites to river lodges, Futaleufú has the branch’s most varied offer, driven by adventure tourism. To be replaced with real businesses.',
-    },
-    como: { es: 'Varios en el pueblo y junto al río.', en: 'Several in town and by the river.' },
-  },
-  {
-    id: 139, cat: 'comida', localidad: 'futaleufu', lat: -43.1843, lng: -71.8692,
-    nombre: { es: 'Restaurante en Futaleufú (ejemplo)', en: 'Restaurant in Futaleufú (example)' },
-    dist: { es: 'En el pueblo', en: 'In town' },
-    desc: {
-      es: 'Marcador de ejemplo. Cocina cordillerana y cafés para el después del río. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Mountain cooking and cafés for after the river. To be replaced with real venues.',
-    },
-    como: { es: 'En torno a la plaza.', en: 'Around the square.' },
-  },
-  {
     id: 140, cat: 'emergencia', localidad: 'futaleufu', lat: -43.184, lng: -71.8705, tel: '131',
     nombre: { es: 'Hospital de Futaleufú', en: 'Futaleufú Hospital' },
     dist: { es: 'En el pueblo', en: 'In town' },
@@ -1795,26 +1455,6 @@ export const LUGARES_SEED = [
       en: 'Shops and locally sold fuel; availability can vary, so confirm before counting on it. The branch’s reliable stop is Futaleufú.',
     },
     como: { es: 'En el pueblo.', en: 'In the village.' },
-  },
-  {
-    id: 146, cat: 'alojamiento', localidad: 'palena', lat: -43.617, lng: -71.8005,
-    nombre: { es: 'Hospedaje en Palena (ejemplo)', en: 'Guesthouse in Palena (example)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Marcador de ejemplo. Hospedajes y cabañas familiares de ambiente campero. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. Family guesthouses and cabins with a country feel. To be replaced with real businesses.',
-    },
-    como: { es: 'En el pueblo.', en: 'In the village.' },
-  },
-  {
-    id: 147, cat: 'comida', localidad: 'palena', lat: -43.6163, lng: -71.7992,
-    nombre: { es: 'Comedor en Palena (ejemplo)', en: 'Eatery in Palena (example)' },
-    dist: { es: 'En el pueblo', en: 'In the village' },
-    desc: {
-      es: 'Marcador de ejemplo. Cocina casera de campo — asado, sopaipillas, repostería. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Country home cooking — barbecue, sopaipillas, pastries. To be replaced with real venues.',
-    },
-    como: { es: 'En el centro.', en: 'Downtown.' },
   },
   {
     id: 148, cat: 'emergencia', localidad: 'palena', lat: -43.616, lng: -71.8002, tel: '131',
@@ -1897,26 +1537,6 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo.', en: 'In town.' },
   },
   {
-    id: 155, cat: 'alojamiento', localidad: 'chaiten', lat: -42.9172, lng: -72.709,
-    nombre: { es: 'Alojamiento en Chaitén (ejemplo)', en: 'Lodging in Chaitén (example)' },
-    dist: { es: 'En el pueblo', en: 'In town' },
-    desc: {
-      es: 'Marcador de ejemplo. Hospedajes, cabañas y residenciales; conviene reservar cuando llegan los ferries. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. Guesthouses, cabins and lodges; book ahead around ferry arrivals. To be replaced with real businesses.',
-    },
-    como: { es: 'Varios en el pueblo.', en: 'Several in town.' },
-  },
-  {
-    id: 156, cat: 'comida', localidad: 'chaiten', lat: -42.9167, lng: -72.7082,
-    nombre: { es: 'Restaurante en Chaitén (ejemplo)', en: 'Restaurant in Chaitén (example)' },
-    dist: { es: 'En el pueblo', en: 'In town' },
-    desc: {
-      es: 'Marcador de ejemplo. Cocina de mar y platos patagones. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Seafood and Patagonian dishes. To be replaced with real venues.',
-    },
-    como: { es: 'En el centro.', en: 'Downtown.' },
-  },
-  {
     id: 157, cat: 'emergencia', localidad: 'chaiten', lat: -42.9155, lng: -72.7075, tel: '131',
     nombre: { es: 'Hospital de Chaitén', en: 'Chaitén Hospital' },
     dist: { es: 'En el pueblo', en: 'In town' },
@@ -1988,26 +1608,6 @@ export const LUGARES_SEED = [
       en: 'Basic shops; no fuel station or ATM — full services are in Chaitén, 25 km away. Stock up before coming.',
     },
     como: { es: 'En la aldea, sobre la Ruta 7.', en: 'In the hamlet, on Route 7.' },
-  },
-  {
-    id: 163, cat: 'alojamiento', localidad: 'el-amarillo', lat: -42.9335, lng: -72.5335,
-    nombre: { es: 'Hospedaje en El Amarillo (ejemplo)', en: 'Guesthouse in El Amarillo (example)' },
-    dist: { es: 'En la aldea', en: 'In the hamlet' },
-    desc: {
-      es: 'Marcador de ejemplo. Cabañas y hospedajes rurales al pie del volcán, además de los campings del parque. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. Rural cabins and guesthouses at the volcano’s foot, plus the park campgrounds. To be replaced with real businesses.',
-    },
-    como: { es: 'En la aldea.', en: 'In the hamlet.' },
-  },
-  {
-    id: 164, cat: 'comida', localidad: 'el-amarillo', lat: -42.9331, lng: -72.5331,
-    nombre: { es: 'Comedor en El Amarillo (ejemplo)', en: 'Eatery in El Amarillo (example)' },
-    dist: { es: 'En la aldea', en: 'In the hamlet' },
-    desc: {
-      es: 'Marcador de ejemplo. Cocina casera de campo. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Country home cooking. To be replaced with real venues.',
-    },
-    como: { es: 'En la aldea.', en: 'In the hamlet.' },
   },
   {
     id: 165, cat: 'emergencia', localidad: 'el-amarillo', lat: -42.933, lng: -72.5337, tel: '131',
@@ -2155,26 +1755,6 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo.', en: 'In town.' },
   },
   {
-    id: 178, cat: 'alojamiento', localidad: 'hornopiren', lat: -41.958, lng: -72.4375,
-    nombre: { es: 'Alojamiento en Hornopirén (ejemplo)', en: 'Lodging in Hornopirén (example)' },
-    dist: { es: 'En el pueblo', en: 'In town' },
-    desc: {
-      es: 'Marcador de ejemplo. Hospedajes, cabañas y campings; útil pernoctar la víspera del zarpe temprano. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. Guesthouses, cabins and campgrounds; handy the night before an early ferry. To be replaced with real businesses.',
-    },
-    como: { es: 'Varios en el pueblo.', en: 'Several in town.' },
-  },
-  {
-    id: 179, cat: 'comida', localidad: 'hornopiren', lat: -41.9576, lng: -72.437,
-    nombre: { es: 'Restaurante en Hornopirén (ejemplo)', en: 'Restaurant in Hornopirén (example)' },
-    dist: { es: 'En el pueblo', en: 'In town' },
-    desc: {
-      es: 'Marcador de ejemplo. Pescados, mariscos y cocina de Hualaihué. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Fish, shellfish and Hualaihué cooking. To be replaced with real venues.',
-    },
-    como: { es: 'En el centro y la costanera.', en: 'Downtown and on the waterfront.' },
-  },
-  {
     id: 180, cat: 'emergencia', localidad: 'hornopiren', lat: -41.9572, lng: -72.4365, tel: '131',
     nombre: { es: 'Salud y urgencias — Hornopirén', en: 'Health & emergencies — Hornopirén' },
     dist: { es: 'En el pueblo', en: 'In town' },
@@ -2277,26 +1857,6 @@ export const LUGARES_SEED = [
       en: 'Puerto Montt has everything: big supermarkets, banks, pharmacies, spare parts, outdoor gear and an airport (El Tepual). This is THE place to set up your trip: services thin out steadily to the south.',
     },
     como: { es: 'Por toda la ciudad.', en: 'Throughout the city.' },
-  },
-  {
-    id: 189, cat: 'alojamiento', localidad: 'puerto-montt', lat: -41.4695, lng: -72.943,
-    nombre: { es: 'Alojamiento en Puerto Montt (ejemplo)', en: 'Lodging in Puerto Montt (example)' },
-    dist: { es: 'En la ciudad', en: 'In the city' },
-    desc: {
-      es: 'Marcador de ejemplo. Oferta completa de ciudad, de hostales a hoteles; útil la noche previa al inicio de la ruta o al ferry. Se reemplazará por comercios reales.',
-      en: 'Sample placeholder. A full city offer, hostels to hotels; useful the night before starting the route or catching a ferry. To be replaced with real businesses.',
-    },
-    como: { es: 'En toda la ciudad.', en: 'Citywide.' },
-  },
-  {
-    id: 190, cat: 'comida', localidad: 'puerto-montt', lat: -41.486, lng: -72.9618,
-    nombre: { es: 'Cocinerías de Angelmó (ejemplo)', en: 'Angelmó eateries (example)' },
-    dist: { es: 'Sector Angelmó', en: 'Angelmó area' },
-    desc: {
-      es: 'Marcador de ejemplo. El curanto y los mariscos de las cocinerías del mercado son el clásico local. Se reemplazará por locales reales.',
-      en: 'Sample placeholder. Curanto and shellfish at the market eateries are the local classic. To be replaced with real venues.',
-    },
-    como: { es: 'Mercado de Angelmó.', en: 'Angelmó market.' },
   },
   {
     id: 191, cat: 'emergencia', localidad: 'puerto-montt', lat: -41.4635, lng: -72.9585, tel: '131',
