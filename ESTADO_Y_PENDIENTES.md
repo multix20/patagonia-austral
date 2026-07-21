@@ -302,6 +302,27 @@ lugares nuevos en la fase). Cadena de `orden` norte→sur: 10 Puerto Montt …
 ### 5. Fase 3 — Capa comercial
 Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
 
+- **Giro de arranque — siembra gratis (21-jul-2026):** antes de la capa de pago,
+  poblar el directorio con datos reales gratis para vencer el arranque en frío.
+  - **Selección top 10 por localidad:** el paso 2 (`2_generar_textos.py`) rankea
+    cada alojamiento por completitud de datos (`3·tel + 2·dirección + 1·email`;
+    desempate alfabético) y publica los **10 mejores de cada localidad**
+    (`publicado=true` por-lugar en el JSON); el resto queda en borrador. Ajuste:
+    `TOP_POR_LOCALIDAD` (0 = todo borrador). Emite `seleccion_gratis.csv` (reporte
+    de auditoría) y suma `publicado/score/rank_loc` al Excel.
+  - **Seeder por-lugar:** `SernaturPlaceSeeder` respeta el `publicado` de cada
+    registro (`self::PUBLICAR` solo como respaldo para JSON antiguos).
+  - **Deduplicación por nombre+localidad:** dentro del lote (conserva la ficha más
+    completa) y contra lo ya cargado a mano en el CMS (Tortel/O'Higgins) — nombre
+    normalizado (sin acentos/mayúsculas/espacios). Omite duplicados e informa.
+  - **Solo datos reales:** se quitaron los **44 "(ejemplo)"** (22 alojamiento +
+    22 comida) de `places.json` y `places.js` (en espejo); `PlaceSeeder` los purga
+    también de la BD (barrido `nombre->es like '%(ejemplo)%'`, idempotente). Quedan
+    los reales (Caleta Gonzalo). Los 2 eventos con "(Fecha de ejemplo)" se conservan.
+  - **Para aplicarlo:** correr el pipeline + `SernaturPlaceSeeder` en local (el CSV
+    fuente vive fuera del repo; el seeder escribe en Neon). El top 10 queda
+    publicado sin pasar por `/admin`.
+
 - **Contenido SERNATUR importado (20-jul-2026):** 182 servicios de alojamiento
   de la Región de Aysén (9 comunas) cargados a producción **en borrador**
   (`publicado=false`, ids 2000–2181), pendientes de revisión y publicación desde

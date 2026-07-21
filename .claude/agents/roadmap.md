@@ -60,6 +60,14 @@ index.html, docs).
 planes para negocios, analítica; reemplazar los "(ejemplo)" por comercios reales.
 Audiencia: **100.000–150.000 turistas/año**.
 
+**Arranque de Fase 3 — siembra gratis (jul-2026):** antes de cobrar, poblar el
+directorio con datos reales gratis. Se quitaron los 44 "(ejemplo)" (alojamiento +
+comida) de `places.json`/`places.js` y de la BD (purga en `PlaceSeeder`). El
+pipeline SERNATUR publica los **10 alojamientos con ficha más completa por
+localidad** (`3·tel + 2·dirección + 1·email`), deja el resto en borrador, deduplica
+por nombre+localidad (dentro del lote y contra lo cargado a mano) y emite el
+reporte `seleccion_gratis.csv`. Detalle: `ESTADO_Y_PENDIENTES.md` y `scripts/sernatur/`.
+
 Idea central de Fase 3 — **crowdsourcing tipo Waze** (Uri Levine): que los viajeros
 en ruta aporten reportes que cambian a diario y nadie puede mantener a mano —
 **bencina disponible, cortes/derrumbes de camino, estado del ripio, clima en un
@@ -112,8 +120,8 @@ tramo hoy?"). Además las 2 barcazas nuevas conectan directo con el tipo de repo
 ## Alcance norte — COMPLETADO (Fase 2.5, jul-2026)
 
 La app cubre **toda la Carretera Austral, de Puerto Montt a Villa O'Higgins**.
-Los negocios "(ejemplo)" del tramo norte se reemplazan por comercios reales en
-la Fase 3, igual que los del tramo sur. Detalle: `ESTADO_Y_PENDIENTES.md`.
+Los negocios "(ejemplo)" (norte y sur) ya se quitaron en la siembra gratis de
+Fase 3; el directorio se puebla solo con datos reales. Detalle: `ESTADO_Y_PENDIENTES.md`.
 
 ## Límites
 

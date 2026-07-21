@@ -51,8 +51,11 @@ Historial y decisiones: `ESTADO_Y_PENDIENTES.md`. Roadmap (README):
 - ✅ Fase 2.5 — Contenido tramo norte (Coyhaique→Puerto Montt): 15 localidades y
   125 lugares nuevos (24 localidades, 192 lugares en total), barcazas del tramo
   e identidad actualizada a "Puerto Montt a Villa O'Higgins".
-- **SIGUIENTE**: Fase 3 — Capa comercial (fichas destacadas, planes, analítica)
-  + crowdsourcing tipo Waze. Primeras fichas reales: los negocios del fundador.
+- **EN CURSO**: Fase 3 — arranca con **siembra gratis** (jul-2026): se publican
+  los **10 alojamientos con mejores datos por localidad** (fuente SERNATUR),
+  y se quitaron los 44 "(ejemplo)" para sembrar solo con datos reales. Luego:
+  capa comercial (fichas destacadas, planes, analítica) + crowdsourcing tipo
+  Waze. Primeras fichas reales: los negocios del fundador.
 - Fase 4 — Producción definitiva (dominio propio, S3, respaldos, monitoreo)
 
 **Datos de negocio**: ruta completa ~100.000–150.000 turistas/año (audiencia
