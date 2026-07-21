@@ -401,6 +401,21 @@ h1 small {
     transform: scale(1.35);
   }
 }
+/* Icono de cluster (agrupación de pines) en el verde de la marca. */
+.cluster-pin {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--verde);
+  color: #fff;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
 
 /* ---------- Selector de mapa base (Mapa / Satélite) ---------- */
 .mapa-capas {

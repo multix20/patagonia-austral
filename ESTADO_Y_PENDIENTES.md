@@ -412,12 +412,7 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
     solo los de la zona + globales (el push sí va filtrado; el panel puede ser más
     permisivo para no ocultar información de ruta).
 
-- **Clustering de pines en el mapa (21-jul-2026), por construir.** En zonas
-  densas (Cochrane) los pines se amontonan y se solapan. Agrupar en clusters con
-  el número de puntos, que se despliegan al hacer zoom. Opción estándar:
-  `leaflet.markercluster` (libre, sin costo) — o una agrupación propia liviana si
-  se quiere evitar la dependencia. Los pines ya usan icono por categoría (no solo
-  color), así que esto es solo la agrupación. **Siguiente PR de UX del mapa.**
+- **✅ Clustering de pines — HECHO (21-jul-2026).** Ver detalle en "Menores".
 
 - **Mejoras por componente (análisis Figma AI, 21-jul-2026), por priorizar.**
   Lote de sugerencias de UX; se irán haciendo en PRs chicos y enfocados:
@@ -483,6 +478,16 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ Clustering de pines en el mapa — RESUELTO (21-jul-2026):** en zonas densas
+  los pines se agrupan en un **cluster con el número** de lugares (icono propio en
+  verde de la marca); al hacer zoom se separan (spiderfy al máximo). Se usó
+  `leaflet.markercluster` (libre). El **pin activo** (el que sigue a la lista) se
+  dibuja **fuera del cluster** (marcador directo en el mapa) para que nunca quede
+  escondido y conserve su resalte. CSS base del plugin en `main.jsx`
+  (`MarkerCluster.css`); icono de cluster `.cluster-pin` en `styles.css`.
+  Verificado en navegador (Playwright): 12 pines cercanos → 1 cluster "11" + el
+  activo aparte; al hacer zoom se separan (9 sueltos), sin errores JS; build+lint
+  OK (precache +~35 KB por el plugin, aceptable).
 - **✅ Mapa sincronizado con la lista — RESUELTO (21-jul-2026):** con una
   localidad elegida (modo `mapa-grande`), la card de más arriba en la lista es la
   "activa" y **el mapa la sigue**: al hacer scroll o filtrar, panea (paneo suave,
