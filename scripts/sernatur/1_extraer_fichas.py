@@ -67,6 +67,21 @@ COL_ID = ["id_sernatur", "id", "id sernatur"]
 COL_URL = ["url", "enlace", "link", "ficha"]
 COL_NOMBRE = ["nombre", "name", "servicio"]
 
+# FUENTE DE LOS DATOS (SERNATUR — Servicios Turísticos). El `con_coordenadas.csv`
+# de entrada se arma desde el BUSCADOR de servicios; cada fila luego se completa
+# visitando su ficha individual (URL_TEMPLATE). Ver README.md → "Fuentes de datos".
+#
+#   Buscador (listado):  https://serviciosturisticos.sernatur.cl/nueva_busqueda.php
+#     Parámetros:  tipo_servicio  1 = alojamiento · 2 = alimentación (dónde comer)
+#                  region         11 = Aysén
+#                  clase_servicio 0 = todas · comuna 0 = todas · nombre "" · page N
+#     Alojamiento (Aysén): ...nueva_busqueda.php?page=1&tipo_servicio=1&clase_servicio=0&region=11&comuna=0&nombre=
+#     Dónde comer (Aysén): ...nueva_busqueda.php?page=1&tipo_servicio=2&clase_servicio=0&region=11&comuna=0&nombre=
+#
+# NOTA: hoy el pipeline cubre SOLO alojamiento (tipo_servicio=1). Para sumar
+# "dónde comer" (tipo_servicio=2) hay que adaptar el paso 2 (categoría 'comida' y
+# su descripción base); ver README.md → "Pendiente".
+#
 # Si el CSV NO trae columna URL, se construye la URL de la ficha a partir del
 # id_sernatur y un slug del nombre. SERNATUR enruta por el ID numérico, así que
 # el texto del slug suele ser indiferente. Ajusta si el patrón real cambia.
