@@ -477,6 +477,18 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ Localidades nuevas + top 20 SERNATUR — (22-jul-2026):** se agregan **Raúl
+  Marín Balmaceda** (orden 72, desvío costero al oeste desde La Junta, boca del río
+  Palena) y **Balmaceda** (orden 125, desvío SE desde Coyhaique, aeropuerto
+  regional) al `LocalidadSeeder` y su espejo `LOCALIDADES_SEED` — total **26
+  localidades**. Se despliegan solas al mergear (seeder idempotente). Además, el
+  pipeline SERNATUR pasa a publicar el **top 20 por localidad** (`TOP_POR_LOCALIDAD
+  = 20` en `2_generar_textos.py` + docs), antes 10. **Ojo — publicación de
+  alojamientos:** los alojamientos SERNATUR viven solo en Neon (los carga el
+  `SernaturPlaceSeeder` corriendo en local; el `sernatur_places.json` está
+  gitignoreado y ese seeder NO corre en el deploy). Para publicar el top 20 hay que
+  correr el pipeline en local contra Neon; desde la web no hay acceso a la BD de
+  producción. Detalle del flujo: `scripts/sernatur/README.md`.
 - **✅ Mapa: pin activo llamativo + "estás aquí" por radio — RESUELTO (21-jul-2026):**
   a pedido tras revisar el preview. (a) El **pin activo** ahora resalta con un
   **halo coral pulsante** (`.pin-activo::after`, `@keyframes pin-halo`) además del

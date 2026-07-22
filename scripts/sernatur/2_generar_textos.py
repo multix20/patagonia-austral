@@ -50,9 +50,9 @@ BASE_ID = 2000
 # Siembra gratis de Fase 3: de CADA localidad se PUBLICAN los N alojamientos con
 # los datos más completos (teléfono / dirección / email); el resto queda en
 # BORRADOR para revisarlo o venderlo después. El seeder lee este flag por-lugar.
-#   TOP_POR_LOCALIDAD = 10 → top 10 por localidad publicados.
+#   TOP_POR_LOCALIDAD = 20 → top 20 por localidad publicados.
 #   TOP_POR_LOCALIDAD = 0  → todo en borrador (no publica nada).
-TOP_POR_LOCALIDAD = 10
+TOP_POR_LOCALIDAD = 20
 
 # --------------------------------------------------------------------------- #
 # Localidades (slug + coordenadas del centro) — en espejo con LocalidadSeeder.php
