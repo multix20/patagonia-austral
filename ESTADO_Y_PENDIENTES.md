@@ -477,6 +477,22 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ Publicar top 10 de alojamientos por código — (22-jul-2026):** los
+  alojamientos SERNATUR ya estaban cargados en Neon pero en **borrador**; se
+  habilitan por sistema en vez de uno por uno en el CMS. **Comando reutilizable**
+  `alojamientos:publicar-top {n=10}` (`app/Console/Commands/PublicarTopAlojamientos.php`)
+  + **migración** `2026_07_22_000001_publicar_top_alojamientos` que lo dispara una
+  vez en el deploy (`migrate --force`). Publica los N con ficha más completa de
+  cada localidad; **aditivo** (solo pone `publicado=true`, no despublica nada, no
+  toca lo curado a mano). **Caveat de ranking:** el score exacto del pipeline
+  (`3·tel + 2·dirección + 1·email`) no quedó en la BD (dirección/email se fundieron
+  en el texto), así que el orden se **aproxima** con lo disponible: con teléfono
+  primero, luego descripción más completa, desempate alfabético. En localidades con
+  ≤10 alojamientos publica todos; con >10 el corte puede diferir un poco del
+  pipeline. Para el orden exacto habría que re-correr el `SernaturPlaceSeeder` en
+  local con el `sernatur_places.json`. **Ojo:** la migración muta Neon en el
+  próximo deploy (al mergear). Verificado: `php -l` + prueba del comparador con
+  datos sintéticos (no se probó contra BD viva desde la web; corre en el deploy).
 - **✅ Localidades nuevas — (22-jul-2026):** se agregan **Raúl Marín Balmaceda**
   (orden 72, desvío costero al oeste desde La Junta, boca del río Palena) y
   **Balmaceda** (orden 125, desvío SE desde Coyhaique, aeropuerto regional) al
