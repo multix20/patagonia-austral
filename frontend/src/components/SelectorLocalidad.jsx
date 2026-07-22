@@ -2,6 +2,23 @@ import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import { useI18n } from '../i18n'
 
+// Resalta en <mark> la parte del nombre que coincide con la búsqueda. Los
+// nombres se normalizan (sin tildes) para comparar, pero cada letra acentuada
+// del español mapea 1:1 a su base, así que los índices calzan con el original.
+function resaltar(texto, q, norm) {
+  const qn = norm(q)
+  if (!qn) return texto
+  const i = norm(texto).indexOf(qn)
+  if (i < 0) return texto
+  return (
+    <>
+      {texto.slice(0, i)}
+      <mark>{texto.slice(i, i + qn.length)}</mark>
+      {texto.slice(i + qn.length)}
+    </>
+  )
+}
+
 // Selector de localidad con búsqueda (Fase 2, pendiente UX-b).
 // Reemplaza el <select> nativo: al abrir muestra un buscador que filtra los
 // pueblos escribiendo — útil ahora que la ruta tiene muchas localidades.
@@ -49,7 +66,11 @@ export default function SelectorLocalidad({ localidades, valor, onCambiar }) {
 
   return (
     <div className="selector-localidad" ref={cont}>
-      <Icon nombre="map-pin" tam={14} />
+      <span className="sl-pin">
+        <Icon nombre="map-pin" tam={14} />
+        {/* Punto verde: hay una localidad activa (no "Toda la ruta") */}
+        {valor !== 'todas' && <span className="sl-punto" />}
+      </span>
       <button
         type="button"
         className="sl-boton"
@@ -91,11 +112,14 @@ export default function SelectorLocalidad({ localidades, valor, onCambiar }) {
                   className={`sl-opcion ${o.slug === valor ? 'activo' : ''}`}
                   onClick={() => elegir(o.slug)}
                 >
-                  {o.nombre}
+                  {resaltar(o.nombre, busqueda, norm)}
                 </button>
               </li>
             ))}
           </ul>
+          <div className="sl-contador">
+            {localidades.length} {lang === 'es' ? 'localidades en la ruta' : 'towns on the route'}
+          </div>
         </div>
       )}
     </div>

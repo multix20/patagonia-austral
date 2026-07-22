@@ -12,6 +12,10 @@ const COCHRANE = [-47.2539, -72.5732]
 // realmente cerca del destino. Lejos, para eso está el botón "Cómo llegar".
 const RADIO_RUTA_KM = 30
 
+// Radio (km) para considerar que el usuario está "en" la localidad que mira, y
+// por tanto mostrarle el marcador "estás aquí". Fuera de esto, se ignora.
+const RADIO_LOCALIDAD_KM = 35
+
 // Mapas base disponibles. Las teselas se cachean en el service worker
 // (CacheFirst en vite.config.js) para uso sin conexión.
 const BASEMAPS = {
@@ -131,19 +135,44 @@ export default function MapView({
     return () => navigator.geolocation.clearWatch(id)
   }, [])
 
-  // Dibuja/actualiza el punto azul del usuario
+  // Dibuja/actualiza el punto "estás aquí". Solo se muestra si el usuario está
+  // realmente en la zona que mira: con una localidad elegida, cuando su GPS está
+  // dentro del radio de ese pueblo; si está lejos, se ignora (no se dibuja). En
+  // "Toda la ruta" (sin `centro`) se muestra siempre que haya ubicación.
   useEffect(() => {
     const mapa = mapaRef.current
-    if (!mapa || !pos) return
-    const icon = L.divIcon({
-      html: '<div class="yo-punto"><span class="yo-pulso"></span></div>',
-      className: '',
-      iconSize: [20, 20],
-      iconAnchor: [10, 10],
-    })
-    if (yoRef.current) yoRef.current.setLatLng(pos)
-    else yoRef.current = L.marker(pos, { icon, zIndexOffset: 1000, keyboard: false }).addTo(mapa)
-  }, [pos])
+    if (!mapa) return
+    const quitar = () => {
+      if (yoRef.current) {
+        mapa.removeLayer(yoRef.current)
+        yoRef.current = null
+      }
+    }
+    if (!pos) return quitar()
+    const enZona = !centro || distanciaKm(pos, centro) <= RADIO_LOCALIDAD_KM
+    if (!enZona) return quitar()
+
+    const etiqueta = lang === 'es' ? 'Estás aquí' : "You're here"
+    if (yoRef.current) {
+      yoRef.current.setLatLng(pos)
+      yoRef.current.setTooltipContent(etiqueta)
+    } else {
+      const icon = L.divIcon({
+        html: '<div class="yo-punto"><span class="yo-pulso"></span></div>',
+        className: '',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+      })
+      yoRef.current = L.marker(pos, { icon, zIndexOffset: 1000, keyboard: false })
+        .addTo(mapa)
+        .bindTooltip(etiqueta, {
+          permanent: true,
+          direction: 'top',
+          className: 'yo-tip',
+          offset: [0, -8],
+        })
+    }
+  }, [pos, centro, lang])
 
   // Marcadores de lugares (según filtro de categoría). El activo se dibuja FUERA
   // del cluster (marcador directo en el mapa) para que nunca quede escondido en
