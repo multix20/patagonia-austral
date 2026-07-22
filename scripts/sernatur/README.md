@@ -15,11 +15,11 @@ con_coordenadas.csv ─┐
                                                                       ▼
                                               [2] generar textos ─▶ servicios_completos.xlsx
                                                   (ES/EN, distancias,   sernatur_places.json
-                                                   top 20/localidad)    seleccion_gratis.csv
+                                                   top 10/localidad)    seleccion_gratis.csv
                                                                       │
                                                                       ▼
                                               [3] SernaturPlaceSeeder ─▶ base de datos / PWA
-                                                  (top 20 publicados,     (resto en borrador)
+                                                  (top 10 publicados,     (resto en borrador)
 ```
 
 ## Requisitos (Windows, Python 3.11+)
@@ -89,7 +89,7 @@ python 2_generar_textos.py
   revises. Los que quedan sin coordenadas se ubican en el centro de su localidad.
 
 **Siembra gratis (Fase 3):** en vez de publicar todos o ninguno, de **cada
-localidad** se marcan como publicados los **`TOP_POR_LOCALIDAD` (por defecto 20)**
+localidad** se marcan como publicados los **`TOP_POR_LOCALIDAD` (por defecto 10)**
 alojamientos con la **ficha más completa** — puntaje `3·teléfono + 2·dirección +
 1·email`, y a igualdad, orden alfabético. El resto entra en **borrador** para
 revisar/ampliar (o vender) después. Pon `TOP_POR_LOCALIDAD = 0` para dejar todo
@@ -105,7 +105,7 @@ Salidas:
   localidad y por qué (rank, score, qué datos tiene cada ficha).
 
 Ajustes al inicio del script: `BASE_ID` (id inicial, por defecto `2000`) y
-`TOP_POR_LOCALIDAD` (por defecto `20`).
+`TOP_POR_LOCALIDAD` (por defecto `10`).
 
 > **Sobre el email:** el modelo `Place` de la PWA hoy **no tiene columna email**
 > (solo `tel`). El email se conserva en el Excel y el JSON, pero el seeder no lo
