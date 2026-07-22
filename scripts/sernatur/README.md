@@ -7,6 +7,38 @@ Punto de partida: ya tienes `nombre, categoría, localidad, latitud, longitud` y
 URL de cada ficha. Faltan **teléfono, email, dirección** (solo en la ficha
 individual) y los textos **descripción / cómo llegar / distancia** en ES y EN.
 
+## Fuentes de datos
+
+**SERNATUR — Servicios Turísticos** (buscador oficial; de aquí sale el
+`con_coordenadas.csv` de entrada). Base: `https://serviciosturisticos.sernatur.cl/nueva_busqueda.php`
+
+| Parámetro | Valor | Significado |
+|---|---|---|
+| `tipo_servicio` | `1` | **Alojamiento** (lo que cubre hoy el pipeline) |
+| `tipo_servicio` | `2` | **Alimentación / dónde comer** (por sumar — ver "Pendiente") |
+| `region` | `11` | Región de Aysén |
+| `clase_servicio` | `0` | Todas |
+| `comuna` | `0` | Todas |
+| `nombre` | (vacío) | Sin filtro por nombre |
+| `page` | `1..N` | Paginación del listado |
+
+- Alojamiento (Aysén): `…/nueva_busqueda.php?page=1&tipo_servicio=1&clase_servicio=0&region=11&comuna=0&nombre=`
+- Dónde comer (Aysén): `…/nueva_busqueda.php?page=1&tipo_servicio=2&clase_servicio=0&region=11&comuna=0&nombre=`
+- Ficha individual (contacto): `https://serviciosturisticos.sernatur.cl/{id_sernatur}-{slug}` (la visita el paso 1).
+
+**Fuentes de contexto** (referencia, no las consume el pipeline aún):
+
+- Estadísticas de turismo de Aysén: `https://estadisticas.aysenpatagonia.cl/`
+- Planifica tu viaje (Aysén Patagonia): `https://aysenpatagonia.cl/planifica-tu-viaje`
+
+## Pendiente — sumar "dónde comer" (`tipo_servicio=2`)
+
+Hoy el pipeline cubre **solo alojamiento**. Para incorporar los servicios de
+**alimentación** (categoría `comida` en la app): descargar el listado con
+`tipo_servicio=2`, y en el **paso 2** mapear la categoría a `comida` y darle su
+**descripción base** (hoy las plantillas son de alojamiento: Hotel/Hostal/Cabañas…).
+El resto del flujo (fichas, distancias, selección top N, seeder) se reutiliza igual.
+
 ```
 con_coordenadas.csv ─┐
                      ├─▶ [1] extraer fichas ─▶ fichas_completas.csv ─┐

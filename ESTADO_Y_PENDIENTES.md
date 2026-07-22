@@ -452,6 +452,16 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
   este tipo son **globales** (sin zona). Funciona ya con la infraestructura
   actual.
 
+- **Más data SERNATUR — "dónde comer" y refresco (22-jul-2026), por construir.**
+  Las fuentes quedaron documentadas en `scripts/sernatur/` (README → "Fuentes de
+  datos" y comentario en `1_extraer_fichas.py`): buscador SERNATUR
+  `nueva_busqueda.php` con `tipo_servicio` (**1 = alojamiento**, **2 = dónde
+  comer**), `region=11` (Aysén). Hoy el pipeline cubre solo alojamiento; **sumar
+  comida** = descargar el listado con `tipo_servicio=2` y en el paso 2 mapear la
+  categoría a `comida` con su descripción base (el resto del flujo se reutiliza).
+  Fuentes de contexto (no consumidas aún): `estadisticas.aysenpatagonia.cl` y
+  `aysenpatagonia.cl/planifica-tu-viaje`.
+
 ### 6. Fase 4 — Producción definitiva
 Dominio propio + SSL, respaldos + restauración, logs y monitoreo,
 almacenamiento de imágenes en la nube (S3 o equivalente), difusión.
