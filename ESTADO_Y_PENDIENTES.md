@@ -477,6 +477,16 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ Mapa: pin activo llamativo + "estás aquí" por radio — RESUELTO (21-jul-2026):**
+  a pedido tras revisar el preview. (a) El **pin activo** ahora resalta con un
+  **halo coral pulsante** (`.pin-activo::after`, `@keyframes pin-halo`) además del
+  brinco/tamaño — antes se notaba poco. (b) El marcador **"Estás aquí"** (punto del
+  usuario con etiqueta `.yo-tip`) se muestra **solo si el GPS está dentro del radio
+  de la localidad** que se mira (`RADIO_LOCALIDAD_KM = 35` en `MapView.jsx`); si el
+  usuario está lejos, se ignora (no se dibuja). En "Toda la ruta" se muestra siempre
+  que haya ubicación. Verificado en navegador (Playwright con geolocalización):
+  dentro de Cochrane → marcador + etiqueta "Estás aquí"; en Santiago → 0; sin
+  errores JS; build+lint OK.
 - **✅ SelectorLocalidad: highlight, contador y punto — RESUELTO (21-jul-2026):**
   cierra el análisis de Figma. (a) **Highlight** en `<mark>` de la parte del nombre
   que coincide con la búsqueda (los nombres se normalizan sin tildes para comparar,

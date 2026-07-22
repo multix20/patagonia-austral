@@ -416,23 +416,61 @@ h1 small {
 .pin-lugar svg {
   display: block;
 }
-/* Pin activo (el que sigue a la lista): más grande, al frente, con brinco. */
+/* Pin activo (el que sigue a la lista): más grande, al frente, con brinco y un
+   halo coral pulsante para que resalte de verdad (no solo por el tamaño). */
 .pin-lugar.pin-activo {
-  transform: scale(1.35);
+  transform: scale(1.4);
   transform-origin: 50% 100%;
-  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.42));
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.45));
   animation: pin-brinco 0.35s ease;
+}
+.pin-lugar.pin-activo::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 13px;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border-radius: 50%;
+  background: var(--claude);
+  z-index: -1;
+  animation: pin-halo 1.5s ease-out infinite;
+}
+@keyframes pin-halo {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
 }
 @keyframes pin-brinco {
   0% {
     transform: scale(1);
   }
   60% {
-    transform: scale(1.5);
+    transform: scale(1.55);
   }
   100% {
-    transform: scale(1.35);
+    transform: scale(1.4);
   }
+}
+/* Etiqueta "estás aquí" sobre el punto del usuario */
+.yo-tip {
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.yo-tip::before {
+  display: none;
 }
 /* Icono de cluster (agrupación de pines) en el verde de la marca. */
 .cluster-pin {
