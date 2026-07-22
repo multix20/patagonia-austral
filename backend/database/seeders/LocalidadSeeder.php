@@ -11,10 +11,11 @@ use Illuminate\Database\Seeder;
 // (10 Puerto Montt … 190 Villa O'Higgins) para poder intercalar pueblos.
 // Los desvíos usan valores intermedios: Caleta Gonzalo (30) es el corazón de
 // Pumalín entre las barcazas; Futaleufú (55) y Palena (58) son el ramal este
-// desde Villa Santa Lucía; Puerto Cisnes (95) el desvío costero; Puerto Aysén
-// (110) y Chacabuco (115) la Ruta 240 desde Coyhaique; Chile Chico (155) la
-// ribera sur del lago General Carrera. Mantener en espejo con
-// LOCALIDADES_SEED de frontend/src/data/places.js.
+// desde Villa Santa Lucía; Raúl Marín Balmaceda (72) el desvío costero al oeste
+// desde La Junta; Puerto Cisnes (95) el desvío costero; Puerto Aysén (110) y
+// Chacabuco (115) la Ruta 240 desde Coyhaique; Balmaceda (125) el desvío SE con
+// el aeropuerto regional; Chile Chico (155) la ribera sur del lago General
+// Carrera. Mantener en espejo con LOCALIDADES_SEED de frontend/src/data/places.js.
 class LocalidadSeeder extends Seeder
 {
     public function run(): void
@@ -93,6 +94,16 @@ class LocalidadSeeder extends Seeder
                 'orden' => 70,
             ],
             [
+                // Desvío costero al oeste desde La Junta (Ruta X-12, ~74 km), en la
+                // desembocadura del río Palena.
+                'slug' => 'raul-marin-balmaceda',
+                'nombre' => ['es' => 'Raúl Marín Balmaceda', 'en' => 'Raúl Marín Balmaceda'],
+                'lat' => -43.7783,
+                'lng' => -72.9603,
+                'zoom' => 15,
+                'orden' => 72,
+            ],
+            [
                 'slug' => 'puyuhuapi',
                 'nombre' => ['es' => 'Puyuhuapi', 'en' => 'Puyuhuapi'],
                 'lat' => -44.3286,
@@ -147,6 +158,16 @@ class LocalidadSeeder extends Seeder
                 'lng' => -72.0683,
                 'zoom' => 13,
                 'orden' => 120,
+            ],
+            [
+                // Desvío SE desde Coyhaique (Ruta 245); alberga el aeropuerto de la
+                // región (Balmaceda), puerta de entrada aérea a Aysén.
+                'slug' => 'balmaceda',
+                'nombre' => ['es' => 'Balmaceda', 'en' => 'Balmaceda'],
+                'lat' => -45.9137,
+                'lng' => -71.6947,
+                'zoom' => 15,
+                'orden' => 125,
             ],
             [
                 'slug' => 'villa-cerro-castillo',

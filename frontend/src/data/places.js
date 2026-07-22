@@ -58,6 +58,12 @@ export const LOCALIDADES_SEED = [
     lat: -43.9756, lng: -72.4058, zoom: 14, orden: 70,
   },
   {
+    // Desvío costero al oeste desde La Junta (Ruta X-12), boca del río Palena.
+    slug: 'raul-marin-balmaceda',
+    nombre: { es: 'Raúl Marín Balmaceda', en: 'Raúl Marín Balmaceda' },
+    lat: -43.7783, lng: -72.9603, zoom: 15, orden: 72,
+  },
+  {
     slug: 'puyuhuapi',
     nombre: { es: 'Puyuhuapi', en: 'Puyuhuapi' },
     lat: -44.3286, lng: -72.5567, zoom: 14, orden: 80,
@@ -91,6 +97,12 @@ export const LOCALIDADES_SEED = [
     slug: 'coyhaique',
     nombre: { es: 'Coyhaique', en: 'Coyhaique' },
     lat: -45.5719, lng: -72.0683, zoom: 13, orden: 120,
+  },
+  {
+    // Desvío SE desde Coyhaique (Ruta 245); aeropuerto regional de Aysén.
+    slug: 'balmaceda',
+    nombre: { es: 'Balmaceda', en: 'Balmaceda' },
+    lat: -45.9137, lng: -71.6947, zoom: 15, orden: 125,
   },
   {
     slug: 'villa-cerro-castillo',
