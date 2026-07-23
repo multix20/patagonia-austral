@@ -1,161 +1,213 @@
-import { useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import L from 'leaflet'
-import 'leaflet.markercluster'
 import { CATEGORIAS } from '../data/places'
 import { iconoHTML } from './Icon'
-import { useI18n } from '../i18n'
 
-// Centro de Cochrane
-const COCHRANE = [-47.2539, -72.5732]
+// Rediseño map-first (Sprint UX/UI): el mapa es el protagonista a pantalla
+// completa. Dos vistas:
+//  - 'ruta': puntos de localidad sobre la línea de la Carretera Austral.
+//  - 'localidad': pines de categoría (gota) de los lugares del pueblo elegido.
+// El control de "centrar en mi ubicación" se expone por ref para el rail de la app.
 
-// Radio máximo (km) para dibujar la línea de ruta en el mapa: solo turistas
-// realmente cerca del destino. Lejos, para eso está el botón "Cómo llegar".
-const RADIO_RUTA_KM = 30
-
-// Radio (km) para considerar que el usuario está "en" la localidad que mira, y
-// por tanto mostrarle el marcador "estás aquí". Fuera de esto, se ignora.
-const RADIO_LOCALIDAD_KM = 35
-
-// Mapas base disponibles. Las teselas se cachean en el service worker
-// (CacheFirst en vite.config.js) para uso sin conexión.
-const BASEMAPS = {
-  mapa: {
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    options: { attribution: '© OpenStreetMap © CARTO', subdomains: 'abcd', maxZoom: 20 },
-  },
-  satelite: {
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    options: { attribution: 'Imágenes © Esri', maxZoom: 19 },
-  },
+// Mapa base (teselas cacheadas por el service worker para uso sin conexión).
+const BASE = {
+  url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+  options: { attribution: '© OpenStreetMap © CARTO', subdomains: 'abcd', maxZoom: 20 },
 }
 
-// Distancia en km entre dos coordenadas (fórmula de Haversine).
-function distanciaKm(a, b) {
-  const R = 6371
-  const dLat = ((b[0] - a[0]) * Math.PI) / 180
-  const dLng = ((b[1] - a[1]) * Math.PI) / 180
-  const s =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((a[0] * Math.PI) / 180) *
-      Math.cos((b[0] * Math.PI) / 180) *
-      Math.sin(dLng / 2) ** 2
-  return 2 * R * Math.asin(Math.sqrt(s))
+const CENTRO_RUTA = [-45.5, -72.6]
+
+// Pines con área de toque real (iconSize/iconAnchor) para tap-targets correctos.
+function pinLocalidad(loc, destacado) {
+  return L.divIcon({
+    className: '',
+    iconSize: [26, 26],
+    iconAnchor: [13, 13],
+    html: `<div class="pin-loc ${destacado ? 'rel' : ''}"><div class="lbl">${loc.nombre}</div><div class="dot"></div></div>`,
+  })
 }
 
-// `centro`/`zoom` (opcionales) llegan de la localidad elegida en el selector:
-// al cambiarla, el mapa vuela al pueblo correspondiente. Sin localidad
-// ("toda la ruta") el mapa conserva su vista actual.
-export default function MapView({
-  lugares,
-  filtro,
-  seleccionado,
-  onSeleccionar,
-  offline,
-  centro = null,
-  zoom = null,
-  activo = null,
-}) {
+function pinCategoria(cat) {
+  const c = CATEGORIAS[cat]
+  return L.divIcon({
+    className: '',
+    iconSize: [34, 44],
+    iconAnchor: [17, 44],
+    html: `<div class="pin-cat"><div class="teardrop">
+      <svg class="body" width="34" height="44" viewBox="0 0 34 44"><path d="M17 43C17 43 32 25 32 15A15 15 0 1 0 2 15C2 25 17 43 17 43Z" fill="${c.color}" stroke="#fff" stroke-width="2.5"/></svg>
+      <div class="ico">${iconoHTML(c.icono, 17, '#fff')}</div>
+    </div></div>`,
+  })
+}
+
+const MapView = forwardRef(function MapView(
+  {
+    vista,
+    localidades,
+    lugares,
+    destacados = [],
+    filtro,
+    localidadActiva,
+    onEntrarLocalidad,
+    onSeleccionarLugar,
+    onPos,
+    lang,
+  },
+  ref
+) {
   const contRef = useRef(null)
   const mapaRef = useRef(null)
-  const capaRef = useRef(null) // grupo de marcadores de lugares
-  const baseRef = useRef(null) // capa base (teselas) actual
-  const yoRef = useRef(null) // marcador de la ubicación del usuario
-  const rutaRef = useRef(null) // línea de ruta usuario → lugar
-  const activoMarkerRef = useRef(null) // marcador del lugar activo (fuera del cluster)
-  const volandoRef = useRef(0) // timestamp del último flyTo por cambio de localidad
-  const [pos, setPos] = useState(null) // [lat, lng] del usuario en vivo
-  const [capa, setCapa] = useState('mapa') // 'mapa' | 'satelite'
-  const { t, lang } = useI18n()
+  const rutaRef = useRef(null)
+  const locMarkersRef = useRef([])
+  const catMarkersRef = useRef([])
+  const yoRef = useRef(null)
+  const [pos, setPos] = useState(null)
 
-  // Inicializa el mapa una sola vez
+  // Callbacks en refs para no re-suscribir los efectos del mapa en cada render.
+  const cbEntrar = useRef(onEntrarLocalidad)
+  const cbLugar = useRef(onSeleccionarLugar)
+  useEffect(() => {
+    cbEntrar.current = onEntrarLocalidad
+    cbLugar.current = onSeleccionarLugar
+  })
+
+  // Centrar en la ubicación del usuario (lo llama el rail de la app).
+  useImperativeHandle(ref, () => ({
+    centrarEnMi() {
+      if (pos && mapaRef.current) mapaRef.current.setView(pos, 15, { animate: true })
+    },
+    tienePos: !!pos,
+  }))
+
+  // Inicializa el mapa una sola vez.
   useEffect(() => {
     if (mapaRef.current) return
-    const mapa = L.map(contRef.current, { zoomControl: false }).setView(COCHRANE, 13)
-    baseRef.current = L.tileLayer(BASEMAPS.mapa.url, BASEMAPS.mapa.options).addTo(mapa)
-    L.control.zoom({ position: 'topright' }).addTo(mapa)
-    // Agrupa los pines cercanos en un cluster (útil en zonas densas como Cochrane;
-    // se separan al hacer zoom). Icono de cluster propio, en el verde de la marca.
-    capaRef.current = L.markerClusterGroup({
-      maxClusterRadius: 45,
-      showCoverageOnHover: false,
-      spiderfyOnMaxZoom: true,
-      iconCreateFunction: (cluster) =>
-        L.divIcon({
-          html: `<div class="cluster-pin">${cluster.getChildCount()}</div>`,
-          className: '',
-          iconSize: [38, 38],
-        }),
-    }).addTo(mapa)
+    const mapa = L.map(contRef.current, {
+      zoomControl: false,
+      attributionControl: true,
+    }).setView(CENTRO_RUTA, 6)
+    L.tileLayer(BASE.url, BASE.options).addTo(mapa)
     mapaRef.current = mapa
+    setTimeout(() => mapa.invalidateSize(), 200)
     return () => {
       mapa.remove()
       mapaRef.current = null
     }
   }, [])
 
-  // Recentra el mapa al cambiar de localidad (Fase 1 — multi-localidad)
+  // Línea de la ruta (una vez que hay localidades).
   useEffect(() => {
     const mapa = mapaRef.current
-    if (!mapa || !centro) return
-    volandoRef.current = Date.now()
-    mapa.flyTo(centro, zoom || 13, { duration: 0.8 })
+    if (!mapa || !localidades.length || rutaRef.current) return
+    const pts = [...localidades]
+      .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0))
+      .map((l) => [l.lat, l.lng])
+    rutaRef.current = L.polyline(pts, {
+      color: '#0f6e56',
+      weight: 4,
+      opacity: 0.55,
+      lineCap: 'round',
+      lineJoin: 'round',
+    }).addTo(mapa)
+    if (vista === 'ruta') {
+      mapa.fitBounds(rutaRef.current.getBounds(), { padding: [54, 54] })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [centro?.[0], centro?.[1], zoom])
+  }, [localidades])
 
-  // Sincronización lista → mapa: el mapa sigue (paneo suave, mismo zoom) al lugar
-  // "activo" (la card de más arriba en la lista). Se omite el paneo justo tras un
-  // flyTo de cambio de localidad, para no interrumpir esa animación.
+  // Opacidad de la ruta según la vista.
+  useEffect(() => {
+    if (rutaRef.current) rutaRef.current.setStyle({ opacity: vista === 'ruta' ? 0.55 : 0 })
+  }, [vista])
+
+  function limpiarLoc() {
+    locMarkersRef.current.forEach((m) => mapaRef.current?.removeLayer(m))
+    locMarkersRef.current = []
+  }
+  function limpiarCat() {
+    catMarkersRef.current.forEach((m) => mapaRef.current?.removeLayer(m))
+    catMarkersRef.current = []
+  }
+
+  // Pines de localidad (vista 'ruta').
   useEffect(() => {
     const mapa = mapaRef.current
-    if (!mapa || !activo) return
-    if (Date.now() - volandoRef.current < 1000) return
-    const lugar = lugares.find((l) => l.id === activo)
-    if (!lugar) return
-    mapa.panTo([lugar.lat, lugar.lng], { animate: true, duration: 0.5 })
+    if (!mapa) return
+    if (vista !== 'ruta') return limpiarLoc()
+    limpiarLoc()
+    localidades.forEach((loc) => {
+      const m = L.marker([loc.lat, loc.lng], {
+        icon: pinLocalidad(loc, destacados.includes(loc.slug)),
+      })
+        .addTo(mapa)
+        .on('click', () => cbEntrar.current?.(loc.slug))
+      locMarkersRef.current.push(m)
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activo])
+  }, [vista, localidades, destacados])
 
-  // Cambia el mapa base (Mapa ↔ Satélite)
+  // Pines de categoría (vista 'localidad'), según filtro.
   useEffect(() => {
     const mapa = mapaRef.current
-    if (!mapa || !baseRef.current) return
-    mapa.removeLayer(baseRef.current)
-    baseRef.current = L.tileLayer(BASEMAPS[capa].url, BASEMAPS[capa].options).addTo(mapa)
-    baseRef.current.bringToBack()
-  }, [capa])
+    if (!mapa) return
+    if (vista !== 'localidad') return limpiarCat()
+    limpiarCat()
+    lugares
+      .filter((l) => !filtro || l.cat === filtro)
+      .forEach((l) => {
+        const m = L.marker([l.lat, l.lng], { icon: pinCategoria(l.cat) })
+          .addTo(mapa)
+          .on('click', () => cbLugar.current?.(l))
+        catMarkersRef.current.push(m)
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vista, lugares, filtro])
 
-  // Sigue la ubicación del usuario en tiempo real (requiere HTTPS, ya disponible)
+  // Vuelo del mapa al cambiar de vista / localidad.
+  useEffect(() => {
+    const mapa = mapaRef.current
+    if (!mapa) return
+    if (vista === 'localidad' && localidadActiva) {
+      mapa.flyTo([localidadActiva.lat, localidadActiva.lng], localidadActiva.zoom || 14, {
+        duration: 0.9,
+      })
+    } else if (vista === 'ruta' && rutaRef.current) {
+      mapa.flyToBounds(rutaRef.current.getBounds(), { padding: [54, 54], duration: 0.8 })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vista, localidadActiva?.slug])
+
+  // Ubicación del usuario en vivo.
   useEffect(() => {
     if (!('geolocation' in navigator)) return
     const id = navigator.geolocation.watchPosition(
       (p) => setPos([p.coords.latitude, p.coords.longitude]),
-      () => {}, // permiso denegado o sin señal: el mapa sigue funcionando
+      () => {},
       { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
     )
     return () => navigator.geolocation.clearWatch(id)
   }, [])
 
-  // Dibuja/actualiza el punto "estás aquí". Solo se muestra si el usuario está
-  // realmente en la zona que mira: con una localidad elegida, cuando su GPS está
-  // dentro del radio de ese pueblo; si está lejos, se ignora (no se dibuja). En
-  // "Toda la ruta" (sin `centro`) se muestra siempre que haya ubicación.
+  // Avisa a la app si hay ubicación (para habilitar el botón del rail).
+  useEffect(() => {
+    onPos?.(pos)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pos])
+
+  // Marcador "estás aquí".
   useEffect(() => {
     const mapa = mapaRef.current
     if (!mapa) return
-    const quitar = () => {
+    if (!pos) {
       if (yoRef.current) {
         mapa.removeLayer(yoRef.current)
         yoRef.current = null
       }
+      return
     }
-    if (!pos) return quitar()
-    const enZona = !centro || distanciaKm(pos, centro) <= RADIO_LOCALIDAD_KM
-    if (!enZona) return quitar()
-
     const etiqueta = lang === 'es' ? 'Estás aquí' : "You're here"
     if (yoRef.current) {
       yoRef.current.setLatLng(pos)
-      yoRef.current.setTooltipContent(etiqueta)
     } else {
       const icon = L.divIcon({
         html: '<div class="yo-punto"><span class="yo-pulso"></span></div>',
@@ -172,127 +224,9 @@ export default function MapView({
           offset: [0, -8],
         })
     }
-  }, [pos, centro, lang])
+  }, [pos, lang])
 
-  // Marcadores de lugares (según filtro de categoría). El activo se dibuja FUERA
-  // del cluster (marcador directo en el mapa) para que nunca quede escondido en
-  // un grupo y conserve su resalte; el resto va al cluster.
-  useEffect(() => {
-    const cluster = capaRef.current
-    const mapa = mapaRef.current
-    if (!cluster || !mapa) return
-    cluster.clearLayers()
-    if (activoMarkerRef.current) {
-      mapa.removeLayer(activoMarkerRef.current)
-      activoMarkerRef.current = null
-    }
-    lugares
-      .filter((l) => filtro === 'todos' || l.cat === filtro)
-      .forEach((l) => {
-        const c = CATEGORIAS[l.cat]
-        const esActivo = l.id === activo
-        // Pin estilo señalética outdoor: gota SVG en el color de la categoría,
-        // borde blanco fino y el icono calado en blanco. El pin activo (el que
-        // sigue a la lista) se agranda y sube al frente.
-        const icono = L.divIcon({
-          html: `<div class="pin-lugar${esActivo ? ' pin-activo' : ''}"><svg width="24" height="31" viewBox="0 0 26 34"><path d="M13 1C6.4 1 1 6.5 1 13.1 1 22 13 33 13 33s12-11 12-19.9C25 6.5 19.6 1 13 1z" fill="${c.color}" stroke="#fff" stroke-width="1.6"/></svg><span class="pin-ico">${iconoHTML(c.icono, 11, '#fff')}</span></div>`,
-          className: '',
-          iconSize: [24, 31],
-          iconAnchor: [12, 29],
-        })
-        const m = L.marker([l.lat, l.lng], {
-          icon: icono,
-          zIndexOffset: esActivo ? 600 : 0,
-        }).on('click', () => onSeleccionar(l.id))
-        if (esActivo) {
-          m.addTo(mapa)
-          activoMarkerRef.current = m
-        } else {
-          cluster.addLayer(m)
-        }
-      })
-  }, [lugares, filtro, onSeleccionar, activo])
+  return <div ref={contRef} className="mapa-full" />
+})
 
-  // Traza la ruta (línea + distancia) desde el usuario al lugar seleccionado
-  useEffect(() => {
-    const mapa = mapaRef.current
-    if (!mapa) return
-    if (rutaRef.current) {
-      mapa.removeLayer(rutaRef.current)
-      rutaRef.current = null
-    }
-    const lugar = lugares.find((l) => l.id === seleccionado)
-    if (!lugar || !pos) return
-    const destino = [lugar.lat, lugar.lng]
-    const km = distanciaKm(pos, destino)
-    // Solo dibuja la ruta directa si el usuario está razonablemente cerca (en/junto
-    // a Cochrane). Lejos —p. ej. en otra ciudad— una línea recta de cientos de km
-    // no aporta y descuadra el mapa. Para esos casos está el botón "Cómo llegar"
-    // (Google Maps) en la ficha del lugar.
-    if (km > RADIO_RUTA_KM) return
-    const linea = L.polyline([pos, destino], {
-      color: '#0F6E56',
-      weight: 4,
-      opacity: 0.85,
-      dashArray: '8 8',
-    }).addTo(mapa)
-    const txt = km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`
-    linea
-      .bindTooltip(txt, { permanent: true, direction: 'center', className: 'ruta-tip' })
-      .openTooltip()
-    rutaRef.current = linea
-    mapa.fitBounds(linea.getBounds(), { padding: [50, 50], maxZoom: 16 })
-  }, [seleccionado, pos, lugares])
-
-  const centrarEnMi = () => {
-    if (pos && mapaRef.current) mapaRef.current.setView(pos, 15)
-  }
-
-  return (
-    <div className="mapa-cont">
-      <div ref={contRef} className="mapa" />
-
-      {/* Selector de mapa base */}
-      <div className="mapa-capas">
-        <button
-          className={`btn-capa ${capa === 'mapa' ? 'activo' : ''}`}
-          onClick={() => setCapa('mapa')}
-        >
-          {lang === 'es' ? 'Mapa' : 'Map'}
-        </button>
-        <button
-          className={`btn-capa ${capa === 'satelite' ? 'activo' : ''}`}
-          onClick={() => setCapa('satelite')}
-        >
-          {lang === 'es' ? 'Satélite' : 'Satellite'}
-        </button>
-      </div>
-
-      {/* Botón "centrar en mi ubicación" */}
-      <button
-        className="btn-ubicarme"
-        onClick={centrarEnMi}
-        disabled={!pos}
-        aria-label={lang === 'es' ? 'Centrar en mi ubicación' : 'Center on my location'}
-        title={
-          pos
-            ? lang === 'es'
-              ? 'Centrar en mi ubicación'
-              : 'Center on my location'
-            : lang === 'es'
-              ? 'Buscando tu ubicación…'
-              : 'Locating you…'
-        }
-      >
-        <span dangerouslySetInnerHTML={{ __html: iconoHTML('locate', 18, '#0F6E56') }} />
-      </button>
-
-      {offline && (
-        <div className="velo-offline">
-          <span className="velo-ico">{/* icono */}</span>
-          {t('veloOffline')}
-        </div>
-      )}
-    </div>
-  )
-}
+export default MapView

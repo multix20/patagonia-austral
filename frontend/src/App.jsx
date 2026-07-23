@@ -1,14 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { I18nProvider, useI18n } from './i18n'
 import { CATEGORIAS } from './data/places'
 import { obtenerLugares, obtenerAvisos, obtenerLocalidades } from './api/client'
 import { activarPush, pushSoportado } from './push'
 import Icon from './components/Icon'
-import Huemul from './components/Huemul'
 import MapView from './components/MapView'
 import PlaceDetail from './components/PlaceDetail'
+import QuickCard from './components/QuickCard'
 import ChatBot from './components/ChatBot'
-import SelectorLocalidad from './components/SelectorLocalidad'
 
 // Etiquetas de tipo de aviso (coinciden con el CMS Filament)
 const TIPOS_AVISO = {
@@ -18,48 +17,68 @@ const TIPOS_AVISO = {
   evento: { es: 'Evento', en: 'Event' },
 }
 
-// Distancia aproximada en km (haversine) para ordenar localidades por cercanía.
-function distanciaKm(a, b) {
-  const R = 6371
-  const rad = (x) => (x * Math.PI) / 180
-  const dLat = rad(b[0] - a[0])
-  const dLng = rad(b[1] - a[1])
-  const s =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(rad(a[0])) * Math.cos(rad(b[0])) * Math.sin(dLng / 2) ** 2
-  return 2 * R * Math.asin(Math.sqrt(s))
+// Etiqueta corta de categoría para la barra flotante (clave de i18n).
+const CAT_LABEL = {
+  alojamiento: 'catDormir',
+  comida: 'catComer',
+  atractivo: 'catVisitar',
+  servicio: 'catServicios',
+  evento: 'catEventos',
+  emergencia: 'catEmergencia',
 }
+
+// Macrozona por `orden` norte→sur (para el buscador). Norte (Los Lagos) hasta
+// Palena; Centro (Aysén norte) hasta Balmaceda; Sur (Aysén sur) el resto.
+const macrozonaDe = (orden = 0) => (orden < 65 ? 'norte' : orden < 128 ? 'centro' : 'sur')
+
+// Tipos de reporte del crowdsourcing (Fase 3). Hoy es una vista previa de UI:
+// abre el panel y confirma con un toast, sin persistir (backend pendiente).
+const REPORTES = [
+  { k: 'repDerrumbe', icon: 'mountain', c: '#8a5a2b' },
+  { k: 'repHielo', icon: 'snow', c: '#2b6cb0' },
+  { k: 'repCamino', icon: 'alert', c: 'var(--amarillo)' },
+  { k: 'repCombustible', icon: 'fuel', c: '#185FA5' },
+  { k: 'repFerry', icon: 'anchor', c: '#0e7c86' },
+  { k: 'repCamping', icon: 'tent', c: '#534AB7' },
+  { k: 'repTiempo', icon: 'cloud', c: '#5b6b78' },
+  { k: 'repFauna', icon: 'paw', c: '#0F6E56' },
+  { k: 'repEvento', icon: 'calendar', c: '#D4537E' },
+]
+
+// Normaliza a minúsculas sin acentos (rango de diacríticos combinantes U+0300–U+036F).
+const norm = (s) =>
+  (s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
 
 function AppInterna() {
   const { t, lang, setLang } = useI18n()
   const [lugares, setLugares] = useState([])
-  const [filtro, setFiltro] = useState('todos')
-  const [seleccionado, setSeleccionado] = useState(null)
-  const [chatAbierto, setChatAbierto] = useState(false)
-
-  // Sincronización lista ↔ mapa (solo con una localidad elegida): la card que
-  // está arriba en la lista es la "activa"; el mapa la sigue (centra + resalta
-  // su pin) al hacer scroll o filtrar. `listaRef` observa el scroll de la lista.
-  const [activo, setActivo] = useState(null)
-  const listaRef = useRef(null)
-
-  // Multi-localidad (Fase 1): pueblos de la ruta sincronizados offline-first.
-  // 'todas' = toda la Carretera Austral (sin filtro). Se persiste la elección.
   const [localidades, setLocalidades] = useState([])
-  const [localidad, setLocalidad] = useState(() => localStorage.getItem('localidadSel') || 'todas')
-  // Ubicación del usuario para ordenar "Toda la ruta" por cercanía. Solo se pide
-  // si el permiso YA está concedido (no interrumpimos con un prompt sorpresa).
-  const [posUsuario, setPosUsuario] = useState(null)
+  const [avisos, setAvisos] = useState([])
 
-  // Estado de conexión real del dispositivo
+  // Navegación map-first: 'ruta' (toda la Carretera) ↔ 'localidad' (un pueblo).
+  const [vista, setVista] = useState('ruta')
+  const [localidad, setLocalidad] = useState(null) // slug o null en 'ruta'
+  const [filtro, setFiltro] = useState(null) // categoría o null (sin filtro)
+
+  const [lugarRapido, setLugarRapido] = useState(null) // ficha rápida (pin)
+  const [fichaLugar, setFichaLugar] = useState(null) // ficha completa (PlaceDetail)
+  const [hoja, setHoja] = useState(null) // 'buscar' | 'menu' | 'reportar' | null
+  const [zona, setZona] = useState(null) // filtro de macrozona en el buscador
+  const [busqueda, setBusqueda] = useState('')
+  const [chatAbierto, setChatAbierto] = useState(false)
+  const [panelAvisos, setPanelAvisos] = useState(false)
+
+  const [posMapa, setPosMapa] = useState(null)
+  const [toast, setToast] = useState(null)
+  const mapaRef = useRef(null)
+
   const [sinRed, setSinRed] = useState(!navigator.onLine)
   const offline = sinRed
 
-  // Avisos municipales sincronizados desde el CMS (/api/notices)
-  const [avisos, setAvisos] = useState([])
-  const [toast, setToast] = useState(null)
-  const [panelAvisos, setPanelAvisos] = useState(false)
-  // Avisos ya vistos (para el contador sobre la campanita), persistidos en el dispositivo.
+  // Avisos vistos (contador de la campanita), persistido en el dispositivo.
   const [avisosVistos, setAvisosVistos] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('avisosVistos') || '[]')
@@ -68,14 +87,8 @@ function AppInterna() {
     }
   })
 
-  // Web Push real (suscripción del dispositivo a los avisos municipales)
-  const [pushEstado, setPushEstado] = useState('idle') // idle|activando|activado|error
-
-  // Tarjeta de push (respaldo iOS/Android). iOS no dispara `appinstalled` y exige
-  // un gesto del usuario para pedir el permiso → un iPhone instalado no tiene otra
-  // vía para suscribirse. Mostramos UNA tarjeta, solo en modo standalone y con el
-  // permiso pendiente; al decidir (o cerrarla) desaparece. No es el botón "Activar
-  // notificaciones" de siempre: es contextual, único y descartable.
+  // ----- Web Push + instalación (idéntico al flujo previo) -----
+  const [pushEstado, setPushEstado] = useState('idle')
   const [instaladaStandalone] = useState(
     () =>
       window.matchMedia('(display-mode: standalone)').matches ||
@@ -84,8 +97,6 @@ function AppInterna() {
   const [tarjetaPushCerrada, setTarjetaPushCerrada] = useState(
     () => localStorage.getItem('tarjetaPushCerrada') === '1'
   )
-
-  // Instalación PWA (beforeinstallprompt real)
   const [promptInstalar, setPromptInstalar] = useState(null)
   const [bannerCerrado, setBannerCerrado] = useState(
     () => localStorage.getItem('bannerInstalarCerrado') === '1'
@@ -97,81 +108,20 @@ function AppInterna() {
     obtenerLocalidades().then(setLocalidades)
   }, [])
 
-  // Determina la card "activa" (la de más arriba visible en la lista) para que
-  // el mapa la siga. Solo con una localidad elegida; en "Toda la ruta" se apaga.
-  useEffect(() => {
-    if (localidad === 'todas') {
-      setActivo(null)
-      return
-    }
-    const root = listaRef.current
-    if (!root) return
-    const calcular = () => {
-      const tope = root.getBoundingClientRect().top
-      let mejor = null
-      let mejorDist = Infinity
-      root.querySelectorAll('.tarjeta[data-id]').forEach((c) => {
-        const d = c.getBoundingClientRect().top - tope
-        // el primer card cuyo borde superior queda en/apenas bajo el tope
-        if (d >= -24 && d < mejorDist) {
-          mejorDist = d
-          mejor = c
-        }
-      })
-      if (mejor) setActivo(Number(mejor.dataset.id))
-    }
-    calcular()
-    root.addEventListener('scroll', calcular, { passive: true })
-    return () => root.removeEventListener('scroll', calcular)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localidad, filtro, lugares])
-
-  // Ubicación para ordenar por cercanía. Solo si el permiso ya fue concedido
-  // (p. ej. el usuario tocó "centrar en mi ubicación" en el mapa): así no
-  // disparamos un prompt de geolocalización solo para ordenar la lista.
-  useEffect(() => {
-    if (!('geolocation' in navigator) || !navigator.permissions) return
-    navigator.permissions
-      .query({ name: 'geolocation' })
-      .then((res) => {
-        const pedir = () => {
-          if (res.state === 'granted') {
-            navigator.geolocation.getCurrentPosition(
-              (pos) => setPosUsuario([pos.coords.latitude, pos.coords.longitude]),
-              () => {},
-              { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
-            )
-          }
-        }
-        pedir()
-        // Si el usuario concede el permiso más tarde (desde el mapa), reordenamos.
-        res.onchange = pedir
-      })
-      .catch(() => {})
-  }, [])
-
-  // Cuando llega un Web Push, el service worker avisa a la app (postMessage).
-  // Recargamos los avisos desde la API para que la campanita/badge se actualice
-  // AL MISMO TIEMPO que la notificación del sistema, sin refrescar la página.
+  // Recarga de avisos al recibir un push (postMessage del service worker).
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return
     const alMensaje = (event) => {
-      if (event.data?.tipo === 'nuevo-aviso') {
-        obtenerAvisos().then(setAvisos)
-      }
+      if (event.data?.tipo === 'nuevo-aviso') obtenerAvisos().then(setAvisos)
     }
     navigator.serviceWorker.addEventListener('message', alMensaje)
     return () => navigator.serviceWorker.removeEventListener('message', alMensaje)
   }, [])
 
-  // En móvil, la página se congela en segundo plano y no procesa el mensaje del
-  // service worker. Al volver a primer plano (o recuperar el foco) recargamos los
-  // avisos, así la campanita se actualiza sin tener que salir y reabrir la app.
+  // Al volver a primer plano, refrescar avisos (móvil congela en segundo plano).
   useEffect(() => {
     const refrescar = () => {
-      if (document.visibilityState === 'visible') {
-        obtenerAvisos().then(setAvisos)
-      }
+      if (document.visibilityState === 'visible') obtenerAvisos().then(setAvisos)
     }
     document.addEventListener('visibilitychange', refrescar)
     window.addEventListener('focus', refrescar)
@@ -201,23 +151,9 @@ function AppInterna() {
     return () => window.removeEventListener('beforeinstallprompt', h)
   }, [])
 
-  const instalar = async () => {
-    if (promptInstalar) {
-      promptInstalar.prompt()
-      await promptInstalar.userChoice
-      setPromptInstalar(null)
-    }
-    cerrarBanner()
-  }
-
-  const cerrarBanner = () => {
-    setBannerCerrado(true)
-    localStorage.setItem('bannerInstalarCerrado', '1')
-  }
-
   const mostrarToast = (msg) => {
     setToast(msg)
-    setTimeout(() => setToast(null), 4500)
+    setTimeout(() => setToast(null), 3000)
   }
 
   const habilitarPush = async () => {
@@ -232,9 +168,6 @@ function AppInterna() {
       )
     } catch (e) {
       setPushEstado('error')
-      // El código del error (no-soportado | sin-clave | permiso-denegado |
-      // registro-fallido | otro) se muestra para poder diagnosticar en móvil,
-      // donde no hay consola a mano.
       const motivo = e?.message || 'desconocido'
       mostrarToast(
         lang === 'es'
@@ -244,8 +177,7 @@ function AppInterna() {
     }
   }
 
-  // Al instalar la app (desde nuestro banner o el propio navegador),
-  // se pide el permiso de notificaciones una sola vez, sin botón visible.
+  // Al instalar la PWA, pedir permiso de notificaciones una vez (sin botón).
   useEffect(() => {
     const alInstalar = () => {
       if (pushEstado === 'idle' && pushSoportado() && Notification.permission === 'default') {
@@ -257,11 +189,7 @@ function AppInterna() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Red de seguridad: si la app corre INSTALADA y el permiso ya está concedido,
-  // asegura la suscripción en cada arranque. Repara dispositivos donde el flujo
-  // de appinstalled no llegó a registrar la suscripción en el backend (p. ej.
-  // el permiso se dio a nivel de sistema pero el POST nunca ocurrió). Silencioso
-  // y sin duplicados: el backend hace updateOrCreate por endpoint.
+  // Red de seguridad: app instalada + permiso concedido → asegurar suscripción.
   useEffect(() => {
     if (instaladaStandalone && pushSoportado() && Notification.permission === 'granted') {
       activarPush()
@@ -271,20 +199,24 @@ function AppInterna() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const instalar = async () => {
+    if (promptInstalar) {
+      promptInstalar.prompt()
+      await promptInstalar.userChoice
+      setPromptInstalar(null)
+    }
+    setBannerCerrado(true)
+    localStorage.setItem('bannerInstalarCerrado', '1')
+  }
+
   const cerrarTarjetaPush = () => {
     setTarjetaPushCerrada(true)
     localStorage.setItem('tarjetaPushCerrada', '1')
   }
-
-  // El gesto del usuario (toque) permite pedir el permiso también en iOS. Se
-  // conceda o se deniegue, no volvemos a mostrar la tarjeta.
   const activarPushDesdeTarjeta = async () => {
     await habilitarPush()
     cerrarTarjetaPush()
   }
-
-  // Solo en standalone, con push soportado y permiso PENDIENTE (default): iOS ≥16.4
-  // instalado, o Android donde el flujo de `appinstalled` no llegó a pedirlo.
   const mostrarTarjetaPush =
     instaladaStandalone &&
     !tarjetaPushCerrada &&
@@ -292,15 +224,61 @@ function AppInterna() {
     pushSoportado() &&
     Notification.permission === 'default'
 
-  // Avisos no leídos = los que aún no se han visto (contador de la campanita)
+  // ----- Derivados -----
+  const locActiva = localidades.find((l) => l.slug === localidad) || null
+
+  // Lugares del pueblo elegido, destacados primero (capa comercial Fase 3).
+  const lugaresLocalidad = lugares
+    .filter((l) => (l.localidad || 'cochrane') === localidad)
+    .sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0))
+
+  // Localidades con al menos una ficha destacada (se resaltan en la vista ruta).
+  const destacadosSlugs = [
+    ...new Set(lugares.filter((l) => l.destacado).map((l) => l.localidad || 'cochrane')),
+  ]
+
   const noLeidos = avisos.filter((a) => !avisosVistos.includes(a.id)).length
 
-  // Abre el panel con TODOS los avisos y los marca como vistos (limpia el contador)
+  // ----- Acciones de navegación -----
+  const entrarLocalidad = (slug) => {
+    setLocalidad(slug)
+    setVista('localidad')
+    setFiltro(null)
+    setLugarRapido(null)
+    setHoja(null)
+  }
+  const volverRuta = () => {
+    setVista('ruta')
+    setLocalidad(null)
+    setFiltro(null)
+    setLugarRapido(null)
+  }
+
+  const toggleCat = (clave) => {
+    if (vista === 'ruta') {
+      mostrarToast(t('eligeLocalidad'))
+      return
+    }
+    setFiltro((f) => (f === clave ? null : clave))
+    setLugarRapido(null)
+  }
+
   const abrirPanelAvisos = () => {
     setPanelAvisos(true)
+    setHoja(null)
     const ids = avisos.map((a) => a.id)
     setAvisosVistos(ids)
     localStorage.setItem('avisosVistos', JSON.stringify(ids))
+  }
+
+  const centrarEnMi = () => {
+    if (mapaRef.current?.centrarEnMi) mapaRef.current.centrarEnMi()
+    else mostrarToast(t('centrando'))
+  }
+
+  const enviarReporte = (k) => {
+    setHoja(null)
+    mostrarToast(t(k) + ' · ' + t('reporteEnviado'))
   }
 
   const fmtFechaAviso = (iso) =>
@@ -310,211 +288,342 @@ function AppInterna() {
       hour: '2-digit',
       minute: '2-digit',
     })
-
   const tipoAvisoLabel = (tp) => TIPOS_AVISO[tp]?.[lang] ?? tp
 
-  const onSeleccionar = useCallback((id) => setSeleccionado(id), [])
-  const lugarSel = lugares.find((l) => l.id === seleccionado)
-
-  // Cambia la localidad activa: persiste la elección y cierra la ficha abierta
-  // (podría ser de otro pueblo). El mapa se recentra vía props de MapView.
-  const cambiarLocalidad = (slug) => {
-    setLocalidad(slug)
-    localStorage.setItem('localidadSel', slug)
-    setSeleccionado(null)
-  }
-
-  const locActiva = localidades.find((l) => l.slug === localidad)
-
-  // Lugares visibles según la localidad elegida. Los lugares cacheados por
-  // versiones previas de la app (sin campo `localidad`) se asumen de Cochrane,
-  // que era la única localidad hasta la Fase 1.
-  const lugaresVisibles =
-    localidad === 'todas'
-      ? lugares
-      : lugares.filter((l) => (l.localidad || 'cochrane') === localidad)
-
-  // Filtra por categoría y sube los destacados al inicio (capa comercial Fase 3).
-  // El sort es estable, así que dentro de cada grupo de localidad los destacados
-  // quedan primero y el resto conserva su orden. Opera sobre una copia (filter +
-  // sort) para no mutar `lugares`/`lugaresVisibles`.
-  const lugaresFiltrados = lugaresVisibles
-    .filter((l) => filtro === 'todos' || l.cat === filtro)
-    .sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0))
-
-  // Orden de localidades para la vista "Toda la ruta": por cercanía al GPS si
-  // está disponible; si no, por `orden` (norte→sur).
-  const localidadesOrdenadas = [...localidades].sort((a, b) =>
-    posUsuario
-      ? distanciaKm(posUsuario, [a.lat, a.lng]) - distanciaKm(posUsuario, [b.lat, b.lng])
-      : (a.orden ?? 0) - (b.orden ?? 0)
-  )
-
-  const renderTarjeta = (l) => {
-    const c = CATEGORIAS[l.cat]
-    return (
-      <div
-        key={l.id}
-        data-id={l.id}
-        className={`tarjeta ${l.destacado ? 'es-destacado' : ''} ${
-          activo === l.id ? 'es-activo' : ''
-        }`}
-        onClick={() => setSeleccionado(l.id)}
-      >
-        <div className="icono" style={{ background: c.fondo, color: c.color }}>
-          <Icon nombre={c.icono} tam={20} />
-        </div>
-        <div className="info">
-          <div className="nombre">
-            {l.nombre[lang]}
-            {l.destacado && (
-              <span className="sello-destacado">
-                <Icon nombre="star" tam={10} /> {t('destacado')}
-              </span>
-            )}
-          </div>
-          <div className="meta">{c.nombre[lang]}</div>
-          <div className="sello">
-            <Icon nombre="download" tam={10} /> {t('guardadoOffline')}
-          </div>
-        </div>
-        <div className="dist">{l.dist[lang].split('·')[0]}</div>
-      </div>
-    )
+  // Localidades para el buscador, agrupadas por macrozona.
+  const gruposBuscador = () => {
+    const g = { norte: [], centro: [], sur: [] }
+    localidades.forEach((l) => {
+      const mz = macrozonaDe(l.orden)
+      if (zona && mz !== zona) return
+      if (busqueda && !norm(l.nombre[lang]).includes(norm(busqueda))) return
+      g[mz].push(l)
+    })
+    return g
   }
 
   return (
-    // Con una localidad elegida el mapa es el protagonista (`mapa-grande`):
-    // ocupa la mayor parte de la pantalla y la lista queda debajo. En "Toda la
-    // ruta" manda la lista agrupada por cercanía, así que el mapa queda compacto.
-    <div className={`app ${offline ? 'offline' : ''} ${localidad !== 'todas' ? 'mapa-grande' : ''}`}>
-      <header>
-        <div className="fila-top">
-          <h1>
-            {t('titulo')} <small>{t('subtitulo')}</small>
-          </h1>
-          <div className="acciones-header">
-            <button
-              className="btn-campanita"
-              onClick={abrirPanelAvisos}
-              aria-label={lang === 'es' ? 'Avisos municipales' : 'Municipal alerts'}
-            >
-              <span className="campanita">
-                <Icon nombre="bell" tam={16} />
-                {noLeidos > 0 && <span className="badge-avisos">{noLeidos}</span>}
-              </span>
-            </button>
-            <button
-              className="btn-idioma"
-              onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
-              aria-label="Cambiar idioma / Switch language"
-            >
-              <Icon nombre="globe" tam={12} /> {lang === 'es' ? 'EN' : 'ES'}
-            </button>
-            <div className="estado">
-              <span className="punto" /> {offline ? t('sinConexion') : t('enLinea')}
-            </div>
-          </div>
-        </div>
+    <div className={`app mapa-app ${offline ? 'offline' : ''}`}>
+      <MapView
+        ref={mapaRef}
+        vista={vista}
+        localidades={localidades}
+        lugares={lugaresLocalidad}
+        destacados={destacadosSlugs}
+        filtro={filtro}
+        localidadActiva={locActiva}
+        onEntrarLocalidad={entrarLocalidad}
+        onSeleccionarLugar={setLugarRapido}
+        onPos={setPosMapa}
+        lang={lang}
+      />
 
-        {/* Selector de localidad con búsqueda (Fase 2): elige el pueblo de la ruta */}
-        <SelectorLocalidad
-          localidades={localidades}
-          valor={localidad}
-          onCambiar={cambiarLocalidad}
-        />
-      </header>
+      {/* Barra superior flotante */}
+      <div className="topbar">
+        <button
+          className="fab-sq"
+          onClick={() => setHoja('menu')}
+          aria-label={lang === 'es' ? 'Menú' : 'Menu'}
+        >
+          <Icon nombre="menu" tam={22} color="var(--tinta)" />
+          {noLeidos > 0 && <span className="fab-dot" />}
+        </button>
+
+        <button
+          className="loc-pill"
+          onClick={() => (vista === 'localidad' ? volverRuta() : setHoja('buscar'))}
+        >
+          <span
+            className="zn"
+            style={{ background: vista === 'localidad' ? 'var(--claude)' : 'var(--verde)' }}
+          >
+            <Icon nombre={vista === 'localidad' ? 'arrow-left' : 'route'} tam={15} color="#fff" />
+          </span>
+          <span className="tx">
+            <b>{vista === 'localidad' && locActiva ? locActiva.nombre[lang] : t('titulo')}</b>
+            <small>{vista === 'localidad' ? t('volverRuta') : t('rutaSub')}</small>
+          </span>
+        </button>
+
+        <button
+          className="fab-sq"
+          onClick={() => setHoja('buscar')}
+          aria-label={lang === 'es' ? 'Buscar' : 'Search'}
+        >
+          <Icon nombre="search" tam={22} color="var(--tinta)" />
+        </button>
+      </div>
 
       {offline && (
-        <div className="banner-offline">
-          <Icon nombre="wifi-off" tam={14} /> {t('bannerOffline')}
+        <div className="offline-chip">
+          <Icon nombre="wifi-off" tam={13} /> {t('sinConexion')}
         </div>
       )}
 
-      <MapView
-        lugares={lugaresVisibles}
-        filtro={filtro}
-        seleccionado={seleccionado}
-        onSeleccionar={onSeleccionar}
-        offline={offline}
-        centro={locActiva ? [locActiva.lat, locActiva.lng] : null}
-        zoom={locActiva?.zoom}
-        activo={localidad !== 'todas' ? activo : null}
-      />
-
-      <div className="lista" ref={listaRef}>
-        {lugaresFiltrados.length === 0 && (
-          <div className="lista-vacia">{t('sinLugaresLocalidad')}</div>
-        )}
-        {localidad === 'todas' && localidades.length > 0
-          ? localidadesOrdenadas.map((loc) => {
-              const items = lugaresFiltrados.filter(
-                (l) => (l.localidad || 'cochrane') === loc.slug
-              )
-              if (items.length === 0) return null
-              return (
-                <div key={loc.slug} className="grupo-loc">
-                  <div className="grupo-loc-titulo">
-                    <span>
-                      <Icon nombre="map-pin" tam={12} /> {loc.nombre[lang]}
-                    </span>
-                    {posUsuario && (
-                      <span className="grupo-loc-km">
-                        {Math.round(distanciaKm(posUsuario, [loc.lat, loc.lng]))} km
-                      </span>
-                    )}
-                  </div>
-                  {items.map(renderTarjeta)}
-                </div>
-              )
-            })
-          : lugaresFiltrados.map(renderTarjeta)}
+      {/* Rail derecho */}
+      <div className="rail">
+        <button
+          className="fab-round"
+          onClick={centrarEnMi}
+          disabled={!posMapa}
+          aria-label={lang === 'es' ? 'Mi ubicación' : 'My location'}
+        >
+          <Icon nombre="locate" tam={22} color="var(--tinta)" />
+        </button>
+        <button
+          className="fab-round fab-report"
+          onClick={() => setHoja('reportar')}
+          aria-label={lang === 'es' ? 'Reportar' : 'Report'}
+        >
+          <Icon nombre="plus" tam={26} color="#fff" />
+        </button>
       </div>
 
-      {/* Barra de categorías en la zona del pulgar. "Dónde dormir" y "Dónde comer"
-          van primero (orden de CATEGORIAS): es lo que más busca el turista. */}
-      <nav className="barra-cat" aria-label={lang === 'es' ? 'Filtrar por categoría' : 'Filter by category'}>
-        <button
-          className={`cat-btn ${filtro === 'todos' ? 'activo' : ''}`}
-          onClick={() => setFiltro('todos')}
-        >
-          <Icon nombre="map" tam={18} />
-          <span>{t('todos')}</span>
-        </button>
+      {/* Barra de categorías flotante */}
+      <nav
+        className="catbar"
+        aria-label={lang === 'es' ? 'Filtrar por categoría' : 'Filter by category'}
+      >
         {Object.entries(CATEGORIAS).map(([clave, c]) => (
           <button
             key={clave}
-            className={`cat-btn ${filtro === clave ? 'activo' : ''}`}
-            onClick={() => setFiltro(clave)}
-            style={filtro === clave ? { '--cat-color': c.color } : undefined}
+            className={`cat-btn ${filtro === clave ? 'on' : ''}`}
+            style={{ '--cc': c.color }}
+            onClick={() => toggleCat(clave)}
           >
-            <Icon nombre={c.icono} tam={18} />
-            <span>{c.nombre[lang]}</span>
+            <span className="cico">
+              <Icon nombre={c.icono} tam={18} />
+            </span>
+            <span>{t(CAT_LABEL[clave])}</span>
           </button>
         ))}
       </nav>
 
-      {lugarSel && <PlaceDetail lugar={lugarSel} onCerrar={() => setSeleccionado(null)} />}
-
-      {toast && (
-        <div className="toast visible">
-          <span className="t-ico">
-            <Icon nombre="landmark" tam={22} />
-          </span>
-          <div>
-            <div className="t-titulo">{t('muni')}</div>
-            <div className="t-msg">{toast}</div>
-          </div>
-        </div>
+      {/* Ficha rápida */}
+      {lugarRapido && (
+        <QuickCard
+          lugar={lugarRapido}
+          onCerrar={() => setLugarRapido(null)}
+          onVerFicha={() => {
+            setFichaLugar(lugarRapido)
+            setLugarRapido(null)
+          }}
+          onToast={mostrarToast}
+        />
       )}
 
+      {toast && <div className="toast show">{toast}</div>}
+
+      {/* Scrim + hojas inferiores */}
+      <div className={`scrim ${hoja ? 'show' : ''}`} onClick={() => setHoja(null)} />
+
+      {/* Hoja: buscador */}
+      <div className={`sheet ${hoja === 'buscar' ? 'show' : ''}`}>
+        <div className="grab" />
+        <div className="sheet-head">
+          <h2>{t('aDondeVas')}</h2>
+          <button className="x-btn" onClick={() => setHoja(null)} aria-label="Cerrar">
+            <Icon nombre="x" tam={15} />
+          </button>
+        </div>
+        <div className="searchbox">
+          <Icon nombre="search" tam={18} color="var(--gris)" />
+          <input
+            type="text"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            placeholder={t('buscarPh')}
+          />
+        </div>
+        <div className="zonas">
+          {[
+            ['norte', 'zonaNorte', 'zonaNorteSub'],
+            ['centro', 'zonaCentro', 'zonaCentroSub'],
+            ['sur', 'zonaSur', 'zonaSurSub'],
+          ].map(([k, lbl, sub]) => (
+            <button
+              key={k}
+              className={`zona ${zona === k ? 'on' : ''}`}
+              onClick={() => setZona((z) => (z === k ? null : k))}
+            >
+              <b>{t(lbl)}</b>
+              <small>{t(sub)}</small>
+            </button>
+          ))}
+        </div>
+        <div className="sheet-body">
+          {['norte', 'centro', 'sur'].map((zk) => {
+            const items = gruposBuscador()[zk]
+            if (!items.length) return null
+            const label = { norte: t('zonaNorte'), centro: t('zonaCentro'), sur: t('zonaSur') }[zk]
+            return (
+              <div key={zk}>
+                <div className="zgrp-t">
+                  <Icon nombre="map-pin" tam={13} color="var(--verde)" /> {label}
+                </div>
+                {items.map((l) => (
+                  <div key={l.slug} className="loc-row" onClick={() => entrarLocalidad(l.slug)}>
+                    <span className="r-ico">
+                      <Icon nombre="map-pin" tam={18} color="var(--verde)" />
+                    </span>
+                    <div className="r-tx">
+                      <b>{l.nombre[lang]}</b>
+                      <small>
+                        {destacadosSlugs.includes(l.slug) ? t('destacado') + ' · ' : ''}
+                        {macrozonaDe(l.orden) === 'norte'
+                          ? t('zonaNorteSub')
+                          : macrozonaDe(l.orden) === 'centro'
+                            ? t('zonaCentroSub')
+                            : t('zonaSurSub')}
+                      </small>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          })}
+          <div className="sheet-foot">
+            {localidades.length} {t('localidadesRuta')}
+          </div>
+        </div>
+      </div>
+
+      {/* Hoja: menú */}
+      <div className={`sheet ${hoja === 'menu' ? 'show' : ''}`}>
+        <div className="grab" />
+        <div className="sheet-head">
+          <h2>{t('titulo')}</h2>
+          <button className="x-btn" onClick={() => setHoja(null)} aria-label="Cerrar">
+            <Icon nombre="x" tam={15} />
+          </button>
+        </div>
+        <div className="sheet-body">
+          <div
+            className="menu-row"
+            onClick={() => {
+              setHoja(null)
+              volverRuta()
+            }}
+          >
+            <span className="m-ico">
+              <Icon nombre="route" tam={20} color="var(--verde)" />
+            </span>
+            <div>
+              <b>{t('menuVerRuta')}</b>
+              <div className="m-sub">{t('menuVerRutaSub')}</div>
+            </div>
+          </div>
+          <div
+            className="menu-row"
+            onClick={() => {
+              setHoja(null)
+              setChatAbierto(true)
+            }}
+          >
+            <span className="m-ico">
+              <Icon nombre="message-circle" tam={20} color="var(--verde)" />
+            </span>
+            <div>
+              <b>{t('menuAsistente')}</b>
+              <div className="m-sub">{t('menuAsistenteSub')}</div>
+            </div>
+          </div>
+          <div className="menu-row" onClick={abrirPanelAvisos}>
+            <span className="m-ico">
+              <Icon nombre="bell" tam={20} color="var(--verde)" />
+            </span>
+            <div>
+              <b>{t('menuAvisos')}</b>
+              <div className="m-sub">{t('menuAvisosSub')}</div>
+            </div>
+            {noLeidos > 0 && <span className="menu-badge">{noLeidos}</span>}
+          </div>
+          <div className="menu-row">
+            <span className="m-ico">
+              <Icon nombre="wifi" tam={20} color="var(--verde)" />
+            </span>
+            <div>
+              <b>{t('menuOffline')}</b>
+              <div className="m-sub">{t('menuOfflineSub')}</div>
+            </div>
+          </div>
+          <div className="menu-row">
+            <span className="m-ico">
+              <Icon nombre="map-pin" tam={20} color="var(--verde)" />
+            </span>
+            <div>
+              <b>{t('menuAcerca')}</b>
+              <div className="m-sub">{t('menuAcercaSub')}</div>
+            </div>
+          </div>
+          <div className="menu-row">
+            <span className="m-ico">
+              <Icon nombre="globe" tam={20} color="var(--verde)" />
+            </span>
+            <div>
+              <b>{t('idioma')}</b>
+              <div className="m-sub">Español · English</div>
+            </div>
+            <button
+              className="menu-lang"
+              onClick={(e) => {
+                e.stopPropagation()
+                setLang(lang === 'es' ? 'en' : 'es')
+              }}
+            >
+              <Icon nombre="globe" tam={12} /> {lang === 'es' ? 'EN' : 'ES'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Hoja: reportar (crowdsourcing — vista previa de UI, Fase 3) */}
+      <div className={`sheet ${hoja === 'reportar' ? 'show' : ''}`}>
+        <div className="grab" />
+        <div className="sheet-head">
+          <h2>{t('queVesRuta')}</h2>
+          <button className="x-btn" onClick={() => setHoja(null)} aria-label="Cerrar">
+            <Icon nombre="x" tam={15} />
+          </button>
+        </div>
+        <div className="sheet-body">
+          <div className="rep-note">
+            <Icon nombre="clock" tam={15} color="var(--verde-osc)" />
+            <span>{t('reportesNota')}</span>
+          </div>
+          <div className="rep-comment" onClick={() => enviarReporte('dejarComentario')}>
+            <span className="rc-ico">
+              <Icon nombre="message-circle" tam={20} color="var(--claude)" />
+            </span>
+            <div>
+              <b>{t('dejarComentario')}</b>
+              <small>{t('comentarioSub')}</small>
+            </div>
+          </div>
+          <div className="rep-grid">
+            {REPORTES.map((r) => (
+              <button key={r.k} className="rep-item" onClick={() => enviarReporte(r.k)}>
+                <span className="r-badge" style={{ background: r.c }}>
+                  <Icon nombre={r.icon} tam={26} color="#fff" />
+                </span>
+                <span>{t(r.k)}</span>
+              </button>
+            ))}
+          </div>
+          <div className="rep-preview">{t('reportePreview')}</div>
+        </div>
+      </div>
+
+      {/* Ficha completa */}
+      {fichaLugar && <PlaceDetail lugar={fichaLugar} onCerrar={() => setFichaLugar(null)} />}
+
+      {/* Panel de avisos municipales */}
       {panelAvisos && (
         <div className="panel-avisos-overlay" onClick={() => setPanelAvisos(false)}>
           <div className="panel-avisos" onClick={(e) => e.stopPropagation()}>
             <div className="pa-head">
               <span>
-                <Icon nombre="bell" tam={16} />{' '}
-                {lang === 'es' ? 'Avisos municipales' : 'Municipal alerts'}
+                <Icon nombre="bell" tam={16} /> {t('menuAvisos')}
               </span>
               <button
                 className="pa-cerrar"
@@ -542,18 +651,10 @@ function AppInterna() {
         </div>
       )}
 
-      <button className="fab-chat" onClick={() => setChatAbierto(true)} aria-label={t('chatNombre')}>
-        {/* Crossfade: el huemul (emblema de Aysén) aparece y desaparece alternando con el spark */}
-        <span className="fab-iconos" aria-hidden="true">
-          <Huemul tam={25} />
-          <Icon nombre="spark" tam={24} />
-        </span>
-      </button>
-
       <ChatBot
         abierto={chatAbierto}
         onCerrar={() => setChatAbierto(false)}
-        lugares={lugaresVisibles}
+        lugares={vista === 'localidad' ? lugaresLocalidad : lugares}
         localidadNombre={locActiva ? locActiva.nombre[lang] : null}
       />
 
@@ -589,7 +690,14 @@ function AppInterna() {
             {t('instalarTexto')}
           </div>
           <button onClick={instalar}>{t('instalar')}</button>
-          <button className="cerrar" onClick={cerrarBanner} aria-label="Cerrar">
+          <button
+            className="cerrar"
+            onClick={() => {
+              setBannerCerrado(true)
+              localStorage.setItem('bannerInstalarCerrado', '1')
+            }}
+            aria-label="Cerrar"
+          >
             <Icon nombre="x" tam={14} />
           </button>
         </div>
