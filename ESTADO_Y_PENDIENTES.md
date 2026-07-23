@@ -6,6 +6,10 @@ Stack: **React 18 (Vite) + Laravel (PHP 8.x) + PostgreSQL 16**.
 
 Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
+> **Rumbo y priorización estratégica:** ver `ROADMAP.md` (visión 2026–2027, en qué
+> invertir y qué **no** hacer). Este archivo es el **registro operativo** (bitácora
+> fechada + backlog); aquél fija la dirección. Principio: **curar, no acumular.**
+
 > **Aclaración importante (10-jul-2026):** este proyecto nació como fork de la
 > PWA de Cochrane (licitación ID 3797-37-LE26, repo `multix20/cochrane-turismo`),
 > pero es un **producto independiente que NO se rige por bases de licitación**.
