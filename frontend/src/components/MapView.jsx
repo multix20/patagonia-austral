@@ -9,10 +9,15 @@ import { iconoHTML } from './Icon'
 //  - 'localidad': pines de categoría (gota) de los lugares del pueblo elegido.
 // El control de "centrar en mi ubicación" se expone por ref para el rail de la app.
 
-// Mapa base (teselas cacheadas por el service worker para uso sin conexión).
+// Mapa base topográfico (relieve + caminos + etiquetas): alto contraste, ideal
+// para una ruta de montaña. Host Esri (arcgisonline), ya cacheado por el service
+// worker (regla `esri-tiles` en vite.config.js) para uso sin conexión.
 const BASE = {
-  url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-  options: { attribution: '© OpenStreetMap © CARTO', subdomains: 'abcd', maxZoom: 20 },
+  url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+  options: {
+    attribution: 'Tiles © Esri — Esri, DeLorme, NAVTEQ, TomTom, USGS',
+    maxZoom: 19,
+  },
 }
 
 const CENTRO_RUTA = [-45.5, -72.6]

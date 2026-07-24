@@ -1447,7 +1447,7 @@ h1 small {
   font-family: inherit;
 }
 .mapa-app .leaflet-tile-pane {
-  filter: saturate(1.12) contrast(1.12) brightness(0.95);
+  filter: saturate(1.04) contrast(1.04);
 }
 .mapa-app.offline .leaflet-tile-pane {
   filter: grayscale(0.85) brightness(1.05);
