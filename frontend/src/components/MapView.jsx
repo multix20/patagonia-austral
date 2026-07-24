@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import L from 'leaflet'
 import { CATEGORIAS } from '../data/places'
+import { RUTA7 } from '../data/ruta7'
 import { iconoHTML } from './Icon'
 
 // Rediseño map-first (Sprint UX/UI): el mapa es el protagonista a pantalla
@@ -100,29 +101,52 @@ const MapView = forwardRef(function MapView(
     }
   }, [])
 
-  // Línea de la ruta (una vez que hay localidades).
+  // Traza la Ruta 7 destacada (dato estático, una sola vez): línea naranja con
+  // contorno blanco sobre el mapa base; los tramos en barcaza van punteados. Ya
+  // no se unen los pueblos con líneas rectas.
   useEffect(() => {
     const mapa = mapaRef.current
-    if (!mapa || !localidades.length || rutaRef.current) return
-    const pts = [...localidades]
-      .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0))
-      .map((l) => [l.lat, l.lng])
-    rutaRef.current = L.polyline(pts, {
-      color: '#0f6e56',
-      weight: 4,
-      opacity: 0.55,
-      lineCap: 'round',
-      lineJoin: 'round',
-    }).addTo(mapa)
-    if (vista === 'ruta') {
-      mapa.fitBounds(rutaRef.current.getBounds(), { padding: [54, 54] })
-    }
+    if (!mapa || rutaRef.current) return
+    const grupo = L.featureGroup()
+    RUTA7.forEach((seg) => {
+      if (seg.tipo === 'barcaza') {
+        L.polyline(seg.puntos, {
+          color: '#d85a30',
+          weight: 3,
+          opacity: 0.75,
+          dashArray: '1 10',
+          lineCap: 'round',
+        }).addTo(grupo)
+      } else {
+        // Contorno blanco + línea naranja: efecto "ruta resaltada".
+        L.polyline(seg.puntos, {
+          color: '#ffffff',
+          weight: 8,
+          opacity: 0.9,
+          lineCap: 'round',
+          lineJoin: 'round',
+        }).addTo(grupo)
+        L.polyline(seg.puntos, {
+          color: '#d85a30',
+          weight: 4.5,
+          opacity: 1,
+          lineCap: 'round',
+          lineJoin: 'round',
+        }).addTo(grupo)
+      }
+    })
+    rutaRef.current = grupo
+    if (vista === 'ruta') grupo.addTo(mapa)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localidades])
+  }, [])
 
-  // Opacidad de la ruta según la vista.
+  // La ruta destacada solo se muestra en la vista general (en 'localidad' estorba).
   useEffect(() => {
-    if (rutaRef.current) rutaRef.current.setStyle({ opacity: vista === 'ruta' ? 0.55 : 0 })
+    const mapa = mapaRef.current
+    const grupo = rutaRef.current
+    if (!mapa || !grupo) return
+    if (vista === 'ruta' && !mapa.hasLayer(grupo)) grupo.addTo(mapa)
+    else if (vista !== 'ruta' && mapa.hasLayer(grupo)) mapa.removeLayer(grupo)
   }, [vista])
 
   function limpiarLoc() {
