@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { I18nProvider, useI18n } from './i18n'
-import { CATEGORIAS } from './data/places'
+import { CATEGORIAS, LOCALIDADES_DESTACADAS } from './data/places'
 import { obtenerLugares, obtenerAvisos, obtenerLocalidades } from './api/client'
 import { activarPush, pushSoportado } from './push'
 import Icon from './components/Icon'
@@ -232,10 +232,13 @@ function AppInterna() {
     .filter((l) => (l.localidad || 'cochrane') === localidad)
     .sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0))
 
-  // Localidades con al menos una ficha destacada (se resaltan en la vista ruta).
-  const destacadosSlugs = [
-    ...new Set(lugares.filter((l) => l.destacado).map((l) => l.localidad || 'cochrane')),
-  ]
+  // Localidades ancla que se resaltan en la vista ruta (mapa y buscador): set
+  // curado de puertas de entrada de la Carretera Austral (ver LOCALIDADES_DESTACADAS),
+  // no las que tengan una ficha comercial destacada. Se filtra contra las localidades
+  // realmente cargadas para no resaltar un slug ausente.
+  const destacadosSlugs = LOCALIDADES_DESTACADAS.filter((slug) =>
+    localidades.some((l) => l.slug === slug)
+  )
 
   const noLeidos = avisos.filter((a) => !avisosVistos.includes(a.id)).length
 

@@ -146,6 +146,19 @@ export const LOCALIDADES_SEED = [
   },
 ]
 
+// Localidades ancla (puertas de entrada de la Carretera Austral) que se resaltan
+// en el mapa de la vista general al iniciar la app: punto de partida norte, capital
+// regional, destino #1 de atenciones OIT e ícono del extremo sur. Es una decisión
+// de producto (curada y estable), independiente del flag comercial `destacado` de
+// cada ficha, para que el turista fije de un vistazo los hitos de la ruta y no salte
+// una localidad cualquiera por tener una ficha destacada.
+export const LOCALIDADES_DESTACADAS = [
+  'puerto-montt', // inicio norte de la Carretera Austral
+  'coyhaique', // capital regional de Aysén
+  'cochrane', // destino #1 de la región por atenciones OIT
+  'caleta-tortel', // ícono del extremo sur (pasarelas)
+]
+
 // El orden de las claves define el orden de los botones de categoría en la app:
 // "Dónde dormir" y "Dónde comer" primero, que es lo que más busca el turista.
 export const CATEGORIAS = {
