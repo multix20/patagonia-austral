@@ -10,18 +10,26 @@ import { iconoHTML } from './Icon'
 //  - 'localidad': pines de categoría (gota) de los lugares del pueblo elegido.
 // El control de "centrar en mi ubicación" se expone por ref para el rail de la app.
 
-// Mapa base topográfico (relieve + caminos + etiquetas): alto contraste, ideal
-// para una ruta de montaña. Host Esri (arcgisonline), ya cacheado por el service
-// worker (regla `esri-tiles` en vite.config.js) para uso sin conexión.
+// Mapa base CARTO Voyager: cartografía limpia, colorida y nítida (estilo tipo
+// Google Maps), con caminos y etiquetas legibles. El placeholder `{r}` pide
+// teselas @2x (retina) en pantallas de alta densidad → mucho más nítido en el
+// celular que un topográfico raster. Cacheado por el service worker (regla
+// `carto-tiles` en vite.config.js) para uso sin conexión.
 const BASE = {
-  url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+  url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
   options: {
-    attribution: 'Tiles © Esri — Esri, DeLorme, NAVTEQ, TomTom, USGS',
-    maxZoom: 19,
+    subdomains: 'abcd',
+    attribution: '© OpenStreetMap © CARTO',
+    maxZoom: 20,
   },
 }
 
 const CENTRO_RUTA = [-45.5, -72.6]
+
+// A partir de este zoom se muestran los nombres de TODAS las localidades (como
+// Google Maps: al acercar aparecen las etiquetas). Más lejos que esto solo se
+// rotulan las destacadas, para no saturar la vista general de toda la ruta.
+const ZOOM_ETIQUETAS = 8
 
 // Pines con área de toque real (iconSize/iconAnchor) para tap-targets correctos.
 function pinLocalidad(loc, destacado) {
@@ -94,8 +102,15 @@ const MapView = forwardRef(function MapView(
     }).setView(CENTRO_RUTA, 6)
     L.tileLayer(BASE.url, BASE.options).addTo(mapa)
     mapaRef.current = mapa
+    // Muestra/oculta los nombres de todas las localidades según el zoom.
+    const sincronizarEtiquetas = () => {
+      contRef.current?.classList.toggle('labels-on', mapa.getZoom() >= ZOOM_ETIQUETAS)
+    }
+    mapa.on('zoomend', sincronizarEtiquetas)
+    sincronizarEtiquetas()
     setTimeout(() => mapa.invalidateSize(), 200)
     return () => {
+      mapa.off('zoomend', sincronizarEtiquetas)
       mapa.remove()
       mapaRef.current = null
     }

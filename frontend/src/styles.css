@@ -1482,22 +1482,34 @@ h1 small {
 .pin-loc .lbl {
   position: absolute;
   left: 50%;
-  top: 0;
-  transform: translate(-50%, -100%);
+  bottom: 100%;
+  margin-bottom: 3px;
+  transform: translateX(-50%);
   white-space: nowrap;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 700;
-  color: var(--tinta);
-  background: rgba(255, 255, 255, 0.9);
-  padding: 1px 6px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  line-height: 1.25;
+  letter-spacing: 0.1px;
+  color: #16281f;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2px 7px;
+  border-radius: 9px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.18s;
   pointer-events: none;
 }
+/* Al acercar el mapa se muestran los nombres de todas las localidades (estilo
+   Google Maps). En la vista general de toda la ruta se ocultan para no saturar. */
+.mapa-full.labels-on .pin-loc .lbl {
+  opacity: 1;
+}
+/* Las localidades destacadas rotulan su nombre siempre, un poco más marcado. */
 .pin-loc.rel .lbl {
   opacity: 1;
+  font-size: 12.5px;
+  background: #fff;
+  color: var(--tinta);
 }
 
 /* Pin de categoría (vista localidad) — gota */
