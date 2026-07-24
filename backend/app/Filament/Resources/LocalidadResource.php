@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\TieneCampoUbicacionGoogleMaps;
 use App\Filament\Resources\LocalidadResource\Pages;
 use App\Models\Localidad;
 use Filament\Forms;
@@ -12,6 +13,8 @@ use Filament\Tables\Table;
 
 class LocalidadResource extends Resource
 {
+    use TieneCampoUbicacionGoogleMaps;
+
     protected static ?string $model = Localidad::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-map';
@@ -50,12 +53,14 @@ class LocalidadResource extends Resource
             Forms\Components\Section::make('Mapa y orden en la ruta')
                 ->columns(2)
                 ->schema([
+                    self::campoPegarGoogleMaps(),
                     Forms\Components\TextInput::make('lat')
                         ->label('Latitud (centro del pueblo)')
                         ->numeric()
                         ->required()
                         ->step('0.0000001')
-                        ->rules(['between:-90,90']),
+                        ->rules(['between:-90,90'])
+                        ->helperText('Se completa al pegar el enlace de Google Maps; ajústala solo si hace falta.'),
                     Forms\Components\TextInput::make('lng')
                         ->label('Longitud (centro del pueblo)')
                         ->numeric()

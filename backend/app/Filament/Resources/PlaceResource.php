@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\TieneCampoUbicacionGoogleMaps;
 use App\Filament\Resources\PlaceResource\Pages;
 use App\Models\Localidad;
 use App\Models\Place;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 class PlaceResource extends Resource
 {
+    use TieneCampoUbicacionGoogleMaps;
+
     protected static ?string $model = Place::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
@@ -71,12 +74,14 @@ class PlaceResource extends Resource
                         ->helperText('Resalta el lugar en la app: aparece primero en su localidad y con un sello.')
                         ->default(false)
                         ->inline(false),
+                    self::campoPegarGoogleMaps(),
                     Forms\Components\TextInput::make('lat')
                         ->label('Latitud')
                         ->numeric()
                         ->required()
                         ->step('0.0000001')
-                        ->rules(['between:-90,90']),
+                        ->rules(['between:-90,90'])
+                        ->helperText('Se completa al pegar el enlace de Google Maps; ajústala solo si hace falta.'),
                     Forms\Components\TextInput::make('lng')
                         ->label('Longitud')
                         ->numeric()
