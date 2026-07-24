@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import L from 'leaflet'
 import { CATEGORIAS } from '../data/places'
 import { RUTA7 } from '../data/ruta7'
-import { iconoHTML } from './Icon'
+import Icon, { iconoHTML } from './Icon'
 
 // Rediseño map-first (Sprint UX/UI): el mapa es el protagonista a pantalla
 // completa. Dos vistas:
@@ -10,17 +10,29 @@ import { iconoHTML } from './Icon'
 //  - 'localidad': pines de categoría (gota) de los lugares del pueblo elegido.
 // El control de "centrar en mi ubicación" se expone por ref para el rail de la app.
 
-// Mapa base CARTO Voyager: cartografía limpia, colorida y nítida (estilo tipo
-// Google Maps), con caminos y etiquetas legibles. El placeholder `{r}` pide
-// teselas @2x (retina) en pantallas de alta densidad → mucho más nítido en el
-// celular que un topográfico raster. Cacheado por el service worker (regla
-// `carto-tiles` en vite.config.js) para uso sin conexión.
-const BASE = {
-  url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-  options: {
-    subdomains: 'abcd',
-    attribution: '© OpenStreetMap © CARTO',
-    maxZoom: 20,
+// Capas base seleccionables por el usuario (botón de capas sobre el mapa):
+//  - 'mapa'     → CARTO Voyager: cartografía limpia, colorida y nítida (estilo
+//    Google Maps). El placeholder `{r}` pide teselas @2x (retina) en pantallas
+//    de alta densidad → mucho más nítido en el celular que un topográfico raster.
+//  - 'satelite' → Esri World Imagery: fotografía satelital de alto contraste,
+//    útil para ubicar geografía real (ríos, glaciares, sendas).
+// Ambas quedan cacheadas por el service worker (reglas `carto-tiles` y
+// `esri-tiles` en vite.config.js) para uso sin conexión.
+const CAPAS = {
+  mapa: {
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    options: {
+      subdomains: 'abcd',
+      attribution: '© OpenStreetMap © CARTO',
+      maxZoom: 20,
+    },
+  },
+  satelite: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    options: {
+      attribution: 'Imágenes © Esri, Maxar, Earthstar Geographics',
+      maxZoom: 19,
+    },
   },
 }
 
@@ -32,12 +44,15 @@ const CENTRO_RUTA = [-45.5, -72.6]
 const ZOOM_ETIQUETAS = 8
 
 // Pines con área de toque real (iconSize/iconAnchor) para tap-targets correctos.
-function pinLocalidad(loc, destacado) {
+// `loc.nombre` es bilingüe ({ es, en }): hay que rotular con el idioma activo,
+// nunca el objeto crudo (si no, se ve "[object Object]" en la etiqueta).
+function pinLocalidad(loc, destacado, lang) {
+  const nombre = loc.nombre?.[lang] ?? loc.nombre?.es ?? loc.nombre ?? ''
   return L.divIcon({
     className: '',
     iconSize: [26, 26],
     iconAnchor: [13, 13],
-    html: `<div class="pin-loc ${destacado ? 'rel' : ''}"><div class="lbl">${loc.nombre}</div><div class="dot"></div></div>`,
+    html: `<div class="pin-loc ${destacado ? 'rel' : ''}"><div class="lbl">${nombre}</div><div class="dot"></div></div>`,
   })
 }
 
@@ -71,11 +86,17 @@ const MapView = forwardRef(function MapView(
 ) {
   const contRef = useRef(null)
   const mapaRef = useRef(null)
+  const tileRef = useRef(null)
   const rutaRef = useRef(null)
   const locMarkersRef = useRef([])
   const catMarkersRef = useRef([])
   const yoRef = useRef(null)
   const [pos, setPos] = useState(null)
+  // Capa base elegida por el usuario y visibilidad de las etiquetas de localidad
+  // (según el zoom). Ambas se reflejan como clases del contenedor → las controla
+  // React en el className, no con classList (si no, un re-render las borraría).
+  const [capa, setCapa] = useState('mapa')
+  const [etiquetasVisibles, setEtiquetasVisibles] = useState(false)
 
   // Callbacks en refs para no re-suscribir los efectos del mapa en cada render.
   const cbEntrar = useRef(onEntrarLocalidad)
@@ -93,19 +114,16 @@ const MapView = forwardRef(function MapView(
     tienePos: !!pos,
   }))
 
-  // Inicializa el mapa una sola vez.
+  // Inicializa el mapa una sola vez (la capa base la monta el efecto de `capa`).
   useEffect(() => {
     if (mapaRef.current) return
     const mapa = L.map(contRef.current, {
       zoomControl: false,
       attributionControl: true,
     }).setView(CENTRO_RUTA, 6)
-    L.tileLayer(BASE.url, BASE.options).addTo(mapa)
     mapaRef.current = mapa
     // Muestra/oculta los nombres de todas las localidades según el zoom.
-    const sincronizarEtiquetas = () => {
-      contRef.current?.classList.toggle('labels-on', mapa.getZoom() >= ZOOM_ETIQUETAS)
-    }
+    const sincronizarEtiquetas = () => setEtiquetasVisibles(mapa.getZoom() >= ZOOM_ETIQUETAS)
     mapa.on('zoomend', sincronizarEtiquetas)
     sincronizarEtiquetas()
     setTimeout(() => mapa.invalidateSize(), 200)
@@ -113,8 +131,20 @@ const MapView = forwardRef(function MapView(
       mapa.off('zoomend', sincronizarEtiquetas)
       mapa.remove()
       mapaRef.current = null
+      tileRef.current = null
     }
   }, [])
+
+  // Monta / cambia la capa base cuando el usuario elige Mapa ↔ Satélite.
+  useEffect(() => {
+    const mapa = mapaRef.current
+    if (!mapa) return
+    if (tileRef.current) mapa.removeLayer(tileRef.current)
+    const cfg = CAPAS[capa] || CAPAS.mapa
+    tileRef.current = L.tileLayer(cfg.url, cfg.options)
+    tileRef.current.setZIndex(0) // siempre por debajo de la ruta y los pines
+    tileRef.current.addTo(mapa)
+  }, [capa])
 
   // Traza la Ruta 7 destacada (dato estático, una sola vez): línea naranja con
   // contorno blanco sobre el mapa base; los tramos en barcaza van punteados. Ya
@@ -181,14 +211,14 @@ const MapView = forwardRef(function MapView(
     limpiarLoc()
     localidades.forEach((loc) => {
       const m = L.marker([loc.lat, loc.lng], {
-        icon: pinLocalidad(loc, destacados.includes(loc.slug)),
+        icon: pinLocalidad(loc, destacados.includes(loc.slug), lang),
       })
         .addTo(mapa)
         .on('click', () => cbEntrar.current?.(loc.slug))
       locMarkersRef.current.push(m)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vista, localidades, destacados])
+  }, [vista, localidades, destacados, lang])
 
   // Pines de categoría (vista 'localidad'), según filtro.
   useEffect(() => {
@@ -270,7 +300,37 @@ const MapView = forwardRef(function MapView(
     }
   }, [pos, lang])
 
-  return <div ref={contRef} className="mapa-full" />
+  const capas = [
+    { id: 'mapa', icono: 'map', lbl: lang === 'es' ? 'Mapa' : 'Map' },
+    { id: 'satelite', icono: 'globe', lbl: lang === 'es' ? 'Satélite' : 'Satellite' },
+  ]
+
+  return (
+    <>
+      <div
+        ref={contRef}
+        className={`mapa-full capa-${capa} ${etiquetasVisibles ? 'labels-on' : ''}`}
+      />
+      <div
+        className="mapa-capas"
+        role="group"
+        aria-label={lang === 'es' ? 'Capa del mapa' : 'Map layer'}
+      >
+        {capas.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            className={`btn-capa ${capa === c.id ? 'activo' : ''}`}
+            aria-pressed={capa === c.id}
+            onClick={() => setCapa(c.id)}
+          >
+            <Icon nombre={c.icono} tam={15} />
+            <span>{c.lbl}</span>
+          </button>
+        ))}
+      </div>
+    </>
+  )
 })
 
 export default MapView

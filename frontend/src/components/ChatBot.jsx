@@ -21,16 +21,68 @@ function normalizar(s) {
   return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 }
 
-function listaLugares(lugares, cat, lang, conTel = false) {
+// Recorta un texto a un resumen corto (primeras palabras), sin partir palabras,
+// para enriquecer las listas del bot con una pincelada de contexto real.
+function resumenBreve(texto, max = 120) {
+  const t = (texto || '').trim()
+  if (t.length <= max) return t
+  const corte = t.slice(0, max)
+  const fin = corte.lastIndexOf(' ')
+  return `${(fin > 40 ? corte.slice(0, fin) : corte).trimEnd()}…`
+}
+
+// Lista los lugares de una categoría (todos de la localidad activa). Opciones:
+//  - conTel:  agrega el teléfono cuando existe (alojamiento, comida, servicios).
+//  - conDesc: agrega una descripción breve real (atractivos) en vez de la distancia.
+// Cada ítem cabe en UNA línea para no romper el render Markdown (viñetas).
+function listaLugares(lugares, cat, lang, { conTel = false, conDesc = false } = {}) {
+  const tel = lang === 'es' ? 'Tel' : 'Phone'
   return lugares
     .filter((l) => l.cat === cat)
     .map((l) => {
       // El nombre en **negrita** lo resalta el render Markdown de los mensajes.
-      let linea = `• **${l.nombre[lang]}** — ${l.dist[lang].split('·')[0].trim()}`
-      if (conTel && l.tel) linea += ` · Tel: ${l.tel}`
+      let linea = `• **${l.nombre[lang]}**`
+      if (conDesc && l.desc?.[lang]) {
+        linea += ` — ${resumenBreve(l.desc[lang])}`
+      } else if (l.dist?.[lang]) {
+        linea += ` — ${l.dist[lang].split('·')[0].trim()}`
+      }
+      if (conTel && l.tel) linea += ` · ${tel}: ${l.tel}`
       return linea
     })
     .join('\n')
+}
+
+// Resumen de lo que hay cargado en la localidad (conteo por categoría), para
+// que el asistente responda algo concreto y propio del pueblo, no genérico.
+function resumenLocalidad(lugares, lang, loc) {
+  const es = lang === 'es'
+  const etiquetas = {
+    atractivo: es ? ['atractivo', 'atractivos'] : ['attraction', 'attractions'],
+    alojamiento: es ? ['alojamiento', 'alojamientos'] : ['place to stay', 'places to stay'],
+    comida: es ? ['lugar para comer', 'lugares para comer'] : ['place to eat', 'places to eat'],
+    servicio: es ? ['servicio', 'servicios'] : ['service', 'services'],
+    emergencia: es
+      ? ['contacto de emergencia', 'contactos de emergencia']
+      : ['emergency contact', 'emergency contacts'],
+    evento: es ? ['evento', 'eventos'] : ['event', 'events'],
+  }
+  const partes = Object.entries(etiquetas)
+    .map(([cat, [sing, plural]]) => {
+      const n = lugares.filter((l) => l.cat === cat).length
+      return n > 0 ? `${n} ${n === 1 ? sing : plural}` : null
+    })
+    .filter(Boolean)
+
+  if (partes.length === 0) {
+    return es
+      ? `Todavía no tengo lugares cargados para ${loc}. Explora el mapa o vuelve a la vista de la ruta.`
+      : `I don't have places loaded for ${loc} yet. Explore the map or go back to the route view.`
+  }
+  const lista = `• ${partes.join('\n• ')}`
+  return es
+    ? `Esto es lo que tengo sobre ${loc}:\n\n${lista}\n\nPregúntame por cualquiera de estos temas.`
+    : `Here's what I have for ${loc}:\n\n${lista}\n\nAsk me about any of these.`
 }
 
 // Render de Markdown simple para los mensajes del bot: **negrita**, viñetas
@@ -71,18 +123,22 @@ function Markdown({ texto }) {
 }
 
 // Lista los lugares de una categoría o, si no hay, un aviso claro para esa localidad.
-function listaOFallback(lugares, cat, lang, loc, conTel = false) {
-  const l = listaLugares(lugares, cat, lang, conTel)
+function listaOFallback(lugares, cat, lang, loc, opciones = {}) {
+  const l = listaLugares(lugares, cat, lang, opciones)
   if (l) return l
   return lang === 'es'
     ? `(Aún no tengo lugares de esta categoría cargados para ${loc}. Toca el mapa o la lista para explorar.)`
     : `(No places of this category are loaded for ${loc} yet. Tap the map or list to explore.)`
 }
 
-function saludo(lang, loc) {
-  return lang === 'es'
-    ? `¡Hola! Soy tu asistente turístico para ${loc}. Puedo ayudarte con lugares para visitar, alojamiento, comida, emergencias y consejos de ruta.\n\n¿Qué necesitas saber?`
-    : `Hi! I'm your tourist assistant for ${loc}. I can help with places to visit, lodging, food, emergencies and road tips.\n\nWhat do you need to know?`
+function saludo(lang, loc, lugares = []) {
+  const es = lang === 'es'
+  // Si ya hay lugares de la localidad cargados, el saludo arranca con lo que hay
+  // (concreto y propio del pueblo), no con una frase genérica.
+  const detalle = lugares.length > 0 ? `\n\n${resumenLocalidad(lugares, lang, loc)}` : ''
+  return es
+    ? `¡Hola! Soy tu asistente turístico para ${loc}. Puedo ayudarte con lugares para visitar, alojamiento, comida, emergencias y consejos de ruta.${detalle || '\n\n¿Qué necesitas saber?'}`
+    : `Hi! I'm your tourist assistant for ${loc}. I can help with places to visit, lodging, food, emergencies and road tips.${detalle || '\n\nWhat do you need to know?'}`
 }
 
 function responder(pregunta, lugares, lang, loc) {
@@ -107,37 +163,45 @@ function responder(pregunta, lugares, lang, loc) {
       sugerencias: sug,
     }
 
+  if (tiene('que hay', 'resumen', 'cuentame', 'informacion', 'que tienes', 'que ofrece', 'overview', 'summary', 'tell me about', 'what is there', 'whats here'))
+    return {
+      texto: resumenLocalidad(lugares, lang, loc),
+      sugerencias: sug,
+    }
+
   if (tiene('emergencia', 'hospital', 'urgencia', 'accidente', 'carabineros', 'policia', 'bomberos', 'rescate', 'emergency', 'police', 'fire', 'rescue', 'ambulance'))
     return {
       texto: es
-        ? `Números de emergencia en ${loc}:\n\n${listaOFallback(lugares, 'emergencia', lang, loc, true)}\n\nConsejo: antes de salir de trekking, informa tu ruta en la tenencia de Carabineros.`
-        : `Emergency numbers in ${loc}:\n\n${listaOFallback(lugares, 'emergencia', lang, loc, true)}\n\nTip: before trekking, register your route at the police station.`,
+        ? `Números de emergencia en ${loc}:\n\n${listaOFallback(lugares, 'emergencia', lang, loc, { conTel: true })}\n\nConsejo: antes de salir de trekking, informa tu ruta en la tenencia de Carabineros.`
+        : `Emergency numbers in ${loc}:\n\n${listaOFallback(lugares, 'emergencia', lang, loc, { conTel: true })}\n\nTip: before trekking, register your route at the police station.`,
       sugerencias: es ? ['¿Dónde dormir?', 'Estado de caminos', '¿Qué visitar?'] : ['Where to sleep?', 'Road conditions', 'What to visit?'],
     }
 
   if (tiene('dormir', 'alojamiento', 'hostal', 'cabana', 'hotel', 'hospedaje', 'sleep', 'stay', 'lodging', 'hostel', 'cabin'))
     return {
       texto: es
-        ? `Opciones de alojamiento en ${loc}:\n\n${listaOFallback(lugares, 'alojamiento', lang, loc, true)}\n\nEn temporada alta (dic–feb) conviene reservar con anticipación.`
-        : `Lodging options in ${loc}:\n\n${listaOFallback(lugares, 'alojamiento', lang, loc, true)}\n\nIn high season (Dec–Feb) book in advance.`,
+        ? `Opciones de alojamiento en ${loc}:\n\n${listaOFallback(lugares, 'alojamiento', lang, loc, { conTel: true })}\n\nEn temporada alta (dic–feb) conviene reservar con anticipación.`
+        : `Lodging options in ${loc}:\n\n${listaOFallback(lugares, 'alojamiento', lang, loc, { conTel: true })}\n\nIn high season (Dec–Feb) book in advance.`,
       sugerencias: es ? ['¿Dónde comer?', '¿Qué visitar?', 'Combustible'] : ['Where to eat?', 'What to visit?', 'Fuel'],
     }
 
   if (tiene('comer', 'restaurante', 'comida', 'almuerzo', 'cena', 'cafe', 'desayuno', 'kuchen', 'eat', 'food', 'restaurant', 'lunch', 'dinner', 'coffee'))
     return {
       texto: es
-        ? `Dónde comer en ${loc}:\n\n${listaOFallback(lugares, 'comida', lang, loc, true)}\n\nEl cordero al palo es un plato típico de la Patagonia.`
-        : `Where to eat in ${loc}:\n\n${listaOFallback(lugares, 'comida', lang, loc, true)}\n\nSpit-roasted lamb is a Patagonian specialty.`,
+        ? `Dónde comer en ${loc}:\n\n${listaOFallback(lugares, 'comida', lang, loc, { conTel: true })}\n\nEl cordero al palo es un plato típico de la Patagonia.`
+        : `Where to eat in ${loc}:\n\n${listaOFallback(lugares, 'comida', lang, loc, { conTel: true })}\n\nSpit-roasted lamb is a Patagonian specialty.`,
       sugerencias: es ? ['¿Dónde dormir?', 'Eventos', '¿Qué visitar?'] : ['Where to sleep?', 'Events', 'What to visit?'],
     }
 
-  if (tiene('combustible', 'bencina', 'gasolina', 'petroleo', 'fuel', 'gas', 'petrol', 'diesel'))
+  if (tiene('combustible', 'bencina', 'gasolina', 'petroleo', 'servicio', 'banco', 'cajero', 'fuel', 'gas', 'petrol', 'diesel', 'service')) {
+    const servicios = listaLugares(lugares, 'servicio', lang, { conTel: true })
     return {
       texto: es
-        ? `La bencina es escasa en la Carretera Austral y las estaciones están lejos entre sí. Carga el estanque completo cada vez que puedas, sobre todo antes de tramos largos hacia el sur.\n\nRevisa los servicios de ${loc} en la lista y el mapa para ubicar la estación más cercana.`
-        : `Fuel is scarce on the Carretera Austral and stations are far apart. Fill up completely whenever you can, especially before long stretches heading south.\n\nCheck ${loc}'s services in the list and map to find the nearest station.`,
+        ? `Combustible y servicios en ${loc}:\n\n${servicios || '(Aún no tengo estaciones ni servicios cargados para esta localidad.)'}\n\nLa bencina escasea en la Carretera Austral y las estaciones están lejos entre sí: carga el estanque completo cada vez que puedas, sobre todo antes de tramos largos hacia el sur.`
+        : `Fuel and services in ${loc}:\n\n${servicios || '(No fuel stations or services loaded for this locality yet.)'}\n\nFuel is scarce on the Carretera Austral and stations are far apart: fill up completely whenever you can, especially before long stretches heading south.`,
       sugerencias: es ? ['Estado de caminos', 'Emergencias', '¿Qué visitar?'] : ['Road conditions', 'Emergencies', 'What to visit?'],
     }
+  }
 
   if (tiene('huemul', 'fauna', 'animal', 'guanaco', 'nandu', 'wildlife', 'deer'))
     return {
@@ -150,8 +214,8 @@ function responder(pregunta, lugares, lang, loc) {
   if (tiene('visitar', 'atractivo', 'hacer', 'panorama', 'conocer', 'sendero', 'trekking', 'caminata', 'parque', 'mirador', 'laguna', 'glaciar', 'lago', 'visit', 'attraction', 'see', 'hike', 'trail', 'park'))
     return {
       texto: es
-        ? `Los imperdibles de ${loc}:\n\n${listaOFallback(lugares, 'atractivo', lang, loc)}\n\nToca cualquier lugar en el mapa o la lista para ver cómo llegar. Toda la información funciona sin conexión.`
-        : `${loc}'s must-sees:\n\n${listaOFallback(lugares, 'atractivo', lang, loc)}\n\nTap any place on the map or list for directions. Everything works offline.`,
+        ? `Los imperdibles de ${loc}:\n\n${listaOFallback(lugares, 'atractivo', lang, loc, { conDesc: true })}\n\nToca cualquier lugar en el mapa o la lista para ver cómo llegar. Toda la información funciona sin conexión.`
+        : `${loc}'s must-sees:\n\n${listaOFallback(lugares, 'atractivo', lang, loc, { conDesc: true })}\n\nTap any place on the map or list for directions. Everything works offline.`,
       sugerencias: es ? ['Ver fauna / huemules', 'Estado de caminos', '¿Dónde comer?'] : ['Wildlife / huemul', 'Road conditions', 'Where to eat?'],
     }
 
@@ -220,8 +284,11 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
     if (!abierto) return
     setMensajes((prev) => {
       if (prev.some((m) => m.quien === 'usuario')) return prev
-      return [{ quien: 'bot', texto: saludo(lang, loc) }]
+      return [{ quien: 'bot', texto: saludo(lang, loc, lugares) }]
     })
+    // `lugares` se lee del closure al abrir/cambiar de localidad; no va en deps
+    // (su referencia cambia en cada render y dispararía el efecto en bucle).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [abierto, lang, loc])
 
   useEffect(() => {
