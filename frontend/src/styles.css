@@ -1454,13 +1454,17 @@ h1 small {
   font-family: inherit;
 }
 /* Más contraste y viveza en la capa "Mapa": Voyager viene algo pastel/pálido
-   de fábrica, así se ve más nítido y con más "punch" (estilo Google Maps). */
+   de fábrica, así se ve más nítido y con más "punch" (estilo Google Maps):
+   verdes de parques más vivos y azules de agua más marcados. */
 .mapa-full.capa-mapa .leaflet-tile-pane {
-  filter: saturate(1.2) contrast(1.1) brightness(0.98);
+  filter: saturate(1.4) contrast(1.22) brightness(0.96);
 }
-/* La capa satélite se deja casi natural, solo un toque de nitidez. */
+/* Capa satélite con más contraste: subir la saturación intensifica justo lo que
+   más satura la foto patagónica —el verde de la vegetación y el azul del océano,
+   lagos y lagunas— mientras la roca y la nieve (poco saturadas) casi no cambian.
+   Así el "terreno más verde" y el "azul más azul" del pedido sin virar el tono. */
 .mapa-full.capa-satelite .leaflet-tile-pane {
-  filter: saturate(1.05) contrast(1.05);
+  filter: saturate(1.5) contrast(1.16) brightness(1.01);
 }
 /* Sin conexión: escala de grises (prevalece sobre los filtros de capa). */
 .mapa-app.offline .mapa-full .leaflet-tile-pane {
@@ -1488,10 +1492,15 @@ h1 small {
   border: 2px solid #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
+/* Localidades ancla (puertas de entrada): punto coral más grande con halo para
+   que resalten claramente por sobre las demás en la vista general de la ruta. */
 .pin-loc.rel .dot {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   background: var(--claude);
+  box-shadow:
+    0 0 0 3px rgba(217, 119, 87, 0.28),
+    0 1px 4px rgba(0, 0, 0, 0.4);
 }
 .pin-loc .lbl {
   position: absolute;
