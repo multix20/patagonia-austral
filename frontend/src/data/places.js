@@ -154,6 +154,7 @@ export const LOCALIDADES_SEED = [
 // una localidad cualquiera por tener una ficha destacada.
 export const LOCALIDADES_DESTACADAS = [
   'puerto-montt', // inicio norte de la Carretera Austral
+  'chaiten', // puerta de entrada norte (ferry, acceso a Pumalín)
   'coyhaique', // capital regional de Aysén
   'cochrane', // destino #1 de la región por atenciones OIT
   'caleta-tortel', // ícono del extremo sur (pasarelas)
