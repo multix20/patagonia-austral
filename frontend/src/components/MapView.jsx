@@ -11,16 +11,19 @@ import Icon, { iconoHTML } from './Icon'
 // El control de "centrar en mi ubicación" se expone por ref para el rail de la app.
 
 // Capas base seleccionables por el usuario (botón de capas sobre el mapa):
-//  - 'mapa'     → CARTO Voyager: cartografía limpia, colorida y nítida (estilo
-//    Google Maps). El placeholder `{r}` pide teselas @2x (retina) en pantallas
-//    de alta densidad → mucho más nítido en el celular que un topográfico raster.
+//  - 'mapa'     → CARTO Voyager SIN rótulos (`voyager_nolabels`): cartografía
+//    limpia y nítida, pero sin los nombres de pueblos/regiones del mapa base.
+//    Las etiquetas las ponen NUESTROS marcadores (localidades ancla siempre; el
+//    resto al acercar), así evitamos el nombre duplicado (pin + rótulo base) y el
+//    mapa gana limpieza. El placeholder `{r}` pide teselas @2x (retina) en
+//    pantallas de alta densidad → mucho más nítido en el celular.
 //  - 'satelite' → Esri World Imagery: fotografía satelital de alto contraste,
 //    útil para ubicar geografía real (ríos, glaciares, sendas).
 // Ambas quedan cacheadas por el service worker (reglas `carto-tiles` y
 // `esri-tiles` en vite.config.js) para uso sin conexión.
 const CAPAS = {
   mapa: {
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
     options: {
       subdomains: 'abcd',
       attribution: '© OpenStreetMap © CARTO',
@@ -46,13 +49,18 @@ const ZOOM_ETIQUETAS = 8
 // Pines con área de toque real (iconSize/iconAnchor) para tap-targets correctos.
 // `loc.nombre` es bilingüe ({ es, en }): hay que rotular con el idioma activo,
 // nunca el objeto crudo (si no, se ve "[object Object]" en la etiqueta).
-function pinLocalidad(loc, destacado, lang) {
+// `tier` define la jerarquía visual del pin de localidad:
+//   'rel'   = ancla (punto coral + etiqueta prominente)
+//   'fija'  = hito de referencia (punto verde + etiqueta siempre visible)
+//   'menor' = sector/caserío (punto chico y apagado, poca notoriedad)
+//   ''      = localidad normal (punto verde, etiqueta solo al acercar)
+function pinLocalidad(loc, tier, lang) {
   const nombre = loc.nombre?.[lang] ?? loc.nombre?.es ?? loc.nombre ?? ''
   return L.divIcon({
     className: '',
     iconSize: [26, 26],
     iconAnchor: [13, 13],
-    html: `<div class="pin-loc ${destacado ? 'rel' : ''}"><div class="lbl">${nombre}</div><div class="dot"></div></div>`,
+    html: `<div class="pin-loc ${tier}"><div class="lbl">${nombre}</div><div class="dot"></div></div>`,
   })
 }
 
@@ -75,6 +83,8 @@ const MapView = forwardRef(function MapView(
     localidades,
     lugares,
     destacados = [],
+    rotuladas = [],
+    menores = [],
     filtro,
     localidadActiva,
     onEntrarLocalidad,
@@ -210,15 +220,20 @@ const MapView = forwardRef(function MapView(
     if (vista !== 'ruta') return limpiarLoc()
     limpiarLoc()
     localidades.forEach((loc) => {
-      const m = L.marker([loc.lat, loc.lng], {
-        icon: pinLocalidad(loc, destacados.includes(loc.slug), lang),
-      })
+      const tier = destacados.includes(loc.slug)
+        ? 'rel'
+        : rotuladas.includes(loc.slug)
+          ? 'fija'
+          : menores.includes(loc.slug)
+            ? 'menor'
+            : ''
+      const m = L.marker([loc.lat, loc.lng], { icon: pinLocalidad(loc, tier, lang) })
         .addTo(mapa)
         .on('click', () => cbEntrar.current?.(loc.slug))
       locMarkersRef.current.push(m)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vista, localidades, destacados, lang])
+  }, [vista, localidades, destacados, rotuladas, menores, lang])
 
   // Pines de categoría (vista 'localidad'), según filtro.
   useEffect(() => {

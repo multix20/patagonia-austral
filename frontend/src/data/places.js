@@ -154,9 +154,28 @@ export const LOCALIDADES_SEED = [
 // una localidad cualquiera por tener una ficha destacada.
 export const LOCALIDADES_DESTACADAS = [
   'puerto-montt', // inicio norte de la Carretera Austral
+  'chaiten', // puerta de entrada norte (ferry, acceso a Pumalín)
   'coyhaique', // capital regional de Aysén
   'cochrane', // destino #1 de la región por atenciones OIT
   'caleta-tortel', // ícono del extremo sur (pasarelas)
+]
+
+// Segundo nivel: localidades que muestran SIEMPRE su nombre en la vista general
+// (hitos de referencia para orientarse a lo largo de la ruta), pero SIN el
+// resalte coral de las anclas — punto verde normal, solo la etiqueta fija. Así el
+// mapa no queda tan vacío sin descuadrar la jerarquía de las 4 destacadas.
+export const LOCALIDADES_ROTULADAS = [
+  'la-junta', // nudo norte (cruce a Raúl Marín / Palena-Futaleufú)
+  'puyuhuapi', // hito norte (termas, Queulat)
+  'villa-ohiggins', // extremo sur de la Carretera Austral
+]
+
+// Tercer nivel: localidades "menores" que se conservan (con sus lugares) pero se
+// dibujan con poca notoriedad en el mapa — punto chico y apagado, sin etiqueta
+// fija. Para caseríos/sectores que no son un pueblo en sí (p. ej. El Amarillo,
+// portal de Pumalín cerca de Chaitén), sin perder sus atractivos.
+export const LOCALIDADES_MENORES = [
+  'el-amarillo', // sector cerca de Chaitén (termas, ventisquero, portal Pumalín)
 ]
 
 // Mapa slug → nombre ES de la localidad, para armar búsquedas legibles.
