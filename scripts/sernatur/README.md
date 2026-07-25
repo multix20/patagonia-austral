@@ -172,6 +172,54 @@ Ajustes al inicio del script: `BASE_ID` (id inicial, por defecto `2000`) y
 
 ---
 
+## Paso 4 (opcional) — Corregir coordenadas geocodificando por nombre
+
+Muchas fichas SERNATUR traían **coordenadas placeholder** (repetidas, hasta ~160 km
+del pueblo). El paso 2 las detecta y **reubica al centro del pueblo con dispersión**,
+así que los pines caen "cerca del pueblo" pero **no en la dirección real**. Las
+direcciones de SERNATUR son vagas ("Sector rincón s/n") y no se geocodifican gratis
+— pero **Google conoce estos negocios como POIs**: dado el nombre + la localidad,
+devuelve su coordenada real.
+
+```bat
+:: 1) API key con Places API habilitada + facturación activada (crédito gratis)
+set GOOGLE_MAPS_API_KEY=AIza...        REM  (PowerShell: $env:GOOGLE_MAPS_API_KEY="AIza...")
+
+:: 2) ver qué se consultaría, sin gastar cuota
+python 4_geocodificar.py --dry-run
+
+:: 3) geocodificar (solo los publicados ahorra cuota; o todo el lote)
+python 4_geocodificar.py --solo-publicados
+```
+
+- **Consulta:** `"«nombre ES», «localidad», Chile"` a *Find Place From Text*.
+- **Guardarraíl de distancia** (`--max-km`, 20 por defecto): solo acepta el
+  resultado si cae cerca del centro de la localidad; si Google devuelve un
+  homónimo lejano o no encuentra nada, **conserva la coordenada original** y lo
+  marca (`LEJOS` / `SIN_RESULTADO`) para revisar a mano.
+- Cuando acepta, sobrescribe `lat`/`lng`, agrega `google_place_id` y recalcula el
+  texto de distancia.
+- **Caché** (`geocode_cache.json`): reanuda tras un corte o límite de cuota sin
+  volver a pagar las llamadas ya hechas.
+
+Salidas (no versionadas):
+- **`sernatur_places.geocodificado.json`** — la entrada con coordenadas corregidas
+  + `google_place_id` + `geocode_estado`.
+- **`geocodificacion.csv`** — auditoría: qué se movió, cuántos km y con qué estado.
+
+**Aplicar:** revisa el CSV, copia el JSON corregido sobre `sernatur_places.json` y
+vuelve a correr el **paso 3** (seeder). Nota: el `google_place_id` queda en el JSON
+para referencia; el `SernaturPlaceSeeder` actual no lo guarda (si lo quieres en la
+BD, agrégalo como una columna igual que el email más abajo).
+
+> **Coste:** es una pasada única de ~200 lugares; entra sobrado en el crédito
+> mensual gratis de Google. La key **nunca** se versiona (va por variable de
+> entorno). Si prefieres cero API, ubica a mano las fichas publicadas/destacadas
+> en `/admin` (clic derecho en Google Maps → "copiar coordenadas" → pegar en
+> `lat`/`lng`).
+
+---
+
 ## (Opcional) Añadir email a la PWA
 
 El esquema actual no guarda email. Para incluirlo:

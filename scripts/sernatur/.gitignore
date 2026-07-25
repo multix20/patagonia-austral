@@ -2,5 +2,8 @@
 *.csv
 *.xlsx
 sernatur_places.json
+# Salidas del paso 4 (geocodificación por nombre)
+sernatur_places.geocodificado.json
+geocode_cache.json
 .venv/
 __pycache__/

@@ -1,5 +1,5 @@
 import Icon from './Icon'
-import { CATEGORIAS } from '../data/places'
+import { CATEGORIAS, urlComoLlegar } from '../data/places'
 import { useI18n } from '../i18n'
 
 // Ficha rápida (Sprint UX/UI): tarjeta compacta que sube al tocar un pin en el
@@ -11,7 +11,7 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
   if (!lugar) return null
 
   const c = CATEGORIAS[lugar.cat]
-  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lugar.lat},${lugar.lng}`
+  const mapsUrl = urlComoLlegar(lugar, lang)
   const distancia = lugar.dist?.[lang]?.split('·')[0]?.trim()
   const telLimpio = lugar.tel ? lugar.tel.replace(/\s/g, '') : null
   const waNum = (lugar.whatsapp || lugar.tel || '').replace(/[^\d]/g, '')

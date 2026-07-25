@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Icon from './Icon'
-import { CATEGORIAS } from '../data/places'
+import { CATEGORIAS, urlComoLlegar } from '../data/places'
 import { useI18n } from '../i18n'
 
 // Ficha de punto de interés: descripción, cómo llegar, distancia,
@@ -10,7 +10,7 @@ export default function PlaceDetail({ lugar, onCerrar }) {
   const [copiado, setCopiado] = useState(false)
   if (!lugar) return null
   const c = CATEGORIAS[lugar.cat]
-  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lugar.lat},${lugar.lng}`
+  const mapsUrl = urlComoLlegar(lugar, lang)
 
   // Compartir el lugar: usa el diálogo nativo del sistema (móvil) y, si no está,
   // copia el enlace al portapapeles con un aviso breve.

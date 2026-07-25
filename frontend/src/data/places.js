@@ -159,6 +159,26 @@ export const LOCALIDADES_DESTACADAS = [
   'caleta-tortel', // ícono del extremo sur (pasarelas)
 ]
 
+// Mapa slug → nombre ES de la localidad, para armar búsquedas legibles.
+const NOMBRE_LOCALIDAD = Object.fromEntries(
+  LOCALIDADES_SEED.map((l) => [l.slug, l.nombre.es])
+)
+
+// URL de "Cómo llegar" / compartir. Google Maps rutea al destino buscándolo por
+// NOMBRE + localidad + país, NO por coordenada: las lat/lng guardadas son
+// aproximadas (muchas fichas SERNATUR traían coordenadas placeholder y se
+// dispersaron al centro del pueblo), mientras que Google conoce estos negocios y
+// atractivos como POIs y los ubica en su dirección real. Si faltara el nombre,
+// cae a las coordenadas para no romper el enlace.
+export function urlComoLlegar(lugar, lang = 'es') {
+  const nombre = lugar?.nombre?.[lang] ?? lugar?.nombre?.es ?? ''
+  const loc = NOMBRE_LOCALIDAD[lugar?.localidad] ?? ''
+  const destino = nombre
+    ? encodeURIComponent([nombre, loc, 'Chile'].filter(Boolean).join(', '))
+    : `${lugar?.lat},${lugar?.lng}`
+  return `https://www.google.com/maps/dir/?api=1&destination=${destino}`
+}
+
 // El orden de las claves define el orden de los botones de categoría en la app:
 // "Dónde dormir" y "Dónde comer" primero, que es lo que más busca el turista.
 export const CATEGORIAS = {
