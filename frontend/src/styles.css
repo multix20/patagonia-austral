@@ -1540,6 +1540,20 @@ h1 small {
 .pin-loc.fija .lbl {
   opacity: 1;
 }
+/* Tercer nivel (localidad menor, p. ej. El Amarillo): punto chico y apagado, y
+   sin etiqueta ni siquiera al acercar → se conserva en el mapa sin notoriedad.
+   Igual es tappable (el área de toque de 26px se mantiene). */
+.pin-loc.menor .dot {
+  width: 6px;
+  height: 6px;
+  background: #9aa8a0;
+  border-width: 1.5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+.pin-loc.menor .lbl,
+.mapa-full.labels-on .pin-loc.menor .lbl {
+  opacity: 0;
+}
 
 /* Pin de categoría (vista localidad) — gota */
 .pin-cat {

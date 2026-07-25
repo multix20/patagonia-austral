@@ -49,16 +49,18 @@ const ZOOM_ETIQUETAS = 8
 // Pines con área de toque real (iconSize/iconAnchor) para tap-targets correctos.
 // `loc.nombre` es bilingüe ({ es, en }): hay que rotular con el idioma activo,
 // nunca el objeto crudo (si no, se ve "[object Object]" en la etiqueta).
-function pinLocalidad(loc, destacado, rotulada, lang) {
+// `tier` define la jerarquía visual del pin de localidad:
+//   'rel'   = ancla (punto coral + etiqueta prominente)
+//   'fija'  = hito de referencia (punto verde + etiqueta siempre visible)
+//   'menor' = sector/caserío (punto chico y apagado, poca notoriedad)
+//   ''      = localidad normal (punto verde, etiqueta solo al acercar)
+function pinLocalidad(loc, tier, lang) {
   const nombre = loc.nombre?.[lang] ?? loc.nombre?.es ?? loc.nombre ?? ''
-  // 'rel' = ancla (coral + etiqueta prominente); 'fija' = etiqueta siempre
-  // visible con punto normal (segundo nivel de hitos).
-  const clase = destacado ? 'rel' : rotulada ? 'fija' : ''
   return L.divIcon({
     className: '',
     iconSize: [26, 26],
     iconAnchor: [13, 13],
-    html: `<div class="pin-loc ${clase}"><div class="lbl">${nombre}</div><div class="dot"></div></div>`,
+    html: `<div class="pin-loc ${tier}"><div class="lbl">${nombre}</div><div class="dot"></div></div>`,
   })
 }
 
@@ -82,6 +84,7 @@ const MapView = forwardRef(function MapView(
     lugares,
     destacados = [],
     rotuladas = [],
+    menores = [],
     filtro,
     localidadActiva,
     onEntrarLocalidad,
@@ -217,15 +220,20 @@ const MapView = forwardRef(function MapView(
     if (vista !== 'ruta') return limpiarLoc()
     limpiarLoc()
     localidades.forEach((loc) => {
-      const m = L.marker([loc.lat, loc.lng], {
-        icon: pinLocalidad(loc, destacados.includes(loc.slug), rotuladas.includes(loc.slug), lang),
-      })
+      const tier = destacados.includes(loc.slug)
+        ? 'rel'
+        : rotuladas.includes(loc.slug)
+          ? 'fija'
+          : menores.includes(loc.slug)
+            ? 'menor'
+            : ''
+      const m = L.marker([loc.lat, loc.lng], { icon: pinLocalidad(loc, tier, lang) })
         .addTo(mapa)
         .on('click', () => cbEntrar.current?.(loc.slug))
       locMarkersRef.current.push(m)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vista, localidades, destacados, rotuladas, lang])
+  }, [vista, localidades, destacados, rotuladas, menores, lang])
 
   // Pines de categoría (vista 'localidad'), según filtro.
   useEffect(() => {

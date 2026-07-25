@@ -170,6 +170,14 @@ export const LOCALIDADES_ROTULADAS = [
   'villa-ohiggins', // extremo sur de la Carretera Austral
 ]
 
+// Tercer nivel: localidades "menores" que se conservan (con sus lugares) pero se
+// dibujan con poca notoriedad en el mapa — punto chico y apagado, sin etiqueta
+// fija. Para caseríos/sectores que no son un pueblo en sí (p. ej. El Amarillo,
+// portal de Pumalín cerca de Chaitén), sin perder sus atractivos.
+export const LOCALIDADES_MENORES = [
+  'el-amarillo', // sector cerca de Chaitén (termas, ventisquero, portal Pumalín)
+]
+
 // Mapa slug → nombre ES de la localidad, para armar búsquedas legibles.
 const NOMBRE_LOCALIDAD = Object.fromEntries(
   LOCALIDADES_SEED.map((l) => [l.slug, l.nombre.es])

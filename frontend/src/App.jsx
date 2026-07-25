@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { I18nProvider, useI18n } from './i18n'
-import { CATEGORIAS, LOCALIDADES_DESTACADAS, LOCALIDADES_ROTULADAS } from './data/places'
+import {
+  CATEGORIAS,
+  LOCALIDADES_DESTACADAS,
+  LOCALIDADES_ROTULADAS,
+  LOCALIDADES_MENORES,
+} from './data/places'
 import { obtenerLugares, obtenerAvisos, obtenerLocalidades } from './api/client'
 import { activarPush, pushSoportado } from './push'
 import Icon from './components/Icon'
@@ -246,6 +251,11 @@ function AppInterna() {
     (slug) => !destacadosSlugs.includes(slug) && localidades.some((l) => l.slug === slug)
   )
 
+  // Localidades menores (tercer nivel: punto chico y apagado, poca notoriedad).
+  const menoresSlugs = LOCALIDADES_MENORES.filter((slug) =>
+    localidades.some((l) => l.slug === slug)
+  )
+
   const noLeidos = avisos.filter((a) => !avisosVistos.includes(a.id)).length
 
   // ----- Acciones de navegación -----
@@ -320,6 +330,7 @@ function AppInterna() {
         lugares={lugaresLocalidad}
         destacados={destacadosSlugs}
         rotuladas={rotuladasSlugs}
+        menores={menoresSlugs}
         filtro={filtro}
         localidadActiva={locActiva}
         onEntrarLocalidad={entrarLocalidad}
