@@ -1453,11 +1453,13 @@ h1 small {
   background: #dfe4e0;
   font-family: inherit;
 }
-/* Más contraste y viveza en la capa "Mapa": Voyager viene algo pastel/pálido
-   de fábrica, así se ve más nítido y con más "punch" (estilo Google Maps):
-   verdes de parques más vivos y azules de agua más marcados. */
+/* Paleta tipo Google Maps para la capa "Mapa": Voyager viene algo pastel, así
+   que se realza con MODERACIÓN — verdes de parques naturales (no neón), estepa
+   beige, agua celeste e hielos blancos — manteniendo el mapa LIMPIO y LUMINOSO.
+   (Antes se usaba saturate(2)/contrast(1.5)/brightness(0.8): sobresaturaba y
+   oscurecía, justo lo contrario al look claro de Google Maps.) */
 .mapa-full.capa-mapa .leaflet-tile-pane {
-  filter: saturate(2) contrast(1.5) brightness(0.8);
+  filter: saturate(1.3) contrast(1.05) brightness(1.02);
 }
 /* Capa satélite con más contraste: subir la saturación intensifica justo lo que
    más satura la foto patagónica —el verde de la vegetación y el azul del océano,
