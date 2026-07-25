@@ -11,16 +11,19 @@ import Icon, { iconoHTML } from './Icon'
 // El control de "centrar en mi ubicación" se expone por ref para el rail de la app.
 
 // Capas base seleccionables por el usuario (botón de capas sobre el mapa):
-//  - 'mapa'     → CARTO Voyager: cartografía limpia, colorida y nítida (estilo
-//    Google Maps). El placeholder `{r}` pide teselas @2x (retina) en pantallas
-//    de alta densidad → mucho más nítido en el celular que un topográfico raster.
+//  - 'mapa'     → CARTO Voyager SIN rótulos (`voyager_nolabels`): cartografía
+//    limpia y nítida, pero sin los nombres de pueblos/regiones del mapa base.
+//    Las etiquetas las ponen NUESTROS marcadores (localidades ancla siempre; el
+//    resto al acercar), así evitamos el nombre duplicado (pin + rótulo base) y el
+//    mapa gana limpieza. El placeholder `{r}` pide teselas @2x (retina) en
+//    pantallas de alta densidad → mucho más nítido en el celular.
 //  - 'satelite' → Esri World Imagery: fotografía satelital de alto contraste,
 //    útil para ubicar geografía real (ríos, glaciares, sendas).
 // Ambas quedan cacheadas por el service worker (reglas `carto-tiles` y
 // `esri-tiles` en vite.config.js) para uso sin conexión.
 const CAPAS = {
   mapa: {
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
     options: {
       subdomains: 'abcd',
       attribution: '© OpenStreetMap © CARTO',
