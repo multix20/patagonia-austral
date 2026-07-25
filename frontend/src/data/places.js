@@ -159,6 +159,16 @@ export const LOCALIDADES_DESTACADAS = [
   'caleta-tortel', // ícono del extremo sur (pasarelas)
 ]
 
+// Segundo nivel: localidades que muestran SIEMPRE su nombre en la vista general
+// (hitos de referencia para orientarse a lo largo de la ruta), pero SIN el
+// resalte coral de las anclas — punto verde normal, solo la etiqueta fija. Así el
+// mapa no queda tan vacío sin descuadrar la jerarquía de las 4 destacadas.
+export const LOCALIDADES_ROTULADAS = [
+  'la-junta', // nudo norte (cruce a Raúl Marín / Palena-Futaleufú)
+  'puyuhuapi', // hito norte (termas, Queulat)
+  'villa-ohiggins', // extremo sur de la Carretera Austral
+]
+
 // Mapa slug → nombre ES de la localidad, para armar búsquedas legibles.
 const NOMBRE_LOCALIDAD = Object.fromEntries(
   LOCALIDADES_SEED.map((l) => [l.slug, l.nombre.es])

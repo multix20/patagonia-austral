@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { I18nProvider, useI18n } from './i18n'
-import { CATEGORIAS, LOCALIDADES_DESTACADAS } from './data/places'
+import { CATEGORIAS, LOCALIDADES_DESTACADAS, LOCALIDADES_ROTULADAS } from './data/places'
 import { obtenerLugares, obtenerAvisos, obtenerLocalidades } from './api/client'
 import { activarPush, pushSoportado } from './push'
 import Icon from './components/Icon'
@@ -240,6 +240,12 @@ function AppInterna() {
     localidades.some((l) => l.slug === slug)
   )
 
+  // Localidades con etiqueta fija (segundo nivel: nombre visible siempre, sin el
+  // resalte coral). No repite las que ya son ancla.
+  const rotuladasSlugs = LOCALIDADES_ROTULADAS.filter(
+    (slug) => !destacadosSlugs.includes(slug) && localidades.some((l) => l.slug === slug)
+  )
+
   const noLeidos = avisos.filter((a) => !avisosVistos.includes(a.id)).length
 
   // ----- Acciones de navegación -----
@@ -313,6 +319,7 @@ function AppInterna() {
         localidades={localidades}
         lugares={lugaresLocalidad}
         destacados={destacadosSlugs}
+        rotuladas={rotuladasSlugs}
         filtro={filtro}
         localidadActiva={locActiva}
         onEntrarLocalidad={entrarLocalidad}

@@ -49,13 +49,16 @@ const ZOOM_ETIQUETAS = 8
 // Pines con área de toque real (iconSize/iconAnchor) para tap-targets correctos.
 // `loc.nombre` es bilingüe ({ es, en }): hay que rotular con el idioma activo,
 // nunca el objeto crudo (si no, se ve "[object Object]" en la etiqueta).
-function pinLocalidad(loc, destacado, lang) {
+function pinLocalidad(loc, destacado, rotulada, lang) {
   const nombre = loc.nombre?.[lang] ?? loc.nombre?.es ?? loc.nombre ?? ''
+  // 'rel' = ancla (coral + etiqueta prominente); 'fija' = etiqueta siempre
+  // visible con punto normal (segundo nivel de hitos).
+  const clase = destacado ? 'rel' : rotulada ? 'fija' : ''
   return L.divIcon({
     className: '',
     iconSize: [26, 26],
     iconAnchor: [13, 13],
-    html: `<div class="pin-loc ${destacado ? 'rel' : ''}"><div class="lbl">${nombre}</div><div class="dot"></div></div>`,
+    html: `<div class="pin-loc ${clase}"><div class="lbl">${nombre}</div><div class="dot"></div></div>`,
   })
 }
 
@@ -78,6 +81,7 @@ const MapView = forwardRef(function MapView(
     localidades,
     lugares,
     destacados = [],
+    rotuladas = [],
     filtro,
     localidadActiva,
     onEntrarLocalidad,
@@ -214,14 +218,14 @@ const MapView = forwardRef(function MapView(
     limpiarLoc()
     localidades.forEach((loc) => {
       const m = L.marker([loc.lat, loc.lng], {
-        icon: pinLocalidad(loc, destacados.includes(loc.slug), lang),
+        icon: pinLocalidad(loc, destacados.includes(loc.slug), rotuladas.includes(loc.slug), lang),
       })
         .addTo(mapa)
         .on('click', () => cbEntrar.current?.(loc.slug))
       locMarkersRef.current.push(m)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vista, localidades, destacados, lang])
+  }, [vista, localidades, destacados, rotuladas, lang])
 
   // Pines de categoría (vista 'localidad'), según filtro.
   useEffect(() => {
