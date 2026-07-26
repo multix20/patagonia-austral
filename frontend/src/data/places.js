@@ -166,7 +166,8 @@ export const LOCALIDADES_DESTACADAS = [
 // mapa no queda tan vacío sin descuadrar la jerarquía de las 4 destacadas.
 export const LOCALIDADES_ROTULADAS = [
   'la-junta', // nudo norte (cruce a Raúl Marín / Palena-Futaleufú)
-  'puyuhuapi', // hito norte (termas, Queulat)
+  // Puyuhuapi queda como localidad normal (etiqueta solo al acercar): está muy
+  // cerca de La Junta y sus rótulos fijos se encimaban en la vista general.
   'villa-ohiggins', // extremo sur de la Carretera Austral
 ]
 
