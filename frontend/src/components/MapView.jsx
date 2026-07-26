@@ -218,29 +218,39 @@ const MapView = forwardRef(function MapView(
     const grupo = L.featureGroup()
     RUTA7.forEach((seg) => {
       if (seg.tipo === 'barcaza') {
+        // Barcaza (ferry): parte de la Ruta 7 pero PUNTEADA para distinguir el
+        // cruce marítimo. Con más cuerpo que antes para acompañar el resalte.
         L.polyline(seg.puntos, {
           color: '#d85a30',
-          weight: 3,
-          opacity: 0.75,
-          dashArray: '1 10',
+          weight: 5,
+          opacity: 0.9,
+          dashArray: '2 12',
           lineCap: 'round',
         }).addTo(grupo)
       } else {
-        // Contorno blanco + línea naranja: efecto "ruta resaltada".
-        L.polyline(seg.puntos, {
-          color: '#ffffff',
-          weight: 8,
-          opacity: 0.9,
-          lineCap: 'round',
-          lineJoin: 'round',
-        }).addTo(grupo)
+        // La Ruta 7 como PROTAGONISTA del mapa: halo suave (la despega del fondo
+        // sin apagarlo) + contorno blanco + núcleo coral grueso.
         L.polyline(seg.puntos, {
           color: '#d85a30',
-          weight: 4.5,
+          weight: 14,
+          opacity: 0.2,
+          lineCap: 'round',
+          lineJoin: 'round',
+        }).addTo(grupo) // halo / glow
+        L.polyline(seg.puntos, {
+          color: '#ffffff',
+          weight: 9.5,
+          opacity: 0.95,
+          lineCap: 'round',
+          lineJoin: 'round',
+        }).addTo(grupo) // contorno blanco
+        L.polyline(seg.puntos, {
+          color: '#d85a30',
+          weight: 5.5,
           opacity: 1,
           lineCap: 'round',
           lineJoin: 'round',
-        }).addTo(grupo)
+        }).addTo(grupo) // núcleo coral
       }
     })
     rutaRef.current = grupo
