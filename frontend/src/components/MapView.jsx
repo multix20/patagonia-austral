@@ -17,14 +17,15 @@ import Icon, { iconoHTML } from './Icon'
 //      · CON key → COMBINA por zoom: lejos, Stadia "Stamen Terrain" (relieve con
 //        verde de bosque, estepa parda, agua celeste e hielos blancos → el look
 //        "vivo" tipo Google Maps); al ACERCAR (zoom ≥ ZOOM_CORTE_TERRENO) cede a
-//        CARTO Voyager, que sí trae calles y manzanas. El terreno es relieve, no
-//        callejero: precioso en la vista general, pero en un pueblo plano queda
-//        casi en blanco → por eso Voyager toma el detalle de cerca.
-//      · SIN key → solo CARTO Voyager (fallback): así el preview y el dev local
-//        siguen andando aunque falte la key (el mapa no se rompe).
-//    Ambas fuentes SIN rótulos de base: los nombres los ponen NUESTROS marcadores
-//    (anclas siempre; el resto al acercar), evitando el nombre duplicado. `{r}`
-//    pide teselas @2x (retina) → más nítido en el celular.
+//        Stadia `osm_bright`, un mapa CALLEJERO con nombres de calles, POIs y
+//        parques (calidad Google Maps). El terreno es relieve, no callejero:
+//        precioso en la vista general, pero en un pueblo plano queda casi en
+//        blanco → por eso las calles toman el detalle de cerca.
+//      · SIN key → solo CARTO Voyager sin rótulos (fallback): así el preview y el
+//        dev local siguen andando aunque falte la key (el mapa no se rompe).
+//    El terreno (lejos) va SIN rótulos: los nombres de localidad los ponen
+//    NUESTROS marcadores. Al acercar, `osm_bright` sí trae rótulos de calle/POI
+//    (lo que se busca). `{r}` pide teselas @2x (retina) → más nítido en el celular.
 //  - 'satelite' → Esri World Imagery: fotografía satelital de alto contraste,
 //    útil para ubicar geografía real (ríos, glaciares, sendas).
 // Todas quedan cacheadas por el service worker (reglas `carto-tiles`,
@@ -49,13 +50,26 @@ const TESELA_TERRENO = {
     maxZoom: 18,
   },
 }
+// Calles de calidad "Google Maps" para la cercanía (Stadia `osm_bright`): mapa
+// callejero colorido CON nombres de calles, POIs y parques — muy superior al
+// Voyager sin rótulos, que se veía pelado. Solo disponible con key de Stadia; sin
+// key se cae a Voyager (el fallback keyless de siempre).
+const TESELA_CALLES = STADIA_KEY
+  ? {
+      url: `https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png?api_key=${STADIA_KEY}`,
+      options: {
+        attribution: '© Stadia Maps © OpenMapTiles © OpenStreetMap',
+        maxZoom: 20,
+      },
+    }
+  : TESELA_VOYAGER
 
 const CAPAS = {
   mapa: STADIA_KEY
     ? [
-        // Terreno hasta el corte; Voyager (calles) de ahí en adelante.
+        // Terreno hasta el corte; calles osm_bright (con rótulos) de ahí en adelante.
         { ...TESELA_TERRENO, options: { ...TESELA_TERRENO.options, maxZoom: ZOOM_CORTE_TERRENO } },
-        { ...TESELA_VOYAGER, options: { ...TESELA_VOYAGER.options, minZoom: ZOOM_CORTE_TERRENO } },
+        { ...TESELA_CALLES, options: { ...TESELA_CALLES.options, minZoom: ZOOM_CORTE_TERRENO } },
       ]
     : [TESELA_VOYAGER],
   satelite: [
