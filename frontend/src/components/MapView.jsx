@@ -11,25 +11,44 @@ import Icon, { iconoHTML } from './Icon'
 // El control de "centrar en mi ubicación" se expone por ref para el rail de la app.
 
 // Capas base seleccionables por el usuario (botón de capas sobre el mapa):
-//  - 'mapa'     → CARTO Voyager SIN rótulos (`voyager_nolabels`): cartografía
-//    limpia y nítida, pero sin los nombres de pueblos/regiones del mapa base.
-//    Las etiquetas las ponen NUESTROS marcadores (localidades ancla siempre; el
-//    resto al acercar), así evitamos el nombre duplicado (pin + rótulo base) y el
-//    mapa gana limpieza. El placeholder `{r}` pide teselas @2x (retina) en
-//    pantallas de alta densidad → mucho más nítido en el celular.
+//  - 'mapa' → depende de si hay API key de Stadia (VITE_STADIA_API_KEY):
+//      · CON key → Stadia "Stamen Terrain" SIN rótulos (`stamen_terrain_background`):
+//        relieve con verde de bosque, estepa parda, agua celeste e hielos blancos
+//        → el look "vivo" tipo Google Maps que buscamos (el verde SÍ viene en la
+//        tesela, cosa que Voyager no daba).
+//      · SIN key → CARTO Voyager SIN rótulos (fallback): así el preview y el dev
+//        local siguen andando aunque falte la key (el mapa no se rompe).
+//    En ambos casos SIN rótulos de base: los nombres los ponen NUESTROS marcadores
+//    (anclas siempre; el resto al acercar), evitando el nombre duplicado. `{r}`
+//    pide teselas @2x (retina) → más nítido en el celular.
 //  - 'satelite' → Esri World Imagery: fotografía satelital de alto contraste,
 //    útil para ubicar geografía real (ríos, glaciares, sendas).
-// Ambas quedan cacheadas por el service worker (reglas `carto-tiles` y
-// `esri-tiles` en vite.config.js) para uso sin conexión.
+// Todas quedan cacheadas por el service worker (reglas `carto-tiles`,
+// `stadia-tiles` y `esri-tiles` en vite.config.js) para uso sin conexión.
+// La key de Stadia es una clave de CLIENTE (restringida por dominio en el panel de
+// Stadia), no un secreto de servidor; se inyecta en build (VITE_) como las demás.
+// NUNCA se commitea: vive en las env vars de Netlify (ver .env.example / DEPLOY.md).
+const STADIA_KEY = import.meta.env.VITE_STADIA_API_KEY || ''
+
+const CAPA_MAPA = STADIA_KEY
+  ? {
+      url: `https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png?api_key=${STADIA_KEY}`,
+      options: {
+        attribution: '© Stadia Maps © Stamen Design © OpenMapTiles © OpenStreetMap',
+        maxZoom: 18,
+      },
+    }
+  : {
+      url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
+      options: {
+        subdomains: 'abcd',
+        attribution: '© OpenStreetMap © CARTO',
+        maxZoom: 20,
+      },
+    }
+
 const CAPAS = {
-  mapa: {
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
-    options: {
-      subdomains: 'abcd',
-      attribution: '© OpenStreetMap © CARTO',
-      maxZoom: 20,
-    },
-  },
+  mapa: CAPA_MAPA,
   satelite: {
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     options: {
@@ -38,6 +57,10 @@ const CAPAS = {
     },
   },
 }
+
+// ¿El basemap "Mapa" activo es el de terreno (Stadia)? Se usa para elegir el
+// filtro de color correcto (el terreno ya viene vivo → filtro mínimo).
+const MAPA_ES_TERRENO = !!STADIA_KEY
 
 const CENTRO_RUTA = [-45.5, -72.6]
 
@@ -324,7 +347,7 @@ const MapView = forwardRef(function MapView(
     <>
       <div
         ref={contRef}
-        className={`mapa-full capa-${capa} ${etiquetasVisibles ? 'labels-on' : ''}`}
+        className={`mapa-full capa-${capa} ${MAPA_ES_TERRENO ? 'terreno' : ''} ${etiquetasVisibles ? 'labels-on' : ''}`}
       />
       <div
         className="mapa-capas"

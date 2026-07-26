@@ -1463,6 +1463,13 @@ h1 small {
 .mapa-full.capa-mapa .leaflet-tile-pane {
   filter: saturate(1.55) contrast(1.12) brightness(1.05);
 }
+/* Cuando el basemap "Mapa" es el de TERRENO (Stadia/Stamen), el color ya viene
+   vivo (verde de bosque, estepa parda, agua celeste): filtro casi neutro para no
+   recargarlo. Más específico que la regla de Voyager (+.terreno), así prevalece;
+   queda ANTES de la regla offline para que el gris sin conexión siga ganando. */
+.mapa-full.capa-mapa.terreno .leaflet-tile-pane {
+  filter: saturate(1.02) contrast(1.03) brightness(1.02);
+}
 /* Capa satélite con más contraste: subir la saturación intensifica justo lo que
    más satura la foto patagónica —el verde de la vegetación y el azul del océano,
    lagos y lagunas— mientras la roca y la nieve (poco saturadas) casi no cambian.
@@ -1496,16 +1503,9 @@ h1 small {
   border: 2px solid #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
-/* Localidades ancla (puertas de entrada): punto coral más grande con halo para
-   que resalten claramente por sobre las demás en la vista general de la ruta. */
-.pin-loc.rel .dot {
-  width: 14px;
-  height: 14px;
-  background: var(--claude);
-  box-shadow:
-    0 0 0 3px rgba(217, 119, 87, 0.28),
-    0 1px 4px rgba(0, 0, 0, 0.4);
-}
+/* Las localidades ancla ya NO llevan punto coral: usan el mismo punto verde que
+   el resto (mapa uniforme). Su jerarquía la da solo la etiqueta siempre visible
+   (ver .pin-loc.rel .lbl más abajo). */
 /* Etiqueta al COSTADO DERECHO del punto (no encima): así no tapa la ruta —que
    corre vertical por el centro— ni los puntos, y los rótulos cercanos dejan de
    encimarse. Estilo sobrio: píldora blanca fina, tipografía media, sombra suave

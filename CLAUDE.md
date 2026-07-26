@@ -17,7 +17,7 @@ desplegado por separado; no interferir con sus servicios).
 
 | Pieza | Dónde | Clave |
 |---|---|---|
-| PWA | Netlify | `netlify.toml`; vars `VITE_API_URL`, `VITE_VAPID_PUBLIC_KEY` (build-time: redeploy al cambiarlas) |
+| PWA | Netlify | `netlify.toml`; vars `VITE_API_URL`, `VITE_VAPID_PUBLIC_KEY`, `VITE_STADIA_API_KEY` (opcional, basemap terreno) (build-time: redeploy al cambiarlas) |
 | Backend | Render web service `patagonia-austral-api` | blueprint `render.yaml`; secretos con `sync: false` |
 | PostgreSQL | Neon (externa) | `DB_URL` como secreto en Render, con `?sslmode=require` |
 
