@@ -10,15 +10,19 @@ import Icon, { iconoHTML } from './Icon'
 //  - 'localidad': pines de categoría (gota) de los lugares del pueblo elegido.
 // El control de "centrar en mi ubicación" se expone por ref para el rail de la app.
 
-// Capas base seleccionables por el usuario (botón de capas sobre el mapa):
+// Capas base seleccionables por el usuario (botón de capas sobre el mapa). Cada
+// entrada de CAPAS es una LISTA de teselas, para poder combinar dos fuentes por
+// rango de zoom.
 //  - 'mapa' → depende de si hay API key de Stadia (VITE_STADIA_API_KEY):
-//      · CON key → Stadia "Stamen Terrain" SIN rótulos (`stamen_terrain_background`):
-//        relieve con verde de bosque, estepa parda, agua celeste e hielos blancos
-//        → el look "vivo" tipo Google Maps que buscamos (el verde SÍ viene en la
-//        tesela, cosa que Voyager no daba).
-//      · SIN key → CARTO Voyager SIN rótulos (fallback): así el preview y el dev
-//        local siguen andando aunque falte la key (el mapa no se rompe).
-//    En ambos casos SIN rótulos de base: los nombres los ponen NUESTROS marcadores
+//      · CON key → COMBINA por zoom: lejos, Stadia "Stamen Terrain" (relieve con
+//        verde de bosque, estepa parda, agua celeste e hielos blancos → el look
+//        "vivo" tipo Google Maps); al ACERCAR (zoom ≥ ZOOM_CORTE_TERRENO) cede a
+//        CARTO Voyager, que sí trae calles y manzanas. El terreno es relieve, no
+//        callejero: precioso en la vista general, pero en un pueblo plano queda
+//        casi en blanco → por eso Voyager toma el detalle de cerca.
+//      · SIN key → solo CARTO Voyager (fallback): así el preview y el dev local
+//        siguen andando aunque falte la key (el mapa no se rompe).
+//    Ambas fuentes SIN rótulos de base: los nombres los ponen NUESTROS marcadores
 //    (anclas siempre; el resto al acercar), evitando el nombre duplicado. `{r}`
 //    pide teselas @2x (retina) → más nítido en el celular.
 //  - 'satelite' → Esri World Imagery: fotografía satelital de alto contraste,
@@ -30,36 +34,44 @@ import Icon, { iconoHTML } from './Icon'
 // NUNCA se commitea: vive en las env vars de Netlify (ver .env.example / DEPLOY.md).
 const STADIA_KEY = import.meta.env.VITE_STADIA_API_KEY || ''
 
-const CAPA_MAPA = STADIA_KEY
-  ? {
-      url: `https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png?api_key=${STADIA_KEY}`,
-      options: {
-        attribution: '© Stadia Maps © Stamen Design © OpenMapTiles © OpenStreetMap',
-        maxZoom: 18,
-      },
-    }
-  : {
-      url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
-      options: {
-        subdomains: 'abcd',
-        attribution: '© OpenStreetMap © CARTO',
-        maxZoom: 20,
-      },
-    }
+// Zoom en que el basemap "Mapa" pasa de terreno (lejos) a calles (cerca).
+const ZOOM_CORTE_TERRENO = 11
 
-const CAPAS = {
-  mapa: CAPA_MAPA,
-  satelite: {
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    options: {
-      attribution: 'Imágenes © Esri, Maxar, Earthstar Geographics',
-      maxZoom: 19,
-    },
+// Teselas reutilizables (se combinan por rango de zoom en CAPAS.mapa).
+const TESELA_VOYAGER = {
+  url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
+  options: { subdomains: 'abcd', attribution: '© OpenStreetMap © CARTO', maxZoom: 20 },
+}
+const TESELA_TERRENO = {
+  url: `https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png?api_key=${STADIA_KEY}`,
+  options: {
+    attribution: '© Stadia Maps © Stamen Design © OpenMapTiles © OpenStreetMap',
+    maxZoom: 18,
   },
 }
 
-// ¿El basemap "Mapa" activo es el de terreno (Stadia)? Se usa para elegir el
-// filtro de color correcto (el terreno ya viene vivo → filtro mínimo).
+const CAPAS = {
+  mapa: STADIA_KEY
+    ? [
+        // Terreno hasta el corte; Voyager (calles) de ahí en adelante.
+        { ...TESELA_TERRENO, options: { ...TESELA_TERRENO.options, maxZoom: ZOOM_CORTE_TERRENO } },
+        { ...TESELA_VOYAGER, options: { ...TESELA_VOYAGER.options, minZoom: ZOOM_CORTE_TERRENO } },
+      ]
+    : [TESELA_VOYAGER],
+  satelite: [
+    {
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      options: {
+        attribution: 'Imágenes © Esri, Maxar, Earthstar Geographics',
+        maxZoom: 19,
+      },
+    },
+  ],
+}
+
+// ¿El basemap "Mapa" activo usa el terreno de Stadia? (para el filtro de color y
+// la clase `terreno`). El filtro casi neutro solo importa lejos, donde manda el
+// terreno; al acercar, Voyager se ve bien igual con ese filtro suave.
 const MAPA_ES_TERRENO = !!STADIA_KEY
 
 const CENTRO_RUTA = [-45.5, -72.6]
@@ -119,7 +131,7 @@ const MapView = forwardRef(function MapView(
 ) {
   const contRef = useRef(null)
   const mapaRef = useRef(null)
-  const tileRef = useRef(null)
+  const tileLayersRef = useRef([])
   const rutaRef = useRef(null)
   const locMarkersRef = useRef([])
   const catMarkersRef = useRef([])
@@ -164,7 +176,7 @@ const MapView = forwardRef(function MapView(
       mapa.off('zoomend', sincronizarEtiquetas)
       mapa.remove()
       mapaRef.current = null
-      tileRef.current = null
+      tileLayersRef.current = []
     }
   }, [])
 
@@ -172,11 +184,15 @@ const MapView = forwardRef(function MapView(
   useEffect(() => {
     const mapa = mapaRef.current
     if (!mapa) return
-    if (tileRef.current) mapa.removeLayer(tileRef.current)
-    const cfg = CAPAS[capa] || CAPAS.mapa
-    tileRef.current = L.tileLayer(cfg.url, cfg.options)
-    tileRef.current.setZIndex(0) // siempre por debajo de la ruta y los pines
-    tileRef.current.addTo(mapa)
+    tileLayersRef.current.forEach((l) => mapa.removeLayer(l))
+    tileLayersRef.current = []
+    const cfgs = CAPAS[capa] || CAPAS.mapa
+    cfgs.forEach((cfg) => {
+      const l = L.tileLayer(cfg.url, cfg.options)
+      l.setZIndex(0) // siempre por debajo de la ruta y los pines
+      l.addTo(mapa)
+      tileLayersRef.current.push(l)
+    })
   }, [capa])
 
   // Traza la Ruta 7 destacada (dato estático, una sola vez): línea naranja con
