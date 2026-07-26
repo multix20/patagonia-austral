@@ -70,9 +70,18 @@ Proyecto **personal/comercial propio**. Arquitectura del despliegue (todo gratis
    ```
    VITE_API_URL          = https://patagonia-austral-api.onrender.com
    VITE_VAPID_PUBLIC_KEY = (la VAPID_PUBLIC_KEY de render.yaml)
+   VITE_STADIA_API_KEY   = (API key de Stadia Maps; opcional)
    ```
    > `VITE_*` se resuelve en tiempo de build: si cambias una variable hay que
    > **Trigger deploy** para que la tome.
+   >
+   > **`VITE_STADIA_API_KEY`** (opcional): activa el basemap de terreno verde
+   > (Stamen Terrain) en la capa "Mapa". Se registra gratis en
+   > https://stadiamaps.com → crea una *Property* → **Authentication → API keys**.
+   > En el panel de Stadia, restringe la key a los dominios propios (la URL de
+   > Netlify y, si aplica, los `deploy-preview-*.netlify.app`). Es una clave de
+   > cliente restringida por dominio, no un secreto. Si se deja vacía, la capa
+   > "Mapa" cae de vuelta a CARTO Voyager (el mapa no se rompe).
 3. Si quieres URL fija: **Site configuration → Change site name** →
    `patagonia-austral` → queda `https://patagonia-austral.netlify.app`.
 4. **CORS**: la variable `FRONTEND_URL` del web service en Render debe ser

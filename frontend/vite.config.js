@@ -53,6 +53,16 @@ export default defineConfig({
             },
           },
           {
+            // Basemap de terreno Stadia/Stamen (capa "Mapa" cuando hay API key)
+            urlPattern: /^https:\/\/tiles\.stadiamaps\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'stadia-tiles',
+              expiration: { maxEntries: 800, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
             // Capa Satélite (Esri World Imagery)
             urlPattern: /^https:\/\/server\.arcgisonline\.com\/.*/i,
             handler: 'CacheFirst',
