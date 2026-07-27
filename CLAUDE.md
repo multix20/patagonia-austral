@@ -61,9 +61,14 @@ Historial y decisiones: `ESTADO_Y_PENDIENTES.md`. Roadmap (README):
   e identidad actualizada a "Puerto Montt a Villa O'Higgins".
 - **EN CURSO**: Fase 3 — arranca con **siembra gratis** (jul-2026): se publican
   los **10 alojamientos con mejores datos por localidad** (fuente SERNATUR),
-  y se quitaron los 44 "(ejemplo)" para sembrar solo con datos reales. Luego:
-  capa comercial (fichas destacadas, planes, analítica) + crowdsourcing tipo
-  Waze. Primeras fichas reales: los negocios del fundador.
+  y se quitaron los 44 "(ejemplo)" para sembrar solo con datos reales.
+  Desde el 27-jul-2026 rige **un servicio publicado por localidad y categoría**
+  (156 fichas = 26 × 6): el foco es la CALIDAD del dato antes del volumen. Lo que
+  sale de circulación queda con `publicado: false` (no se borra) y los cupos sin
+  dato real llevan una ficha `preliminar: true` sin teléfono, a reemplazar con
+  data oficial (correo a encargadas de turismo / dueños, o fuentes públicas).
+  Luego: capa comercial (fichas destacadas, planes, analítica) + crowdsourcing
+  tipo Waze. Primeras fichas reales: los negocios del fundador.
 - Fase 4 — Producción definitiva (dominio propio, S3, respaldos, monitoreo)
 
 **Datos de negocio**: ruta completa ~100.000–150.000 turistas/año (audiencia

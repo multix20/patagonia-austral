@@ -35,10 +35,14 @@ export async function obtenerLugares() {
   const locales = await leerLugares()
   if (locales.length > 0) return locales
 
-  // Primera visita: sembrar IndexedDB con el contenido crítico empaquetado
-  await guardarLugares(LUGARES_SEED)
+  // Primera visita: sembrar IndexedDB con el contenido crítico empaquetado.
+  // La semilla trae también los lugares despublicados (`publicado: false`) para
+  // no perder el contenido ya redactado, pero la app muestra lo mismo que sirve
+  // la API: un servicio publicado por localidad y categoría.
+  const publicados = LUGARES_SEED.filter((l) => l.publicado !== false)
+  await guardarLugares(publicados)
   await guardarMeta('actualizadoEl', Date.now())
-  return LUGARES_SEED
+  return publicados
 }
 
 // Avisos municipales, misma estrategia offline-first que los lugares.

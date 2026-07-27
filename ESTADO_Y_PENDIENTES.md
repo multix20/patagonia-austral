@@ -306,6 +306,46 @@ lugares nuevos en la fase). Cadena de `orden` norte→sur: 10 Puerto Montt …
 ### 5. Fase 3 — Capa comercial
 Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
 
+- **✅ Un servicio publicado por localidad y categoría (27-jul-2026):** con la
+  UX/UI ya pulida, el foco pasa al **dato**. El directorio queda en **156 fichas
+  publicadas = 26 localidades × 6 categorías**, una sola por cupo, para poder
+  salir a pedir la información oficial con un esqueleto parejo (correo a las
+  encargadas de turismo municipal, correo a los dueños de alojamiento/comida, o
+  extracción desde fuentes públicas / Google Maps).
+  - **Nada se borra:** los 75 lugares que salen de circulación quedan en
+    `places.json` / `places.js` con **`publicado: false`** (texto ya redactado,
+    listos para volver cuando se abra la mano). `PlaceSeeder` ahora respeta ese
+    flag en vez de forzar `publicado = true`.
+  - **Cupos vacíos → fichas `preliminar: true`** (ids **3001–3083**): nombre
+    verosímil **sin teléfono inventado**, con el texto diciendo que el dato está
+    por confirmar. Cubren dormir/comer/eventos donde no había nada. El seeder las
+    publica **solo si el cupo sigue vacío**, así un dato real (alojamiento
+    SERNATUR o ficha del CMS) siempre les gana.
+  - **Contenido real nuevo:** Raúl Marín Balmaceda y Balmaceda no tenían ningún
+    lugar cargado — ahora tienen atractivo, servicio y emergencia reales; se
+    sumaron también los `servicio` que faltaban en Puerto Río Tranquilo y Caleta
+    Tortel.
+  - **Criterio de selección:** se conserva el primer lugar redactado de cada
+    categoría (el orden va del más icónico al más secundario), salvo dos ajustes
+    (Villa Santa Lucía → lago Yelcho; Puerto Chacabuco → navegación al San
+    Rafael); en `servicio` gana el enlace de la ruta (barcaza/rampa/terminal)
+    cuando la localidad es un cruce, y el combustible/abastecimiento en el resto.
+    En `emergencia` gana siempre salud (hospital o posta) sobre Carabineros.
+  - **Producción:** migración `2026_07_27_000001_publicar_un_servicio_por_localidad`
+    (pasada única) normaliza lo que el seeder no toca —los ~100 alojamientos
+    SERNATUR (ids 2000+) y lo cargado a mano en el CMS— despublicando todo y
+    dejando un candidato por cupo (destacado → con teléfono → id más bajo). De ahí
+    en adelante manda el CMS.
+  - **Frontend:** `client.js` filtra `publicado !== false` al sembrar IndexedDB,
+    para que la semilla offline muestre lo mismo que sirve la API.
+  - **Verificado:** build + lint frontend OK, `php -l` OK, y simulación del par
+    migración + seeder (con lote SERNATUR y una ficha nueva del CMS): 156
+    publicados, exactamente 1 por cupo, idempotente al reiniciar el contenedor.
+  - **Pendiente (siguiente):** **segunda revisión de las 156 fichas** cuando
+    llegue el dato oficial — y con **fotos**, que el CMS todavía no permite subir
+    (ver el backlog: depende del almacenamiento S3/R2 de la Fase 4, porque el
+    disco de Render free es efímero).
+
 - **✅ Fichas destacadas — base implementada (21-jul-2026):** primer ladrillo de
   la capa comercial. Un lugar puede marcarse **destacado** y en la app aparece
   **primero dentro de su localidad** y con un **sello coral "Destacado/Featured"**.
@@ -384,6 +424,33 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
 > keep-alive con ping a `/up` cada ~10 min (cron-job.org).
 
 ### Backlog de features (anotar aquí las ideas; se priorizan al planificar)
+
+- **Fotos de las fichas + segunda revisión del contenido (anotado 27-jul-2026).**
+  Hoy el CMS **no** permite subir imágenes: la ficha se ve solo con degradado del
+  color de la categoría + icono grande (`.ficha-foto-ico`), y para un servicio
+  (dormir/comer) la foto es justo lo que el turista espera, como en Google Maps.
+  Pendiente doble: **(a)** habilitar imágenes en el CMS y en la app; **(b)** una
+  **segunda pasada sobre las 156 fichas** publicadas por la regla "un servicio por
+  localidad" (jul-2026) — reemplazar las `preliminar: true` por el dato oficial y,
+  ahí mismo, cargarles foto.
+  - **Bloqueo real → depende de la Fase 4:** en el plan free de Render el disco es
+    **efímero** (lo subido a `storage/app/public` se pierde en cada deploy o
+    reinicio), así que esto no se puede hacer "solo con Filament": necesita
+    almacenamiento de objetos **S3-compatible (Cloudflare R2, egress gratis)**, que
+    ya está anotado en la Fase 4. Sin eso, cualquier upload es humo.
+  - **Alcance técnico cuando se haga:** migración con la columna (`imagen` o
+    `imagenes` jsonb para varias + orden), `FileUpload` en `PlaceResource` con
+    conversión a WebP y límite de tamaño, `toApi()` devolviendo la URL pública,
+    y en el frontend la cabecera de `PlaceDetail` + miniatura en `QuickCard`
+    (ambos ya tienen el hueco donde hoy va el icono).
+  - **Ojo offline-first:** la PWA precachea el shell; las fotos NO deben entrar al
+    precache (regla del proyecto: peso inicial bajo, ~20 MB). Van con runtime
+    caching por demanda (`CacheFirst` con `maxEntries`/expiración, como las
+    teselas), y la ficha tiene que verse bien **sin** la foto cuando no hubo red
+    — el degradado + icono actual queda como respaldo, no se tira.
+  - **Fuente de las fotos:** propias o cedidas por el negocio (el correo a los
+    dueños puede pedirlas junto con los datos). **No** raspar imágenes de Google
+    Maps ni de sitios de terceros: son de sus autores y traen problema de licencia.
 
 - **Avisos segmentados por zona — diseño acordado (21-jul-2026), por construir.**
   Que la campanita/push avise de "actividades en tu zona" sin rastrear a nadie.

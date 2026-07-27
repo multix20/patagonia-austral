@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\DB;
 
 // Siembra el directorio turístico desde data/places.json y data/notices.json
 // (mismos datos semilla del frontend — mantener ambos archivos en espejo)
+//
+// Desde jul-2026 el JSON manda sobre el estado de publicación, siguiendo la regla
+// "un servicio publicado por localidad y categoría":
+//   - `"publicado": false` → la ficha se carga pero no se sirve por la API.
+//     Ausente → se publica (el caso normal).
+//   - `"preliminar": true` → cupo reservado con una ficha verosímil sin teléfono
+//     (dormir/comer/eventos sin dato real todavía). Se publica SOLO si en ese
+//     cupo (localidad + categoría) no hay ninguna otra ficha publicada, para que
+//     un dato real —p. ej. un alojamiento SERNATUR o algo cargado en el CMS—
+//     siempre le gane al relleno.
 class PlaceSeeder extends Seeder
 {
     public function run(): void
@@ -29,23 +39,26 @@ class PlaceSeeder extends Seeder
         // (LocalidadSeeder corre antes en DatabaseSeeder).
         $localidades = Localidad::pluck('id', 'slug');
 
+        // Primero las fichas normales; las preliminares al final, porque su
+        // publicación depende de si el cupo quedó ocupado por una ficha real.
+        $preliminares = [];
         foreach ($lugares as $l) {
-            Place::updateOrCreate(
-                ['id' => $l['id']],
-                [
-                    'cat' => $l['cat'],
-                    'lat' => $l['lat'],
-                    'lng' => $l['lng'],
-                    'tel' => $l['tel'] ?? null,
-                    'nombre' => $l['nombre'],
-                    'descripcion' => $l['desc'],
-                    'como' => $l['como'],
-                    'dist' => $l['dist'],
-                    'localidad_id' => $localidades[$l['localidad'] ?? 'cochrane'] ?? null,
-                    'publicado' => true,
-                    'destacado' => $l['destacado'] ?? false,
-                ]
-            );
+            if ($l['preliminar'] ?? false) {
+                $preliminares[] = $l;
+
+                continue;
+            }
+            $this->sembrar($l, $localidades, $l['publicado'] ?? true);
+        }
+
+        foreach ($preliminares as $l) {
+            $localidadId = $localidades[$l['localidad'] ?? 'cochrane'] ?? null;
+            $cupoOcupado = Place::where('localidad_id', $localidadId)
+                ->where('cat', $l['cat'])
+                ->where('publicado', true)
+                ->where('id', '!=', $l['id'])
+                ->exists();
+            $this->sembrar($l, $localidades, ! $cupoOcupado);
         }
 
         // Sembrar con ids explícitos no avanza la secuencia de PostgreSQL:
@@ -67,5 +80,26 @@ class PlaceSeeder extends Seeder
                 ]);
             }
         }
+    }
+
+    /** Crea o actualiza un lugar semilla con el estado de publicación indicado. */
+    private function sembrar(array $l, $localidades, bool $publicado): void
+    {
+        Place::updateOrCreate(
+            ['id' => $l['id']],
+            [
+                'cat' => $l['cat'],
+                'lat' => $l['lat'],
+                'lng' => $l['lng'],
+                'tel' => $l['tel'] ?? null,
+                'nombre' => $l['nombre'],
+                'descripcion' => $l['desc'],
+                'como' => $l['como'],
+                'dist' => $l['dist'],
+                'localidad_id' => $localidades[$l['localidad'] ?? 'cochrane'] ?? null,
+                'publicado' => $publicado,
+                'destacado' => $l['destacado'] ?? false,
+            ]
+        );
     }
 }

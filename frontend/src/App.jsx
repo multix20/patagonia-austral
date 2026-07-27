@@ -5,6 +5,7 @@ import {
   LOCALIDADES_DESTACADAS,
   LOCALIDADES_ROTULADAS,
   LOCALIDADES_MENORES,
+  ETIQUETAS_LOCALIDAD,
 } from './data/places'
 import { obtenerLugares, obtenerAvisos, obtenerLocalidades } from './api/client'
 import { activarPush, pushSoportado } from './push'
@@ -331,6 +332,7 @@ function AppInterna() {
         destacados={destacadosSlugs}
         rotuladas={rotuladasSlugs}
         menores={menoresSlugs}
+        etiquetas={ETIQUETAS_LOCALIDAD}
         filtro={filtro}
         localidadActiva={locActiva}
         onEntrarLocalidad={entrarLocalidad}
@@ -411,11 +413,15 @@ function AppInterna() {
             className={`cat-btn ${filtro === clave ? 'on' : ''}`}
             style={{ '--cc': c.color }}
             onClick={() => toggleCat(clave)}
+            // Barra solo de iconos: el nombre de la categoría deja de dibujarse
+            // (mapa más limpio) pero sigue disponible para lectores de pantalla
+            // y como tooltip al mantener el cursor.
+            aria-label={t(CAT_LABEL[clave])}
+            title={c.nombre[lang]}
           >
             <span className="cico">
-              <Icon nombre={c.icono} tam={18} />
+              <Icon nombre={c.icono} tam={22} />
             </span>
-            <span>{t(CAT_LABEL[clave])}</span>
           </button>
         ))}
       </nav>

@@ -103,13 +103,15 @@ const ZOOM_ETIQUETAS = 8
 //   'fija'  = hito de referencia (punto verde + etiqueta siempre visible)
 //   'menor' = sector/caserío (punto chico y apagado, poca notoriedad)
 //   ''      = localidad normal (punto verde, etiqueta solo al acercar)
-function pinLocalidad(loc, tier, lang) {
+// `extra` son clases de ajuste del rótulo ('izq', 'alta'): ver
+// ETIQUETAS_LOCALIDAD en data/places.js.
+function pinLocalidad(loc, tier, lang, extra = '') {
   const nombre = loc.nombre?.[lang] ?? loc.nombre?.es ?? loc.nombre ?? ''
   return L.divIcon({
     className: '',
     iconSize: [26, 26],
     iconAnchor: [13, 13],
-    html: `<div class="pin-loc ${tier}"><div class="lbl">${nombre}</div><div class="dot"></div></div>`,
+    html: `<div class="pin-loc ${tier} ${extra}"><div class="lbl">${nombre}</div><div class="dot"></div></div>`,
   })
 }
 
@@ -134,6 +136,7 @@ const MapView = forwardRef(function MapView(
     destacados = [],
     rotuladas = [],
     menores = [],
+    etiquetas = {},
     filtro,
     localidadActiva,
     onEntrarLocalidad,
@@ -290,13 +293,15 @@ const MapView = forwardRef(function MapView(
           : menores.includes(loc.slug)
             ? 'menor'
             : ''
-      const m = L.marker([loc.lat, loc.lng], { icon: pinLocalidad(loc, tier, lang) })
+      const m = L.marker([loc.lat, loc.lng], {
+        icon: pinLocalidad(loc, tier, lang, etiquetas[loc.slug] || ''),
+      })
         .addTo(mapa)
         .on('click', () => cbEntrar.current?.(loc.slug))
       locMarkersRef.current.push(m)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vista, localidades, destacados, rotuladas, menores, lang])
+  }, [vista, localidades, destacados, rotuladas, menores, etiquetas, lang])
 
   // Pines de categoría (vista 'localidad'), según filtro.
   useEffect(() => {
