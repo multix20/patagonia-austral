@@ -107,27 +107,31 @@ export const RUTA7 = [
       [-47.19, -72.63],
       [-47.2539, -72.5732], // Cochrane
       [-47.37, -72.62],
-      [-47.55, -72.9],
-      [-47.68, -73.12],
-      [-47.7583, -73.2264], // Puerto Yungay
+      [-47.52, -72.8],
+      [-47.64, -72.93],
+      [-47.716, -73.014], // Puerto Yungay (rampa de la barcaza)
     ],
   },
-  // Barcaza Puerto Yungay ↔ Río Bravo (Fiordo Mitchell)
+  // Barcaza Puerto Yungay ↔ Río Bravo (cruce del Fiordo Mitchell, ~45 min).
+  // OJO: coordenadas APROXIMADAS ajustadas a mano (Overpass/OSM no es alcanzable
+  // desde el entorno web). Para la geometría exacta, correr el script local
+  // scripts/ruta7/generar_ruta7.mjs. Antes la barcaza se trazaba como una larga
+  // diagonal desplazada al noreste, fuera del fiordo.
   {
     tipo: 'barcaza',
     puntos: [
-      [-47.7583, -73.2264],
-      [-47.86, -73.08],
-      [-47.9925, -73.0011],
+      [-47.716, -73.014], // Puerto Yungay
+      [-47.79, -72.95], // Río Bravo
     ],
   },
   // Río Bravo → Villa O'Higgins (fin de la Carretera Austral)
   {
     tipo: 'camino',
     puntos: [
-      [-47.9925, -73.0011],
-      [-48.13, -72.88],
-      [-48.28, -72.71],
+      [-47.79, -72.95], // Río Bravo
+      [-47.96, -72.85],
+      [-48.14, -72.74],
+      [-48.31, -72.63],
       [-48.4686, -72.5601], // Villa O'Higgins
     ],
   },
