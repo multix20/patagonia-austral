@@ -341,6 +341,10 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
   - **Verificado:** build + lint frontend OK, `php -l` OK, y simulación del par
     migración + seeder (con lote SERNATUR y una ficha nueva del CMS): 156
     publicados, exactamente 1 por cupo, idempotente al reiniciar el contenedor.
+  - **Pendiente (siguiente):** **segunda revisión de las 156 fichas** cuando
+    llegue el dato oficial — y con **fotos**, que el CMS todavía no permite subir
+    (ver el backlog: depende del almacenamiento S3/R2 de la Fase 4, porque el
+    disco de Render free es efímero).
 
 - **✅ Fichas destacadas — base implementada (21-jul-2026):** primer ladrillo de
   la capa comercial. Un lugar puede marcarse **destacado** y en la app aparece
@@ -420,6 +424,33 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
 > keep-alive con ping a `/up` cada ~10 min (cron-job.org).
 
 ### Backlog de features (anotar aquí las ideas; se priorizan al planificar)
+
+- **Fotos de las fichas + segunda revisión del contenido (anotado 27-jul-2026).**
+  Hoy el CMS **no** permite subir imágenes: la ficha se ve solo con degradado del
+  color de la categoría + icono grande (`.ficha-foto-ico`), y para un servicio
+  (dormir/comer) la foto es justo lo que el turista espera, como en Google Maps.
+  Pendiente doble: **(a)** habilitar imágenes en el CMS y en la app; **(b)** una
+  **segunda pasada sobre las 156 fichas** publicadas por la regla "un servicio por
+  localidad" (jul-2026) — reemplazar las `preliminar: true` por el dato oficial y,
+  ahí mismo, cargarles foto.
+  - **Bloqueo real → depende de la Fase 4:** en el plan free de Render el disco es
+    **efímero** (lo subido a `storage/app/public` se pierde en cada deploy o
+    reinicio), así que esto no se puede hacer "solo con Filament": necesita
+    almacenamiento de objetos **S3-compatible (Cloudflare R2, egress gratis)**, que
+    ya está anotado en la Fase 4. Sin eso, cualquier upload es humo.
+  - **Alcance técnico cuando se haga:** migración con la columna (`imagen` o
+    `imagenes` jsonb para varias + orden), `FileUpload` en `PlaceResource` con
+    conversión a WebP y límite de tamaño, `toApi()` devolviendo la URL pública,
+    y en el frontend la cabecera de `PlaceDetail` + miniatura en `QuickCard`
+    (ambos ya tienen el hueco donde hoy va el icono).
+  - **Ojo offline-first:** la PWA precachea el shell; las fotos NO deben entrar al
+    precache (regla del proyecto: peso inicial bajo, ~20 MB). Van con runtime
+    caching por demanda (`CacheFirst` con `maxEntries`/expiración, como las
+    teselas), y la ficha tiene que verse bien **sin** la foto cuando no hubo red
+    — el degradado + icono actual queda como respaldo, no se tira.
+  - **Fuente de las fotos:** propias o cedidas por el negocio (el correo a los
+    dueños puede pedirlas junto con los datos). **No** raspar imágenes de Google
+    Maps ni de sitios de terceros: son de sus autores y traen problema de licencia.
 
 - **Avisos segmentados por zona — diseño acordado (21-jul-2026), por construir.**
   Que la campanita/push avise de "actividades en tu zona" sin rastrear a nadie.
