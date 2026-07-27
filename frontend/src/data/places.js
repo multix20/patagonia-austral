@@ -168,8 +168,25 @@ export const LOCALIDADES_ROTULADAS = [
   'la-junta', // nudo norte (cruce a Raúl Marín / Palena-Futaleufú)
   // Puyuhuapi queda como localidad normal (etiqueta solo al acercar): está muy
   // cerca de La Junta y sus rótulos fijos se encimaban en la vista general.
+  'puerto-cisnes', // desvío costero de la Ruta X-25
+  'puerto-aysen', // Ruta 240, acceso a Chacabuco y los fiordos
+  'puerto-rio-tranquilo', // base de las Capillas de Mármol
+  'chile-chico', // ribera sur del lago General Carrera (etiqueta a la izquierda)
   'villa-ohiggins', // extremo sur de la Carretera Austral
 ]
+
+// Ajustes finos del rótulo del pin de localidad (slug → clases extra). Por
+// defecto el nombre va a la DERECHA del punto y a su misma altura; estas
+// excepciones evitan que dos rótulos vecinos se encimen en la vista general:
+//   'izq'  → el nombre va a la IZQUIERDA del punto
+//   'alta' → el nombre sube una línea
+export const ETIQUETAS_LOCALIDAD = {
+  // Casi a la misma latitud que Coyhaique: sin subirlo, los dos nombres chocan.
+  'puerto-aysen': 'alta',
+  // Pegado al borde este del lago General Carrera: a su derecha el nombre se iría
+  // sobre la frontera argentina, y a la altura del punto pisa a Río Tranquilo.
+  'chile-chico': 'izq alta',
+}
 
 // Tercer nivel: localidades "menores" que se conservan (con sus lugares) pero se
 // dibujan con poca notoriedad en el mapa — punto chico y apagado, sin etiqueta
@@ -210,6 +227,16 @@ export const CATEGORIAS = {
   emergencia: { nombre: { es: 'Emergencias', en: 'Emergencies' }, icono: 'cross', fondo: '#FCEBEB', color: '#A32D2D' },
 }
 
+// Directorio semilla. Desde jul-2026 rige la regla "UN SERVICIO PUBLICADO POR
+// LOCALIDAD Y CATEGORÍA" (26 localidades × 6 categorías = 156 fichas): la app se
+// enfoca en la calidad del dato antes de abrir la mano. Por eso:
+//   - `publicado: false` → la ficha se conserva aquí (texto ya redactado, listo
+//     para volver) pero NO se muestra ni la sirve la API. Ausente = publicada.
+//   - `preliminar: true` → cupo reservado con una ficha verosímil SIN teléfono
+//     (dormir, comer y eventos donde no hay dato real todavía). Se reemplaza en
+//     cuanto llegue la información oficial: correo a las encargadas de turismo,
+//     a los dueños de los servicios, o extracción desde fuentes públicas.
+//     En la BD se publica solo si el cupo está vacío (ver PlaceSeeder).
 export const LUGARES_SEED = [
   {
     id: 1, cat: 'atractivo', localidad: 'cochrane', lat: -47.133, lng: -72.706,
@@ -225,7 +252,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 2, cat: 'atractivo', localidad: 'cochrane', lat: -47.225, lng: -72.522, tel: '+56 67 252 2164',
+    id: 2, cat: 'atractivo', localidad: 'cochrane', lat: -47.225, lng: -72.522, tel: '+56 67 252 2164', publicado: false,
     nombre: { es: 'Reserva Nacional Lago Cochrane (Tamango)', en: 'Lago Cochrane National Reserve (Tamango)' },
     dist: { es: '6 km · 12 min en auto', en: '6 km · 12 min by car' },
     desc: {
@@ -238,7 +265,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 3, cat: 'atractivo', localidad: 'cochrane', lat: -47.11, lng: -72.48,
+    id: 3, cat: 'atractivo', localidad: 'cochrane', lat: -47.11, lng: -72.48, publicado: false,
     nombre: { es: 'Parque Nacional Patagonia — Valle Chacabuco', en: 'Patagonia National Park — Chacabuco Valley' },
     dist: { es: '28 km · 40 min en auto', en: '28 km · 40 min by car' },
     desc: {
@@ -251,7 +278,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 4, cat: 'atractivo', localidad: 'cochrane', lat: -47.2544, lng: -72.5741,
+    id: 4, cat: 'atractivo', localidad: 'cochrane', lat: -47.2544, lng: -72.5741, publicado: false,
     nombre: { es: 'Plaza de Armas de Cochrane', en: 'Cochrane Main Square' },
     dist: { es: 'En el centro', en: 'Downtown' },
     desc: {
@@ -274,7 +301,7 @@ export const LUGARES_SEED = [
     como: { es: 'Calle Río Maitén, salida norte del pueblo.', en: 'Río Maitén St., north exit of town.' },
   },
   {
-    id: 10, cat: 'servicio', localidad: 'cochrane', lat: -47.2542, lng: -72.5735, tel: '+56 67 252 2115',
+    id: 10, cat: 'servicio', localidad: 'cochrane', lat: -47.2542, lng: -72.5735, tel: '+56 67 252 2115', publicado: false,
     nombre: { es: 'Oficina de Información Turística', en: 'Tourist Information Office' },
     dist: { es: 'En la plaza', en: 'At the square' },
     desc: {
@@ -294,7 +321,7 @@ export const LUGARES_SEED = [
     como: { es: 'Avenida Dr. Steffens s/n.', en: 'Dr. Steffens Avenue.' },
   },
   {
-    id: 12, cat: 'emergencia', localidad: 'cochrane', lat: -47.2547, lng: -72.5729, tel: '133',
+    id: 12, cat: 'emergencia', localidad: 'cochrane', lat: -47.2547, lng: -72.5729, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Tenencia Cochrane', en: 'Police — Cochrane Station' },
     dist: { es: '150 m de la plaza', en: '150 m from the square' },
     desc: {
@@ -304,7 +331,7 @@ export const LUGARES_SEED = [
     como: { es: 'Calle Esmeralda 398.', en: 'Esmeralda St. 398.' },
   },
   {
-    id: 13, cat: 'emergencia', localidad: 'cochrane', lat: -47.2552, lng: -72.5745, tel: '132',
+    id: 13, cat: 'emergencia', localidad: 'cochrane', lat: -47.2552, lng: -72.5745, tel: '132', publicado: false,
     nombre: { es: 'Bomberos de Cochrane', en: 'Cochrane Fire Department' },
     dist: { es: '200 m de la plaza', en: '200 m from the square' },
     desc: {
@@ -324,7 +351,7 @@ export const LUGARES_SEED = [
     como: { es: 'Plaza de Armas y medialuna municipal.', en: 'Main square and municipal rodeo arena.' },
   },
   {
-    id: 15, cat: 'evento', localidad: 'cochrane', lat: -47.2542, lng: -72.5738,
+    id: 15, cat: 'evento', localidad: 'cochrane', lat: -47.2542, lng: -72.5738, publicado: false,
     nombre: { es: 'Feria de artesanía local', en: 'Local crafts fair' },
     dist: { es: 'En la plaza', en: 'At the square' },
     desc: {
@@ -333,8 +360,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'Costado norte de la Plaza de Armas.', en: 'North side of the main square.' },
   },
-
-  // ---- Puerto Río Tranquilo ----
   {
     id: 16, cat: 'atractivo', localidad: 'puerto-rio-tranquilo', lat: -46.6497, lng: -72.6252,
     nombre: { es: 'Capillas de Mármol', en: 'Marble Chapels (Capillas de Mármol)' },
@@ -349,7 +374,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 17, cat: 'atractivo', localidad: 'puerto-rio-tranquilo', lat: -46.509, lng: -73.174,
+    id: 17, cat: 'atractivo', localidad: 'puerto-rio-tranquilo', lat: -46.509, lng: -73.174, publicado: false,
     nombre: { es: 'Glaciar Exploradores (Valle Exploradores)', en: 'Exploradores Glacier (Exploradores Valley)' },
     dist: { es: '52 km · 1 h 30 min en auto', en: '52 km · 1.5 h by car' },
     desc: {
@@ -374,8 +399,6 @@ export const LUGARES_SEED = [
       en: 'In the town centre, next to the Carretera Austral.',
     },
   },
-
-  // ---- Caleta Tortel ----
   {
     id: 19, cat: 'atractivo', localidad: 'caleta-tortel', lat: -47.7967, lng: -73.536,
     nombre: { es: 'Pasarelas de Caleta Tortel', en: 'Caleta Tortel Boardwalks' },
@@ -390,7 +413,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 20, cat: 'atractivo', localidad: 'caleta-tortel', lat: -47.783, lng: -73.599,
+    id: 20, cat: 'atractivo', localidad: 'caleta-tortel', lat: -47.783, lng: -73.599, publicado: false,
     nombre: { es: 'Isla de los Muertos', en: 'Isla de los Muertos (Island of the Dead)' },
     dist: { es: '8 km · 40 min en lancha', en: '8 km · 40 min by boat' },
     desc: {
@@ -415,8 +438,6 @@ export const LUGARES_SEED = [
       en: 'Along the main boardwalk, central sector of town.',
     },
   },
-
-  // ---- Coyhaique ----
   {
     id: 22, cat: 'atractivo', localidad: 'coyhaique', lat: -45.532, lng: -72.032,
     nombre: { es: 'Reserva Nacional Coyhaique', en: 'Coyhaique National Reserve' },
@@ -431,7 +452,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 23, cat: 'atractivo', localidad: 'coyhaique', lat: -45.5719, lng: -72.0683,
+    id: 23, cat: 'atractivo', localidad: 'coyhaique', lat: -45.5719, lng: -72.0683, publicado: false,
     nombre: { es: 'Plaza de Armas pentagonal', en: 'Pentagonal Main Square' },
     dist: { es: 'En el centro', en: 'Downtown' },
     desc: {
@@ -444,7 +465,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 24, cat: 'atractivo', localidad: 'coyhaique', lat: -45.582, lng: -72.078,
+    id: 24, cat: 'atractivo', localidad: 'coyhaique', lat: -45.582, lng: -72.078, publicado: false,
     nombre: { es: 'Piedra del Indio (mirador del río Simpson)', en: 'Piedra del Indio (Simpson River viewpoint)' },
     dist: { es: '1,5 km · 20 min a pie', en: '1.5 km · 20 min on foot' },
     desc: {
@@ -480,7 +501,7 @@ export const LUGARES_SEED = [
     como: { es: 'Calle Dr. Jorge Ibar, sector poniente del centro.', en: 'Dr. Jorge Ibar St., west of downtown.' },
   },
   {
-    id: 29, cat: 'emergencia', localidad: 'coyhaique', lat: -45.5708, lng: -72.0662, tel: '133',
+    id: 29, cat: 'emergencia', localidad: 'coyhaique', lat: -45.5708, lng: -72.0662, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Comisaría Coyhaique', en: 'Police — Coyhaique Station' },
     dist: { es: 'En el centro', en: 'Downtown' },
     desc: {
@@ -489,8 +510,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'Sector céntrico, a cuadras de la Plaza de Armas.', en: 'Central area, blocks from the main square.' },
   },
-
-  // ---- Villa Cerro Castillo ----
   {
     id: 30, cat: 'atractivo', localidad: 'villa-cerro-castillo', lat: -46.113, lng: -72.179,
     nombre: { es: 'Sendero Laguna Cerro Castillo (P.N. Cerro Castillo)', en: 'Cerro Castillo Lagoon Trail (Cerro Castillo N.P.)' },
@@ -505,7 +524,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 31, cat: 'atractivo', localidad: 'villa-cerro-castillo', lat: -46.1295, lng: -72.152,
+    id: 31, cat: 'atractivo', localidad: 'villa-cerro-castillo', lat: -46.1295, lng: -72.152, publicado: false,
     nombre: { es: 'Paredón de las Manos', en: 'Paredón de las Manos (Wall of Hands)' },
     dist: { es: '3 km · 40 min a pie', en: '3 km · 40 min on foot' },
     desc: {
@@ -518,7 +537,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 32, cat: 'atractivo', localidad: 'villa-cerro-castillo', lat: -46.1223, lng: -72.1638,
+    id: 32, cat: 'atractivo', localidad: 'villa-cerro-castillo', lat: -46.1223, lng: -72.1638, publicado: false,
     nombre: { es: 'Museo Escuela (antigua escuela rural)', en: 'School Museum (old rural school)' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -548,7 +567,7 @@ export const LUGARES_SEED = [
     como: { es: 'Casco del pueblo.', en: 'Village centre.' },
   },
   {
-    id: 37, cat: 'emergencia', localidad: 'villa-cerro-castillo', lat: -46.1207, lng: -72.1642, tel: '133',
+    id: 37, cat: 'emergencia', localidad: 'villa-cerro-castillo', lat: -46.1207, lng: -72.1642, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Retén Cerro Castillo', en: 'Police — Cerro Castillo Outpost' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -557,8 +576,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'Junto a la calle principal.', en: 'By the main street.' },
   },
-
-  // ---- Chile Chico ----
   {
     id: 38, cat: 'atractivo', localidad: 'chile-chico', lat: -46.5378, lng: -71.7275,
     nombre: { es: 'Costanera del lago General Carrera', en: 'General Carrera Lake waterfront' },
@@ -570,7 +587,7 @@ export const LUGARES_SEED = [
     como: { es: 'Borde norte del pueblo, frente al lago.', en: 'Northern edge of town, facing the lake.' },
   },
   {
-    id: 39, cat: 'atractivo', localidad: 'chile-chico', lat: -46.82, lng: -72.0,
+    id: 39, cat: 'atractivo', localidad: 'chile-chico', lat: -46.82, lng: -72.0, publicado: false,
     nombre: { es: 'Reserva Nacional Lago Jeinimeni', en: 'Lago Jeinimeni National Reserve' },
     dist: { es: '52 km · 1 h 30 min en auto', en: '52 km · 1.5 h by car' },
     desc: {
@@ -583,7 +600,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 42, cat: 'servicio', localidad: 'chile-chico', lat: -46.5405, lng: -71.729,
+    id: 42, cat: 'servicio', localidad: 'chile-chico', lat: -46.5405, lng: -71.729, publicado: false,
     nombre: { es: 'Combustible y banco (BancoEstado)', en: 'Fuel and bank (BancoEstado)' },
     dist: { es: 'En el pueblo', en: 'In town' },
     desc: {
@@ -616,7 +633,7 @@ export const LUGARES_SEED = [
     como: { es: 'Sector oriente del pueblo.', en: 'Eastern sector of town.' },
   },
   {
-    id: 45, cat: 'emergencia', localidad: 'chile-chico', lat: -46.541, lng: -71.727, tel: '133',
+    id: 45, cat: 'emergencia', localidad: 'chile-chico', lat: -46.541, lng: -71.727, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Comisaría Chile Chico', en: 'Police — Chile Chico Station' },
     dist: { es: 'En el centro', en: 'Downtown' },
     desc: {
@@ -625,8 +642,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'Sector céntrico.', en: 'Central area.' },
   },
-
-  // ---- Puerto Guadal ----
   {
     id: 46, cat: 'atractivo', localidad: 'puerto-guadal', lat: -46.845, lng: -72.702,
     nombre: { es: 'Costanera y playas del lago General Carrera', en: 'General Carrera Lake waterfront and beaches' },
@@ -638,7 +653,7 @@ export const LUGARES_SEED = [
     como: { es: 'Borde del lago, junto al casco del pueblo.', en: 'Lakeshore, by the village centre.' },
   },
   {
-    id: 47, cat: 'atractivo', localidad: 'puerto-guadal', lat: -46.822, lng: -72.622,
+    id: 47, cat: 'atractivo', localidad: 'puerto-guadal', lat: -46.822, lng: -72.622, publicado: false,
     nombre: { es: 'Cascada Los Maquis', en: 'Los Maquis Waterfall' },
     dist: { es: '10 km · 20 min en auto + caminata corta', en: '10 km · 20 min by car + short walk' },
     desc: {
@@ -671,7 +686,7 @@ export const LUGARES_SEED = [
     como: { es: 'Casco del pueblo.', en: 'Village centre.' },
   },
   {
-    id: 52, cat: 'emergencia', localidad: 'puerto-guadal', lat: -46.8442, lng: -72.702, tel: '133',
+    id: 52, cat: 'emergencia', localidad: 'puerto-guadal', lat: -46.8442, lng: -72.702, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Retén Puerto Guadal', en: 'Police — Puerto Guadal Outpost' },
     dist: { es: 'En el pueblo', en: 'In town' },
     desc: {
@@ -680,8 +695,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'Casco del pueblo.', en: 'Village centre.' },
   },
-
-  // ---- Puerto Bertrand ----
   {
     id: 53, cat: 'atractivo', localidad: 'puerto-bertrand', lat: -47.028, lng: -72.82,
     nombre: { es: 'Nacimiento del río Baker', en: 'Source of the Baker River' },
@@ -696,7 +709,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 54, cat: 'atractivo', localidad: 'puerto-bertrand', lat: -47.022, lng: -72.824,
+    id: 54, cat: 'atractivo', localidad: 'puerto-bertrand', lat: -47.022, lng: -72.824, publicado: false,
     nombre: { es: 'Rafting y pesca en el río Baker', en: 'Rafting and fishing on the Baker River' },
     dist: { es: 'Desde el pueblo', en: 'From the village' },
     desc: {
@@ -729,7 +742,7 @@ export const LUGARES_SEED = [
     como: { es: 'Casco del pueblo.', en: 'Village centre.' },
   },
   {
-    id: 59, cat: 'emergencia', localidad: 'puerto-bertrand', lat: -47.0224, lng: -72.8244, tel: '133',
+    id: 59, cat: 'emergencia', localidad: 'puerto-bertrand', lat: -47.0224, lng: -72.8244, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Retén Puerto Bertrand', en: 'Police — Puerto Bertrand Outpost' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -738,8 +751,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'Junto a la calle principal.', en: 'By the main street.' },
   },
-
-  // ---- Villa O'Higgins ----
   {
     id: 60, cat: 'atractivo', localidad: 'villa-ohiggins', lat: -48.9, lng: -73.1,
     nombre: { es: 'Glaciar O’Higgins (navegación por el lago)', en: 'O’Higgins Glacier (lake cruise)' },
@@ -754,7 +765,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 61, cat: 'atractivo', localidad: 'villa-ohiggins', lat: -48.517, lng: -72.586,
+    id: 61, cat: 'atractivo', localidad: 'villa-ohiggins', lat: -48.517, lng: -72.586, publicado: false,
     nombre: { es: 'Fin de la Carretera Austral (Bahía Bahamóndez)', en: 'End of the Carretera Austral (Bahía Bahamóndez)' },
     dist: { es: '7 km · 15 min en auto', en: '7 km · 15 min by car' },
     desc: {
@@ -767,7 +778,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 62, cat: 'atractivo', localidad: 'villa-ohiggins', lat: -48.463, lng: -72.556,
+    id: 62, cat: 'atractivo', localidad: 'villa-ohiggins', lat: -48.463, lng: -72.556, publicado: false,
     nombre: { es: 'Mirador Cerro Santiago', en: 'Cerro Santiago Viewpoint' },
     dist: { es: '1 km · 45 min a pie', en: '1 km · 45 min on foot' },
     desc: {
@@ -797,7 +808,7 @@ export const LUGARES_SEED = [
     como: { es: 'Casco del pueblo.', en: 'Village centre.' },
   },
   {
-    id: 67, cat: 'emergencia', localidad: 'villa-ohiggins', lat: -48.4681, lng: -72.5594, tel: '133',
+    id: 67, cat: 'emergencia', localidad: 'villa-ohiggins', lat: -48.4681, lng: -72.5594, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Retén Villa O’Higgins', en: 'Police — Villa O’Higgins Outpost' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -806,11 +817,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'Casco del pueblo.', en: 'Village centre.' },
   },
-
-  // ── Fase 2.5 · Tramo norte ──────────────────────────────────────────────
-  // Puerto Aysén (ids 68-76) y Puerto Chacabuco (ids 77-82): desvío oeste por la
-  // Ruta 240 desde Coyhaique; el puerto marítimo y la puerta de entrada por mar
-  // de la Región de Aysén. Primeras localidades del tramo Coyhaique → Puerto Montt.
   {
     id: 68, cat: 'atractivo', localidad: 'puerto-aysen', lat: -45.403, lng: -72.7,
     nombre: { es: 'Puente Presidente Ibáñez', en: 'Presidente Ibáñez Bridge' },
@@ -825,7 +831,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 69, cat: 'atractivo', localidad: 'puerto-aysen', lat: -45.49, lng: -72.36,
+    id: 69, cat: 'atractivo', localidad: 'puerto-aysen', lat: -45.49, lng: -72.36, publicado: false,
     nombre: { es: 'Reserva Nacional Río Simpson', en: 'Río Simpson National Reserve' },
     dist: { es: '35 km · 30 min hacia Coyhaique', en: '35 km · 30 min toward Coyhaique' },
     desc: {
@@ -838,7 +844,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 70, cat: 'atractivo', localidad: 'puerto-aysen', lat: -45.46, lng: -72.63,
+    id: 70, cat: 'atractivo', localidad: 'puerto-aysen', lat: -45.46, lng: -72.63, publicado: false,
     nombre: { es: 'Laguna Los Palos', en: 'Los Palos Lagoon' },
     dist: { es: '18 km · 25 min en auto', en: '18 km · 25 min by car' },
     desc: {
@@ -851,7 +857,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 71, cat: 'atractivo', localidad: 'puerto-aysen', lat: -45.4033, lng: -72.6947,
+    id: 71, cat: 'atractivo', localidad: 'puerto-aysen', lat: -45.4033, lng: -72.6947, publicado: false,
     nombre: { es: 'Costanera y Plaza de Puerto Aysén', en: 'Puerto Aysén Riverfront & Main Square' },
     dist: { es: 'En el centro', en: 'Downtown' },
     desc: {
@@ -881,7 +887,7 @@ export const LUGARES_SEED = [
     como: { es: 'En la ciudad.', en: 'In town.' },
   },
   {
-    id: 76, cat: 'emergencia', localidad: 'puerto-aysen', lat: -45.4038, lng: -72.6952, tel: '133',
+    id: 76, cat: 'emergencia', localidad: 'puerto-aysen', lat: -45.4038, lng: -72.6952, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Puerto Aysén', en: 'Police — Puerto Aysén' },
     dist: { es: 'En el centro', en: 'Downtown' },
     desc: {
@@ -891,7 +897,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el centro.', en: 'Downtown.' },
   },
   {
-    id: 77, cat: 'atractivo', localidad: 'puerto-chacabuco', lat: -45.4667, lng: -72.8167,
+    id: 77, cat: 'atractivo', localidad: 'puerto-chacabuco', lat: -45.4667, lng: -72.8167, publicado: false,
     nombre: { es: 'Puerto Chacabuco', en: 'Puerto Chacabuco' },
     dist: { es: '15 km · 20 min desde Puerto Aysén', en: '15 km · 20 min from Puerto Aysén' },
     desc: {
@@ -936,10 +942,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'En el puerto.', en: 'At the port.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · Villa Mañihuales (ids 83-90) ────────────────
-  // Primer pueblo sobre la Ruta 7 al norte del cruce a Aysén; parada de
-  // servicios clave (combustible) en el largo tramo Coyhaique → La Junta.
   {
     id: 83, cat: 'atractivo', localidad: 'villa-manihuales', lat: -45.19, lng: -72.16,
     nombre: { es: 'Reserva Nacional Mañihuales', en: 'Mañihuales National Reserve' },
@@ -954,7 +956,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 84, cat: 'atractivo', localidad: 'villa-manihuales', lat: -45.212, lng: -72.156,
+    id: 84, cat: 'atractivo', localidad: 'villa-manihuales', lat: -45.212, lng: -72.156, publicado: false,
     nombre: { es: 'Río Mañihuales', en: 'Mañihuales River' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -967,7 +969,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 85, cat: 'atractivo', localidad: 'villa-manihuales', lat: -45.2103, lng: -72.1547,
+    id: 85, cat: 'atractivo', localidad: 'villa-manihuales', lat: -45.2103, lng: -72.1547, publicado: false,
     nombre: { es: 'Plaza e iglesia de Villa Mañihuales', en: 'Villa Mañihuales Square & Church' },
     dist: { es: 'En el centro', en: 'Downtown' },
     desc: {
@@ -997,7 +999,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo.', en: 'In the village.' },
   },
   {
-    id: 90, cat: 'emergencia', localidad: 'villa-manihuales', lat: -45.21, lng: -72.1549, tel: '133',
+    id: 90, cat: 'emergencia', localidad: 'villa-manihuales', lat: -45.21, lng: -72.1549, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Villa Mañihuales', en: 'Police — Villa Mañihuales' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -1006,10 +1008,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'En el pueblo.', en: 'In the village.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · Villa Amengual (ids 91-97) ──────────────────
-  // Pequeño pueblo de colonización sobre la Ruta 7, comuna de Cisnes; conocido
-  // por su iglesia de tejuela y como acceso a la Reserva Nacional Lago Las Torres.
   {
     id: 91, cat: 'atractivo', localidad: 'villa-amengual', lat: -44.7167, lng: -72.1667,
     nombre: { es: 'Iglesia de Villa Amengual', en: 'Villa Amengual Church' },
@@ -1021,7 +1019,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el centro, junto a la Ruta 7.', en: 'Downtown, along Route 7.' },
   },
   {
-    id: 92, cat: 'atractivo', localidad: 'villa-amengual', lat: -44.95, lng: -72.05,
+    id: 92, cat: 'atractivo', localidad: 'villa-amengual', lat: -44.95, lng: -72.05, publicado: false,
     nombre: { es: 'Reserva Nacional Lago Las Torres', en: 'Lago Las Torres National Reserve' },
     dist: { es: '28 km · 30 min al sur', en: '28 km · 30 min south' },
     desc: {
@@ -1034,7 +1032,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 93, cat: 'atractivo', localidad: 'villa-amengual', lat: -44.71, lng: -72.17,
+    id: 93, cat: 'atractivo', localidad: 'villa-amengual', lat: -44.71, lng: -72.17, publicado: false,
     nombre: { es: 'Mirador Cerro Pirámide', en: 'Cerro Pirámide Viewpoint' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -1066,11 +1064,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'En el pueblo.', en: 'In the village.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · Puerto Cisnes (ids 98-106) ──────────────────
-  // Capital de la comuna de Cisnes, en la costa del canal Puyuhuapi; se llega por
-  // un desvío oeste (~35 km) desde la Ruta 7. Pueblo pesquero, río Cisnes (pesca
-  // con mosca de clase mundial) y acceso al Parque Nacional Isla Magdalena.
   {
     id: 98, cat: 'atractivo', localidad: 'puerto-cisnes', lat: -44.743, lng: -72.69,
     nombre: { es: 'Costanera y puerto de Puerto Cisnes', en: 'Puerto Cisnes Waterfront & Harbour' },
@@ -1082,7 +1075,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el centro, frente al mar.', en: 'Downtown, on the seafront.' },
   },
   {
-    id: 99, cat: 'atractivo', localidad: 'puerto-cisnes', lat: -44.72, lng: -72.4,
+    id: 99, cat: 'atractivo', localidad: 'puerto-cisnes', lat: -44.72, lng: -72.4, publicado: false,
     nombre: { es: 'Piedra del Gato', en: 'Piedra del Gato' },
     dist: { es: 'En el camino de acceso', en: 'On the access road' },
     desc: {
@@ -1095,7 +1088,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 100, cat: 'atractivo', localidad: 'puerto-cisnes', lat: -44.74, lng: -72.55,
+    id: 100, cat: 'atractivo', localidad: 'puerto-cisnes', lat: -44.74, lng: -72.55, publicado: false,
     nombre: { es: 'Río Cisnes', en: 'Cisnes River' },
     dist: { es: 'En la ruta de acceso', en: 'On the access road' },
     desc: {
@@ -1108,7 +1101,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 101, cat: 'atractivo', localidad: 'puerto-cisnes', lat: -44.7, lng: -72.9,
+    id: 101, cat: 'atractivo', localidad: 'puerto-cisnes', lat: -44.7, lng: -72.9, publicado: false,
     nombre: { es: 'Parque Nacional Isla Magdalena', en: 'Isla Magdalena National Park' },
     dist: { es: 'En bote desde el puerto', en: 'By boat from the harbour' },
     desc: {
@@ -1141,7 +1134,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo.', en: 'In town.' },
   },
   {
-    id: 106, cat: 'emergencia', localidad: 'puerto-cisnes', lat: -44.7422, lng: -72.6888, tel: '133',
+    id: 106, cat: 'emergencia', localidad: 'puerto-cisnes', lat: -44.7422, lng: -72.6888, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Puerto Cisnes', en: 'Police — Puerto Cisnes' },
     dist: { es: 'En el centro', en: 'Downtown' },
     desc: {
@@ -1150,10 +1143,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'En el centro.', en: 'Downtown.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · Puyuhuapi (ids 107-115) ─────────────────────
-  // Pueblo de herencia alemana (1935) en la cabecera del fiordo Puyuhuapi;
-  // puerta de entrada al Parque Nacional Queulat y su Ventisquero Colgante.
   {
     id: 107, cat: 'atractivo', localidad: 'puyuhuapi', lat: -44.4989, lng: -72.5486,
     nombre: { es: 'Parque Nacional Queulat — Ventisquero Colgante', en: 'Queulat National Park — Hanging Glacier' },
@@ -1168,7 +1157,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 108, cat: 'atractivo', localidad: 'puyuhuapi', lat: -44.39, lng: -72.55,
+    id: 108, cat: 'atractivo', localidad: 'puyuhuapi', lat: -44.39, lng: -72.55, publicado: false,
     nombre: { es: 'Termas del Ventisquero', en: 'Ventisquero Hot Springs' },
     dist: { es: '6 km · 10 min al sur', en: '6 km · 10 min south' },
     desc: {
@@ -1181,7 +1170,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 109, cat: 'atractivo', localidad: 'puyuhuapi', lat: -44.3286, lng: -72.5567,
+    id: 109, cat: 'atractivo', localidad: 'puyuhuapi', lat: -44.3286, lng: -72.5567, publicado: false,
     nombre: { es: 'Fiordo y pueblo de Puyuhuapi', en: 'Puyuhuapi Fjord & Village' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -1191,7 +1180,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo, sobre la Ruta 7.', en: 'In the village, on Route 7.' },
   },
   {
-    id: 110, cat: 'atractivo', localidad: 'puyuhuapi', lat: -44.328, lng: -72.557,
+    id: 110, cat: 'atractivo', localidad: 'puyuhuapi', lat: -44.328, lng: -72.557, publicado: false,
     nombre: { es: 'Fábrica de Alfombras Puyuhuapi', en: 'Puyuhuapi Carpet Factory' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -1221,7 +1210,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo.', en: 'In the village.' },
   },
   {
-    id: 115, cat: 'emergencia', localidad: 'puyuhuapi', lat: -44.3284, lng: -72.5564, tel: '133',
+    id: 115, cat: 'emergencia', localidad: 'puyuhuapi', lat: -44.3284, lng: -72.5564, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Puyuhuapi', en: 'Police — Puyuhuapi' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -1230,11 +1219,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'En el pueblo.', en: 'In the village.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · La Junta (ids 116-124) ──────────────────────
-  // Pueblo en el cruce de la Ruta 7 con el camino a Raúl Marín Balmaceda (costa),
-  // en la confluencia de los ríos Rosselot y Palena. Última parada de servicios
-  // confiables de la Región de Aysén antes de cruzar a Los Lagos.
   {
     id: 116, cat: 'atractivo', localidad: 'la-junta', lat: -43.98, lng: -72.28,
     nombre: { es: 'Reserva Nacional Lago Rosselot', en: 'Lago Rosselot National Reserve' },
@@ -1249,7 +1233,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 117, cat: 'atractivo', localidad: 'la-junta', lat: -43.982, lng: -72.41,
+    id: 117, cat: 'atractivo', localidad: 'la-junta', lat: -43.982, lng: -72.41, publicado: false,
     nombre: { es: 'Confluencia de los ríos Rosselot y Palena', en: 'Rosselot & Palena Rivers Confluence' },
     dist: { es: '3 km · 5 min', en: '3 km · 5 min' },
     desc: {
@@ -1259,7 +1243,7 @@ export const LUGARES_SEED = [
     como: { es: 'A pasos del pueblo, señalizado.', en: 'Just outside town, signposted.' },
   },
   {
-    id: 118, cat: 'atractivo', localidad: 'la-junta', lat: -43.99, lng: -72.42,
+    id: 118, cat: 'atractivo', localidad: 'la-junta', lat: -43.99, lng: -72.42, publicado: false,
     nombre: { es: 'Río Palena', en: 'Palena River' },
     dist: { es: 'Junto al pueblo', en: 'Next to town' },
     desc: {
@@ -1272,7 +1256,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 119, cat: 'atractivo', localidad: 'la-junta', lat: -43.78, lng: -72.96,
+    id: 119, cat: 'atractivo', localidad: 'la-junta', lat: -43.78, lng: -72.96, publicado: false,
     nombre: { es: 'Desvío a Raúl Marín Balmaceda', en: 'Detour to Raúl Marín Balmaceda' },
     dist: { es: '74 km · 1 h 30 al oeste', en: '74 km · 1 h 30 west' },
     desc: {
@@ -1305,7 +1289,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo.', en: 'In town.' },
   },
   {
-    id: 124, cat: 'emergencia', localidad: 'la-junta', lat: -43.9754, lng: -72.406, tel: '133',
+    id: 124, cat: 'emergencia', localidad: 'la-junta', lat: -43.9754, lng: -72.406, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — La Junta', en: 'Police — La Junta' },
     dist: { es: 'En el centro', en: 'Downtown' },
     desc: {
@@ -1314,13 +1298,8 @@ export const LUGARES_SEED = [
     },
     como: { es: 'En el centro.', en: 'Downtown.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · Villa Santa Lucía (ids 125-132) ─────────────
-  // Primera localidad de la Región de Los Lagos subiendo desde La Junta; cruce
-  // de la Ruta 7 con el camino que se bifurca en Puerto Ramírez hacia Futaleufú
-  // y Palena. Reconstruida tras el aluvión de diciembre de 2017.
   {
-    id: 125, cat: 'atractivo', localidad: 'villa-santa-lucia', lat: -43.4167, lng: -72.3667,
+    id: 125, cat: 'atractivo', localidad: 'villa-santa-lucia', lat: -43.4167, lng: -72.3667, publicado: false,
     nombre: { es: 'Villa Santa Lucía — el cruce', en: 'Villa Santa Lucía — the junction' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -1343,7 +1322,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 127, cat: 'atractivo', localidad: 'villa-santa-lucia', lat: -43.36, lng: -72.42,
+    id: 127, cat: 'atractivo', localidad: 'villa-santa-lucia', lat: -43.36, lng: -72.42, publicado: false,
     nombre: { es: 'Sendero Ventisquero Yelcho', en: 'Yelcho Glacier Trail' },
     dist: { es: '20 km · 30 min al norte', en: '20 km · 30 min north' },
     desc: {
@@ -1376,7 +1355,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo.', en: 'In the village.' },
   },
   {
-    id: 132, cat: 'emergencia', localidad: 'villa-santa-lucia', lat: -43.4164, lng: -72.3664, tel: '133',
+    id: 132, cat: 'emergencia', localidad: 'villa-santa-lucia', lat: -43.4164, lng: -72.3664, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Villa Santa Lucía', en: 'Police — Villa Santa Lucía' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -1385,11 +1364,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'En el pueblo.', en: 'In the village.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · Futaleufú (ids 133-141) ─────────────────────
-  // Desvío este desde Villa Santa Lucía (vía Puerto Ramírez); pueblo cordillerano
-  // junto a uno de los ríos de aguas blancas más famosos del mundo y paso
-  // fronterizo hacia Esquel/Trevelin (Argentina).
   {
     id: 133, cat: 'atractivo', localidad: 'futaleufu', lat: -43.19, lng: -71.9,
     nombre: { es: 'Río Futaleufú — rafting y kayak', en: 'Futaleufú River — rafting & kayaking' },
@@ -1404,7 +1378,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 134, cat: 'atractivo', localidad: 'futaleufu', lat: -43.2, lng: -71.95,
+    id: 134, cat: 'atractivo', localidad: 'futaleufu', lat: -43.2, lng: -71.95, publicado: false,
     nombre: { es: 'Lago Espolón', en: 'Espolón Lake' },
     dist: { es: '8 km · 15 min', en: '8 km · 15 min' },
     desc: {
@@ -1417,7 +1391,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 135, cat: 'atractivo', localidad: 'futaleufu', lat: -43.25, lng: -71.85,
+    id: 135, cat: 'atractivo', localidad: 'futaleufu', lat: -43.25, lng: -71.85, publicado: false,
     nombre: { es: 'Reserva Nacional Futaleufú', en: 'Futaleufú National Reserve' },
     dist: { es: '10 km · 20 min al sur', en: '10 km · 20 min south' },
     desc: {
@@ -1430,7 +1404,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 136, cat: 'atractivo', localidad: 'futaleufu', lat: -43.18, lng: -71.8,
+    id: 136, cat: 'atractivo', localidad: 'futaleufu', lat: -43.18, lng: -71.8, publicado: false,
     nombre: { es: 'Paso fronterizo Futaleufú (Argentina)', en: 'Futaleufú border crossing (Argentina)' },
     dist: { es: '10 km · 15 min al este', en: '10 km · 15 min east' },
     desc: {
@@ -1463,7 +1437,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo.', en: 'In town.' },
   },
   {
-    id: 141, cat: 'emergencia', localidad: 'futaleufu', lat: -43.1846, lng: -71.8694, tel: '133',
+    id: 141, cat: 'emergencia', localidad: 'futaleufu', lat: -43.1846, lng: -71.8694, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Futaleufú', en: 'Police — Futaleufú' },
     dist: { es: 'En el pueblo', en: 'In town' },
     desc: {
@@ -1472,11 +1446,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'En el pueblo.', en: 'In town.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · Palena (ids 142-149) ────────────────────────
-  // Desvío este desde Villa Santa Lucía (ramal sur en Puerto Ramírez); pueblo
-  // ganadero y huaso del alto valle del río Palena, con paso fronterizo
-  // Río Encuentro hacia Argentina.
   {
     id: 142, cat: 'atractivo', localidad: 'palena', lat: -43.6167, lng: -71.8,
     nombre: { es: 'Palena — pueblo huaso y su rodeo', en: 'Palena — cowboy village & rodeo' },
@@ -1488,7 +1457,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo; la medialuna está junto al casco.', en: 'In the village; the rodeo ring sits by the centre.' },
   },
   {
-    id: 143, cat: 'atractivo', localidad: 'palena', lat: -43.6, lng: -71.85,
+    id: 143, cat: 'atractivo', localidad: 'palena', lat: -43.6, lng: -71.85, publicado: false,
     nombre: { es: 'Alto río Palena — valle y cabalgatas', en: 'Upper Palena River — valley & horse rides' },
     dist: { es: 'En torno al pueblo', en: 'Around the village' },
     desc: {
@@ -1501,7 +1470,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 144, cat: 'atractivo', localidad: 'palena', lat: -43.63, lng: -71.73,
+    id: 144, cat: 'atractivo', localidad: 'palena', lat: -43.63, lng: -71.73, publicado: false,
     nombre: { es: 'Paso fronterizo Río Encuentro (Argentina)', en: 'Río Encuentro border crossing (Argentina)' },
     dist: { es: '8 km · 15 min al este', en: '8 km · 15 min east' },
     desc: {
@@ -1534,7 +1503,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo.', en: 'In the village.' },
   },
   {
-    id: 149, cat: 'emergencia', localidad: 'palena', lat: -43.6164, lng: -71.7998, tel: '133',
+    id: 149, cat: 'emergencia', localidad: 'palena', lat: -43.6164, lng: -71.7998, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Palena', en: 'Police — Palena' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -1543,10 +1512,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'En el pueblo.', en: 'In the village.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · Chaitén (ids 150-158) ───────────────────────
-  // Capital de la comuna y puerta marítima del tramo norte: ferries a Puerto
-  // Montt y a Chiloé. Reconstruida tras la erupción del volcán Chaitén (2008).
   {
     id: 150, cat: 'atractivo', localidad: 'chaiten', lat: -42.837, lng: -72.647,
     nombre: { es: 'Volcán Chaitén — sendero al cráter', en: 'Chaitén Volcano — crater trail' },
@@ -1561,7 +1526,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 151, cat: 'atractivo', localidad: 'chaiten', lat: -42.9169, lng: -72.7086,
+    id: 151, cat: 'atractivo', localidad: 'chaiten', lat: -42.9169, lng: -72.7086, publicado: false,
     nombre: { es: 'Costanera de Chaitén', en: 'Chaitén Waterfront' },
     dist: { es: 'En el pueblo', en: 'In town' },
     desc: {
@@ -1571,7 +1536,7 @@ export const LUGARES_SEED = [
     como: { es: 'Frente al pueblo.', en: 'Along the town shore.' },
   },
   {
-    id: 152, cat: 'atractivo', localidad: 'chaiten', lat: -42.87, lng: -72.78,
+    id: 152, cat: 'atractivo', localidad: 'chaiten', lat: -42.87, lng: -72.78, publicado: false,
     nombre: { es: 'Playa Santa Bárbara', en: 'Santa Bárbara Beach' },
     dist: { es: '10 km · 15 min al norte', en: '10 km · 15 min north' },
     desc: {
@@ -1594,7 +1559,7 @@ export const LUGARES_SEED = [
     como: { es: 'Rampa en la costanera del pueblo.', en: 'Ramp on the town waterfront.' },
   },
   {
-    id: 154, cat: 'servicio', localidad: 'chaiten', lat: -42.9165, lng: -72.708,
+    id: 154, cat: 'servicio', localidad: 'chaiten', lat: -42.9165, lng: -72.708, publicado: false,
     nombre: { es: 'Combustible y servicios', en: 'Fuel and services' },
     dist: { es: 'En el pueblo', en: 'In town' },
     desc: {
@@ -1614,7 +1579,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo.', en: 'In town.' },
   },
   {
-    id: 158, cat: 'emergencia', localidad: 'chaiten', lat: -42.9171, lng: -72.7088, tel: '133',
+    id: 158, cat: 'emergencia', localidad: 'chaiten', lat: -42.9171, lng: -72.7088, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Chaitén', en: 'Police — Chaitén' },
     dist: { es: 'En el pueblo', en: 'In town' },
     desc: {
@@ -1623,10 +1588,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'En el centro.', en: 'Downtown.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · El Amarillo (ids 159-165) ───────────────────
-  // Aldea al pie del volcán Michinmahuida, 25 km al sureste de Chaitén; portal
-  // sur del Parque Nacional Pumalín y sus termas.
   {
     id: 159, cat: 'atractivo', localidad: 'el-amarillo', lat: -42.92, lng: -72.5,
     nombre: { es: 'P.N. Pumalín — portal El Amarillo', en: 'Pumalín N.P. — El Amarillo gateway' },
@@ -1641,7 +1602,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 160, cat: 'atractivo', localidad: 'el-amarillo', lat: -42.9, lng: -72.46,
+    id: 160, cat: 'atractivo', localidad: 'el-amarillo', lat: -42.9, lng: -72.46, publicado: false,
     nombre: { es: 'Termas El Amarillo', en: 'El Amarillo Hot Springs' },
     dist: { es: '5 km · 10 min', en: '5 km · 10 min' },
     desc: {
@@ -1654,7 +1615,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 161, cat: 'atractivo', localidad: 'el-amarillo', lat: -42.89, lng: -72.43,
+    id: 161, cat: 'atractivo', localidad: 'el-amarillo', lat: -42.89, lng: -72.43, publicado: false,
     nombre: { es: 'Volcán Michinmahuida y su ventisquero', en: 'Michinmahuida Volcano & Glacier' },
     dist: { es: 'Sendero desde el portal', en: 'Trail from the gateway' },
     desc: {
@@ -1686,11 +1647,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'En la aldea.', en: 'In the hamlet.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · Caleta Gonzalo / P.N. Pumalín (ids 166-172) ─
-  // Corazón del Parque Nacional Pumalín Douglas Tompkins y rampa sur del cruce
-  // bimodal en barcaza hacia Hornopirén. No es un pueblo: infraestructura de
-  // parque y naturaleza en estado puro.
   {
     id: 166, cat: 'atractivo', localidad: 'caleta-gonzalo', lat: -42.5633, lng: -72.5989,
     nombre: { es: 'Parque Nacional Pumalín Douglas Tompkins', en: 'Pumalín Douglas Tompkins National Park' },
@@ -1702,7 +1658,7 @@ export const LUGARES_SEED = [
     como: { es: 'La Ruta 7 cruza el parque; portería en la caleta.', en: 'Route 7 crosses the park; gatehouse at the cove.' },
   },
   {
-    id: 167, cat: 'atractivo', localidad: 'caleta-gonzalo', lat: -42.58, lng: -72.6,
+    id: 167, cat: 'atractivo', localidad: 'caleta-gonzalo', lat: -42.58, lng: -72.6, publicado: false,
     nombre: { es: 'Sendero Cascadas', en: 'Cascadas Trail' },
     dist: { es: 'Desde la caleta', en: 'From the cove' },
     desc: {
@@ -1712,7 +1668,7 @@ export const LUGARES_SEED = [
     como: { es: 'Inicio junto a la caleta.', en: 'Trailhead by the cove.' },
   },
   {
-    id: 168, cat: 'atractivo', localidad: 'caleta-gonzalo', lat: -42.63, lng: -72.6,
+    id: 168, cat: 'atractivo', localidad: 'caleta-gonzalo', lat: -42.63, lng: -72.6, publicado: false,
     nombre: { es: 'Sendero Alerces', en: 'Alerces Trail' },
     dist: { es: '12 km · 15 min al sur', en: '12 km · 15 min south' },
     desc: {
@@ -1761,10 +1717,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'Portería del parque, en la caleta.', en: 'Park gatehouse, at the cove.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · Hornopirén (ids 173-181) ────────────────────
-  // Capital de la comuna de Hualaihué, entre fiordos y volcanes; rampa norte del
-  // cruce bimodal a Caleta Gonzalo y base del P.N. Hornopirén.
   {
     id: 173, cat: 'atractivo', localidad: 'hornopiren', lat: -41.9, lng: -72.3,
     nombre: { es: 'Parque Nacional Hornopirén', en: 'Hornopirén National Park' },
@@ -1779,7 +1731,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 174, cat: 'atractivo', localidad: 'hornopiren', lat: -42.0, lng: -72.5,
+    id: 174, cat: 'atractivo', localidad: 'hornopiren', lat: -42.0, lng: -72.5, publicado: false,
     nombre: { es: 'Termas de Llancahué', en: 'Llancahué Hot Springs' },
     dist: { es: 'En bote desde el pueblo', en: 'By boat from town' },
     desc: {
@@ -1792,7 +1744,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 175, cat: 'atractivo', localidad: 'hornopiren', lat: -41.9578, lng: -72.4372,
+    id: 175, cat: 'atractivo', localidad: 'hornopiren', lat: -41.9578, lng: -72.4372, publicado: false,
     nombre: { es: 'Costanera y fiordos de Hornopirén', en: 'Hornopirén Waterfront & Fjords' },
     dist: { es: 'En el pueblo', en: 'In town' },
     desc: {
@@ -1812,7 +1764,7 @@ export const LUGARES_SEED = [
     como: { es: 'Rampa en la costanera.', en: 'Ramp on the waterfront.' },
   },
   {
-    id: 177, cat: 'servicio', localidad: 'hornopiren', lat: -41.9575, lng: -72.4368,
+    id: 177, cat: 'servicio', localidad: 'hornopiren', lat: -41.9575, lng: -72.4368, publicado: false,
     nombre: { es: 'Combustible y servicios', en: 'Fuel and services' },
     dist: { es: 'En el pueblo', en: 'In town' },
     desc: {
@@ -1832,7 +1784,7 @@ export const LUGARES_SEED = [
     como: { es: 'En el pueblo.', en: 'In town.' },
   },
   {
-    id: 181, cat: 'emergencia', localidad: 'hornopiren', lat: -41.9579, lng: -72.4374, tel: '133',
+    id: 181, cat: 'emergencia', localidad: 'hornopiren', lat: -41.9579, lng: -72.4374, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Hornopirén', en: 'Police — Hornopirén' },
     dist: { es: 'En el pueblo', en: 'In town' },
     desc: {
@@ -1841,11 +1793,6 @@ export const LUGARES_SEED = [
     },
     como: { es: 'En el centro.', en: 'Downtown.' },
   },
-
-  // ── Fase 2.5 · Tramo norte · Puerto Montt (ids 182-192) ──────────────────
-  // El km 0 de la Carretera Austral y la capital de la Región de Los Lagos:
-  // punto de partida (o llegada) de la ruta completa, con todos los servicios
-  // de una ciudad grande. Completa la identidad "Puerto Montt a Villa O'Higgins".
   {
     id: 182, cat: 'atractivo', localidad: 'puerto-montt', lat: -41.4842, lng: -72.9337,
     nombre: { es: 'Hito Cero — inicio de la Carretera Austral', en: 'Kilometre Zero — start of the Carretera Austral' },
@@ -1860,7 +1807,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 183, cat: 'atractivo', localidad: 'puerto-montt', lat: -41.4857, lng: -72.9614,
+    id: 183, cat: 'atractivo', localidad: 'puerto-montt', lat: -41.4857, lng: -72.9614, publicado: false,
     nombre: { es: 'Caleta y mercado de Angelmó', en: 'Angelmó Cove & Market' },
     dist: { es: '3 km · 10 min del centro', en: '3 km · 10 min from downtown' },
     desc: {
@@ -1870,7 +1817,7 @@ export const LUGARES_SEED = [
     como: { es: 'Costanera al oeste del centro.', en: 'Waterfront west of downtown.' },
   },
   {
-    id: 184, cat: 'atractivo', localidad: 'puerto-montt', lat: -41.4693, lng: -72.9424,
+    id: 184, cat: 'atractivo', localidad: 'puerto-montt', lat: -41.4693, lng: -72.9424, publicado: false,
     nombre: { es: 'Centro y costanera de Puerto Montt', en: 'Puerto Montt Downtown & Waterfront' },
     dist: { es: 'En el centro', en: 'Downtown' },
     desc: {
@@ -1880,7 +1827,7 @@ export const LUGARES_SEED = [
     como: { es: 'Centro de la ciudad.', en: 'City centre.' },
   },
   {
-    id: 185, cat: 'atractivo', localidad: 'puerto-montt', lat: -41.5, lng: -72.6,
+    id: 185, cat: 'atractivo', localidad: 'puerto-montt', lat: -41.5, lng: -72.6, publicado: false,
     nombre: { es: 'Parque Nacional Alerce Andino', en: 'Alerce Andino National Park' },
     dist: { es: '40 km · 50 min', en: '40 km · 50 min' },
     desc: {
@@ -1906,7 +1853,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 187, cat: 'servicio', localidad: 'puerto-montt', lat: -41.4865, lng: -72.9655,
+    id: 187, cat: 'servicio', localidad: 'puerto-montt', lat: -41.4865, lng: -72.9655, publicado: false,
     nombre: { es: 'Terminales de ferries de Puerto Montt', en: 'Puerto Montt Ferry Terminals' },
     dist: { es: 'Sector Angelmó', en: 'Angelmó area' },
     desc: {
@@ -1916,7 +1863,7 @@ export const LUGARES_SEED = [
     como: { es: 'Terminal de transbordadores, sector Angelmó.', en: 'Ferry terminal, Angelmó area.' },
   },
   {
-    id: 188, cat: 'servicio', localidad: 'puerto-montt', lat: -41.47, lng: -72.9415,
+    id: 188, cat: 'servicio', localidad: 'puerto-montt', lat: -41.47, lng: -72.9415, publicado: false,
     nombre: { es: 'Últimas compras — servicios de ciudad', en: 'Last shopping — full city services' },
     dist: { es: 'En la ciudad', en: 'In the city' },
     desc: {
@@ -1936,7 +1883,7 @@ export const LUGARES_SEED = [
     como: { es: 'En la ciudad.', en: 'In the city.' },
   },
   {
-    id: 192, cat: 'emergencia', localidad: 'puerto-montt', lat: -41.4696, lng: -72.9426, tel: '133',
+    id: 192, cat: 'emergencia', localidad: 'puerto-montt', lat: -41.4696, lng: -72.9426, tel: '133', publicado: false,
     nombre: { es: 'Carabineros de Chile — Puerto Montt', en: 'Police — Puerto Montt' },
     dist: { es: 'En la ciudad', en: 'In the city' },
     desc: {
@@ -1944,6 +1891,1059 @@ export const LUGARES_SEED = [
       en: 'Full police coverage for the city and the start of Route 7. Dial 133.',
     },
     como: { es: 'Unidades en toda la ciudad.', en: 'Stations citywide.' },
+  },
+  // ---- Siembra "un servicio por localidad" (jul-2026) ----
+  // Un lugar publicado por localidad y categoría. Las fichas comerciales
+  // (dormir, comer) y los eventos de este bloque son PRELIMINARES: nombres
+  // verosímiles sin teléfono, un cupo reservado hasta que llegue el dato
+  // oficial (correo a las encargadas de turismo, a los dueños de los
+  // servicios, o extracción desde fuentes públicas). Los de Raúl Marín
+  // Balmaceda y Balmaceda, en cambio, son contenido real.
+  {
+    id: 3001, cat: 'alojamiento', localidad: 'puerto-montt', lat: -41.4656, lng: -72.9373, preliminar: true,
+    nombre: { es: 'Hostal Costanera Angelmó', en: 'Costanera Angelmó Hostel' },
+    dist: { es: 'En la ciudad', en: 'In the city' },
+    desc: {
+      es: 'Hostal con habitaciones privadas y compartidas, cocina para huéspedes y desayuno, en Puerto Montt. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Hostel with private and shared rooms, guest kitchen and breakfast, in Puerto Montt. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Montt; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Montt; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3002, cat: 'comida', localidad: 'puerto-montt', lat: -41.4737, lng: -72.9387, preliminar: true,
+    nombre: { es: 'Cocinería del Mercado de Angelmó', en: 'Angelmó Market Eatery' },
+    dist: { es: 'En la ciudad', en: 'In the city' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Puerto Montt. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Puerto Montt. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Montt; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Montt; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3003, cat: 'evento', localidad: 'puerto-montt', lat: -41.4669, lng: -72.9478, preliminar: true,
+    nombre: { es: 'Semana costumbrista de Angelmó', en: 'Angelmó Folk Week' },
+    dist: { es: 'Centro', en: 'Downtown' },
+    desc: {
+      es: 'Cocinerías, curanto, mariscos y música chilota en el sector del mercado. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Market eateries, curanto, shellfish and Chilote music in the market area. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: { es: 'Plaza y sede vecinal de Puerto Montt.', en: 'Puerto Montt main square and community hall.' },
+  },
+  {
+    id: 3004, cat: 'alojamiento', localidad: 'hornopiren', lat: -41.9556, lng: -72.4342, preliminar: true,
+    nombre: { es: 'Cabañas Fiordo Comau', en: 'Fiordo Comau Cabins' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cabañas equipadas para cuatro a seis personas, con cocina, leña y estacionamiento, en Hornopirén. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Cabins for four to six people, with kitchen, firewood and parking, in Hornopirén. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Hornopirén; dirección exacta por confirmar.',
+      en: 'In the centre of Hornopirén; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3005, cat: 'comida', localidad: 'hornopiren', lat: -41.9604, lng: -72.435, preliminar: true,
+    nombre: { es: 'Restaurante El Muelle', en: 'El Muelle Restaurant' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Carta patagónica con cordero, pescado y cazuelas, con atención de almuerzo y cena, en Hornopirén. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Patagonian menu with lamb, fish and stews, open for lunch and dinner, in Hornopirén. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Hornopirén; dirección exacta por confirmar.',
+      en: 'In the centre of Hornopirén; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3006, cat: 'evento', localidad: 'hornopiren', lat: -41.9564, lng: -72.4404, preliminar: true,
+    nombre: { es: 'Fiesta del Pescador de Hornopirén', en: 'Hornopirén Fisherman\'s Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Procesión de botes, mariscos, música en vivo y artesanía del fiordo. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Boat procession, shellfish, live music and fjord crafts. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: { es: 'Plaza y sede vecinal de Hornopirén.', en: 'Hornopirén main square and community hall.' },
+  },
+  {
+    id: 3007, cat: 'evento', localidad: 'caleta-gonzalo', lat: -42.5619, lng: -72.6021, preliminar: true,
+    nombre: { es: 'Jornada de senderos del Parque Pumalín', en: 'Pumalín Park Trails Day' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Caminatas guiadas por guardaparques, charlas del bosque valdiviano y voluntariado de senderos. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Ranger-guided walks, Valdivian forest talks and trail volunteering. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Caleta Gonzalo (Pumalín).',
+      en: 'Caleta Gonzalo (Pumalín) main square and community hall.',
+    },
+  },
+  {
+    id: 3008, cat: 'alojamiento', localidad: 'chaiten', lat: -42.9147, lng: -72.7056, preliminar: true,
+    nombre: { es: 'Hospedaje Santa Bárbara', en: 'Santa Bárbara Guesthouse' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hospedaje familiar con habitaciones simples y dobles, desayuno casero y estacionamiento, en Chaitén. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Family-run guesthouse with single and double rooms, homemade breakfast and parking, in Chaitén. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Chaitén; dirección exacta por confirmar.',
+      en: 'In the centre of Chaitén; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3009, cat: 'comida', localidad: 'chaiten', lat: -42.9195, lng: -72.7064, preliminar: true,
+    nombre: { es: 'Cocinería Volcán Chaitén', en: 'Volcán Chaitén Eatery' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Chaitén. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Chaitén. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Chaitén; dirección exacta por confirmar.',
+      en: 'In the centre of Chaitén; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3010, cat: 'evento', localidad: 'chaiten', lat: -42.9155, lng: -72.7118, preliminar: true,
+    nombre: { es: 'Aniversario de Chaitén', en: 'Chaitén Anniversary Celebration' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Ferias, música en vivo y actividades en la costanera para celebrar el renacer del pueblo. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Fairs, live music and waterfront activities celebrating the town’s rebirth. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: { es: 'Plaza y sede vecinal de Chaitén.', en: 'Chaitén main square and community hall.' },
+  },
+  {
+    id: 3011, cat: 'alojamiento', localidad: 'el-amarillo', lat: -42.9311, lng: -72.5303, preliminar: true,
+    nombre: { es: 'Cabañas El Amarillo', en: 'El Amarillo Cabins' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cabañas equipadas para cuatro a seis personas, con cocina, leña y estacionamiento, en El Amarillo. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Cabins for four to six people, with kitchen, firewood and parking, in El Amarillo. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de El Amarillo; dirección exacta por confirmar.',
+      en: 'In the centre of El Amarillo; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3012, cat: 'comida', localidad: 'el-amarillo', lat: -42.9359, lng: -72.5311, preliminar: true,
+    nombre: { es: 'Comedor Michinmahuida', en: 'Michinmahuida Diner' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en El Amarillo. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in El Amarillo. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de El Amarillo; dirección exacta por confirmar.',
+      en: 'In the centre of El Amarillo; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3013, cat: 'evento', localidad: 'el-amarillo', lat: -42.9319, lng: -72.5365, preliminar: true,
+    nombre: { es: 'Fiesta campesina de El Amarillo', en: 'El Amarillo Country Fair' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Asado al palo, esquila, artesanía y productos del valle. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Spit-roasted lamb, sheep shearing, crafts and valley produce. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: { es: 'Plaza y sede vecinal de El Amarillo.', en: 'El Amarillo main square and community hall.' },
+  },
+  {
+    id: 3014, cat: 'alojamiento', localidad: 'villa-santa-lucia', lat: -43.4145, lng: -72.3637, preliminar: true,
+    nombre: { es: 'Hospedaje El Cruce', en: 'El Cruce Guesthouse' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hospedaje familiar con habitaciones simples y dobles, desayuno casero y estacionamiento, en Villa Santa Lucía. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Family-run guesthouse with single and double rooms, homemade breakfast and parking, in Villa Santa Lucía. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Villa Santa Lucía; dirección exacta por confirmar.',
+      en: 'In the centre of Villa Santa Lucía; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3015, cat: 'comida', localidad: 'villa-santa-lucia', lat: -43.4193, lng: -72.3645, preliminar: true,
+    nombre: { es: 'Comedor Lago Yelcho', en: 'Lago Yelcho Diner' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Villa Santa Lucía. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Villa Santa Lucía. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Villa Santa Lucía; dirección exacta por confirmar.',
+      en: 'In the centre of Villa Santa Lucía; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3016, cat: 'evento', localidad: 'villa-santa-lucia', lat: -43.4153, lng: -72.3699, preliminar: true,
+    nombre: { es: 'Fiesta costumbrista de Villa Santa Lucía', en: 'Villa Santa Lucía Folk Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Comida típica, música en vivo y juegos criollos en la villa. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Traditional food, live music and country games in the village. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Villa Santa Lucía.',
+      en: 'Villa Santa Lucía main square and community hall.',
+    },
+  },
+  {
+    id: 3017, cat: 'alojamiento', localidad: 'futaleufu', lat: -43.1825, lng: -71.8667, preliminar: true,
+    nombre: { es: 'Hostal Río Azul', en: 'Río Azul Hostel' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hostal con habitaciones privadas y compartidas, cocina para huéspedes y desayuno, en Futaleufú. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Hostel with private and shared rooms, guest kitchen and breakfast, in Futaleufú. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Futaleufú; dirección exacta por confirmar.',
+      en: 'In the centre of Futaleufú; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3018, cat: 'comida', localidad: 'futaleufu', lat: -43.1873, lng: -71.8675, preliminar: true,
+    nombre: { es: 'Restaurante Espolón', en: 'Espolón Restaurant' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Carta patagónica con cordero, pescado y cazuelas, con atención de almuerzo y cena, en Futaleufú. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Patagonian menu with lamb, fish and stews, open for lunch and dinner, in Futaleufú. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Futaleufú; dirección exacta por confirmar.',
+      en: 'In the centre of Futaleufú; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3019, cat: 'evento', localidad: 'futaleufu', lat: -43.1833, lng: -71.8729, preliminar: true,
+    nombre: { es: 'Semana futaleufuana', en: 'Futaleufú Town Week' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Rodeo, bajadas de kayak y rafting, música en vivo y feria de artesanía. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Rodeo, kayak and rafting descents, live music and a crafts fair. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: { es: 'Plaza y sede vecinal de Futaleufú.', en: 'Futaleufú main square and community hall.' },
+  },
+  {
+    id: 3020, cat: 'alojamiento', localidad: 'palena', lat: -43.6145, lng: -71.797, preliminar: true,
+    nombre: { es: 'Hospedaje Casa Huasa', en: 'Casa Huasa Guesthouse' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hospedaje familiar con habitaciones simples y dobles, desayuno casero y estacionamiento, en Palena. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Family-run guesthouse with single and double rooms, homemade breakfast and parking, in Palena. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Palena; dirección exacta por confirmar.',
+      en: 'In the centre of Palena; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3021, cat: 'comida', localidad: 'palena', lat: -43.6193, lng: -71.7978, preliminar: true,
+    nombre: { es: 'Comedor La Trilla', en: 'La Trilla Diner' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Palena. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Palena. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Palena; dirección exacta por confirmar.',
+      en: 'In the centre of Palena; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3022, cat: 'evento', localidad: 'palena', lat: -43.6153, lng: -71.8032, preliminar: true,
+    nombre: { es: 'Rodeo y fiesta huasa de Palena', en: 'Palena Rodeo and Huaso Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Medialuna, jineteadas, asado al palo y cueca en la capital huasa de la Patagonia. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Rodeo arena, bronco riding, spit-roasted lamb and cueca dancing. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: { es: 'Plaza y sede vecinal de Palena.', en: 'Palena main square and community hall.' },
+  },
+  {
+    id: 3023, cat: 'alojamiento', localidad: 'la-junta', lat: -43.9734, lng: -72.4028, preliminar: true,
+    nombre: { es: 'Cabañas Lago Rosselot', en: 'Lago Rosselot Cabins' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cabañas equipadas para cuatro a seis personas, con cocina, leña y estacionamiento, en La Junta. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Cabins for four to six people, with kitchen, firewood and parking, in La Junta. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de La Junta; dirección exacta por confirmar.',
+      en: 'In the centre of La Junta; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3024, cat: 'comida', localidad: 'la-junta', lat: -43.9782, lng: -72.4036, preliminar: true,
+    nombre: { es: 'Restaurante El Nudo', en: 'El Nudo Restaurant' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Carta patagónica con cordero, pescado y cazuelas, con atención de almuerzo y cena, en La Junta. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Patagonian menu with lamb, fish and stews, open for lunch and dinner, in La Junta. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de La Junta; dirección exacta por confirmar.',
+      en: 'In the centre of La Junta; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3025, cat: 'evento', localidad: 'la-junta', lat: -43.9742, lng: -72.409, preliminar: true,
+    nombre: { es: 'Fiesta costumbrista de La Junta', en: 'La Junta Folk Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Asado, música en vivo y muestra de artesanía del valle del Palena. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Barbecue, live music and a Palena valley crafts showcase. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: { es: 'Plaza y sede vecinal de La Junta.', en: 'La Junta main square and community hall.' },
+  },
+  {
+    id: 3026, cat: 'alojamiento', localidad: 'raul-marin-balmaceda', lat: -43.7761, lng: -72.9573, preliminar: true,
+    nombre: { es: 'Hospedaje Boca del Palena', en: 'Boca del Palena Guesthouse' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hospedaje familiar con habitaciones simples y dobles, desayuno casero y estacionamiento, en Raúl Marín Balmaceda. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Family-run guesthouse with single and double rooms, homemade breakfast and parking, in Raúl Marín Balmaceda. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Raúl Marín Balmaceda; dirección exacta por confirmar.',
+      en: 'In the centre of Raúl Marín Balmaceda; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3027, cat: 'comida', localidad: 'raul-marin-balmaceda', lat: -43.7809, lng: -72.9581, preliminar: true,
+    nombre: { es: 'Cocinería del Muelle', en: 'Del Muelle Eatery' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Raúl Marín Balmaceda. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Raúl Marín Balmaceda. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Raúl Marín Balmaceda; dirección exacta por confirmar.',
+      en: 'In the centre of Raúl Marín Balmaceda; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3028, cat: 'atractivo', localidad: 'raul-marin-balmaceda', lat: -43.7743, lng: -72.9563,
+    nombre: {
+      es: 'Boca del río Palena — toninas y bosque siempreverde',
+      en: 'Mouth of the Palena river — dolphins and evergreen forest',
+    },
+    dist: { es: 'En la isla, junto al pueblo', en: 'On the island, next to the village' },
+    desc: {
+      es: 'Pueblo isla en la desembocadura del río Palena, rodeado de bosque siempreverde, playas de arena y canales donde se avistan toninas, delfines y lobos marinos. Es el desvío costero más apartado del tramo norte y se llega por la Ruta X-12 desde La Junta.',
+      en: 'An island village at the mouth of the Palena river, surrounded by evergreen forest, sandy beaches and channels where dolphins and sea lions are often seen. It is the most remote coastal detour of the northern section, reached via Route X-12 from La Junta.',
+    },
+    como: {
+      es: 'Ruta X-12 al oeste desde La Junta (unos 74 km de ripio) y cruce en barcaza del río Palena; conviene confirmar los horarios antes de salir.',
+      en: 'Route X-12 west from La Junta (about 74 km of gravel) plus a ferry crossing of the Palena river; check the schedule before setting out.',
+    },
+  },
+  {
+    id: 3029, cat: 'servicio', localidad: 'raul-marin-balmaceda', lat: -43.7793, lng: -72.9593,
+    nombre: { es: 'Abastecimiento y barcaza del río Palena', en: 'Supplies and the Palena river ferry' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Almacenes con lo básico y venta de combustible no siempre disponible: conviene cargar bencina y efectivo en La Junta. El acceso depende de la barcaza del río Palena, con horarios acotados y sensibles al clima.',
+      en: 'Small shops with basics and fuel that is not always available: fill up and get cash in La Junta. Access depends on the Palena river ferry, which runs limited, weather-sensitive schedules.',
+    },
+    como: {
+      es: 'Casco del pueblo; la rampa de la barcaza queda en el acceso por la Ruta X-12.',
+      en: 'Village centre; the ferry ramp is on the Route X-12 access.',
+    },
+  },
+  {
+    id: 3030, cat: 'evento', localidad: 'raul-marin-balmaceda', lat: -43.7769, lng: -72.9635, preliminar: true,
+    nombre: { es: 'Fiesta del Mar de Raúl Marín Balmaceda', en: 'Raúl Marín Balmaceda Sea Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Mariscos, salidas en bote, avistamiento de toninas y música en el muelle. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Shellfish, boat trips, dolphin watching and music at the pier. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Raúl Marín Balmaceda.',
+      en: 'Raúl Marín Balmaceda main square and community hall.',
+    },
+  },
+  {
+    id: 3031, cat: 'emergencia', localidad: 'raul-marin-balmaceda', lat: -43.7798, lng: -72.9611, tel: '131',
+    nombre: { es: 'Posta de Salud Rural Raúl Marín Balmaceda', en: 'Raúl Marín Balmaceda Rural Health Post' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Posta rural para primeros auxilios y urgencias básicas. Por ser un pueblo isla, las evacuaciones se coordinan por mar o aire hacia La Junta y Coyhaique: SAMU 131, Carabineros 133.',
+      en: 'Rural health post for first aid and basic emergencies. As this is an island village, evacuations are coordinated by sea or air to La Junta and Coyhaique: ambulance 131, police 133.',
+    },
+    como: { es: 'Casco del pueblo.', en: 'Village centre.' },
+  },
+  {
+    id: 3032, cat: 'alojamiento', localidad: 'puyuhuapi', lat: -44.3264, lng: -72.5537, preliminar: true,
+    nombre: { es: 'Cabañas Fiordo Puyuhuapi', en: 'Fiordo Puyuhuapi Cabins' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cabañas equipadas para cuatro a seis personas, con cocina, leña y estacionamiento, en Puyuhuapi. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Cabins for four to six people, with kitchen, firewood and parking, in Puyuhuapi. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puyuhuapi; dirección exacta por confirmar.',
+      en: 'In the centre of Puyuhuapi; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3033, cat: 'comida', localidad: 'puyuhuapi', lat: -44.3312, lng: -72.5545, preliminar: true,
+    nombre: { es: 'Cocinería Ventisquero', en: 'Ventisquero Eatery' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Puyuhuapi. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Puyuhuapi. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puyuhuapi; dirección exacta por confirmar.',
+      en: 'In the centre of Puyuhuapi; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3034, cat: 'evento', localidad: 'puyuhuapi', lat: -44.3272, lng: -72.5599, preliminar: true,
+    nombre: { es: 'Aniversario de Puyuhuapi', en: 'Puyuhuapi Anniversary Celebration' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Muestra de la tradición alfombrera y colona alemana, comida típica y música junto al fiordo. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'A showcase of the village’s carpet-weaving and German settler heritage, local food and music by the fjord. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: { es: 'Plaza y sede vecinal de Puyuhuapi.', en: 'Puyuhuapi main square and community hall.' },
+  },
+  {
+    id: 3035, cat: 'alojamiento', localidad: 'villa-amengual', lat: -44.7145, lng: -72.1637, preliminar: true,
+    nombre: { es: 'Hospedaje Cerro Pirámide', en: 'Cerro Pirámide Guesthouse' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hospedaje familiar con habitaciones simples y dobles, desayuno casero y estacionamiento, en Villa Amengual. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Family-run guesthouse with single and double rooms, homemade breakfast and parking, in Villa Amengual. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Villa Amengual; dirección exacta por confirmar.',
+      en: 'In the centre of Villa Amengual; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3036, cat: 'comida', localidad: 'villa-amengual', lat: -44.7193, lng: -72.1645, preliminar: true,
+    nombre: { es: 'Comedor Las Torres', en: 'Las Torres Diner' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Villa Amengual. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Villa Amengual. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Villa Amengual; dirección exacta por confirmar.',
+      en: 'In the centre of Villa Amengual; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3037, cat: 'evento', localidad: 'villa-amengual', lat: -44.7153, lng: -72.1699, preliminar: true,
+    nombre: { es: 'Fiesta costumbrista de Villa Amengual', en: 'Villa Amengual Folk Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Comida típica, artesanía en lana y madera, y música en vivo en la villa. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Traditional food, wool and wood crafts, and live music in the village. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Villa Amengual.',
+      en: 'Villa Amengual main square and community hall.',
+    },
+  },
+  {
+    id: 3038, cat: 'alojamiento', localidad: 'puerto-cisnes', lat: -44.74, lng: -72.6859, preliminar: true,
+    nombre: { es: 'Hostal Piedra del Gato', en: 'Piedra del Gato Hostel' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hostal con habitaciones privadas y compartidas, cocina para huéspedes y desayuno, en Puerto Cisnes. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Hostel with private and shared rooms, guest kitchen and breakfast, in Puerto Cisnes. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Cisnes; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Cisnes; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3039, cat: 'comida', localidad: 'puerto-cisnes', lat: -44.7448, lng: -72.6867, preliminar: true,
+    nombre: { es: 'Marisquería El Cisne', en: 'El Cisne Seafood Restaurant' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Pescado y mariscos del día preparados al estilo de la costa de Aysén, en Puerto Cisnes. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Fish and shellfish of the day cooked Aysén-coast style, in Puerto Cisnes. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Cisnes; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Cisnes; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3040, cat: 'evento', localidad: 'puerto-cisnes', lat: -44.7408, lng: -72.6921, preliminar: true,
+    nombre: { es: 'Fiesta del Pescador de Puerto Cisnes', en: 'Puerto Cisnes Fisherman\'s Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Mariscos y pescado fresco, procesión de botes y música en la costanera. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Fresh fish and shellfish, boat procession and music on the waterfront. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Puerto Cisnes.',
+      en: 'Puerto Cisnes main square and community hall.',
+    },
+  },
+  {
+    id: 3041, cat: 'alojamiento', localidad: 'villa-manihuales', lat: -45.2081, lng: -72.1517, preliminar: true,
+    nombre: { es: 'Hospedaje Mañihuales', en: 'Mañihuales Guesthouse' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hospedaje familiar con habitaciones simples y dobles, desayuno casero y estacionamiento, en Villa Mañihuales. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Family-run guesthouse with single and double rooms, homemade breakfast and parking, in Villa Mañihuales. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Villa Mañihuales; dirección exacta por confirmar.',
+      en: 'In the centre of Villa Mañihuales; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3042, cat: 'comida', localidad: 'villa-manihuales', lat: -45.2129, lng: -72.1525, preliminar: true,
+    nombre: { es: 'Comedor Ruta 7', en: 'Ruta 7 Diner' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Villa Mañihuales. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Villa Mañihuales. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Villa Mañihuales; dirección exacta por confirmar.',
+      en: 'In the centre of Villa Mañihuales; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3043, cat: 'evento', localidad: 'villa-manihuales', lat: -45.2089, lng: -72.1579, preliminar: true,
+    nombre: { es: 'Fiesta costumbrista de Villa Mañihuales', en: 'Villa Mañihuales Folk Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Asado al palo, juegos criollos y artesanía local junto a la Ruta 7. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Spit-roasted lamb, country games and local crafts by Route 7. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Villa Mañihuales.',
+      en: 'Villa Mañihuales main square and community hall.',
+    },
+  },
+  {
+    id: 3044, cat: 'alojamiento', localidad: 'puerto-aysen', lat: -45.4011, lng: -72.6917, preliminar: true,
+    nombre: { es: 'Hostal Puente Ibáñez', en: 'Puente Ibáñez Hostel' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hostal con habitaciones privadas y compartidas, cocina para huéspedes y desayuno, en Puerto Aysén. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Hostel with private and shared rooms, guest kitchen and breakfast, in Puerto Aysén. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Aysén; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Aysén; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3045, cat: 'comida', localidad: 'puerto-aysen', lat: -45.4059, lng: -72.6925, preliminar: true,
+    nombre: { es: 'Restaurante Río Aysén', en: 'Río Aysén Restaurant' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Carta patagónica con cordero, pescado y cazuelas, con atención de almuerzo y cena, en Puerto Aysén. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Patagonian menu with lamb, fish and stews, open for lunch and dinner, in Puerto Aysén. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Aysén; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Aysén; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3046, cat: 'evento', localidad: 'puerto-aysen', lat: -45.4019, lng: -72.6979, preliminar: true,
+    nombre: { es: 'Semana aysenina', en: 'Puerto Aysén Town Week' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Desfiles, ferias, deportes en el río y música en vivo en la costanera. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Parades, fairs, river sports and live music on the waterfront. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: { es: 'Plaza y sede vecinal de Puerto Aysén.', en: 'Puerto Aysén main square and community hall.' },
+  },
+  {
+    id: 3047, cat: 'alojamiento', localidad: 'puerto-chacabuco', lat: -45.4645, lng: -72.8137, preliminar: true,
+    nombre: { es: 'Hospedaje Chacabuco', en: 'Chacabuco Guesthouse' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hospedaje familiar con habitaciones simples y dobles, desayuno casero y estacionamiento, en Puerto Chacabuco. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Family-run guesthouse with single and double rooms, homemade breakfast and parking, in Puerto Chacabuco. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Chacabuco; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Chacabuco; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3048, cat: 'comida', localidad: 'puerto-chacabuco', lat: -45.4693, lng: -72.8145, preliminar: true,
+    nombre: { es: 'Marisquería del Terminal', en: 'Terminal Seafood Restaurant' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Pescado y mariscos del día preparados al estilo de la costa de Aysén, en Puerto Chacabuco. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Fish and shellfish of the day cooked Aysén-coast style, in Puerto Chacabuco. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Chacabuco; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Chacabuco; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3049, cat: 'evento', localidad: 'puerto-chacabuco', lat: -45.4653, lng: -72.8199, preliminar: true,
+    nombre: { es: 'Fiesta del Pescador de Puerto Chacabuco', en: 'Puerto Chacabuco Fisherman\'s Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Mariscos, procesión de embarcaciones y música en el puerto. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Shellfish, boat procession and music at the port. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Puerto Chacabuco.',
+      en: 'Puerto Chacabuco main square and community hall.',
+    },
+  },
+  {
+    id: 3050, cat: 'alojamiento', localidad: 'coyhaique', lat: -45.5682, lng: -72.0632, preliminar: true,
+    nombre: { es: 'Hostal Piedra del Indio', en: 'Piedra del Indio Hostel' },
+    dist: { es: 'En la ciudad', en: 'In the city' },
+    desc: {
+      es: 'Hostal con habitaciones privadas y compartidas, cocina para huéspedes y desayuno, en Coyhaique. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Hostel with private and shared rooms, guest kitchen and breakfast, in Coyhaique. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Coyhaique; dirección exacta por confirmar.',
+      en: 'In the centre of Coyhaique; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3051, cat: 'comida', localidad: 'coyhaique', lat: -45.5763, lng: -72.0646, preliminar: true,
+    nombre: { es: 'Restaurante Simpson', en: 'Simpson Restaurant' },
+    dist: { es: 'En la ciudad', en: 'In the city' },
+    desc: {
+      es: 'Carta patagónica con cordero, pescado y cazuelas, con atención de almuerzo y cena, en Coyhaique. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Patagonian menu with lamb, fish and stews, open for lunch and dinner, in Coyhaique. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Coyhaique; dirección exacta por confirmar.',
+      en: 'In the centre of Coyhaique; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3052, cat: 'evento', localidad: 'coyhaique', lat: -45.5695, lng: -72.0737, preliminar: true,
+    nombre: { es: 'Aniversario de Coyhaique', en: 'Coyhaique Anniversary Celebration' },
+    dist: { es: 'Centro', en: 'Downtown' },
+    desc: {
+      es: 'Ferias, exposición ganadera, rodeo y música en vivo en la capital regional. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Fairs, livestock show, rodeo and live music in the regional capital. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: { es: 'Plaza y sede vecinal de Coyhaique.', en: 'Coyhaique main square and community hall.' },
+  },
+  {
+    id: 3053, cat: 'alojamiento', localidad: 'balmaceda', lat: -45.9115, lng: -71.6917, preliminar: true,
+    nombre: { es: 'Hospedaje Balmaceda', en: 'Balmaceda Guesthouse' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hospedaje familiar con habitaciones simples y dobles, desayuno casero y estacionamiento, en Balmaceda. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Family-run guesthouse with single and double rooms, homemade breakfast and parking, in Balmaceda. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Balmaceda; dirección exacta por confirmar.',
+      en: 'In the centre of Balmaceda; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3054, cat: 'comida', localidad: 'balmaceda', lat: -45.9163, lng: -71.6925, preliminar: true,
+    nombre: { es: 'Comedor La Estepa', en: 'La Estepa Diner' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Balmaceda. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Balmaceda. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Balmaceda; dirección exacta por confirmar.',
+      en: 'In the centre of Balmaceda; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3055, cat: 'atractivo', localidad: 'balmaceda', lat: -45.9107, lng: -71.6907,
+    nombre: {
+      es: 'Estepa patagónica y paso Huemules',
+      en: 'Patagonian steppe and the Huemules border crossing',
+    },
+    dist: { es: 'En el pueblo y camino al paso', en: 'In the village and on the road to the pass' },
+    desc: {
+      es: 'El cambio de paisaje más brusco de la región: al este de Coyhaique el bosque se abre en estepa de coirón, con viento permanente, guanacos y cielos enormes. Por aquí sale la Ruta 245 al paso fronterizo Huemules, hacia Argentina.',
+      en: 'The region’s sharpest change of scenery: east of Coyhaique the forest opens into tussock steppe, with constant wind, guanacos and huge skies. Route 245 continues from here to the Huemules border crossing into Argentina.',
+    },
+    como: {
+      es: 'Ruta 245 desde Coyhaique (unos 55 km); el paso queda algunos kilómetros más al este del pueblo.',
+      en: 'Route 245 from Coyhaique (about 55 km); the pass is a few kilometres east of the village.',
+    },
+  },
+  {
+    id: 3056, cat: 'servicio', localidad: 'balmaceda', lat: -45.9157, lng: -71.6927,
+    nombre: {
+      es: 'Aeropuerto Balmaceda — traslados y arriendo de autos',
+      en: 'Balmaceda Airport — transfers and car rental',
+    },
+    dist: { es: 'Junto al pueblo', en: 'Next to the village' },
+    desc: {
+      es: 'La puerta aérea de la Región de Aysén: la mayoría de los viajeros de la Carretera Austral empieza o termina aquí. Hay arriendo de autos, transfer y buses a Coyhaique (unos 55 km). El viento fuerte puede desviar vuelos, así que conviene no calzar la conexión al límite.',
+      en: 'The air gateway to the Aysén Region: most Carretera Austral travellers start or finish here. Car rental, transfers and buses to Coyhaique (about 55 km) are available. Strong winds can divert flights, so avoid tight connections.',
+    },
+    como: { es: 'Terminal del aeropuerto, sobre la Ruta 245.', en: 'Airport terminal, on Route 245.' },
+  },
+  {
+    id: 3057, cat: 'evento', localidad: 'balmaceda', lat: -45.9123, lng: -71.6979, preliminar: true,
+    nombre: { es: 'Fiesta costumbrista de Balmaceda', en: 'Balmaceda Folk Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Asado, esquila, juegos criollos y artesanía de la estepa. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Barbecue, sheep shearing, country games and steppe crafts. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: { es: 'Plaza y sede vecinal de Balmaceda.', en: 'Balmaceda main square and community hall.' },
+  },
+  {
+    id: 3058, cat: 'emergencia', localidad: 'balmaceda', lat: -45.9149, lng: -71.6957, tel: '131',
+    nombre: { es: 'Posta de Salud Rural Balmaceda', en: 'Balmaceda Rural Health Post' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Posta rural para primeros auxilios y urgencias básicas. Los casos de mayor complejidad se derivan al Hospital Regional de Coyhaique, a unos 55 km: SAMU 131, Carabineros 133.',
+      en: 'Rural health post for first aid and basic emergencies. More complex cases are referred to the Coyhaique Regional Hospital, about 55 km away: ambulance 131, police 133.',
+    },
+    como: { es: 'Casco del pueblo.', en: 'Village centre.' },
+  },
+  {
+    id: 3059, cat: 'alojamiento', localidad: 'villa-cerro-castillo', lat: -46.1194, lng: -72.1606, preliminar: true,
+    nombre: { es: 'Hospedaje Cerro Castillo', en: 'Cerro Castillo Guesthouse' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hospedaje familiar con habitaciones simples y dobles, desayuno casero y estacionamiento, en Villa Cerro Castillo. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Family-run guesthouse with single and double rooms, homemade breakfast and parking, in Villa Cerro Castillo. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Villa Cerro Castillo; dirección exacta por confirmar.',
+      en: 'In the centre of Villa Cerro Castillo; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3060, cat: 'comida', localidad: 'villa-cerro-castillo', lat: -46.1242, lng: -72.1614, preliminar: true,
+    nombre: { es: 'Cocinería Paredón de las Manos', en: 'Paredón de las Manos Eatery' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Villa Cerro Castillo. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Villa Cerro Castillo. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Villa Cerro Castillo; dirección exacta por confirmar.',
+      en: 'In the centre of Villa Cerro Castillo; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3061, cat: 'evento', localidad: 'villa-cerro-castillo', lat: -46.1202, lng: -72.1668, preliminar: true,
+    nombre: { es: 'Fiesta costumbrista de Villa Cerro Castillo', en: 'Villa Cerro Castillo Folk Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Jineteadas, asado al palo, artesanía y música al pie del cerro Castillo. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Bronco riding, spit-roasted lamb, crafts and music at the foot of Cerro Castillo. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Villa Cerro Castillo.',
+      en: 'Villa Cerro Castillo main square and community hall.',
+    },
+  },
+  {
+    id: 3062, cat: 'alojamiento', localidad: 'puerto-rio-tranquilo', lat: -46.623, lng: -72.6705, preliminar: true,
+    nombre: { es: 'Cabañas Capillas de Mármol', en: 'Capillas de Mármol Cabins' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cabañas equipadas para cuatro a seis personas, con cocina, leña y estacionamiento, en Puerto Río Tranquilo. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Cabins for four to six people, with kitchen, firewood and parking, in Puerto Río Tranquilo. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Río Tranquilo; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Río Tranquilo; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3063, cat: 'comida', localidad: 'puerto-rio-tranquilo', lat: -46.6278, lng: -72.6713, preliminar: true,
+    nombre: { es: 'Cocinería Exploradores', en: 'Exploradores Eatery' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Puerto Río Tranquilo. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Puerto Río Tranquilo. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Río Tranquilo; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Río Tranquilo; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3064, cat: 'servicio', localidad: 'puerto-rio-tranquilo', lat: -46.6244, lng: -72.6723,
+    nombre: { es: 'Combustible y abastecimiento', en: 'Fuel and supplies' },
+    dist: { es: 'En el pueblo', en: 'In town' },
+    desc: {
+      es: 'Punto de bencina y almacenes sobre la Ruta 7, en el pueblo base de las Capillas de Mármol. Es el abastecimiento intermedio entre Villa Cerro Castillo y Cochrane: conviene confirmar disponibilidad y llevar efectivo, porque no hay banco ni cajero.',
+      en: 'Fuel point and shops on Route 7, in the base town for the Marble Caves. It is the mid-point supply stop between Villa Cerro Castillo and Cochrane: confirm availability and bring cash, as there is no bank or ATM.',
+    },
+    como: {
+      es: 'Sobre la Carretera Austral, en el casco del pueblo.',
+      en: 'On the Carretera Austral, in the town centre.',
+    },
+  },
+  {
+    id: 3065, cat: 'evento', localidad: 'puerto-rio-tranquilo', lat: -46.6238, lng: -72.6767, preliminar: true,
+    nombre: { es: 'Aniversario de Puerto Río Tranquilo', en: 'Puerto Río Tranquilo Anniversary Celebration' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Feria de artesanía, comida típica y actividades náuticas en el lago General Carrera. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Crafts fair, traditional food and water activities on Lake General Carrera. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Puerto Río Tranquilo.',
+      en: 'Puerto Río Tranquilo main square and community hall.',
+    },
+  },
+  {
+    id: 3066, cat: 'alojamiento', localidad: 'puerto-guadal', lat: -46.842, lng: -72.6997, preliminar: true,
+    nombre: { es: 'Cabañas Los Maquis', en: 'Los Maquis Cabins' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cabañas equipadas para cuatro a seis personas, con cocina, leña y estacionamiento, en Puerto Guadal. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Cabins for four to six people, with kitchen, firewood and parking, in Puerto Guadal. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Guadal; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Guadal; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3067, cat: 'comida', localidad: 'puerto-guadal', lat: -46.8468, lng: -72.7005, preliminar: true,
+    nombre: { es: 'Cocinería Puerto Guadal', en: 'Puerto Guadal Eatery' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Puerto Guadal. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Puerto Guadal. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Guadal; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Guadal; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3068, cat: 'evento', localidad: 'puerto-guadal', lat: -46.8428, lng: -72.7059, preliminar: true,
+    nombre: { es: 'Fiesta costumbrista de Puerto Guadal', en: 'Puerto Guadal Folk Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Comida típica, artesanía y música en vivo frente al lago. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Traditional food, crafts and live music by the lake. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Puerto Guadal.',
+      en: 'Puerto Guadal main square and community hall.',
+    },
+  },
+  {
+    id: 3069, cat: 'alojamiento', localidad: 'chile-chico', lat: -46.5377, lng: -71.7258, preliminar: true,
+    nombre: { es: 'Hostal Jeinimeni', en: 'Jeinimeni Hostel' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hostal con habitaciones privadas y compartidas, cocina para huéspedes y desayuno, en Chile Chico. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Hostel with private and shared rooms, guest kitchen and breakfast, in Chile Chico. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Chile Chico; dirección exacta por confirmar.',
+      en: 'In the centre of Chile Chico; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3070, cat: 'comida', localidad: 'chile-chico', lat: -46.5425, lng: -71.7266, preliminar: true,
+    nombre: { es: 'Restaurante Costanera del Lago', en: 'Costanera del Lago Restaurant' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Carta patagónica con cordero, pescado y cazuelas, con atención de almuerzo y cena, en Chile Chico. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Patagonian menu with lamb, fish and stews, open for lunch and dinner, in Chile Chico. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Chile Chico; dirección exacta por confirmar.',
+      en: 'In the centre of Chile Chico; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3071, cat: 'evento', localidad: 'chile-chico', lat: -46.5385, lng: -71.732, preliminar: true,
+    nombre: { es: 'Fiesta de la Cereza de Chile Chico', en: 'Chile Chico Cherry Festival' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Fruta de la zona, gastronomía, artesanía y música en el pueblo más soleado de Aysén. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Local fruit, food, crafts and music in the sunniest town in Aysén. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: { es: 'Plaza y sede vecinal de Chile Chico.', en: 'Chile Chico main square and community hall.' },
+  },
+  {
+    id: 3072, cat: 'alojamiento', localidad: 'puerto-bertrand', lat: -47.0197, lng: -72.8217, preliminar: true,
+    nombre: { es: 'Cabañas Nacimiento del Baker', en: 'Nacimiento del Baker Cabins' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cabañas equipadas para cuatro a seis personas, con cocina, leña y estacionamiento, en Puerto Bertrand. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Cabins for four to six people, with kitchen, firewood and parking, in Puerto Bertrand. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Bertrand; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Bertrand; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3073, cat: 'comida', localidad: 'puerto-bertrand', lat: -47.0245, lng: -72.8225, preliminar: true,
+    nombre: { es: 'Comedor del Baker', en: 'Del Baker Diner' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Puerto Bertrand. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Puerto Bertrand. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Puerto Bertrand; dirección exacta por confirmar.',
+      en: 'In the centre of Puerto Bertrand; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3074, cat: 'evento', localidad: 'puerto-bertrand', lat: -47.0205, lng: -72.8279, preliminar: true,
+    nombre: {
+      es: 'Torneo de pesca deportiva de Puerto Bertrand',
+      en: 'Puerto Bertrand Sport Fishing Tournament',
+    },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Pesca con mosca en el nacimiento del río Baker, asado y premiación en el pueblo. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Fly fishing at the source of the Baker river, barbecue and prize-giving in the village. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Puerto Bertrand.',
+      en: 'Puerto Bertrand main square and community hall.',
+    },
+  },
+  {
+    id: 3075, cat: 'alojamiento', localidad: 'cochrane', lat: -47.2502, lng: -72.5681, preliminar: true,
+    nombre: { es: 'Hospedaje Plaza Cochrane', en: 'Plaza Cochrane Guesthouse' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hospedaje familiar con habitaciones simples y dobles, desayuno casero y estacionamiento, en Cochrane. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Family-run guesthouse with single and double rooms, homemade breakfast and parking, in Cochrane. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Cochrane; dirección exacta por confirmar.',
+      en: 'In the centre of Cochrane; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3076, cat: 'comida', localidad: 'cochrane', lat: -47.2583, lng: -72.5695, preliminar: true,
+    nombre: { es: 'Cocinería Río Baker', en: 'Río Baker Eatery' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Cochrane. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Cochrane. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Cochrane; dirección exacta por confirmar.',
+      en: 'In the centre of Cochrane; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3077, cat: 'alojamiento', localidad: 'caleta-tortel', lat: -47.7945, lng: -73.533, preliminar: true,
+    nombre: { es: 'Hospedaje Las Pasarelas', en: 'Las Pasarelas Guesthouse' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hospedaje familiar con habitaciones simples y dobles, desayuno casero y estacionamiento, en Caleta Tortel. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Family-run guesthouse with single and double rooms, homemade breakfast and parking, in Caleta Tortel. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Caleta Tortel; dirección exacta por confirmar.',
+      en: 'In the centre of Caleta Tortel; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3078, cat: 'comida', localidad: 'caleta-tortel', lat: -47.7993, lng: -73.5338, preliminar: true,
+    nombre: { es: 'Cocinería del Cipresal', en: 'Del Cipresal Eatery' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Caleta Tortel. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Caleta Tortel. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Caleta Tortel; dirección exacta por confirmar.',
+      en: 'In the centre of Caleta Tortel; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3079, cat: 'servicio', localidad: 'caleta-tortel', lat: -47.7955, lng: -73.5342,
+    nombre: { es: 'Abastecimiento en Caleta Tortel', en: 'Supplies in Caleta Tortel' },
+    dist: { es: 'Sector centro, por las pasarelas', en: 'Central sector, via the boardwalks' },
+    desc: {
+      es: 'Almacenes pequeños con lo básico, sin banco ni cajero y con combustible que no siempre hay: carga bencina y efectivo en Cochrane (unos 127 km). Los vehículos quedan en el estacionamiento a la entrada, porque el pueblo se recorre a pie por las pasarelas.',
+      en: 'Small shops with the basics, no bank or ATM and fuel that is not always available: fill up and get cash in Cochrane (about 127 km). Vehicles stay in the car park at the entrance, as the village is walked on its boardwalks.',
+    },
+    como: {
+      es: 'Sector centro, por la pasarela principal.',
+      en: 'Central sector, along the main boardwalk.',
+    },
+  },
+  {
+    id: 3080, cat: 'evento', localidad: 'caleta-tortel', lat: -47.7953, lng: -73.5392, preliminar: true,
+    nombre: { es: 'Aniversario de Caleta Tortel', en: 'Caleta Tortel Anniversary Celebration' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Comida de mar, remo en la bahía y música sobre las pasarelas de ciprés. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Seafood, rowing in the bay and music on the cypress boardwalks. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Caleta Tortel.',
+      en: 'Caleta Tortel main square and community hall.',
+    },
+  },
+  {
+    id: 3081, cat: 'alojamiento', localidad: 'villa-ohiggins', lat: -48.4664, lng: -72.5571, preliminar: true,
+    nombre: { es: 'Hospedaje Fin de Ruta', en: 'Fin de Ruta Guesthouse' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Hospedaje familiar con habitaciones simples y dobles, desayuno casero y estacionamiento, en Villa O\'Higgins. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Family-run guesthouse with single and double rooms, homemade breakfast and parking, in Villa O\'Higgins. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Villa O\'Higgins; dirección exacta por confirmar.',
+      en: 'In the centre of Villa O\'Higgins; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3082, cat: 'comida', localidad: 'villa-ohiggins', lat: -48.4712, lng: -72.5579, preliminar: true,
+    nombre: { es: 'Cocinería El Viajero', en: 'El Viajero Eatery' },
+    dist: { es: 'En el pueblo', en: 'In the village' },
+    desc: {
+      es: 'Cocina casera patagónica: cordero, cazuelas y pan amasado, sobre todo en temporada alta, en Villa O\'Higgins. Ficha preliminar de referencia: estamos confirmando nombre, dirección y contacto con la oficina de turismo y con el propietario.',
+      en: 'Home-style Patagonian cooking: lamb, stews and fresh bread, mainly in high season, in Villa O\'Higgins. Preliminary reference listing: we are confirming the name, address and contact details with the local tourist office and the owner.',
+    },
+    como: {
+      es: 'En el casco de Villa O\'Higgins; dirección exacta por confirmar.',
+      en: 'In the centre of Villa O\'Higgins; exact address to be confirmed.',
+    },
+  },
+  {
+    id: 3083, cat: 'evento', localidad: 'villa-ohiggins', lat: -48.4672, lng: -72.5633, preliminar: true,
+    nombre: { es: 'Aniversario de Villa O’Higgins', en: 'Villa O’Higgins Anniversary Celebration' },
+    dist: { es: 'Plaza del pueblo', en: 'Village square' },
+    desc: {
+      es: 'Ferias, asado, juegos criollos y música en el último pueblo de la Carretera Austral. Fecha por confirmar con la municipalidad: publicaremos el programa cuando sea oficial.',
+      en: 'Fairs, barbecue, country games and music in the last village on the Carretera Austral. Date to be confirmed with the municipality: we will publish the programme once it is official.',
+    },
+    como: {
+      es: 'Plaza y sede vecinal de Villa O\'Higgins.',
+      en: 'Villa O\'Higgins main square and community hall.',
+    },
   },
 ]
 

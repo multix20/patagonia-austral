@@ -1531,6 +1531,18 @@ h1 small {
   transition: opacity 0.18s;
   pointer-events: none;
 }
+/* Ajustes de posición del rótulo (ETIQUETAS_LOCALIDAD): a la IZQUIERDA para los
+   pueblos sin espacio limpio a su derecha, y una línea más ARRIBA cuando dos
+   rótulos vecinos se encimarían (p. ej. Puerto Aysén con Coyhaique). */
+.pin-loc.izq .lbl {
+  left: auto;
+  right: 100%;
+  margin-left: 0;
+  margin-right: 5px;
+}
+.pin-loc.alta .lbl {
+  transform: translateY(-150%);
+}
 /* Al acercar el mapa se muestran los nombres de todas las localidades (estilo
    Google Maps). En la vista general de toda la ruta se ocultan para no saturar. */
 .mapa-full.labels-on .pin-loc .lbl {
@@ -1751,7 +1763,9 @@ h1 small {
   right: 14px;
   bottom: calc(20px + env(safe-area-inset-bottom));
   z-index: 45;
-  height: 74px;
+  /* Barra solo de iconos (sin los rótulos Dormir/Comer/…): más baja y compacta,
+     así tapa menos mapa. Los nombres viven en aria-label/title. */
+  height: 62px;
   background: #fff;
   border-radius: 22px;
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.24);
@@ -1782,9 +1796,9 @@ h1 small {
   transition: background 0.15s;
 }
 .catbar .cat-btn .cico {
-  width: 30px;
-  height: 30px;
-  border-radius: 11px;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1792,15 +1806,9 @@ h1 small {
   color: var(--gris);
   transition: all 0.15s;
 }
-.catbar .cat-btn span {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.1px;
-}
 .catbar .cat-btn.on .cico {
   background: var(--cc);
   color: #fff;
-  transform: translateY(-1px);
 }
 .catbar .cat-btn.on {
   color: var(--cc);
