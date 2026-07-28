@@ -56,6 +56,29 @@ npm run dev                  # o: npm run build && npm run preview (para probar 
 
 Config local en `frontend/.env.local` (VITE_API_URL + VITE_VAPID_PUBLIC_KEY).
 
+**En sesión web de Claude Code (contenedor efímero, sin `vendor/` ni BD).** Vale
+la pena levantarlo igual: es la diferencia entre "compila" y "funciona" — así
+salieron los tres bugs del crowdsourcing que `php -l` + build no ven. Receta:
+
+```bash
+cd backend
+composer install --ignore-platform-req=ext-gmp   # OJO: falta ext-gmp (la usa web-push);
+                                                 # sin ese flag el install falla entero
+cp .env.example .env && php artisan key:generate --force
+touch database/database.sqlite                   # .env ya trae DB_CONNECTION=sqlite
+php artisan migrate --force --seed               # verifica migraciones Y seeders de verdad
+php artisan test                                 # suite completa
+php artisan serve --port=8000 &
+
+cd ../frontend                                   # PWA apuntando a esa API real
+VITE_API_URL=http://127.0.0.1:8000 npm run build && npx vite preview --port 4173
+```
+
+`config/cors.php` ya permite `localhost:4173`, y con Playwright
+(`executablePath: '/opt/pw-browsers/chromium'`, permiso `geolocation`) se prueba
+el ciclo completo en el navegador. `composer install` tarda ~8 min: lanzarlo en
+segundo plano y seguir escribiendo código mientras baja.
+
 ---
 
 ## Historial técnico (decisiones que no hay que repetir)
@@ -305,6 +328,24 @@ lugares nuevos en la fase). Cadena de `orden` norte→sur: 10 Puerto Montt …
 
 ### 5. Fase 3 — Capa comercial
 Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
+
+> **⚠ RAMA CON TRABAJO SIN FUSIONAR (27-jul-2026):** el PMV de crowdsourcing está
+> pusheado en **`claude/cosmetic-service-data-updates-6sq70v`** (commit `b205789`)
+> y **no tiene PR abierto**; `main` va un commit atrás. Antes de empezar algo
+> nuevo: abrir el PR y fusionarlo, o partir la rama nueva DESDE esa — si se parte
+> de `main`, se trabaja sobre un árbol que todavía no tiene los reportes.
+
+- **Cuánto contenido cabe — cálculo de capacidad (27-jul-2026).** Con 26
+  localidades × 6 categorías, publicar 10 por cupo daría **1.560 fichas**; hoy
+  hay **156 publicadas** (1 por cupo) y **338 reales** en total (156 redactadas en
+  el repo + 182 alojamientos SERNATUR en la BD). Pero 1.560 es aritmética, no
+  meta: **Villa Amengual no tiene 10 restaurantes**. Con topes por tamaño real
+  (2 ciudades 10 por cupo; 16 pueblos 8/5/5/3/2/3; 8 caseríos 2–3) el techo
+  realista es **~608 fichas**, repartidas así: dormir 172, visitar 124, comer 116,
+  servicios 76, emergencias 72, eventos 48. → **La meta razonable es ~600, no
+  1.560**, y el grueso del esfuerzo es dormir + comer (288), que es justo lo que
+  se pide por correo a encargadas de turismo y dueños. Eventos y emergencias
+  nunca llegan a 10: un pueblo tiene una posta y un retén.
 
 - **✅ Crowdsourcing tipo Waze — PMV implementado (27-jul-2026):** el panel
   "¿Qué ves en la ruta?" dejó de ser vista previa: los reportes se guardan,
