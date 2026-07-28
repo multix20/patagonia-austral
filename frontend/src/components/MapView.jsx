@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import L from 'leaflet'
 import { CATEGORIAS } from '../data/places'
+import { ESTILO_REPORTE } from '../data/reportes'
 import { RUTA7 } from '../data/ruta7'
 import Icon, { iconoHTML } from './Icon'
 
@@ -128,6 +129,19 @@ function pinCategoria(cat) {
   })
 }
 
+// Pin de reporte del crowdsourcing: rombo con el color/icono del tipo. Se
+// distingue a propósito de la gota de los lugares (un reporte es temporal y lo
+// puso otro viajero, no es contenido curado del directorio).
+function pinReporte(tipo) {
+  const e = ESTILO_REPORTE[tipo] || { icon: 'alert', c: '#5b6b78' }
+  return L.divIcon({
+    className: '',
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    html: `<div class="pin-rep" style="--rc:${e.c}"><span class="rombo"></span><span class="ico">${iconoHTML(e.icon, 15, '#fff')}</span></div>`,
+  })
+}
+
 const MapView = forwardRef(function MapView(
   {
     vista,
@@ -139,8 +153,10 @@ const MapView = forwardRef(function MapView(
     etiquetas = {},
     filtro,
     localidadActiva,
+    reportes = [],
     onEntrarLocalidad,
     onSeleccionarLugar,
+    onSeleccionarReporte,
     onPos,
     lang,
   },
@@ -152,6 +168,7 @@ const MapView = forwardRef(function MapView(
   const rutaRef = useRef(null)
   const locMarkersRef = useRef([])
   const catMarkersRef = useRef([])
+  const repMarkersRef = useRef([])
   const yoRef = useRef(null)
   const [pos, setPos] = useState(null)
   // Capa base elegida por el usuario y visibilidad de las etiquetas de localidad
@@ -163,9 +180,11 @@ const MapView = forwardRef(function MapView(
   // Callbacks en refs para no re-suscribir los efectos del mapa en cada render.
   const cbEntrar = useRef(onEntrarLocalidad)
   const cbLugar = useRef(onSeleccionarLugar)
+  const cbReporte = useRef(onSeleccionarReporte)
   useEffect(() => {
     cbEntrar.current = onEntrarLocalidad
     cbLugar.current = onSeleccionarLugar
+    cbReporte.current = onSeleccionarReporte
   })
 
   // Centrar en la ubicación del usuario (lo llama el rail de la app).
@@ -278,6 +297,10 @@ const MapView = forwardRef(function MapView(
     catMarkersRef.current.forEach((m) => mapaRef.current?.removeLayer(m))
     catMarkersRef.current = []
   }
+  function limpiarRep() {
+    repMarkersRef.current.forEach((m) => mapaRef.current?.removeLayer(m))
+    repMarkersRef.current = []
+  }
 
   // Pines de localidad (vista 'ruta').
   useEffect(() => {
@@ -319,6 +342,23 @@ const MapView = forwardRef(function MapView(
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vista, lugares, filtro])
+
+  // Reportes del crowdsourcing (Fase 3). Se dibujan en LAS DOS vistas: en la ruta
+  // son el estado del camino de punta a punta, y dentro de un pueblo son lo que
+  // está pasando ahí mismo. Van sobre los demás pines (zIndexOffset) porque son
+  // información fresca y perecible.
+  useEffect(() => {
+    const mapa = mapaRef.current
+    if (!mapa) return
+    limpiarRep()
+    reportes.forEach((r) => {
+      const m = L.marker([r.lat, r.lng], { icon: pinReporte(r.tipo), zIndexOffset: 500 })
+        .addTo(mapa)
+        .on('click', () => cbReporte.current?.(r))
+      repMarkersRef.current.push(m)
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reportes])
 
   // Vuelo del mapa al cambiar de vista / localidad.
   useEffect(() => {
@@ -372,7 +412,15 @@ const MapView = forwardRef(function MapView(
         iconSize: [20, 20],
         iconAnchor: [10, 10],
       })
-      yoRef.current = L.marker(pos, { icon, zIndexOffset: 1000, keyboard: false })
+      // `interactive: false`: el punto "estás aquí" es decorativo, y si captura
+      // toques tapa lo que haya debajo — p. ej. un reporte hecho en ese mismo
+      // lugar, que quedaría imposible de abrir.
+      yoRef.current = L.marker(pos, {
+        icon,
+        zIndexOffset: 1000,
+        keyboard: false,
+        interactive: false,
+      })
         .addTo(mapa)
         .bindTooltip(etiqueta, {
           permanent: true,
