@@ -7,7 +7,17 @@ import {
   LOCALIDADES_MENORES,
   ETIQUETAS_LOCALIDAD,
 } from './data/places'
-import { obtenerLugares, obtenerAvisos, obtenerLocalidades } from './api/client'
+import { REPORTES, ESTILO_REPORTE } from './data/reportes'
+import {
+  obtenerLugares,
+  obtenerAvisos,
+  obtenerLocalidades,
+  obtenerReportes,
+  enviarReporte,
+  sincronizarCola,
+  contarCola,
+  votarReporte,
+} from './api/client'
 import { activarPush, pushSoportado } from './push'
 import Icon from './components/Icon'
 import MapView from './components/MapView'
@@ -37,19 +47,8 @@ const CAT_LABEL = {
 // Palena; Centro (Aysén norte) hasta Balmaceda; Sur (Aysén sur) el resto.
 const macrozonaDe = (orden = 0) => (orden < 65 ? 'norte' : orden < 128 ? 'centro' : 'sur')
 
-// Tipos de reporte del crowdsourcing (Fase 3). Hoy es una vista previa de UI:
-// abre el panel y confirma con un toast, sin persistir (backend pendiente).
-const REPORTES = [
-  { k: 'repDerrumbe', icon: 'mountain', c: '#8a5a2b' },
-  { k: 'repHielo', icon: 'snow', c: '#2b6cb0' },
-  { k: 'repCamino', icon: 'alert', c: 'var(--amarillo)' },
-  { k: 'repCombustible', icon: 'fuel', c: '#185FA5' },
-  { k: 'repFerry', icon: 'anchor', c: '#0e7c86' },
-  { k: 'repCamping', icon: 'tent', c: '#534AB7' },
-  { k: 'repTiempo', icon: 'cloud', c: '#5b6b78' },
-  { k: 'repFauna', icon: 'paw', c: '#0F6E56' },
-  { k: 'repEvento', icon: 'calendar', c: '#D4537E' },
-]
+// Los tipos de reporte del crowdsourcing viven en data/reportes.js (los comparten
+// la hoja de reportar, el mapa y la API).
 
 // Normaliza a minúsculas sin acentos (rango de diacríticos combinantes U+0300–U+036F).
 const norm = (s) =>
@@ -68,6 +67,13 @@ function AppInterna() {
   const [vista, setVista] = useState('ruta')
   const [localidad, setLocalidad] = useState(null) // slug o null en 'ruta'
   const [filtro, setFiltro] = useState(null) // categoría o null (sin filtro)
+
+  // Crowdsourcing (Fase 3): reportes vigentes, el que el usuario tiene abierto,
+  // el texto del comentario opcional y cuántos quedaron en cola sin señal.
+  const [reportes, setReportes] = useState([])
+  const [reporteSel, setReporteSel] = useState(null)
+  const [comentario, setComentario] = useState('')
+  const [enCola, setEnCola] = useState(0)
 
   const [lugarRapido, setLugarRapido] = useState(null) // ficha rápida (pin)
   const [fichaLugar, setFichaLugar] = useState(null) // ficha completa (PlaceDetail)
@@ -112,6 +118,8 @@ function AppInterna() {
     obtenerLugares().then(setLugares)
     obtenerAvisos().then(setAvisos)
     obtenerLocalidades().then(setLocalidades)
+    obtenerReportes().then(setReportes)
+    contarCola().then(setEnCola)
   }, [])
 
   // Recarga de avisos al recibir un push (postMessage del service worker).
@@ -148,6 +156,25 @@ function AppInterna() {
     }
   }, [])
 
+  // Buzón de salida del crowdsourcing: al recuperar señal se envían los reportes
+  // que el viajero hizo sin cobertura (el caso normal en la Carretera Austral).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const vaciarCola = async () => {
+    const enviados = await sincronizarCola()
+    setEnCola(await contarCola())
+    if (enviados > 0) {
+      setReportes(await obtenerReportes())
+      mostrarToast(t('colaEnviada'))
+    }
+  }
+
+  useEffect(() => {
+    vaciarCola()
+    window.addEventListener('online', vaciarCola)
+    return () => window.removeEventListener('online', vaciarCola)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   useEffect(() => {
     const h = (e) => {
       e.preventDefault()
@@ -157,9 +184,14 @@ function AppInterna() {
     return () => window.removeEventListener('beforeinstallprompt', h)
   }, [])
 
+  // Cada toast reinicia su propio temporizador: sin esto, el timer del toast
+  // anterior borraba el nuevo antes de los 3 s (se nota al encadenar acciones,
+  // p. ej. reportar y votar seguido).
+  const timerToast = useRef(null)
   const mostrarToast = (msg) => {
     setToast(msg)
-    setTimeout(() => setToast(null), 3000)
+    if (timerToast.current) clearTimeout(timerToast.current)
+    timerToast.current = setTimeout(() => setToast(null), 3000)
   }
 
   const habilitarPush = async () => {
@@ -296,9 +328,61 @@ function AppInterna() {
     else mostrarToast(t('centrando'))
   }
 
-  const enviarReporte = (k) => {
+  /**
+   * Envía un reporte de ruta. La posición sale del GPS del viajero; si no lo
+   * tiene concedido pero está dentro de una localidad, se usa el centro de ese
+   * pueblo (mejor un reporte ubicado al pueblo que ningún reporte). Sin ninguna
+   * de las dos referencias no se envía: un reporte sin lugar no sirve a nadie.
+   */
+  const reportar = async (tipo, k) => {
+    const punto = posMapa || (locActiva ? [locActiva.lat, locActiva.lng] : null)
+    if (!punto) {
+      mostrarToast(t('reporteSinUbicacion'))
+      return
+    }
+    const texto = comentario.trim()
+    if (tipo === 'comentario' && !texto) {
+      mostrarToast(t('reporteFaltaTexto'))
+      return
+    }
+
     setHoja(null)
-    mostrarToast(t(k) + ' · ' + t('reporteEnviado'))
+    setComentario('')
+    const r = await enviarReporte({
+      tipo,
+      lat: punto[0],
+      lng: punto[1],
+      comentario: texto || null,
+    })
+
+    if (r.enviado) {
+      // Optimista: el reporte que devolvió la API entra al mapa al instante.
+      setReportes((prev) => [r.reporte, ...prev.filter((x) => x.id !== r.reporte.id)])
+      mostrarToast(`${t(k)} · ${t('reporteEnviado')}`)
+    } else if (r.encolado) {
+      setEnCola(await contarCola())
+      mostrarToast(t('reporteEncolado'))
+    } else {
+      mostrarToast(t('reporteFalla'))
+    }
+  }
+
+  /** Voto "¿sigue ahí?" / "ya no está" sobre el reporte abierto. */
+  const votar = async (confirma) => {
+    const actual = reporteSel
+    setReporteSel(null)
+    const actualizado = await votarReporte(actual.id, confirma)
+    mostrarToast(actualizado ? t('graciasVoto') : t('reporteFalla'))
+    if (actualizado) setReportes(await obtenerReportes())
+  }
+
+  /** Antigüedad del reporte en texto corto ("recién", "hace 20 min", "hace 3 h"). */
+  const antiguedad = (iso) => {
+    if (!iso) return ''
+    const min = Math.floor((Date.now() - new Date(iso).getTime()) / 60000)
+    if (min < 2) return t('reporteRecien')
+    if (min < 60) return t('reporteHaceMin').replace('{n}', min)
+    return t('reporteHaceH').replace('{n}', Math.floor(min / 60))
   }
 
   const fmtFechaAviso = (iso) =>
@@ -335,8 +419,10 @@ function AppInterna() {
         etiquetas={ETIQUETAS_LOCALIDAD}
         filtro={filtro}
         localidadActiva={locActiva}
+        reportes={reportes}
         onEntrarLocalidad={entrarLocalidad}
         onSeleccionarLugar={setLugarRapido}
+        onSeleccionarReporte={setReporteSel}
         onPos={setPosMapa}
         lang={lang}
       />
@@ -604,7 +690,7 @@ function AppInterna() {
         </div>
       </div>
 
-      {/* Hoja: reportar (crowdsourcing — vista previa de UI, Fase 3) */}
+      {/* Hoja: reportar (crowdsourcing, Fase 3) */}
       <div className={`sheet ${hoja === 'reportar' ? 'show' : ''}`}>
         <div className="grab" />
         <div className="sheet-head">
@@ -618,7 +704,17 @@ function AppInterna() {
             <Icon nombre="clock" tam={15} color="var(--verde-osc)" />
             <span>{t('reportesNota')}</span>
           </div>
-          <div className="rep-comment" onClick={() => enviarReporte('dejarComentario')}>
+          {/* Detalle opcional: viaja con el tipo que se toque, y es obligatorio
+              cuando el reporte ES el comentario. */}
+          <textarea
+            className="rep-texto"
+            rows={2}
+            maxLength={280}
+            value={comentario}
+            onChange={(e) => setComentario(e.target.value)}
+            placeholder={t('comentarioPh')}
+          />
+          <div className="rep-comment" onClick={() => reportar('comentario', 'dejarComentario')}>
             <span className="rc-ico">
               <Icon nombre="message-circle" tam={20} color="var(--claude)" />
             </span>
@@ -629,7 +725,7 @@ function AppInterna() {
           </div>
           <div className="rep-grid">
             {REPORTES.map((r) => (
-              <button key={r.k} className="rep-item" onClick={() => enviarReporte(r.k)}>
+              <button key={r.k} className="rep-item" onClick={() => reportar(r.tipo, r.k)}>
                 <span className="r-badge" style={{ background: r.c }}>
                   <Icon nombre={r.icon} tam={26} color="#fff" />
                 </span>
@@ -637,9 +733,62 @@ function AppInterna() {
               </button>
             ))}
           </div>
-          <div className="rep-preview">{t('reportePreview')}</div>
+          <div className="rep-preview">
+            {t('reportePreview')}
+            {enCola > 0 && (
+              <>
+                {' · '}
+                <b>
+                  {enCola} {t('colaPendiente')}
+                </b>
+              </>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Tarjeta de un reporte del mapa: qué es, hace cuánto y los dos botones
+          que sostienen la calidad del dato (¿sigue ahí? / ya no está). */}
+      {reporteSel && (
+        <div className="rcard">
+          <button
+            className="rc-x"
+            onClick={() => setReporteSel(null)}
+            aria-label={lang === 'es' ? 'Cerrar' : 'Close'}
+          >
+            <Icon nombre="x" tam={14} />
+          </button>
+          <div className="rc-top">
+            <span
+              className="rc-badge"
+              style={{ background: ESTILO_REPORTE[reporteSel.tipo]?.c || 'var(--gris)' }}
+            >
+              <Icon
+                nombre={ESTILO_REPORTE[reporteSel.tipo]?.icon || 'alert'}
+                tam={22}
+                color="#fff"
+              />
+            </span>
+            <div className="rc-tx">
+              <b>{t(ESTILO_REPORTE[reporteSel.tipo]?.k || 'reporteDeViajero')}</b>
+              <small>
+                {antiguedad(reporteSel.creado_en)}
+                {reporteSel.confirmaciones > 0 &&
+                  ` · ${reporteSel.confirmaciones} ${t('reporteConfirmaciones')}`}
+              </small>
+            </div>
+          </div>
+          {reporteSel.comentario && <p className="rc-msg">{reporteSel.comentario}</p>}
+          <div className="rc-votos">
+            <button className="rc-si" onClick={() => votar(true)} disabled={offline}>
+              <Icon nombre="check" tam={16} /> {t('sigueAhi')}
+            </button>
+            <button className="rc-no" onClick={() => votar(false)} disabled={offline}>
+              <Icon nombre="x" tam={16} /> {t('yaNoEsta')}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Ficha completa */}
       {fichaLugar && <PlaceDetail lugar={fichaLugar} onCerrar={() => setFichaLugar(null)} />}

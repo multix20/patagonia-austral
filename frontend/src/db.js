@@ -3,7 +3,7 @@ import { openDB } from 'idb'
 // Almacenamiento local estructurado (IndexedDB) según plan de contingencia
 // offline: los contenidos quedan disponibles sin conexión tras la primera visita.
 const DB_NOMBRE = 'cochrane-turismo'
-const DB_VERSION = 3
+const DB_VERSION = 4
 
 function db() {
   return openDB(DB_NOMBRE, DB_VERSION, {
@@ -16,6 +16,16 @@ function db() {
       // Clave por slug: es el identificador estable que comparten API y seeds.
       if (!d.objectStoreNames.contains('localidades'))
         d.createObjectStore('localidades', { keyPath: 'slug' })
+      // v4 — Crowdsourcing (Fase 3). Dos stores:
+      //  - `reportes`: los reportes vigentes que sirvió la API, para verlos sin
+      //    señal (el caso normal en la Carretera, no la excepción).
+      //  - `salientes`: BUZÓN DE SALIDA. El viajero reporta justo donde no hay
+      //    red, así que el reporte se guarda aquí y se envía cuando vuelve la
+      //    señal. Clave autoincremental porque no tiene id del servidor todavía.
+      if (!d.objectStoreNames.contains('reportes'))
+        d.createObjectStore('reportes', { keyPath: 'id' })
+      if (!d.objectStoreNames.contains('salientes'))
+        d.createObjectStore('salientes', { keyPath: 'clave', autoIncrement: true })
     },
   })
 }
@@ -56,6 +66,37 @@ export async function guardarLocalidades(lista) {
 export async function leerLocalidades() {
   const d = await db()
   return d.getAll('localidades')
+}
+
+// ---- Crowdsourcing (Fase 3) ----
+
+export async function guardarReportes(lista) {
+  const d = await db()
+  const tx = d.transaction('reportes', 'readwrite')
+  await tx.store.clear() // son volátiles (caducan): reflejar exactamente lo vigente
+  await Promise.all(lista.map((r) => tx.store.put(r)))
+  await tx.done
+}
+
+export async function leerReportes() {
+  const d = await db()
+  return d.getAll('reportes')
+}
+
+/** Encola un reporte hecho sin señal, para enviarlo al volver la conexión. */
+export async function encolarReporte(reporte) {
+  const d = await db()
+  return d.add('salientes', reporte)
+}
+
+export async function leerCola() {
+  const d = await db()
+  return d.getAll('salientes')
+}
+
+export async function borrarDeCola(clave) {
+  const d = await db()
+  return d.delete('salientes', clave)
 }
 
 export async function guardarMeta(clave, valor) {

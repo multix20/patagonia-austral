@@ -6,6 +6,11 @@ import {
   leerAvisos,
   guardarLocalidades,
   leerLocalidades,
+  guardarReportes,
+  leerReportes,
+  encolarReporte,
+  leerCola,
+  borrarDeCola,
   guardarMeta,
   leerMeta,
 } from '../db'
@@ -101,4 +106,111 @@ export async function obtenerLocalidades() {
 
 export async function fechaActualizacion() {
   return leerMeta('actualizadoEl')
+}
+
+// ---------------------------------------------------------------------------
+// Crowdsourcing (Fase 3): reportes de ruta de los viajeros.
+// ---------------------------------------------------------------------------
+
+// Id anónimo del dispositivo: sirve para no contar dos veces el mismo voto. El
+// backend lo guarda HASHEADO, nunca en claro, y no identifica a la persona.
+function idDispositivo() {
+  let id = localStorage.getItem('dispositivoId')
+  if (!id) {
+    id = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`
+    localStorage.setItem('dispositivoId', id)
+  }
+  return id
+}
+
+/** ¿Caducó el reporte? La app lo filtra igual que la API, para el caso sin señal. */
+const vigente = (r) => !r.expira_en || new Date(r.expira_en) > new Date()
+
+export async function obtenerReportes() {
+  if (API_URL && navigator.onLine) {
+    try {
+      const r = await fetch(`${API_URL}/api/reportes`, { headers: { Accept: 'application/json' } })
+      if (r.ok) {
+        const datos = await r.json()
+        await guardarReportes(datos)
+        return datos
+      }
+    } catch {
+      // sin red o API caída: seguir con lo cacheado
+    }
+  }
+  return (await leerReportes()).filter(vigente)
+}
+
+/**
+ * Envía un reporte. Si no hay red (o el POST falla), queda en el buzón de salida
+ * y se reintenta al recuperar señal — el viajero reporta justo donde no hay
+ * cobertura, así que esto es el camino normal, no el excepcional.
+ * Devuelve { enviado, reporte } para que la UI diga la verdad al usuario.
+ */
+export async function enviarReporte({ tipo, lat, lng, comentario = null }) {
+  const cuerpo = { tipo, lat, lng, comentario, dispositivo: idDispositivo() }
+
+  if (API_URL && navigator.onLine) {
+    try {
+      const r = await fetch(`${API_URL}/api/reportes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(cuerpo),
+      })
+      if (r.ok) return { enviado: true, reporte: await r.json() }
+      // 422/429: el reintento no va a arreglarlo (dato inválido o límite de
+      // envíos), así que no se encola para no reintentar en vano.
+      if (r.status === 422 || r.status === 429) return { enviado: false, error: r.status }
+    } catch {
+      // sin red: cae al buzón de salida
+    }
+  }
+  await encolarReporte({ ...cuerpo, creado_en: new Date().toISOString() })
+  return { enviado: false, encolado: true }
+}
+
+/** Vacía el buzón de salida. Se llama al recuperar conexión y al abrir la app. */
+export async function sincronizarCola() {
+  if (!API_URL || !navigator.onLine) return 0
+  const pendientes = await leerCola()
+  let enviados = 0
+  for (const p of pendientes) {
+    const { clave, creado_en: _creado, ...cuerpo } = p
+    try {
+      const r = await fetch(`${API_URL}/api/reportes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(cuerpo),
+      })
+      // 2xx = enviado; 422 = inválido (no sirve reintentarlo). En ambos casos
+      // sale de la cola. Un 429 o un error de red lo deja para el próximo intento.
+      if (r.ok || r.status === 422) {
+        await borrarDeCola(clave)
+        if (r.ok) enviados++
+      }
+    } catch {
+      break // sin red otra vez: dejar el resto en la cola
+    }
+  }
+  return enviados
+}
+
+export async function contarCola() {
+  return (await leerCola()).length
+}
+
+/** Vota un reporte: confirma = "sigue ahí", false = "ya no está". */
+export async function votarReporte(id, confirma) {
+  if (!API_URL || !navigator.onLine) return null
+  try {
+    const r = await fetch(`${API_URL}/api/reportes/${id}/voto`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ confirma, dispositivo: idDispositivo() }),
+    })
+    return r.ok ? await r.json() : null
+  } catch {
+    return null
+  }
 }

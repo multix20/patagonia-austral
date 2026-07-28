@@ -56,6 +56,29 @@ npm run dev                  # o: npm run build && npm run preview (para probar 
 
 Config local en `frontend/.env.local` (VITE_API_URL + VITE_VAPID_PUBLIC_KEY).
 
+**En sesión web de Claude Code (contenedor efímero, sin `vendor/` ni BD).** Vale
+la pena levantarlo igual: es la diferencia entre "compila" y "funciona" — así
+salieron los tres bugs del crowdsourcing que `php -l` + build no ven. Receta:
+
+```bash
+cd backend
+composer install --ignore-platform-req=ext-gmp   # OJO: falta ext-gmp (la usa web-push);
+                                                 # sin ese flag el install falla entero
+cp .env.example .env && php artisan key:generate --force
+touch database/database.sqlite                   # .env ya trae DB_CONNECTION=sqlite
+php artisan migrate --force --seed               # verifica migraciones Y seeders de verdad
+php artisan test                                 # suite completa
+php artisan serve --port=8000 &
+
+cd ../frontend                                   # PWA apuntando a esa API real
+VITE_API_URL=http://127.0.0.1:8000 npm run build && npx vite preview --port 4173
+```
+
+`config/cors.php` ya permite `localhost:4173`, y con Playwright
+(`executablePath: '/opt/pw-browsers/chromium'`, permiso `geolocation`) se prueba
+el ciclo completo en el navegador. `composer install` tarda ~8 min: lanzarlo en
+segundo plano y seguir escribiendo código mientras baja.
+
 ---
 
 ## Historial técnico (decisiones que no hay que repetir)
@@ -306,6 +329,80 @@ lugares nuevos en la fase). Cadena de `orden` norte→sur: 10 Puerto Montt …
 ### 5. Fase 3 — Capa comercial
 Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
 
+> **⚠ RAMA CON TRABAJO SIN FUSIONAR (27-jul-2026):** el PMV de crowdsourcing está
+> pusheado en **`claude/cosmetic-service-data-updates-6sq70v`** (commit `b205789`)
+> y **no tiene PR abierto**; `main` va un commit atrás. Antes de empezar algo
+> nuevo: abrir el PR y fusionarlo, o partir la rama nueva DESDE esa — si se parte
+> de `main`, se trabaja sobre un árbol que todavía no tiene los reportes.
+
+- **Cuánto contenido cabe — cálculo de capacidad (27-jul-2026).** Con 26
+  localidades × 6 categorías, publicar 10 por cupo daría **1.560 fichas**; hoy
+  hay **156 publicadas** (1 por cupo) y **338 reales** en total (156 redactadas en
+  el repo + 182 alojamientos SERNATUR en la BD). Pero 1.560 es aritmética, no
+  meta: **Villa Amengual no tiene 10 restaurantes**. Con topes por tamaño real
+  (2 ciudades 10 por cupo; 16 pueblos 8/5/5/3/2/3; 8 caseríos 2–3) el techo
+  realista es **~608 fichas**, repartidas así: dormir 172, visitar 124, comer 116,
+  servicios 76, emergencias 72, eventos 48. → **La meta razonable es ~600, no
+  1.560**, y el grueso del esfuerzo es dormir + comer (288), que es justo lo que
+  se pide por correo a encargadas de turismo y dueños. Eventos y emergencias
+  nunca llegan a 10: un pueblo tiene una posta y un retén.
+
+- **✅ Crowdsourcing tipo Waze — PMV implementado (27-jul-2026):** el panel
+  "¿Qué ves en la ruta?" dejó de ser vista previa: los reportes se guardan,
+  aparecen en el mapa de todos y la comunidad los sostiene o los entierra.
+  - **Truco que lo hace posible en Render free (sin worker ni scheduler):** cada
+    reporte nace con `expira_en` según su tipo (`Reporte::VIDA_HORAS`: clima y
+    fauna 6 h, hielo/barcaza 12 h, camino/bencina 24 h, derrumbe 48 h, camping y
+    evento 72 h) y **la caducidad se evalúa al LEER**. No hay nada que barrer en
+    segundo plano: un reporte "muere" solo aunque el contenedor esté dormido.
+  - **Backend:** migración `2026_07_27_000002_create_reportes_table` (tablas
+    `reportes` y `reporte_votos`), modelos `Reporte`/`ReporteVoto`,
+    `ReporteController` y tres rutas públicas — `GET /api/reportes` (libre),
+    `POST /api/reportes` (`throttle:10,1`) y `POST /api/reportes/{id}/voto`
+    (`throttle:30,1`).
+  - **Calidad del dato sin moderador de turno:** confirmar suma y **estira** la
+    vigencia (+3 h, tope 24 h); **3 descartes** con más descartes que
+    confirmaciones **ocultan** el reporte (no se borra: queda para el CMS). Un
+    voto por dispositivo, con índice único en la BD — no se infla recargando.
+  - **Privacidad:** sin login. El id del dispositivo es un UUID aleatorio del
+    `localStorage` y el backend guarda solo su **sha256**; no se almacena
+    identidad ni historial de ubicación, solo el punto del reporte.
+  - **Anti-duplicado:** mismo dispositivo + mismo tipo + ≤250 m + ≤2 h devuelve el
+    reporte existente. Cubre el doble toque y, sobre todo, el reintento de la cola
+    offline cuando la respuesta se perdió.
+  - **Offline-first de verdad (lo importante en la Carretera):** el reporte se hace
+    justo donde no hay señal, así que va a un **buzón de salida** en IndexedDB
+    (store `salientes`, DB v4) y se envía al volver la conexión (evento `online`),
+    con toast honesto ("Guardado sin señal…"). El SW cachea `/api/reportes` con
+    **NetworkFirst** (regla antes de la genérica de `/api/`), porque con
+    StaleWhileRevalidate se veía primero el estado viejo del camino.
+  - **Frontend:** tipos en `data/reportes.js` (compartidos por hoja, mapa y API),
+    pin **rombo** `.pin-rep` (distinto de la gota de los lugares: es temporal y lo
+    puso otro viajero), tarjeta `.rcard` con antigüedad + comentario + los dos
+    botones de voto, y campo de detalle opcional en la hoja. Ubicación: GPS del
+    viajero, o el centro de la localidad abierta si no dio permiso.
+  - **CMS:** `ReporteResource` (solo lectura + moderación): badge con los vigentes
+    en el menú, filtros por tipo/vigentes/ocultos, ocultar-mostrar individual y en
+    lote, y "extender 24 h" para revivir un reporte cierto.
+  - **Verificado de punta a punta** (no solo `php -l`): se instaló `vendor` y se
+    levantó Laravel con SQLite → **7 tests nuevos** (`ReporteApiTest`, 32
+    aserciones) cubren caducidad, validación, anti-duplicado, voto único,
+    auto-ocultado y atribución de localidad; y con la PWA apuntando a esa API real
+    se probó en el navegador el ciclo completo: reportar → pin en el mapa → abrir
+    tarjeta → votar → modo avión → cola → recuperar señal → envío automático. Sin
+    errores JS.
+  - **Dos bugs que aparecieron por probar de verdad** (no se habrían visto con
+    `php -l` + build): `oculto` no estaba en el `$fillable` de `Reporte`, así que
+    **ocultar un reporte fallaba en silencio** (auto-ocultado y CMS); y el
+    marcador "Estás aquí" capturaba los toques, dejando **imposible de abrir** un
+    reporte hecho en el mismo lugar (ahora `interactive: false`). De paso, el
+    toast: el temporizador del anterior borraba el nuevo antes de los 3 s, y los
+    mensajes largos se cortaban a la derecha (`nowrap`).
+  - **Pendiente (siguiente):** avisar por **push** cuando aparece un reporte
+    cerca — eso sí necesita el worker de colas del always-on (Fase 4); hoy el
+    viajero ve los reportes al abrir la app. Después: filtrar por tramo/localidad
+    en la vista, y agrupar pines cuando haya varios en el mismo punto.
+
 - **✅ Un servicio publicado por localidad y categoría (27-jul-2026):** con la
   UX/UI ya pulida, el foco pasa al **dato**. El directorio queda en **156 fichas
   publicadas = 26 localidades × 6 categorías**, una sola por cupo, para poder
@@ -416,12 +513,19 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
   - **Pendiente:** revisar/personalizar las descripciones base (son plantillas
     por tipo, no marketing final).
 
-> **⚠ Bloqueo de infraestructura para el crowdsourcing:** los reportes en vivo
-> (bencina, cortes, clima, barcazas) necesitan **worker de colas + scheduler**,
-> que en **Render free NO corren**, y el arranque en frío (~50s al dormirse a los
-> 15 min) es incompatible con algo casi-tiempo-real. → Requiere el always-on de
-> la Fase 4 ANTES de encender la Fase 3 en serio. Parche mientras tanto:
-> keep-alive con ping a `/up` cada ~10 min (cron-job.org).
+> **⚠ Bloqueo de infraestructura para el crowdsourcing — ACOTADO (27-jul-2026).**
+> El diagnóstico original decía que los reportes en vivo necesitaban **worker de
+> colas + scheduler**, que en Render free NO corren. Al construir el PMV se pudo
+> **esquivar las dos piezas**: la caducidad se evalúa al leer (no hace falta
+> scheduler para barrer reportes viejos) y no se despacha push por reporte (no
+> hace falta worker). Lo que sigue bloqueado y sí requiere el always-on de la
+> Fase 4:
+>
+> - **Push de "hay un reporte cerca"** (worker de colas para despachar).
+> - **Avisos programados a futuro** (scheduler; ya era un pendiente conocido).
+> - **Arranque en frío ~50 s** al dormirse a los 15 min: el primer reporte del día
+>   se siente lento. Parche mientras tanto: keep-alive con ping a `/up` cada ~10
+>   min (cron-job.org).
 
 ### Backlog de features (anotar aquí las ideas; se priorizan al planificar)
 

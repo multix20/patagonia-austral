@@ -10,7 +10,8 @@ desplegado por separado; no interferir con sus servicios).
 - `frontend/` — React 18 + Vite, PWA (vite-plugin-pwa/Workbox), IndexedDB,
   Leaflet, bilingüe ES/EN. Sin TypeScript. Lint: `npm run lint` (oxlint).
 - `backend/` — Laravel (PHP 8.4) + Filament v3 (CMS en `/admin`), API pública
-  `/api/places`, `/api/notices`, Web Push VAPID (`minishlink/web-push`).
+  `/api/places`, `/api/notices`, `/api/reportes` (crowdsourcing, escribe sin login
+  → va con rate limit), Web Push VAPID (`minishlink/web-push`).
 - PostgreSQL 16. `docker-compose.prod.yml` (Caddy+SSL) para producción autoalojada.
 
 ## Deploy (producción actual — todo gratis)
@@ -90,6 +91,11 @@ conectividad que la app aborda.
 cortes de camino, clima, barcazas) sobre el sistema de avisos, aplicando disciplina
 de **PMF/APM** (segmento → validar problema → PMV mínimo → medir/pivotar; ojo con el
 arranque en frío). Detalle en `.claude/agents/roadmap.md`.
+**PMV ya implementado (27-jul-2026)**: reportes persistidos con caducidad por tipo
+evaluada AL LEER (por eso anda en Render free, sin worker ni scheduler), votos
+"¿sigue ahí?" que extienden u ocultan, cola offline en IndexedDB que se vacía al
+recuperar señal, y moderación en el CMS. Falta el push de "reporte cerca", que sí
+necesita el worker de la Fase 4. Tests: `backend/tests/Feature/ReporteApiTest.php`.
 
 **Contexto estratégico — Plan Ruta Austral** (MOP, anunciado 30-abr-2026;
 fuente: mop.gob.cl). Inversión ~$800 mil millones CLP **2026–2030 enfocada en la

@@ -73,6 +73,21 @@ export default defineConfig({
             },
           },
           {
+            // Reportes del crowdsourcing (Fase 3): dato PERECIBLE, va antes que la
+            // regla genérica de /api/ (en Workbox gana la primera que calza). Con
+            // StaleWhileRevalidate se vería primero el estado viejo del camino, que
+            // es justo lo que no sirve. NetworkFirst con timeout corto: si hay señal
+            // manda la red, y si no (lo normal en la ruta) responde el caché y la
+            // app además tiene su copia en IndexedDB.
+            urlPattern: /\/api\/reportes/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-reportes',
+              networkTimeoutSeconds: 4,
+              expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 },
+            },
+          },
+          {
             urlPattern: /\/api\/.*/i,
             handler: 'StaleWhileRevalidate',
             options: { cacheName: 'api-contenidos' },
