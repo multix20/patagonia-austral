@@ -189,6 +189,7 @@ export const ETIQUETAS_LOCALIDAD = {
   'puerto-cisnes': 'izq', // desvío oeste por la X-25, en el canal Puyuhuapi
   'puerto-aysen': 'izq', // desvío oeste por la Ruta 240, hacia los fiordos
   'puerto-rio-tranquilo': 'izq', // orilla OESTE del lago General Carrera
+  'caleta-tortel': 'izq', // el pueblo más al oeste de la ruta (desvío X-904)
   // Chile Chico va a la derecha (por defecto): está en el borde ESTE del mismo
   // lago, así que su nombre cae hacia Argentina, que en el mapa es espacio limpio.
   // Si rotulara a la izquierda —como estaba— viajaría de vuelta sobre el lago,
