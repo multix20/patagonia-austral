@@ -872,6 +872,85 @@ entre Caleta Tortel y Cochrane):
 
 ---
 
+## Plan de inversión (conversado 29-jul-2026)
+
+En qué orden gastar plata en el proyecto, una vez que existan **(a)** los
+contactos de las encargadas de turismo de la ruta y **(b)** el dominio propio.
+Queda escrito porque el orden depende de una fecha, y esa razón se pierde si no
+se anota.
+
+**El orden lo dicta el calendario, no la tecnología.** La temporada alta de Aysén
+es **diciembre–marzo**. Lo que se gaste antes de diciembre rinde esa temporada;
+lo que se gaste en enero llega tarde. Todo lo de abajo está ordenado contra esa
+fecha, no contra el roadmap técnico.
+
+**Dato que reordena la pregunta:** la infraestructura completa cuesta
+**~US$10/mes**, o sea que **un solo negocio auspiciador la cubre entera**. El
+riesgo de este proyecto nunca fue el dinero: es el tiempo. Gastar plata sirve
+donde compre tiempo.
+
+### Orden de gasto
+
+1. **Dominio propio — ~CLP 10.000/año. Primero, y por una razón NO técnica.**
+   Sirve para el **correo**, no para la app. La campaña a encargadas de turismo y
+   a dueños de alojamiento se responde si sale de `@<dominio>.cl` con un sitio
+   detrás; desde Gmail apuntando a `netlify.app` parece spam. La tasa de respuesta
+   de esa campaña decide cuántas de las fichas `preliminar: true` se vuelven
+   reales — es la variable más determinante del producto y cuesta casi nada.
+   De paso habilita el subdominio para el bucket R2 (salir del `r2.dev` con rate
+   limit, ver `DEPLOY.md` §2.5).
+
+2. **Backend always-on — ~US$6/mes (VPS) o ~US$7/mes (Render pago).**
+   Ya estaba anotado arriba como "la mejora que mueve la aguja", pero el motivo
+   de fondo es más duro que la comodidad: **el arranque en frío de ~50 s no es un
+   detalle de UX, mata el bucle central del producto.** El crowdsourcing depende
+   de que alguien se detenga en la ruta, con una barra de señal, y reporte un
+   derrumbe. Con 50 s de espera ese reporte no se hace, y sin reportes no hay red.
+   Además desbloquea las dos piezas pendientes por infra: **worker de colas**
+   (push "hay un reporte cerca") y **scheduler** (avisos programados a futuro).
+   Si el cuello de botella es tiempo y no plata: **Render pago**, y seguir.
+
+3. **Fotos — el gasto más grande y el único que compra calidad de verdad.**
+   Primero la vía gratis: pedirlas en el mismo correo del punto 1 (muchos dueños
+   las tienen y las ceden). **No presupuestar el viaje antes de ver qué rinde esa
+   campaña** — esperar 2–3 semanas y recién ahí contar cuántas fichas quedaron sin
+   foto. Presupuestar antes es comprar a ciegas. (Recordatorio: no raspar de
+   Google Maps ni de terceros — licencia.)
+
+4. **Sentry (free) — cuesta cero, hacerlo ANTES de tener usuarios reales.**
+   Evita que el primer bug en la ruta llegue como "no me funcionó" por WhatsApp,
+   sin forma de reproducirlo.
+
+5. **Capa comercial — aquí el dinero ENTRA, no sale.**
+   El flag `destacado` ya está implementado y los dos negocios del fundador son
+   las primeras fichas destacadas reales. **No construir cobros, planes ni
+   facturación hasta tener 2–3 negocios que ya dijeron que sí**: transferencia y
+   planilla son suficientes para los primeros diez clientes.
+
+### Lo que NO financiar (y por qué)
+
+- **Publicidad.** Todavía no hay señal de retención; pagar tráfico ahora es
+  comprar visitas para medir nada.
+- **App nativa.** La PWA es la decisión correcta justamente por offline-first;
+  una nativa cuesta mucho y no arregla nada que hoy falle.
+- **Reescrituras** (Next.js/TypeScript/backend JS) ni infra adelantada. Ya está
+  el veredicto arriba en el plan de migración: no resuelven nada real.
+- **Diseño/marca cara.** La app ya se ve bien; el diferencial es el dato.
+
+### Resumen
+
+Los primeros ~**US$150 del año** son: dominio + 12 meses de always-on + Sentry.
+Todo lo demás es tiempo y viajes, y eso se decide **después** de ver qué contesta
+la campaña de correos.
+
+**Viento a favor con fecha:** el Plan Ruta Austral del MOP mete ~$800 mil
+millones en obras **2026–2030 justo en Aysén**, donde la app ya tiene todo el
+contenido. Obras = cortes y desvíos = exactamente el problema que el
+crowdsourcing resuelve. Estar always-on cuando eso arranque vale más que
+cualquier campaña pagada.
+
+---
+
 ## Archivos clave
 
 - CMS: `backend/app/Filament/Resources/{PlaceResource,NoticeResource}.php`
