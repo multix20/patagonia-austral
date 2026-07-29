@@ -181,15 +181,18 @@ export const LOCALIDADES_ROTULADAS = [
 //   'izq'  → el nombre va a la IZQUIERDA del punto
 //   'alta' → el nombre sube una línea
 export const ETIQUETAS_LOCALIDAD = {
-  // Casi a la misma latitud que Coyhaique: sin subirlo, los dos nombres chocan.
-  'puerto-aysen': 'alta',
-  // Los dos pueblos del lago General Carrera rotulan hacia AFUERA del lago, cada
-  // uno hacia su propia orilla: Chile Chico está en el borde ESTE, así que su
-  // nombre va a la derecha (hacia Argentina, que en el mapa es espacio limpio), y
-  // Puerto Río Tranquilo está en el borde OESTE, así que va a la izquierda. Si
-  // ambos rotularan hacia adentro, los dos nombres se juntarían sobre el lago.
-  // Chile Chico usa el lado derecho por defecto: no necesita entrada aquí.
-  'puerto-rio-tranquilo': 'izq',
+  // REGLA: el rótulo se va hacia AFUERA de la Ruta 7, nunca cruzándola. Los
+  // pueblos que son desvío al OESTE (costa, fiordos, orilla oeste del lago)
+  // rotulan a la izquierda; los del ESTE, a la derecha (que es el lado por
+  // defecto y por eso no aparecen acá). Así el nombre cae siempre sobre el
+  // espacio vacío del mapa y no encima de la línea de la ruta ni de un vecino.
+  'puerto-cisnes': 'izq', // desvío oeste por la X-25, en el canal Puyuhuapi
+  'puerto-aysen': 'izq', // desvío oeste por la Ruta 240, hacia los fiordos
+  'puerto-rio-tranquilo': 'izq', // orilla OESTE del lago General Carrera
+  // Chile Chico va a la derecha (por defecto): está en el borde ESTE del mismo
+  // lago, así que su nombre cae hacia Argentina, que en el mapa es espacio limpio.
+  // Si rotulara a la izquierda —como estaba— viajaría de vuelta sobre el lago,
+  // justo encima de Río Tranquilo.
 }
 
 // Tercer nivel: localidades "menores" que se conservan (con sus lugares) pero se
