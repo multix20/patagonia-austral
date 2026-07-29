@@ -171,7 +171,7 @@ export const LOCALIDADES_ROTULADAS = [
   'puerto-cisnes', // desvío costero de la Ruta X-25
   'puerto-aysen', // Ruta 240, acceso a Chacabuco y los fiordos
   'puerto-rio-tranquilo', // base de las Capillas de Mármol
-  'chile-chico', // ribera sur del lago General Carrera (etiqueta a la izquierda)
+  'chile-chico', // ribera sur del lago General Carrera (etiqueta a la derecha)
   'villa-ohiggins', // extremo sur de la Carretera Austral
 ]
 
@@ -183,9 +183,13 @@ export const LOCALIDADES_ROTULADAS = [
 export const ETIQUETAS_LOCALIDAD = {
   // Casi a la misma latitud que Coyhaique: sin subirlo, los dos nombres chocan.
   'puerto-aysen': 'alta',
-  // Pegado al borde este del lago General Carrera: a su derecha el nombre se iría
-  // sobre la frontera argentina, y a la altura del punto pisa a Río Tranquilo.
-  'chile-chico': 'izq alta',
+  // Los dos pueblos del lago General Carrera rotulan hacia AFUERA del lago, cada
+  // uno hacia su propia orilla: Chile Chico está en el borde ESTE, así que su
+  // nombre va a la derecha (hacia Argentina, que en el mapa es espacio limpio), y
+  // Puerto Río Tranquilo está en el borde OESTE, así que va a la izquierda. Si
+  // ambos rotularan hacia adentro, los dos nombres se juntarían sobre el lago.
+  // Chile Chico usa el lado derecho por defecto: no necesita entrada aquí.
+  'puerto-rio-tranquilo': 'izq',
 }
 
 // Tercer nivel: localidades "menores" que se conservan (con sus lugares) pero se

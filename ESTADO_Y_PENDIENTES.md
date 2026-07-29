@@ -530,6 +530,88 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
 
 ### Backlog de features (anotar aquí las ideas; se priorizan al planificar)
 
+- **⚠ CORRECCIÓN DE RUMBO — la conectividad de la ruta (29-jul-2026).** Dato del
+  fundador, que vive y trabaja en el tramo: **en los pueblos SÍ hay señal, y
+  buena (sobre todo Entel)**. La falta de cobertura está **en la ruta entre
+  pueblos y en las afueras**, no dentro de ellos. Esto corrige un supuesto que
+  venía repetido en los documentos del proyecto y **cambia el argumento de venta**:
+  - **El argumento fuerte pasa a ser la CALIDAD DEL DATO, no la conectividad.** El
+    turista en el pueblo sí puede buscar; lo que encuentra sobre los servicios
+    chicos de la Austral está incompleto, desactualizado o ausente. Ese es el
+    problema que además el municipio y el dueño reconocen como propio y pueden
+    resolver — que es justo lo que se les pide.
+  - **El offline sigue siendo real, pero es la segunda razón y hay que ubicarla
+    donde ocurre: la decisión se toma EN LA RUTA, antes de llegar** (si sigo al
+    próximo pueblo, si alcanza la bencina, si conviene parar antes). Ahí no hay
+    señal y no hay ninguna otra guía.
+  - **El crowdsourcing gana coherencia:** el reporte se *hace* en la ruta sin señal
+    y se *entrega* al llegar al pueblo con señal — que es exactamente lo que hace
+    la cola offline en IndexedDB ya implementada. No es un parche: es el ciclo
+    natural del viaje.
+  - **✅ Documentos actualizados (29-jul-2026):** `CLAUDE.md` (cómo se cuenta el
+    producto, con la regla de no escribir copy que insinúe pueblos incomunicados) y
+    `ROADMAP.md` §1 (visión + apuesta estratégica: la **calidad del dato local**
+    pasa a ser el diferenciador n.º 1, y el offline-first deja de ser el titular
+    para quedar como lo que hace usable el resto en la ruta).
+
+- **Guías Chiletur (Copec) como referencia de diseño (29-jul-2026).** Editadas por
+  Copesa y distribuidas por Copec hace más de 30 años; se venden en las estaciones
+  de servicio y las conoce cualquier chileno que maneje. Zonas Norte/Centro/Sur
+  más una guía "Rutas"; mapas ruteros (Editorial Compass), planos de ciudades,
+  recorridos propuestos y listados de hoteles y restaurantes. Lo que hay que tomar
+  de ellas: **lenguaje de guía de ruta y no de software** (kilometraje, simbología
+  de servicios, orden geográfico norte→sur), densidad honesta —están llenas de
+  información y aun así se leen— y autoridad tranquila. Aplica tanto a la landing
+  como, más adelante, a cómo se presenta el directorio.
+
+- **Mapa de Chile para promocionar la guía (29-jul-2026), por construir.** Un mapa
+  del país que muestre **dónde está la Carretera Austral**, para quien no la ubica.
+  Usos: portada de la landing, redes sociales, y un impreso para dejar en la
+  hamburguesería, en el furgón y en las oficinas de turismo municipal. Hacerlo en
+  **SVG propio y autocontenido** (nada de teselas remotas: la landing no puede
+  cargar recursos externos y un impreso necesita vectores). Bien hecho sirve para
+  las tres cosas con el mismo archivo. Encaja con la referencia Chiletur de arriba.
+
+- **⚠ Landing de presentación — VERSIÓN PROVISORIA (29-jul-2026), a rehacer.** Página para
+  mostrarle el proyecto a **encargadas de turismo municipal, alcaldes y dueños de
+  servicios turísticos**: es el soporte de la campaña de correos, la mitad del
+  cuello de botella que **no** depende de programar (que contesten). Vive en
+  `frontend/public/proyecto.html`, se publica sola con el build de Netlify en
+  **`/proyecto`** (regla en `netlify.toml`, puesta ANTES del catch-all del SPA
+  porque gana la primera que calza).
+  - **Estática y aparte de la app a propósito:** no toca `App.jsx` ni agrega
+    routing (el ROADMAP dice explícitamente que no se fuerza `pages/` mientras
+    haya una sola vista). Un archivo en `public/`, cero riesgo de regresión.
+  - **Fuera del precache** (`globIgnores: ['proyecto.html']` en `vite.config.js`):
+    sin eso el service worker la metía en el app shell y **cada turista se
+    descargaba una página dirigida a alcaldes** (el precache pasaba de 10 a 11
+    entradas). Se lee una vez, con señal, desde un computador de oficina.
+  - **Contenido:** el problema (sin señal + Tortel con 21 atenciones OIT), la
+    propuesta, las 26 localidades listadas norte→sur (que el alcalde vea su pueblo
+    en la lista), el Plan Ruta Austral como razón de urgencia, y **el pedido
+    separado en dos** — municipio (listado + contacto) y dueño de servicio (ficha
+    + foto propia). Solo en español: el destinatario es chileno.
+  - **Honestidad explícita**, porque el lector es una autoridad: dice que es un
+    proyecto privado independiente, que NO es de SERNATUR ni de un municipio, que
+    las fotos se usan solo con autorización, y explica por qué hay fichas que
+    dicen "por confirmar" en vez de esconderlo.
+  - **⚠ Falta rellenar antes de publicar:** los marcadores `[TU-NOMBRE]`,
+    `[TU-CORREO]` y `[TU-WHATSAPP]` (comentario con instrucciones al inicio del
+    archivo). Se pintan en rojo en la página a propósito, para que no se escape
+    uno sin reemplazar. El correo idealmente del **dominio propio**, que es el
+    punto 1 del plan de inversión justamente por esto.
+  - **Verificado:** build + lint OK, precache de vuelta en 10 entradas /
+    573,62 KiB, y navegador (Playwright 1280×900 y 390×844): sin desborde
+    horizontal ni errores JS.
+  - **⚠ NO MERGEAR COMO ESTÁ.** Se construyó antes de la corrección de
+    conectividad de arriba y **abre con el argumento equivocado** ("el turista no
+    puede buscar en Google al llegar al pueblo" — en el pueblo sí puede). Peor:
+    lo va a leer alguien que vive ahí y sabe que es falso, y la credibilidad se
+    pierde en el primer párrafo. Sirve como referencia de **estructura y de
+    restricciones técnicas**, no de contenido. El encargo de la versión buena
+    quedó escrito en **`BRIEF_LANDING.md`**, listo para pegarse como prompt a una
+    IA de diseño.
+
 - **✅ Fotos de las fichas — (a) IMPLEMENTADO (29-jul-2026); (b) pendiente.**
   El CMS ya permite subir fotos y la PWA las muestra. Se adelantó la pieza de
   almacenamiento de la Fase 4 porque era el bloqueo de todo lo demás.

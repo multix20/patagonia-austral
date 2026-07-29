@@ -30,6 +30,10 @@ export default defineConfig({
       devOptions: { enabled: true, type: 'module' },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
+        // La landing de presentacion (municipios / servicios turisticos) NO va al
+        // precache: se lee una vez, con senal, desde un computador de oficina. El
+        // precache es para lo que el viajero necesita sin conexion en la ruta.
+        globIgnores: ['proyecto.html'],
         // Importa el manejador de Web Push (push/notificationclick) al SW generado.
         importScripts: ['push-listener.js'],
         runtimeCaching: [
