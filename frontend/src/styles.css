@@ -794,7 +794,23 @@ h1 small {
   position: relative;
   z-index: 1;
 }
-/* Icono grande de la categoría como identidad visual (no hay foto real). */
+/* Foto de portada de la ficha. Va sobre el degradado del color de la categoría,
+   que queda de respaldo: si la imagen no carga (sin señal en la ruta, o error
+   del bucket) el `onError` la esconde y la cabecera se ve como siempre. */
+.ficha-foto-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Velo inferior para que el título blanco se lea sobre fotos claras. */
+.ficha-foto-velo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.55) 100%);
+}
+/* Icono grande de la categoría como identidad visual (cuando no hay foto). */
 .ficha-foto-ico {
   position: absolute;
   top: 50%;
@@ -807,6 +823,9 @@ h1 small {
   position: absolute;
   top: 14px;
   left: 14px;
+  /* Va antes de la foto en el DOM: sin z-index la imagen lo taparía y no se
+     podría cerrar la ficha. */
+  z-index: 2;
   background: rgba(0, 0, 0, 0.45);
   color: #fff;
   border: none;
@@ -1842,6 +1861,20 @@ h1 small {
   padding: 12px 14px;
   color: #fff;
 }
+/* Miniatura de la tarjeta del mapa (misma lógica que la ficha: la foto tapa el
+   degradado, y si falla se vuelve al degradado + icono). */
+.qc-photo-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.qc-photo-velo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.5) 100%);
+}
 .qc-photo .qc-ico {
   position: absolute;
   right: 14px;
@@ -1853,6 +1886,8 @@ h1 small {
   position: absolute;
   top: 12px;
   right: 12px;
+  /* Igual que .volver: precede a la foto en el DOM. */
+  z-index: 2;
   width: 32px;
   height: 32px;
   border-radius: 50%;

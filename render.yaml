@@ -54,3 +54,22 @@ services:
         value: BHXyuwrehAa5BbAxa02Q76oIza-obs5baPkAl05sjiKF-wB8YaHDxflkFG4l0NwRrEnHWnAV6FLvApRXr2l2-iE
       - key: VAPID_PRIVATE_KEY
         sync: false
+      # Fotos de las fichas — Cloudflare R2 (S3-compatible, egress gratis).
+      # OBLIGATORIO en producción: con el disco local las fotos se pierden en
+      # cada deploy, porque el disco de Render free es efímero.
+      - key: FOTOS_DISK
+        value: r2
+      # Credenciales del token de API de R2: SECRETOS del dashboard (sync: false).
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      # Nombre del bucket, endpoint S3 (https://<account_id>.r2.cloudflarestorage.com)
+      # y dominio público del bucket (https://pub-<hash>.r2.dev o dominio propio).
+      # No son claves, pero dependen de la cuenta: se cargan en el dashboard.
+      - key: R2_BUCKET
+        sync: false
+      - key: R2_ENDPOINT
+        sync: false
+      - key: R2_URL
+        sync: false

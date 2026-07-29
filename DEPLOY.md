@@ -89,6 +89,65 @@ Proyecto **personal/comercial propio**. Arquitectura del despliegue (todo gratis
    `https://patagonia-austral.netlify.app`; ajústala en el dashboard si el
    nombre del sitio termina siendo otro).
 
+## 2.5) Fotos de las fichas — Cloudflare R2
+
+Solo hace falta una vez. Sin esto el CMS **no** puede subir fotos en producción:
+el disco de Render free es efímero y lo subido se pierde en el siguiente deploy.
+
+Se usa R2 y no S3 porque el **egress es gratis**: las fotos las descarga el
+navegador de cada turista, que es justo el costo que en S3 se dispara.
+
+> **Antes de empezar:** activar R2 exige **registrar una tarjeta** en Cloudflare,
+> aunque el uso caiga entero dentro del plan gratis (10 GB). Sin medio de pago en
+> la cuenta, el panel no deja crear el bucket.
+
+1. **Crea el bucket.** En el panel de Cloudflare → *R2* → *Create bucket*.
+   Nombre sugerido: `patagonia-austral`. Ubicación: automática.
+2. **Hazlo público.** Dentro del bucket → *Settings* → *Public access* → habilita
+   el dominio `r2.dev`. Copia la URL que queda (`https://pub-<hash>.r2.dev`):
+   esa es `R2_URL`, y es la que termina en el `<img>` de la PWA.
+   > Sin este paso las fotos suben bien pero dan 403 al mostrarse. El síntoma
+   > engaña: parece que no se subieron.
+3. **Crea el token.** R2 → *Manage API tokens* → *Create API token*, permiso
+   **Object Read & Write**, acotado a ese bucket. Anota `Access Key ID` y
+   `Secret Access Key` — **el secreto se muestra una sola vez**.
+4. **Anota el endpoint**: `https://<account_id>.r2.cloudflarestorage.com`
+   (el *Account ID* está en la portada de R2).
+5. **Cárgalo en Render** (dashboard del servicio → *Environment*):
+
+   | Variable | Valor |
+   |---|---|
+   | `FOTOS_DISK` | `r2` |
+   | `R2_ACCESS_KEY_ID` | del token |
+   | `R2_SECRET_ACCESS_KEY` | del token |
+   | `R2_BUCKET` | `patagonia-austral` |
+   | `R2_ENDPOINT` | `https://<account_id>.r2.cloudflarestorage.com` |
+   | `R2_URL` | `https://pub-<hash>.r2.dev` |
+
+   Ninguna va al repo (regla del proyecto: secretos solo en dashboards).
+6. **Verifica**: en `/admin` edita un lugar, sube una foto y guarda. Debe verse
+   la miniatura en el listado; y en la PWA, en la cabecera de la ficha.
+
+**En local no hace falta R2**: con `FOTOS_DISK=public` (el valor por defecto de
+`.env.example`) las fotos van a `storage/app/public`; corre una vez
+`php artisan storage:link`.
+
+**Plan gratis de R2**: 10 GB de almacenamiento y 1 millón de escrituras al mes.
+Una foto convertida pesa ~150 KB → 10 GB son unas 65.000 fotos, muy por encima
+del techo real de la ruta (~608 fichas).
+
+**`r2.dev` sirve para partir, pero no es el destino.** Cloudflare lo limita a
+propósito: trae *rate limit* y no pasa por la CDN completa, porque está pensado
+para desarrollo. Con tráfico de temporada alta conviene un **dominio propio**
+apuntando al bucket (`fotos.<dominio>.cl`) — es gratis, va por la CDN y no tiene
+ese tope. Entra junto con el dominio propio de la Fase 4.
+
+Migrar después es barato **por diseño**: en la BD se guardan rutas relativas, no
+URLs. Cambiar de `r2.dev` a dominio propio es editar `R2_URL` en Render y nada
+más — cero migración de datos, cero fichas que tocar.
+
+---
+
 ## 3) Prueba de fuego en producción
 
 1. Abre la PWA (URL de Netlify) → cargan los lugares desde la API.
@@ -110,8 +169,9 @@ Proyecto **personal/comercial propio**. Arquitectura del despliegue (todo gratis
 - **Netlify (frontend)**: 100 GB de banda/mes en free — de sobra. No se duerme
   (CDN estático).
 - **Filesystem efímero en Render**: lo subido al disco se pierde al reiniciar.
-  Cuando se agreguen imágenes al CMS, usar almacenamiento en la nube (S3 o
-  equivalente).
+  Por eso las fotos de las fichas van a Cloudflare R2 y no a `storage/`
+  (ver el paso 2.5). Si `FOTOS_DISK` quedara en `public` en producción, las
+  fotos desaparecerían en el siguiente deploy.
 
 ---
 
@@ -120,5 +180,7 @@ Proyecto **personal/comercial propio**. Arquitectura del despliegue (todo gratis
 Para el despliegue definitivo con dominio propio ya existe la base autoalojada:
 `docker-compose.prod.yml` (db + app + scheduler + frontend + **Caddy** con SSL
 automático), `.env.prod.example` y `docker/README-DESPLIEGUE.md`. Pendientes de
-esa fase: respaldos + restauración, logs y monitoreo, almacenamiento de imágenes
-en la nube, y dominio propio.
+esa fase: respaldos + restauración, logs y monitoreo, y dominio propio.
+El almacenamiento de imágenes en la nube ya está resuelto (R2, paso 2.5); al
+montar el dominio propio, apuntar también un subdominio al bucket para salir del
+`r2.dev` con rate limit (basta cambiar `R2_URL`).

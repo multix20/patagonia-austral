@@ -3,10 +3,11 @@
 FROM php:8.4-cli-bookworm
 
 # Dependencias del sistema y extensiones PHP requeridas por Laravel + Filament + PostgreSQL
-# (gmp lo necesita la librería de Web Push / VAPID)
+# (gmp lo necesita la librería de Web Push / VAPID; webp, las fotos de las fichas:
+# sin --with-webp el GD compila sin imagewebp() y toda subida se descarta)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        git unzip libpq-dev libicu-dev libzip-dev libpng-dev libjpeg-dev libfreetype6-dev libgmp-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+        git unzip libpq-dev libicu-dev libzip-dev libpng-dev libjpeg-dev libfreetype6-dev libgmp-dev libwebp-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j"$(nproc)" pdo_pgsql pgsql bcmath intl zip gd exif pcntl gmp \
     && rm -rf /var/lib/apt/lists/*
 

@@ -529,29 +529,56 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
 
 ### Backlog de features (anotar aquí las ideas; se priorizan al planificar)
 
-- **Fotos de las fichas + segunda revisión del contenido (anotado 27-jul-2026).**
-  Hoy el CMS **no** permite subir imágenes: la ficha se ve solo con degradado del
-  color de la categoría + icono grande (`.ficha-foto-ico`), y para un servicio
-  (dormir/comer) la foto es justo lo que el turista espera, como en Google Maps.
-  Pendiente doble: **(a)** habilitar imágenes en el CMS y en la app; **(b)** una
-  **segunda pasada sobre las 156 fichas** publicadas por la regla "un servicio por
-  localidad" (jul-2026) — reemplazar las `preliminar: true` por el dato oficial y,
-  ahí mismo, cargarles foto.
-  - **Bloqueo real → depende de la Fase 4:** en el plan free de Render el disco es
-    **efímero** (lo subido a `storage/app/public` se pierde en cada deploy o
-    reinicio), así que esto no se puede hacer "solo con Filament": necesita
-    almacenamiento de objetos **S3-compatible (Cloudflare R2, egress gratis)**, que
-    ya está anotado en la Fase 4. Sin eso, cualquier upload es humo.
-  - **Alcance técnico cuando se haga:** migración con la columna (`imagen` o
-    `imagenes` jsonb para varias + orden), `FileUpload` en `PlaceResource` con
-    conversión a WebP y límite de tamaño, `toApi()` devolviendo la URL pública,
-    y en el frontend la cabecera de `PlaceDetail` + miniatura en `QuickCard`
-    (ambos ya tienen el hueco donde hoy va el icono).
-  - **Ojo offline-first:** la PWA precachea el shell; las fotos NO deben entrar al
-    precache (regla del proyecto: peso inicial bajo, ~20 MB). Van con runtime
-    caching por demanda (`CacheFirst` con `maxEntries`/expiración, como las
-    teselas), y la ficha tiene que verse bien **sin** la foto cuando no hubo red
-    — el degradado + icono actual queda como respaldo, no se tira.
+- **✅ Fotos de las fichas — (a) IMPLEMENTADO (29-jul-2026); (b) pendiente.**
+  El CMS ya permite subir fotos y la PWA las muestra. Se adelantó la pieza de
+  almacenamiento de la Fase 4 porque era el bloqueo de todo lo demás.
+  - **Almacenamiento — Cloudflare R2** (S3-compatible, **egress gratis**: las
+    fotos las descarga el navegador de cada turista, que es justo el costo que en
+    S3 se dispara). Disco `r2` en `config/filesystems.php`, seleccionable con
+    `FOTOS_DISK` (`public` en local/CI, `r2` en producción). Receta de conexión
+    paso a paso en `DEPLOY.md` §2.5. Plan free: 10 GB ≈ 65.000 fotos, muy por
+    encima del techo real de la ruta (~608 fichas).
+  - **Datos:** columna `imagenes` **jsonb** (lista ordenada) y no una `imagen`
+    suelta — así la segunda foto no cuesta otra migración *ni otra pasada* sobre
+    las fichas ya publicadas. Se guardan **rutas relativas**, no URLs: cambiar a
+    dominio propio es cambiar `R2_URL`, no migrar 200 filas.
+  - **Conversión al subir** (`ImagenServicio` + `GuardarFoto`, GD directo para no
+    sumar dependencias al build de Render): WebP, lado máximo 1600 px, calidad 82
+    → una foto de celular de 4 MB queda en ~150 KB. Endereza por EXIF (si no, las
+    verticales salen acostadas). Se hace **en la petición** porque en Render free
+    no hay worker: lo que no se haga ahí, no se hace nunca. Números en
+    `config/fotos.php`.
+  - **CMS:** `FileUpload` múltiple y reordenable en `PlaceResource` (máx. 6),
+    miniatura de portada en el listado y **filtro "Con foto / Solo SIN foto"** —
+    cruzado con el filtro de localidad, es la lista de trabajo para pedir fotos.
+  - **PWA:** cabecera de `PlaceDetail` y miniatura de `QuickCard` usan la primera
+    foto; el resto ya viaja en el JSON, listo para el carrusel. Velo inferior para
+    que el título blanco se lea sobre fotos claras.
+  - **Offline-first respetado:** las fotos **no** entran al precache (sigue en 10
+    entradas / ~573 KiB); van por runtime caching `CacheFirst` (`fotos-fichas`,
+    300 entradas, 60 días), como las teselas. Sin foto o sin red, la ficha cae en
+    el degradado + icono de siempre (`onError` esconde la imagen).
+  - **Ojo de arquitectura:** `toApi()` fuerza URL **absoluta**. La PWA vive en
+    Netlify y la API en Render, así que una ruta relativa se resolvería contra el
+    dominio equivocado y daría 404 silencioso.
+  - **Verificado:** 7 tests nuevos (`FotosFichaTest`, suite 16/16) — conversión y
+    reescalado reales con GD, no agrandar fotos chicas, archivo corrupto que no
+    deja ficha rota, URLs en orden y `[]` cuando no hay fotos. Lint + build OK.
+  - **Requiere acción manual:** crear el bucket R2 y cargar las 6 variables en
+    Render (`DEPLOY.md` §2.5). Hasta que eso ocurra, el CMS en producción sigue
+    sin poder guardar fotos. Además el `Dockerfile` ahora compila GD `--with-webp`
+    (sin eso `imagewebp()` no existe y toda subida se descartaría).
+    Ojo al activarlo: Cloudflare **pide tarjeta** para habilitar R2 aunque el uso
+    quepa en el plan gratis.
+  - **Pendiente menor, para la Fase 4:** el dominio público `r2.dev` viene con
+    *rate limit* y sin CDN completa (Cloudflare lo limita a propósito, es para
+    desarrollo). Con tráfico de temporada alta conviene un subdominio propio
+    apuntando al bucket. Es **cambiar `R2_URL` en Render y nada más**, porque en
+    la BD hay rutas relativas, no URLs — sin migración de datos.
+  - **(b) PENDIENTE — segunda pasada sobre las 156 fichas** publicadas por la
+    regla "un servicio por localidad": reemplazar las `preliminar: true` por el
+    dato oficial y, ahí mismo, cargarles foto. Ahora sí se puede hacer de una sola
+    vez por ficha.
   - **Fuente de las fotos:** propias o cedidas por el negocio (el correo a los
     dueños puede pedirlas junto con los datos). **No** raspar imágenes de Google
     Maps ni de sitios de terceros: son de sus autores y traen problema de licencia.

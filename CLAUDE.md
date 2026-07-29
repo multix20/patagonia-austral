@@ -70,7 +70,12 @@ Historial y decisiones: `ESTADO_Y_PENDIENTES.md`. Roadmap (README):
   data oficial (correo a encargadas de turismo / dueños, o fuentes públicas).
   Luego: capa comercial (fichas destacadas, planes, analítica) + crowdsourcing
   tipo Waze. Primeras fichas reales: los negocios del fundador.
-- Fase 4 — Producción definitiva (dominio propio, S3, respaldos, monitoreo)
+- Fase 4 — Producción definitiva (dominio propio, respaldos, monitoreo).
+  ✅ **Almacenamiento de imágenes adelantado (29-jul-2026)**: fotos de las fichas
+  en **Cloudflare R2** (disco `r2`, `FOTOS_DISK`), conversión a WebP al subir,
+  `FileUpload` en el CMS y foto en `PlaceDetail`/`QuickCard`. Se adelantó porque
+  bloqueaba la segunda pasada de contenido. Falta **acción manual**: crear el
+  bucket y cargar las variables en Render (`DEPLOY.md` §2.5).
 
 **Datos de negocio**: ruta completa ~100.000–150.000 turistas/año (audiencia
 amplia). Temporada alta 2026 en Aysén (Dic25–Mar26, fuente Red de Informadores
