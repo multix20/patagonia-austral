@@ -28,21 +28,32 @@
 
 ## 1. Visión
 
-Ser la herramienta **offline-first de referencia** del viajero en la Carretera
-Austral completa (Puerto Montt → Villa O'Higgins): saber **dónde dormir, comer y
-cargar bencina**, y sobre todo **si el camino o la barcaza están pasables hoy** —
-justo donde no hay señal ni una oficina de información turística fuerte. En una
-frase: **la "OIT digital" de la Austral**.
+Ser la herramienta de referencia del viajero en la Carretera Austral completa
+(Puerto Montt → Villa O'Higgins): saber **dónde dormir, comer y cargar bencina**,
+y sobre todo **si el camino o la barcaza están pasables hoy**. En una frase:
+**la "OIT digital" de la Austral**.
 
-**Apuesta estratégica.** El _moat_ **no es el directorio** — Google Maps y el
-propio SERNATUR ya tienen todos los listados. El diferenciador es:
-1. **Capa comercial local**: fichas destacadas y negocios reales que no están bien
-   representados en las plataformas globales.
-2. **Crowdsourcing tipo Waze**: condiciones que cambian a diario (bencina, cortes,
+> **Dónde está el problema, con precisión (corregido jul-2026).** **En los pueblos
+> SÍ hay señal, y buena** (sobre todo Entel). La falta de cobertura está **en la
+> ruta entre pueblos y en las afueras**. Por lo tanto el problema del viajero no
+> es que no pueda buscar: es que **lo que encuentra sobre los servicios chicos de
+> la Austral está incompleto, desactualizado o ausente**, y que la decisión de
+> dónde parar **se toma en la ruta, antes de llegar** — sin señal y sin ninguna
+> otra guía a mano.
+
+**Apuesta estratégica.** El _moat_ **no es tener el listado** — Google Maps y el
+propio SERNATUR ya tienen listados. El diferenciador es:
+1. **Calidad del dato local**: el teléfono correcto, la ficha que existe, el
+   servicio chico que las plataformas globales no representan bien. Es lo que se
+   consigue con la campaña a municipios y dueños, no raspando fuentes.
+2. **Capa comercial local**: fichas destacadas y negocios reales de la ruta.
+3. **Crowdsourcing tipo Waze**: condiciones que cambian a diario (bencina, cortes,
    ripio, clima, barcazas) que nadie mantiene a mano y Google no tiene para la Austral.
 
-Todo sobre la base **offline-first** (la app ya vale sin conexión), que es lo que
-hace usable el resto donde no hay señal.
+**El offline-first no es el diferenciador, es lo que hace posible usar los tres
+en el lugar y el momento en que se necesitan**: el viajero lleva la guía cargada y
+decide en la ruta, y el reporte que hace sin señal se entrega solo al llegar al
+próximo pueblo (cola offline). Sigue siendo innegociable — deja de ser el titular.
 
 ---
 

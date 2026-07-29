@@ -5,6 +5,17 @@ a Villa O'Higgins). **Proyecto personal/comercial propio** — NO se rige por ba
 licitación (nació como fork de `multix20/cochrane-turismo`, que sigue vivo y
 desplegado por separado; no interferir con sus servicios).
 
+> **Cómo se cuenta el producto (corregido jul-2026, dato del fundador que vive en
+> la ruta).** **En los pueblos hay señal, y buena** (sobre todo Entel); la falta de
+> cobertura está **en la ruta entre pueblos y en las afueras**. Así que el
+> argumento **no** es "no puedes buscar": es que **el dato de los servicios chicos
+> de la Austral está incompleto o equivocado** en las plataformas globales, y que
+> **la decisión de dónde parar se toma en la ruta, antes de llegar**. El
+> offline-first sigue siendo innegociable a nivel técnico (y le da coherencia al
+> crowdsourcing: el reporte se hace sin señal y se entrega al llegar al pueblo),
+> pero **no es el titular de venta**. No escribir copy que insinúe que los pueblos
+> están incomunicados — lo va a leer gente que vive ahí.
+
 ## Stack y estructura
 
 - `frontend/` — React 18 + Vite, PWA (vite-plugin-pwa/Workbox), IndexedDB,

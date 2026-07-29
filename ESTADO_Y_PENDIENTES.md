@@ -548,10 +548,11 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
     y se *entrega* al llegar al pueblo con señal — que es exactamente lo que hace
     la cola offline en IndexedDB ya implementada. No es un parche: es el ciclo
     natural del viaje.
-  - **Pendiente de decidir:** `CLAUDE.md` y `ROADMAP.md` §1 todavía describen el
-    producto como "offline-first … justo donde no hay señal ni oficina". No se
-    tocaron a la espera de acordar la redacción nueva — son el norte del proyecto,
-    no un detalle de copy.
+  - **✅ Documentos actualizados (29-jul-2026):** `CLAUDE.md` (cómo se cuenta el
+    producto, con la regla de no escribir copy que insinúe pueblos incomunicados) y
+    `ROADMAP.md` §1 (visión + apuesta estratégica: la **calidad del dato local**
+    pasa a ser el diferenciador n.º 1, y el offline-first deja de ser el titular
+    para quedar como lo que hace usable el resto en la ruta).
 
 - **Guías Chiletur (Copec) como referencia de diseño (29-jul-2026).** Editadas por
   Copesa y distribuidas por Copec hace más de 30 años; se venden en las estaciones
