@@ -274,6 +274,14 @@ de frente es lo que hace que un municipio conteste en vez de desconfiar.
 Reemplazar los tres marcadores (van visibles en rojo a propósito para que no se
 escapen): nombre y apellido de quien firma, correo de contacto y WhatsApp.
 
-El correo debería ser **del dominio propio**, no Gmail: es el punto 1 del plan de
-inversión (ver `ESTADO_Y_PENDIENTES.md`) justamente porque de eso depende que
-contesten.
+El correo va **del dominio propio**, no Gmail: es el punto 1 del plan de inversión
+(ver `ESTADO_Y_PENDIENTES.md`) justamente porque de eso depende que contesten.
+**Dominio decidido el 29-jul-2026: `rutaaustral.cl`** → el correo queda como
+`contacto@rutaaustral.cl` (o el buzón que se elija en ese dominio). Pendiente de
+registrar en nic.cl; hasta que exista, el marcador se queda como está.
+
+**Ojo para quien diseñe:** el dominio dice "ruta austral" y el producto se llama
+"Patagonia Austral". Es a propósito —el dominio describe qué es, para que un
+municipio entienda el correo antes de abrirlo— pero significa que **la página tiene
+que dejar claro el nombre del producto en la portada**, para que quien llegue por
+el dominio sepa cómo se llama la app que va a instalar.

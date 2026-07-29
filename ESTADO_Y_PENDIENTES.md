@@ -974,7 +974,42 @@ donde compre tiempo.
 
 ### Orden de gasto
 
-1. **Dominio propio — ~CLP 10.000/año. Primero, y por una razón NO técnica.**
+> **✅ DOMINIO ELEGIDO (29-jul-2026): `rutaaustral.cl` + `rutaustral.cl`.**
+> Se buscó con un criterio distinto al habitual: el trabajo principal del dominio
+> **no es la app, es el correo** — tiene que poder dictarse por teléfono y por
+> WhatsApp a una encargada de turismo sin que se equivoque.
+>
+> - **La trampa que decidió todo — la doble "a".** `patagoniaaustral.cl` (y el
+>   `.com`) están **ocupados**, y lo único libre era `patagoniaustral.cl`, con una
+>   sola "a". Eso no es una alternativa, es una trampa: al dictar "patagonia
+>   austral" la persona escribe la versión con dos aes, que es de un tercero, y
+>   **la campaña de correos alimentaría el sitio de otro**. El mismo choque se
+>   repite en todo el naming porque "Austral" empieza con A y lo que va antes
+>   termina en A (carretera·austral, ruta·austral, mapa·austral).
+> - **Por qué `rutaaustral.cl`:** es la única familia donde **las dos escrituras
+>   están libres**, así que se registran ambas y `rutaustral.cl` redirige — se
+>   compra la trampa en vez de caer en ella, por ~CLP 20.000/año en total. Además
+>   se dicta sin ambigüedad (sin números, guiones ni tildes), describe qué es antes
+>   de que abran el correo, y **resuena con el "Plan Ruta Austral" del MOP**, que es
+>   el marco institucional que va a leer un municipio entre 2026 y 2030.
+> - **Descartados y por qué:** `ruta7.cl` está ocupado y sus variantes obligan a
+>   dictar un número ("¿siete o 7?"), que cuesta respuestas en WhatsApp;
+>   `carreteraaustral.cl`, `guiaaustral.cl` y `turismoaustral.cl` están ocupados;
+>   `aysenaustral.cl` contradice el alcance ya logrado (la app cubre dos regiones,
+>   no solo Aysén) y además lleva tilde.
+> - **Costo asumido:** el dominio dice "ruta austral" y el producto se llama
+>   "Patagonia Austral". Se aceptó a conciencia: para la campaña pesa más que el
+>   dominio **describa qué es** que la coherencia de marca. A cambio, la landing
+>   debe dejar claro el nombre del producto en la portada.
+> - **Pendiente:** verificar en **nic.cl** y registrar. La comprobación previa fue
+>   por DNS, que solo dice si un dominio **resuelve** — un dominio registrado y sin
+>   usar aparece como libre. Pasos de configuración (Netlify, redirección del
+>   segundo, CORS, `fotos.rutaaustral.cl` para salir del `r2.dev`, buzón de correo)
+>   en `DEPLOY.md` → "Dominio propio".
+> - **Dato para mirar:** `carretera-austral.cl` está **ocupado, activo y alojado**.
+>   Puede ser una guía que ya compite; vale revisarla antes de definir el discurso.
+
+1. **Dominio propio — ~CLP 10.000/año (×2 = ~20.000). Primero, y por una razón NO técnica.**
    Sirve para el **correo**, no para la app. La campaña a encargadas de turismo y
    a dueños de alojamiento se responde si sale de `@<dominio>.cl` con un sitio
    detrás; desde Gmail apuntando a `netlify.app` parece spam. La tasa de respuesta

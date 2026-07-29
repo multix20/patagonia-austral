@@ -175,12 +175,45 @@ más — cero migración de datos, cero fichas que tocar.
 
 ---
 
+## Dominio propio — `rutaaustral.cl` (decidido 29-jul-2026)
+
+**Elegido: `rutaaustral.cl`, más `rutaustral.cl` (con una sola "a") como defensa.**
+El porqué de las dos está en `ESTADO_Y_PENDIENTES.md`; en corto: quien escucha
+"ruta austral" puede escribir cualquiera de las dos, y si solo se registra una, la
+otra se la puede quedar un tercero y quedarse con el correo de la campaña.
+
+Registro en **nic.cl** (~CLP 10.000/año cada uno). Verificar disponibilidad ahí
+antes de pagar: la comprobación previa fue por DNS y eso solo dice si el dominio
+resuelve, no si está registrado.
+
+Qué configurar, en este orden:
+
+1. **Netlify — dominio del sitio.** *Domain management → Add a domain*:
+   `rutaaustral.cl` como primario y `www.rutaaustral.cl` redirigiendo a él.
+   Netlify emite el certificado Let's Encrypt solo. En nic.cl hay que apuntar los
+   nameservers a Netlify, o dejar un registro `A`/`ALIAS` al balanceador según lo
+   que ofrezca el panel.
+2. **`rutaustral.cl` → redirección.** No se sirve el sitio dos veces: se registra
+   y se redirige (301) al principal. Se puede hacer en Netlify agregándolo como
+   *domain alias*, o en el registrador si ofrece redirección web.
+3. **CORS del backend.** Sumar el dominio nuevo a `config/cors.php` en el backend
+   y redesplegar; si no, la PWA en el dominio propio no puede llamar a la API.
+4. **`VITE_API_URL`** no cambia (la API sigue en Render), pero **cualquier cambio
+   de variable en Netlify exige redeploy**, porque entran en tiempo de build.
+5. **Fotos: salir de `r2.dev`.** Apuntar `fotos.rutaaustral.cl` al bucket R2
+   (Cloudflare, *Custom Domains* del bucket) y cambiar `R2_URL` en Render. Es
+   gratis, va por la CDN completa y elimina el rate limit del `r2.dev`. **No hay
+   migración de datos**: en la base se guardan rutas relativas, no URLs (ver 2.5).
+6. **Correo del dominio.** Es la razón por la que el dominio va primero, antes que
+   cualquier otra inversión: la campaña a encargadas de turismo y a dueños de
+   servicios se responde si sale de `contacto@rutaaustral.cl` con un sitio detrás.
+   Desde Gmail apuntando a `netlify.app` parece spam. Sirve cualquier buzón
+   (Zoho Mail tiene plan gratis con dominio propio; Google Workspace es pago).
+
 ## Producción definitiva (roadmap Fase 4)
 
-Para el despliegue definitivo con dominio propio ya existe la base autoalojada:
+Para el despliegue definitivo ya existe la base autoalojada:
 `docker-compose.prod.yml` (db + app + scheduler + frontend + **Caddy** con SSL
 automático), `.env.prod.example` y `docker/README-DESPLIEGUE.md`. Pendientes de
-esa fase: respaldos + restauración, logs y monitoreo, y dominio propio.
-El almacenamiento de imágenes en la nube ya está resuelto (R2, paso 2.5); al
-montar el dominio propio, apuntar también un subdominio al bucket para salir del
-`r2.dev` con rate limit (basta cambiar `R2_URL`).
+esa fase: respaldos + restauración, logs y monitoreo, y el backend *always-on*.
+El almacenamiento de imágenes en la nube ya está resuelto (R2, paso 2.5).
