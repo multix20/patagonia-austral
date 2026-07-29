@@ -530,6 +530,38 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
 
 ### Backlog de features (anotar aquí las ideas; se priorizan al planificar)
 
+- **✅ Landing de presentación del proyecto — HECHA (29-jul-2026).** Página para
+  mostrarle el proyecto a **encargadas de turismo municipal, alcaldes y dueños de
+  servicios turísticos**: es el soporte de la campaña de correos, la mitad del
+  cuello de botella que **no** depende de programar (que contesten). Vive en
+  `frontend/public/proyecto.html`, se publica sola con el build de Netlify en
+  **`/proyecto`** (regla en `netlify.toml`, puesta ANTES del catch-all del SPA
+  porque gana la primera que calza).
+  - **Estática y aparte de la app a propósito:** no toca `App.jsx` ni agrega
+    routing (el ROADMAP dice explícitamente que no se fuerza `pages/` mientras
+    haya una sola vista). Un archivo en `public/`, cero riesgo de regresión.
+  - **Fuera del precache** (`globIgnores: ['proyecto.html']` en `vite.config.js`):
+    sin eso el service worker la metía en el app shell y **cada turista se
+    descargaba una página dirigida a alcaldes** (el precache pasaba de 10 a 11
+    entradas). Se lee una vez, con señal, desde un computador de oficina.
+  - **Contenido:** el problema (sin señal + Tortel con 21 atenciones OIT), la
+    propuesta, las 26 localidades listadas norte→sur (que el alcalde vea su pueblo
+    en la lista), el Plan Ruta Austral como razón de urgencia, y **el pedido
+    separado en dos** — municipio (listado + contacto) y dueño de servicio (ficha
+    + foto propia). Solo en español: el destinatario es chileno.
+  - **Honestidad explícita**, porque el lector es una autoridad: dice que es un
+    proyecto privado independiente, que NO es de SERNATUR ni de un municipio, que
+    las fotos se usan solo con autorización, y explica por qué hay fichas que
+    dicen "por confirmar" en vez de esconderlo.
+  - **⚠ Falta rellenar antes de publicar:** los marcadores `[TU-NOMBRE]`,
+    `[TU-CORREO]` y `[TU-WHATSAPP]` (comentario con instrucciones al inicio del
+    archivo). Se pintan en rojo en la página a propósito, para que no se escape
+    uno sin reemplazar. El correo idealmente del **dominio propio**, que es el
+    punto 1 del plan de inversión justamente por esto.
+  - **Verificado:** build + lint OK, precache de vuelta en 10 entradas /
+    573,62 KiB, y navegador (Playwright 1280×900 y 390×844): sin desborde
+    horizontal ni errores JS.
+
 - **✅ Fotos de las fichas — (a) IMPLEMENTADO (29-jul-2026); (b) pendiente.**
   El CMS ya permite subir fotos y la PWA las muestra. Se adelantó la pieza de
   almacenamiento de la Fase 4 porque era el bloqueo de todo lo demás.

@@ -5,6 +5,14 @@
   command = "npm run build"
   publish = "dist"
 
+# Landing de presentación del proyecto (para municipios y servicios turísticos).
+# Va ANTES del catch-all: en Netlify gana la primera regla que calza, y si el
+# comodín quedara primero se tragaría también esta ruta.
+[[redirects]]
+  from = "/proyecto"
+  to = "/proyecto.html"
+  status = 200
+
 # SPA: todas las rutas sirven index.html
 [[redirects]]
   from = "/*"
