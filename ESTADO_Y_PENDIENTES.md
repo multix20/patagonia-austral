@@ -568,6 +568,13 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
     Render (`DEPLOY.md` §2.5). Hasta que eso ocurra, el CMS en producción sigue
     sin poder guardar fotos. Además el `Dockerfile` ahora compila GD `--with-webp`
     (sin eso `imagewebp()` no existe y toda subida se descartaría).
+    Ojo al activarlo: Cloudflare **pide tarjeta** para habilitar R2 aunque el uso
+    quepa en el plan gratis.
+  - **Pendiente menor, para la Fase 4:** el dominio público `r2.dev` viene con
+    *rate limit* y sin CDN completa (Cloudflare lo limita a propósito, es para
+    desarrollo). Con tráfico de temporada alta conviene un subdominio propio
+    apuntando al bucket. Es **cambiar `R2_URL` en Render y nada más**, porque en
+    la BD hay rutas relativas, no URLs — sin migración de datos.
   - **(b) PENDIENTE — segunda pasada sobre las 156 fichas** publicadas por la
     regla "un servicio por localidad": reemplazar las `preliminar: true` por el
     dato oficial y, ahí mismo, cargarles foto. Ahora sí se puede hacer de una sola
