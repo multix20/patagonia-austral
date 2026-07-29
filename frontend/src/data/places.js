@@ -169,7 +169,9 @@ export const LOCALIDADES_ROTULADAS = [
   // Puyuhuapi queda como localidad normal (etiqueta solo al acercar): está muy
   // cerca de La Junta y sus rótulos fijos se encimaban en la vista general.
   'puerto-cisnes', // desvío costero de la Ruta X-25
-  'puerto-aysen', // Ruta 240, acceso a Chacabuco y los fiordos
+  // Puerto Aysén queda como localidad normal (etiqueta solo al acercar), igual
+  // que Puyuhuapi: en la vista general su rótulo fijo saturaba el tramo, que ya
+  // tiene a Puerto Cisnes arriba y a Coyhaique casi al mismo alto.
   'puerto-rio-tranquilo', // base de las Capillas de Mármol
   'chile-chico', // ribera sur del lago General Carrera (etiqueta a la derecha)
   'villa-ohiggins', // extremo sur de la Carretera Austral
