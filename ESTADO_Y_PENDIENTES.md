@@ -329,11 +329,12 @@ lugares nuevos en la fase). Cadena de `orden` norte→sur: 10 Puerto Montt …
 ### 5. Fase 3 — Capa comercial
 Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
 
-> **⚠ RAMA CON TRABAJO SIN FUSIONAR (27-jul-2026):** el PMV de crowdsourcing está
-> pusheado en **`claude/cosmetic-service-data-updates-6sq70v`** (commit `b205789`)
-> y **no tiene PR abierto**; `main` va un commit atrás. Antes de empezar algo
-> nuevo: abrir el PR y fusionarlo, o partir la rama nueva DESDE esa — si se parte
-> de `main`, se trabaja sobre un árbol que todavía no tiene los reportes.
+> **✅ RESUELTO (29-jul-2026):** la alerta anterior decía que el PMV de
+> crowdsourcing estaba sin fusionar en `claude/cosmetic-service-data-updates-6sq70v`.
+> Ya no: entró por el **PR #34** y está en `main` y desplegado. Se verificó rama
+> por rama que **todo el trabajo estaba en `main`** y se limpiaron las **27 ramas**
+> que quedaban vivas — el repo tiene solo `main`. Los SHA quedaron anotados en
+> `RAMAS_ARCHIVADAS.md` por si hay que revivir alguna.
 
 - **Cuánto contenido cabe — cálculo de capacidad (27-jul-2026).** Con 26
   localidades × 6 categorías, publicar 10 por cupo daría **1.560 fichas**; hoy
