@@ -6,6 +6,7 @@ use App\Filament\Concerns\TieneCampoUbicacionGoogleMaps;
 use App\Filament\Resources\PlaceResource\Pages;
 use App\Models\Localidad;
 use App\Models\Place;
+use App\Services\GuardarFoto;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -121,6 +122,35 @@ class PlaceResource extends Resource
                         ->label('Distancia (EN)')->required()->maxLength(255)
                         ->helperText('Ej: 22 km · 30 min by car'),
                 ]),
+
+            Forms\Components\Section::make('Fotos')
+                ->description('La primera foto es la que se ve en la cabecera de la ficha y en la tarjeta del mapa. Arrastra para reordenar.')
+                ->schema([
+                    Forms\Components\FileUpload::make('imagenes')
+                        ->label('Fotos de la ficha')
+                        ->disk(config('fotos.disco'))
+                        ->directory(config('fotos.carpeta'))
+                        ->visibility('public')
+                        ->image()
+                        ->imageEditor()
+                        ->multiple()
+                        ->reorderable()
+                        ->appendFiles()
+                        ->maxFiles(config('fotos.max_por_ficha'))
+                        ->maxSize(config('fotos.max_subida_kb'))
+                        ->helperText(
+                            'Hasta '.config('fotos.max_por_ficha').' fotos, máx. '
+                            .round(config('fotos.max_subida_kb') / 1024).' MB cada una. Se convierten '
+                            .'solas a WebP de '.config('fotos.lado_maximo').' px: no hace falta '
+                            .'achicarlas antes. Usa fotos propias o cedidas por el negocio.'
+                        )
+                        // La conversión ocurre aquí y no en un job: Render free no
+                        // corre worker de colas, así que lo que no se haga en la
+                        // petición no se hace nunca. Una foto tarda ~200 ms.
+                        ->saveUploadedFileUsing(
+                            fn ($file): ?string => app(GuardarFoto::class)->guardar($file)
+                        ),
+                ]),
         ]);
     }
 
@@ -131,6 +161,14 @@ class PlaceResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')->sortable()->toggleable(),
+                // Solo la primera foto: es la que la PWA usa de cabecera y
+                // miniatura, así que de un vistazo se ve qué ficha va a lucir
+                // bien y cuál sale con el degradado de siempre.
+                Tables\Columns\ImageColumn::make('portada')
+                    ->label('Foto')
+                    ->disk(config('fotos.disco'))
+                    ->square()
+                    ->getStateUsing(fn (Place $record): ?string => $record->imagenes[0] ?? null),
                 Tables\Columns\TextColumn::make('nombre.es')
                     ->label('Nombre')->searchable()->sortable()->limit(40),
                 Tables\Columns\TextColumn::make('localidad_nombre')
@@ -167,6 +205,25 @@ class PlaceResource extends Resource
                     ->label('Publicado'),
                 Tables\Filters\TernaryFilter::make('destacado')
                     ->label('Destacado'),
+                // La lista de trabajo de la segunda pasada: cruzado con el filtro
+                // de localidad, dice a qué encargada de turismo escribirle y por
+                // cuáles fichas preguntar.
+                Tables\Filters\TernaryFilter::make('con_foto')
+                    ->label('Con foto')
+                    ->placeholder('Todas')
+                    ->trueLabel('Solo con foto')
+                    ->falseLabel('Solo SIN foto')
+                    // whereJsonLength y no un whereRaw con `imagenes::text`: ese
+                    // cast es de Postgres y reventaría en los tests, que corren
+                    // sobre SQLite. Laravel lo traduce a la función nativa de
+                    // cada motor.
+                    ->queries(
+                        true: fn ($query) => $query->whereJsonLength('imagenes', '>', 0),
+                        false: fn ($query) => $query->where(
+                            fn ($q) => $q->whereNull('imagenes')->orWhereJsonLength('imagenes', 0)
+                        ),
+                        blank: fn ($query) => $query,
+                    ),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -88,6 +88,23 @@ export default defineConfig({
             },
           },
           {
+            // Fotos de las fichas (bucket R2). NO entran al precache: el shell
+            // debe seguir siendo liviano (regla del proyecto, ~20 MB) y nadie
+            // quiere descargar 200 fotos al instalar la app. Se guardan a medida
+            // que el turista abre fichas, y desde ahí ya se ven sin señal.
+            // CacheFirst porque la foto de una cabaña no cambia: si está en
+            // caché, no se gasta ni un byte de datos móviles en revalidar.
+            // El tope de entradas evita que el caché crezca sin control en un
+            // celular con poco espacio.
+            urlPattern: ({ url }) => /\.webp$/i.test(url.pathname) && /\/fichas\//i.test(url.pathname),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'fotos-fichas',
+              expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 60 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
             urlPattern: /\/api\/.*/i,
             handler: 'StaleWhileRevalidate',
             options: { cacheName: 'api-contenidos' },

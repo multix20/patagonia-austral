@@ -11,6 +11,9 @@ export default function PlaceDetail({ lugar, onCerrar }) {
   if (!lugar) return null
   const c = CATEGORIAS[lugar.cat]
   const mapsUrl = urlComoLlegar(lugar, lang)
+  // La primera foto es la portada. El resto ya viaja en el JSON y queda
+  // disponible para el carrusel, cuando se haga.
+  const foto = lugar.imagenes?.[0]
 
   // Compartir el lugar: usa el diálogo nativo del sistema (móvil) y, si no está,
   // copia el enlace al portapapeles con un aviso breve.
@@ -38,10 +41,30 @@ export default function PlaceDetail({ lugar, onCerrar }) {
         <button className="volver" onClick={onCerrar} aria-label="Volver">
           <Icon nombre="arrow-left" tam={18} />
         </button>
-        {/* Sin foto real: el icono grande de la categoría da identidad visual. */}
-        <span className="ficha-foto-ico" aria-hidden="true">
-          <Icon nombre={c.icono} tam={72} />
-        </span>
+        {/* Con foto: se pinta encima del degradado, que queda de respaldo si la
+            imagen no carga (sin señal, o error del bucket). Sin foto: el icono
+            grande de la categoría, como siempre. */}
+        {foto ? (
+          <>
+            <img
+              className="ficha-foto-img"
+              src={foto}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none'
+              }}
+            />
+            {/* Velo oscuro al pie: sin él, el título blanco se pierde sobre una
+                foto clara (cielo, nieve, una fachada blanca). */}
+            <span className="ficha-foto-velo" aria-hidden="true" />
+          </>
+        ) : (
+          <span className="ficha-foto-ico" aria-hidden="true">
+            <Icon nombre={c.icono} tam={72} />
+          </span>
+        )}
         <div className="titulo">{lugar.nombre[lang]}</div>
       </div>
       <div className="ficha-cuerpo">

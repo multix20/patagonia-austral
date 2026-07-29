@@ -3,7 +3,9 @@ import { CATEGORIAS, urlComoLlegar } from '../data/places'
 import { useI18n } from '../i18n'
 
 // Ficha rápida (Sprint UX/UI): tarjeta compacta que sube al tocar un pin en el
-// mapa. Sin foto real → identidad por color + icono grande de la categoría.
+// mapa. Con foto de la ficha si la hay; si no, identidad por color + icono
+// grande de la categoría (el respaldo de siempre, que además cubre el caso de
+// quedarse sin señal a mitad de ruta).
 // Los campos comerciales (rating, horario, WhatsApp) se muestran solo si existen
 // en el dato; el contenido informativo degrada con gracia sin ellos.
 export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
@@ -12,6 +14,7 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
 
   const c = CATEGORIAS[lugar.cat]
   const mapsUrl = urlComoLlegar(lugar, lang)
+  const foto = lugar.imagenes?.[0]
   const distancia = lugar.dist?.[lang]?.split('·')[0]?.trim()
   const telLimpio = lugar.tel ? lugar.tel.replace(/\s/g, '') : null
   const waNum = (lugar.whatsapp || lugar.tel || '').replace(/[^\d]/g, '')
@@ -56,9 +59,25 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
         <button className="qc-close" onClick={onCerrar} aria-label={lang === 'es' ? 'Cerrar' : 'Close'}>
           <Icon nombre="x" tam={16} color="#fff" />
         </button>
-        <span className="qc-ico" aria-hidden="true">
-          <Icon nombre={c.icono} tam={64} color="rgba(255,255,255,.32)" />
-        </span>
+        {foto ? (
+          <>
+            <img
+              className="qc-photo-img"
+              src={foto}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none'
+              }}
+            />
+            <span className="qc-photo-velo" aria-hidden="true" />
+          </>
+        ) : (
+          <span className="qc-ico" aria-hidden="true">
+            <Icon nombre={c.icono} tam={64} color="rgba(255,255,255,.32)" />
+          </span>
+        )}
         <span className="qc-tag">
           <Icon nombre={lugar.destacado ? 'star' : c.icono} tam={12} color="#fff" />{' '}
           {lugar.destacado ? t('destacado') : c.nombre[lang]}
