@@ -9,7 +9,13 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
+      includeAssets: [
+        'icons/icon-192.png',
+        'icons/icon-512.png',
+        'icons/icon-maskable-512.png',
+        'icons/apple-touch-icon.png',
+        'icons/favicon.svg',
+      ],
       manifest: {
         name: 'Patagonia Austral Turismo',
         short_name: 'Patagonia',
@@ -21,9 +27,18 @@ export default defineConfig({
         display: 'standalone',
         start_url: '/',
         icons: [
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          // La maskable NO puede ser el mismo archivo que la normal: Android le
+          // aplica su máscara (círculo, squircle, gota) y recorta ~20% del
+          // borde, así que necesita su propia versión a sangre y con el
+          // contenido centrado. Ver scripts/generar-iconos.py.
+          {
+            src: '/icons/icon-maskable-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
         ],
       },
       // Habilita el service worker también en `npm run dev` para probar el push.

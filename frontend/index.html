@@ -2,9 +2,26 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <!-- iOS ignora los iconos del manifest: sin esto, "Agregar a pantalla de
+         inicio" guarda una captura de la página en vez del icono. -->
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Patagonia" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <!-- La barra de estado toma el color del contenido (verde de la cabecera). -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0F6E56" />
+    <!-- Color de fondo en el HTML, no solo en styles.css: evita el destello
+         blanco entre que arranca la app y carga la hoja de estilos. -->
+    <style>
+      html,
+      body {
+        background: #f7f5f0;
+      }
+    </style>
     <meta
       name="description"
       content="Guía turística de la Carretera Austral, de Puerto Montt a Villa O'Higgins. Atractivos, alojamiento, gastronomía, servicios y emergencias de cada localidad. Funciona sin conexión."
