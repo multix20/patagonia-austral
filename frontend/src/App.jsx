@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { I18nProvider, useI18n } from './i18n'
 import {
   CATEGORIAS,
@@ -113,8 +113,20 @@ function AppInterna() {
     () => localStorage.getItem('tarjetaPushCerrada') === '1'
   )
   const [promptInstalar, setPromptInstalar] = useState(null)
+  // Clave v2 a propósito: la v1 se guardaba también al INSTALAR, y como el
+  // localStorage sobrevive a la desinstalación, quien instalaba y luego
+  // desinstalaba no volvía a ver el banner nunca. Estrenando clave, esos
+  // usuarios quedan desatascados; ahora solo la cruz escribe aquí.
   const [bannerCerrado, setBannerCerrado] = useState(
-    () => localStorage.getItem('bannerInstalarCerrado') === '1'
+    () => localStorage.getItem('bannerInstalarCerrado.v2') === '1'
+  )
+  // iOS no dispara `beforeinstallprompt` (no hay instalación programática), así
+  // que allí el banner no puede depender de tener un prompt vivo.
+  const esIOS = useMemo(
+    () =>
+      /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1),
+    []
   )
 
   useEffect(() => {
@@ -240,14 +252,25 @@ function AppInterna() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const cerrarBannerInstalar = () => {
+    setBannerCerrado(true)
+    localStorage.setItem('bannerInstalarCerrado.v2', '1')
+  }
+
   const instalar = async () => {
     if (promptInstalar) {
       promptInstalar.prompt()
       await promptInstalar.userChoice
+      // No se persiste el cierre: si instala, el navegador deja de disparar
+      // `beforeinstallprompt` y el banner se oculta solo; si más tarde
+      // desinstala, vuelve a dispararse y el banner reaparece, que es
+      // justamente lo que antes no pasaba.
       setPromptInstalar(null)
+      return
     }
-    setBannerCerrado(true)
-    localStorage.setItem('bannerInstalarCerrado', '1')
+    // Sin prompt (iOS): no hay instalación que esperar, el único cierre posible
+    // es el del propio usuario.
+    cerrarBannerInstalar()
   }
 
   const cerrarTarjetaPush = () => {
@@ -883,7 +906,7 @@ function AppInterna() {
         </div>
       )}
 
-      {!bannerCerrado && !instaladaStandalone && (
+      {!bannerCerrado && !instaladaStandalone && (promptInstalar || esIOS) && (
         <div className="instalar">
           <Icon nombre="smartphone" tam={24} />
           <div className="i-txt">
@@ -894,10 +917,7 @@ function AppInterna() {
           <button onClick={instalar}>{t('instalar')}</button>
           <button
             className="cerrar"
-            onClick={() => {
-              setBannerCerrado(true)
-              localStorage.setItem('bannerInstalarCerrado', '1')
-            }}
+            onClick={cerrarBannerInstalar}
             aria-label="Cerrar"
           >
             <Icon nombre="x" tam={14} />
