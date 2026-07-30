@@ -91,6 +91,10 @@ const MAPA_ES_TERRENO = !!STADIA_KEY
 
 const CENTRO_RUTA = [-45.5, -72.6]
 
+// Pane propio de la Ruta 7 y duración del fundido al entrar/salir de un pueblo.
+const PANE_RUTA = 'ruta7'
+const MS_FADE_RUTA = 350
+
 // A partir de este zoom se muestran los nombres de TODAS las localidades (como
 // Google Maps: al acercar aparecen las etiquetas). Más lejos que esto solo se
 // rotulan las destacadas, para no saturar la vista general de toda la ruta.
@@ -158,6 +162,7 @@ const MapView = forwardRef(function MapView(
     onSeleccionarLugar,
     onSeleccionarReporte,
     onPos,
+    onEstadoGeo,
     lang,
   },
   ref
@@ -176,6 +181,11 @@ const MapView = forwardRef(function MapView(
   // React en el className, no con classList (si no, un re-render las borraría).
   const [capa, setCapa] = useState('mapa')
   const [etiquetasVisibles, setEtiquetasVisibles] = useState(false)
+  // Estado del GPS, para que el rail pueda dar feedback en el botón "ubicarme":
+  //   'buscando' = watchPosition pedido, todavía sin fix (spinner)
+  //   'ok'       = hay posición
+  //   'sin'      = el navegador no tiene geolocation, o falló/denegó el permiso
+  const [estadoGeo, setEstadoGeo] = useState('buscando')
 
   // Callbacks en refs para no re-suscribir los efectos del mapa en cada render.
   const cbEntrar = useRef(onEntrarLocalidad)
@@ -203,6 +213,16 @@ const MapView = forwardRef(function MapView(
       attributionControl: true,
     }).setView(CENTRO_RUTA, 6)
     mapaRef.current = mapa
+    // Pane propio para la Ruta 7, con transición de opacidad: así la línea se
+    // DESVANECE al entrar a un pueblo en vez de desaparecer de golpe. Va en su
+    // propio pane (y no en el overlayPane común) para no arrastrar en el fundido
+    // a nada más que se dibuje ahí.
+    const paneRuta = mapa.createPane(PANE_RUTA)
+    // Mismo z que el overlayPane que usaba antes: por encima de las teselas y por
+    // debajo del markerPane (600), así los pines nunca quedan tapados por la línea.
+    paneRuta.style.zIndex = '400'
+    paneRuta.style.opacity = '1'
+    paneRuta.style.transition = `opacity ${MS_FADE_RUTA}ms ease`
     // Muestra/oculta los nombres de todas las localidades según el zoom.
     const sincronizarEtiquetas = () => setEtiquetasVisibles(mapa.getZoom() >= ZOOM_ETIQUETAS)
     mapa.on('zoomend', sincronizarEtiquetas)
@@ -243,6 +263,7 @@ const MapView = forwardRef(function MapView(
         // Barcaza (ferry): parte de la Ruta 7 pero PUNTEADA para distinguir el
         // cruce marítimo. Con más cuerpo que antes para acompañar el resalte.
         L.polyline(seg.puntos, {
+          pane: PANE_RUTA,
           color: '#d85a30',
           weight: 5,
           opacity: 0.9,
@@ -253,6 +274,7 @@ const MapView = forwardRef(function MapView(
         // La Ruta 7 como PROTAGONISTA del mapa: halo suave (la despega del fondo
         // sin apagarlo) + contorno blanco + núcleo coral grueso.
         L.polyline(seg.puntos, {
+          pane: PANE_RUTA,
           color: '#d85a30',
           weight: 14,
           opacity: 0.2,
@@ -260,6 +282,7 @@ const MapView = forwardRef(function MapView(
           lineJoin: 'round',
         }).addTo(grupo) // halo / glow
         L.polyline(seg.puntos, {
+          pane: PANE_RUTA,
           color: '#ffffff',
           weight: 9.5,
           opacity: 0.95,
@@ -267,6 +290,7 @@ const MapView = forwardRef(function MapView(
           lineJoin: 'round',
         }).addTo(grupo) // contorno blanco
         L.polyline(seg.puntos, {
+          pane: PANE_RUTA,
           color: '#d85a30',
           weight: 5.5,
           opacity: 1,
@@ -280,13 +304,33 @@ const MapView = forwardRef(function MapView(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // La ruta destacada solo se muestra en la vista general (en 'localidad' estorba).
+  // La ruta destacada solo se muestra en la vista general (en 'localidad' estorba),
+  // pero entra y sale con un FUNDIDO: al deseleccionar, desaparecer de golpe una
+  // línea tan gruesa se lee como un parpadeo del mapa. Al salir se baja la
+  // opacidad del pane y recién al terminar la transición se saca la capa (así no
+  // sigue costando render dentro del pueblo).
   useEffect(() => {
     const mapa = mapaRef.current
     const grupo = rutaRef.current
-    if (!mapa || !grupo) return
-    if (vista === 'ruta' && !mapa.hasLayer(grupo)) grupo.addTo(mapa)
-    else if (vista !== 'ruta' && mapa.hasLayer(grupo)) mapa.removeLayer(grupo)
+    const pane = mapa?.getPane(PANE_RUTA)
+    if (!mapa || !grupo || !pane) return
+    if (vista === 'ruta') {
+      if (!mapa.hasLayer(grupo)) grupo.addTo(mapa)
+      // Doble rAF: el navegador tiene que ver el estado inicial (opacidad 0, si
+      // veníamos de un fundido de salida) antes de animar hacia 1.
+      const raf = requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          pane.style.opacity = '1'
+        })
+      )
+      return () => cancelAnimationFrame(raf)
+    }
+    if (!mapa.hasLayer(grupo)) return
+    pane.style.opacity = '0'
+    const id = setTimeout(() => {
+      if (mapa.hasLayer(grupo)) mapa.removeLayer(grupo)
+    }, MS_FADE_RUTA)
+    return () => clearTimeout(id)
   }, [vista])
 
   function limpiarLoc() {
@@ -376,10 +420,21 @@ const MapView = forwardRef(function MapView(
 
   // Ubicación del usuario en vivo.
   useEffect(() => {
-    if (!('geolocation' in navigator)) return
+    if (!('geolocation' in navigator)) {
+      setEstadoGeo('sin')
+      return
+    }
+    setEstadoGeo('buscando')
     const id = navigator.geolocation.watchPosition(
-      (p) => setPos([p.coords.latitude, p.coords.longitude]),
-      () => {},
+      (p) => {
+        setPos([p.coords.latitude, p.coords.longitude])
+        setEstadoGeo('ok')
+      },
+      // `watchPosition` sigue vivo tras un error (un timeout en la ruta es
+      // normal: el fix puede llegar después). Marcamos 'sin' para no dejar el
+      // spinner girando eternamente, pero si más tarde entra una posición el
+      // callback de éxito vuelve a poner 'ok'.
+      () => setEstadoGeo((e) => (e === 'ok' ? 'ok' : 'sin')),
       { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
     )
     return () => navigator.geolocation.clearWatch(id)
@@ -390,6 +445,12 @@ const MapView = forwardRef(function MapView(
     onPos?.(pos)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pos])
+
+  // Avisa a la app del estado del GPS (spinner / mensaje del botón "ubicarme").
+  useEffect(() => {
+    onEstadoGeo?.(estadoGeo)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [estadoGeo])
 
   // Marcador "estás aquí".
   useEffect(() => {

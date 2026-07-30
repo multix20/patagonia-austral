@@ -1768,6 +1768,32 @@ h1 small {
   opacity: 0.5;
   cursor: default;
 }
+/* Botón "ubicarme": mientras el GPS busca fix gira un spinner en vez del icono,
+   y si no hay ubicación el botón se apaga PERO sigue tocable (responde con un
+   toast que explica por qué). En el celular no hay `title` al tocar, así que el
+   estado tiene que verse y el toque tiene que contestar algo. */
+.fab-geo.geo-buscando,
+.fab-geo.geo-sin {
+  opacity: 0.6;
+}
+.geo-spinner {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(0, 0, 0, 0.15);
+  border-top-color: var(--tinta);
+  animation: geo-gira 0.8s linear infinite;
+}
+@keyframes geo-gira {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .geo-spinner {
+    animation-duration: 2.4s;
+  }
+}
 .fab-report {
   background: var(--claude);
   color: #fff;

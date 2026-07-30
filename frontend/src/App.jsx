@@ -84,6 +84,9 @@ function AppInterna() {
   const [panelAvisos, setPanelAvisos] = useState(false)
 
   const [posMapa, setPosMapa] = useState(null)
+  // Estado del GPS que reporta MapView ('buscando' | 'ok' | 'sin'): alimenta el
+  // feedback del botón "ubicarme" del rail.
+  const [estadoGeo, setEstadoGeo] = useState('buscando')
   const [toast, setToast] = useState(null)
   const mapaRef = useRef(null)
 
@@ -323,9 +326,19 @@ function AppInterna() {
     localStorage.setItem('avisosVistos', JSON.stringify(ids))
   }
 
+  /**
+   * Centra el mapa en el viajero. Si todavía no hay fix del GPS el botón NO se
+   * deshabilita: en el celular un botón gris y mudo no explica nada (el `title`
+   * no existe al tocar), así que se deja tocable y responde con un toast que
+   * dice si está buscando o si no hay permiso/soporte.
+   */
   const centrarEnMi = () => {
-    if (mapaRef.current?.centrarEnMi) mapaRef.current.centrarEnMi()
-    else mostrarToast(t('centrando'))
+    if (posMapa && mapaRef.current?.centrarEnMi) {
+      mapaRef.current.centrarEnMi()
+      mostrarToast(t('centrando'))
+      return
+    }
+    mostrarToast(estadoGeo === 'buscando' ? t('buscandoUbicacion') : t('sinUbicacion'))
   }
 
   /**
@@ -424,6 +437,7 @@ function AppInterna() {
         onSeleccionarLugar={setLugarRapido}
         onSeleccionarReporte={setReporteSel}
         onPos={setPosMapa}
+        onEstadoGeo={setEstadoGeo}
         lang={lang}
       />
 
@@ -472,12 +486,24 @@ function AppInterna() {
       {/* Rail derecho */}
       <div className="rail">
         <button
-          className="fab-round"
+          className={`fab-round fab-geo geo-${estadoGeo}`}
           onClick={centrarEnMi}
-          disabled={!posMapa}
-          aria-label={lang === 'es' ? 'Mi ubicación' : 'My location'}
+          aria-busy={!posMapa && estadoGeo === 'buscando'}
+          aria-label={
+            posMapa
+              ? lang === 'es'
+                ? 'Mi ubicación'
+                : 'My location'
+              : estadoGeo === 'buscando'
+                ? t('buscandoUbicacion')
+                : t('sinUbicacion')
+          }
         >
-          <Icon nombre="locate" tam={22} color="var(--tinta)" />
+          {!posMapa && estadoGeo === 'buscando' ? (
+            <span className="geo-spinner" aria-hidden="true" />
+          ) : (
+            <Icon nombre="locate" tam={22} color="var(--tinta)" />
+          )}
         </button>
         <button
           className="fab-round fab-report"
