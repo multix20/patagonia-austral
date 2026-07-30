@@ -779,6 +779,30 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ Icono nuevo y arranque de la PWA — RESUELTO (30-jul-2026):** el icono
+  anterior (montaña + sol en blanco sobre verde) se confundía con el glifo de
+  "imagen rota" y, sobre todo, estaba **mal declarado**: la entrada `maskable`
+  del manifest apuntaba **al mismo archivo** que la normal, así que Android le
+  aplicaba su máscara y le cortaba las cumbres y el sol. Además **no había
+  `apple-touch-icon`**, con lo que "Agregar a pantalla de inicio" en iOS —el
+  gesto que instala la app— guardaba una captura de la página en vez del icono.
+  - **Diseño nuevo:** el **7 de la Ruta 7** (la Carretera Austral *es* la Ruta 7)
+    en crema sobre la silueta de la cordillera, con el sol amarillo. Se eligió una
+    forma sola y gruesa porque el icono se ve casi siempre a **48 px** en el
+    lanzador: ahí un paisaje con detalle o un camino en perspectiva se vuelven un
+    borrón (se probaron ambos antes de descartarlos).
+  - **Variantes**, una por tipo de recorte: `icon-192`/`icon-512` (`any`, con
+    esquinas propias), `icon-maskable-512` (a sangre, contenido dentro del círculo
+    seguro del 80%), `apple-touch-icon` (180, cuadrado y **sin alfa** — iOS rellena
+    de negro la transparencia) y `favicon.svg`.
+  - **Reproducible:** `frontend/scripts/generar-iconos.py` (Pillow) genera las
+    cuatro variantes y el SVG desde un único diseño; cambiar el icono es editar
+    ese archivo y volver a correrlo, no reemplazar PNGs a mano.
+  - **Arranque:** `index.html` suma `apple-mobile-web-app-capable`, título corto
+    de la pantalla de inicio y un `background` en línea para que el primer pintado
+    sea crema y no el destello blanco de antes.
+  - **Pendiente (menor):** iOS no muestra splash real sin `apple-touch-startup-image`,
+    que exige un PNG por tamaño de dispositivo. Queda anotado para la Fase 4.
 - **✅ Publicar top 10 de alojamientos por código — (22-jul-2026):** los
   alojamientos SERNATUR ya estaban cargados en Neon pero en **borrador**; se
   habilitan por sistema en vez de uno por uno en el CMS. La **migración**
