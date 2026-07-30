@@ -60,6 +60,38 @@ class ReporteApiTest extends TestCase
         $this->assertNotSame('dispositivo-de-prueba-1', $reporte->dispositivo);
     }
 
+    /**
+     * "Alojamiento lleno": el reporte más valioso mientras duren las obras del
+     * Plan Ruta Austral. Vive 12 h a propósito —la tarde y la mañana siguiente—
+     * porque después las piezas se desocupan y el aviso pasa a mentir.
+     */
+    public function test_reporte_de_alojamiento_lleno_dura_doce_horas(): void
+    {
+        $this->localidad();
+
+        $this->postJson('/api/reportes', [
+            'tipo' => 'alojamiento',
+            'lat' => -47.2545,
+            'lng' => -72.5738,
+            'comentario' => 'Todo lleno, hay cuadrilla de la obra alojada',
+            'dispositivo' => 'dispositivo-de-prueba-1',
+        ])->assertCreated()->assertJsonPath('tipo', 'alojamiento');
+
+        $this->assertSame(12, Reporte::VIDA_HORAS['alojamiento']);
+        $this->assertEqualsWithDelta(
+            now()->addHours(12)->timestamp,
+            Reporte::first()->expira_en->timestamp,
+            5
+        );
+
+        // A las 11 h sigue sirviendo; a las 13 h ya no aparece.
+        $this->travel(11)->hours();
+        $this->assertCount(1, $this->getJson('/api/reportes')->assertOk()->json());
+
+        $this->travel(2)->hours();
+        $this->assertCount(0, $this->getJson('/api/reportes')->assertOk()->json());
+    }
+
     /** El tipo tiene que ser uno de los conocidos y el comentario tiene tope. */
     public function test_valida_la_entrada(): void
     {

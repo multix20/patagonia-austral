@@ -34,6 +34,7 @@ class ReporteResource extends Resource
         'hielo' => 'Hielo / escarcha',
         'combustible' => 'Combustible',
         'ferry' => 'Barcaza',
+        'alojamiento' => 'Alojamiento lleno',
         'camping' => 'Camping',
         'tiempo' => 'Clima',
         'fauna' => 'Animales en la ruta',

@@ -33,6 +33,10 @@ class Reporte extends Model
      * Los plazos siguen qué tan rápido cambia el dato en la Carretera Austral:
      * el clima y la fauna se mueven en horas; un derrumbe o un corte pueden durar
      * días; que haya bencina en un pueblo chico se vuelve dudoso al día siguiente.
+     *
+     * `alojamiento` ("todo lleno") dura 12 h a propósito: cubre la decisión de esa
+     * tarde y la mañana siguiente, que es cuando el dato sirve para seguir de largo
+     * o llamar antes. Pasado eso las piezas se desocupan y el aviso miente.
      */
     public const VIDA_HORAS = [
         'derrumbe' => 48,
@@ -40,6 +44,7 @@ class Reporte extends Model
         'hielo' => 12,
         'combustible' => 24,
         'ferry' => 12,
+        'alojamiento' => 12,
         'camping' => 72,
         'tiempo' => 6,
         'fauna' => 6,

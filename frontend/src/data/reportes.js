@@ -10,6 +10,11 @@ export const REPORTES = [
   { k: 'repCamino', tipo: 'camino', icon: 'alert', c: 'var(--amarillo)' },
   { k: 'repCombustible', tipo: 'combustible', icon: 'fuel', c: '#185FA5' },
   { k: 'repFerry', tipo: 'ferry', icon: 'anchor', c: '#0e7c86' },
+  // "Todo lleno" en el pueblo. Es el aviso que hace que el viajero siga de largo
+  // o llame antes de llegar — y el más valioso mientras duren las obras del Plan
+  // Ruta Austral (2026-2030), que suman cuadrillas alojadas sobre una ocupación
+  // regional que ya venía en ~77% en temporada alta.
+  { k: 'repAlojamiento', tipo: 'alojamiento', icon: 'bed', c: '#B3261E' },
   { k: 'repCamping', tipo: 'camping', icon: 'tent', c: '#534AB7' },
   { k: 'repTiempo', tipo: 'tiempo', icon: 'cloud', c: '#5b6b78' },
   { k: 'repFauna', tipo: 'fauna', icon: 'paw', c: '#0F6E56' },

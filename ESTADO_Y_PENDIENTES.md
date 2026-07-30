@@ -574,13 +574,24 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
     es una buena noticia (va a haber demanda, y por eso importa más que su ficha
     exista con el teléfono correcto), y al municipio le nombra un problema que ya
     ve venir y para el que no tiene herramienta.
-  - **Idea de producto que abre — POR DECIDIR:** un tipo de reporte nuevo,
-    **"alojamiento disponible / sin cupo"**. Hoy los tipos son camino, derrumbe,
-    bencina, barcaza, clima, camping y eventos (`Reporte::VIDA_HORAS`); no hay nada
-    de camas, así que **la landing tiene prohibido prometerlo**. Si se construye,
-    encaja directo en el motor existente (nace con caducidad, se vota, va por la
-    cola offline) — el trabajo es de UX y de decidir la vida útil, no de
-    arquitectura.
+  - **✅ Reporte "Alojamiento lleno" — IMPLEMENTADO (29-jul-2026).** Tipo nuevo
+    `alojamiento`, **12 h de vida**: cubre la decisión de esa tarde y la mañana
+    siguiente, que es cuando el dato sirve para seguir de largo o llamar antes;
+    pasado eso las piezas se desocupan y el aviso pasaría a mentir. Cuatro
+    archivos, porque el motor ya existía: `Reporte::VIDA_HORAS` (el backend valida
+    contra esa lista, así que agregar la clave habilita la API entera),
+    `ReporteResource::TIPOS` en el CMS, `REPORTES` en `data/reportes.js` (icono
+    `bed`, rojo `#B3261E`) e i18n ES/EN.
+  - **Decisión: NO se agregó el reporte inverso ("queda alojamiento").** Tres
+    razones: (a) es mucho más perecible —una pieza libre se toma en una hora— y un
+    aviso vencido de disponibilidad manda al viajero a un pueblo lleno, que es peor
+    que no decirle nada; (b) sería una **superficie de publicidad**: en cuanto los
+    dueños noten que pueden publicar "tengo camas", el muro de reportes deja de ser
+    viajero-a-viajero y se vuelve marketing, que es justo lo que sostiene la
+    confianza del sistema; (c) "tengo disponibilidad" pertenece a la **capa
+    comercial** —gestionado desde la ficha del negocio, con el dueño respondiendo
+    por el dato— y no al feed anónimo. Si se decide igual, es una línea en
+    `VIDA_HORAS` y otra en `REPORTES`.
 
 - **Guías Chiletur (Copec) como referencia de diseño (29-jul-2026).** Editadas por
   Copesa y distribuidas por Copec hace más de 30 años; se venden en las estaciones
