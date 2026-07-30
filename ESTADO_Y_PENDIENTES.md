@@ -554,6 +554,34 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
     pasa a ser el diferenciador n.º 1, y el offline-first deja de ser el titular
     para quedar como lo que hace usable el resto en la ruta).
 
+- **⚡ Presión sobre las camas por las obras (29-jul-2026) — dato nuevo, y el
+  mejor argumento aparecido hasta ahora.** Verificado en fuentes públicas tras un
+  dato de radio:
+  - **Aysén cerró la temporada con 76,8% de ocupación hotelera en enero y 75,7% en
+    febrero**, entre las más altas del país y sobre el promedio nacional (Sernatur).
+  - El **alcalde de Cochrane** señala que obras de esta magnitud generan demanda de
+    mano de obra "además de servicios asociados como **alojamiento**, alimentación,
+    transporte y abastecimiento" (Emol, 23-may-2026).
+  - Nombre oficial del plan, para citarlo bien: *Programa de Inversión Especial Red
+    Austral 2026–2030*, **«Ruta Austral: Soberanía que Conecta»**, **$800.393
+    millones**, anunciado el 30-abr-2026 (MOP).
+  - **La lectura (nuestra, no publicada):** con la ocupación ya en ~77% en
+    temporada alta no queda holgura, y en pueblos de cinco o seis hospedajes una
+    cuadrilla instalada por meses se nota de inmediato. Durante cuatro temporadas,
+    **"¿dónde hay dónde dormir esta noche?" pasa a ser la pregunta más valiosa de
+    la ruta** — y hoy nadie la responde.
+  - **Sirve para las dos audiencias con el mismo hecho:** al dueño de alojamiento
+    es una buena noticia (va a haber demanda, y por eso importa más que su ficha
+    exista con el teléfono correcto), y al municipio le nombra un problema que ya
+    ve venir y para el que no tiene herramienta.
+  - **Idea de producto que abre — POR DECIDIR:** un tipo de reporte nuevo,
+    **"alojamiento disponible / sin cupo"**. Hoy los tipos son camino, derrumbe,
+    bencina, barcaza, clima, camping y eventos (`Reporte::VIDA_HORAS`); no hay nada
+    de camas, así que **la landing tiene prohibido prometerlo**. Si se construye,
+    encaja directo en el motor existente (nace con caducidad, se vota, va por la
+    cola offline) — el trabajo es de UX y de decidir la vida útil, no de
+    arquitectura.
+
 - **Guías Chiletur (Copec) como referencia de diseño (29-jul-2026).** Editadas por
   Copesa y distribuidas por Copec hace más de 30 años; se venden en las estaciones
   de servicio y las conoce cualquier chileno que maneje. Zonas Norte/Centro/Sur

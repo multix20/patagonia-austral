@@ -134,6 +134,68 @@ Mucha gente no sabe dónde empieza la Carretera Austral.
 
 ---
 
+## 5-bis. Los reportes de los viajeros, y por qué ahora
+
+**Este es el argumento más fuerte de la página y el que tiene fecha.** Merece
+sección propia y tratamiento gráfico, no una viñeta en una lista de features.
+
+### Qué hace la app
+
+Un viajero que va pasando reporta lo que ve —**camino cortado, derrumbe, si hay
+bencina, cómo está la barcaza, el clima**— y lo ve quien viene detrás. Cada
+reporte **caduca solo** según su tipo (un aviso de clima dura horas; un derrumbe,
+días), y la comunidad lo sostiene o lo entierra votando "¿sigue ahí?".
+
+El detalle que lo hace funcionar en la Austral: **el reporte se hace sin señal, en
+plena ruta, y se envía solo al llegar al pueblo.** Queda guardado en el teléfono
+mientras tanto. Es el ciclo natural del viaje, no un parche.
+
+Es lo que **ninguna guía impresa puede hacer y ninguna plataforma global mantiene**
+para esta ruta.
+
+### Por qué justo ahora: cuatro años de obras
+
+El MOP anunció el **30 de abril de 2026** el *Programa de Inversión Especial Red
+Austral 2026–2030*, llamado **«Ruta Austral: Soberanía que Conecta»**:
+**$800.393 millones** concentrados en la Región de Aysén.
+
+Eso significa **cuatro temporadas seguidas de faenas, desvíos y cortes** — justo
+la información que cambia día a día y que hoy circula por radio y boca a boca.
+
+Y hay un segundo efecto, menos obvio y más interesante para el lector municipal:
+
+> **La presión sobre las camas.** Aysén ya cerró la última temporada con
+> **76,8% de ocupación hotelera en enero y 75,7% en febrero**, de las más altas del
+> país y sobre el promedio nacional (Sernatur). Las obras suman, encima de eso,
+> demanda de alojamiento para las cuadrillas: el propio **alcalde de Cochrane**
+> menciona que este tipo de faenas genera demanda de mano de obra "además de
+> servicios asociados como **alojamiento**, alimentación, transporte y
+> abastecimiento".
+>
+> Con la ocupación ya en ese nivel **no queda mucha holgura**, y en pueblos que
+> tienen cinco o seis hospedajes una cuadrilla instalada por meses se nota de
+> inmediato. Para el viajero, "¿dónde hay dónde dormir esta noche?" pasa a ser la
+> pregunta más valiosa de la ruta. Para el municipio, es un problema que va a
+> tener que responder sin tener con qué.
+
+**Cómo tratarlo en la página — con cuidado:**
+
+- Es una **tensión previsible**, no una crisis anunciada. Los números de ocupación
+  y la declaración del alcalde son verificables; **la conclusión es nuestra** y hay
+  que presentarla como lectura, no como dato.
+- **Para el dueño de alojamiento es una buena noticia**, y así hay que decírselo:
+  va a haber demanda, y por eso mismo importa más que nunca que su ficha exista,
+  con su teléfono correcto. Nada de tono catastrofista con quien te está por
+  mandar sus datos.
+- **Para el municipio es el problema que ya ve venir**, y ahí la página conecta
+  con lo que puede ofrecerle: un canal para avisar a los viajeros que ya están en
+  la ruta.
+- **Ojo, límite duro:** la app **hoy no tiene** un reporte de "camas disponibles".
+  Los tipos existentes son camino, derrumbe, bencina, barcaza, clima, camping y
+  eventos. **No prometer** disponibilidad de alojamiento en tiempo real.
+
+---
+
 ## 6. Dirección visual
 
 **Referencia: las guías Chiletur de Copec** — el mapa rutero que se vende en las
@@ -187,21 +249,24 @@ beneficios con íconos genéricos.
 2. **El problema** (§4): lo que hoy se encuentra sobre estos pueblos está
    incompleto o equivocado, y la decisión se toma en la ruta.
 3. **Qué es la app.** Ficha por localidad en seis categorías · funciona sin señal
-   en la ruta · estado del camino reportado por los viajeros. Bilingüe ES/EN,
+   en la ruta · **los viajeros reportan el estado del camino**. Bilingüe ES/EN,
    gratis, sin publicidad, sin cuenta.
-4. **Por qué ahora.** Plan Ruta Austral del MOP: obras 2026–2030 en Aysén ⇒
-   faenas, desvíos y cortes durante cuatro temporadas ⇒ información que cambia día
-   a día y que nadie mantiene.
-5. **El pedido, en dos columnas** — municipio y dueño de servicio, porque no se
+4. **Los reportes de los viajeros — sección propia, no una viñeta.** Es lo que
+   ninguna guía impresa ni plataforma global tiene para la Austral, y lo que la
+   vuelve útil durante las obras. Ver §5-bis.
+5. **Por qué ahora: cuatro años de obras** y la presión sobre las camas. Ver
+   §5-bis — es el argumento con fecha, y el que le habla directo a lo que el
+   municipio ya está viendo venir.
+6. **El pedido, en dos columnas** — municipio y dueño de servicio, porque no se
    les pide lo mismo. Clarísimo que sirve un Excel, un PDF o un WhatsApp y que
    **no hay formulario que llenar**.
-6. **Qué reciben.** Municipio: presencia frente a un turista que ya está
+7. **Qué reciben.** Municipio: presencia frente a un turista que ya está
    decidiendo, y un canal para avisos oficiales. Dueño: ficha con teléfono y foto,
-   encontrable justo cuando lo buscan.
-7. **Quién está detrás.** Un vecino de la zona que opera una hamburguesería en el
+   encontrable justo cuando lo buscan — y con más demanda en camino (§5-bis).
+8. **Quién está detrás.** Un vecino de la zona que opera una hamburguesería en el
    km 1020 y transporte y encomiendas entre Tortel y Cochrane; maneja ese tramo
    cada semana. **Con nombre y apellido.**
-8. **Contacto.** Correo y WhatsApp — los dueños contestan mucho más por WhatsApp.
+9. **Contacto.** Correo y WhatsApp — los dueños contestan mucho más por WhatsApp.
 
 ---
 
@@ -233,13 +298,25 @@ total de turistas.*
 > **Cochrane 1.312 / Tortel 21** es el dato más elocuente de la página: merece
 > tratamiento gráfico, no una viñeta.
 
-**Plan Ruta Austral (MOP, 30-abr-2026)**
-- ~**$800 mil millones CLP**, **2026–2030, en la Región de Aysén**.
+**Plan Ruta Austral (MOP, anunciado 30-abr-2026)**
+- Nombre oficial: *Programa de Inversión Especial Red Austral 2026–2030*,
+  **«Ruta Austral: Soberanía que Conecta»**.
+- **$800.393 millones CLP**, **2026–2030, en la Región de Aysén**.
 - 244 km intervenidos · 150,4 km de pavimentación definitiva.
 - Puentes Palena y Rosselot · **dos barcazas nuevas** (lagos General Carrera y
   O'Higgins) · puerto Yungay.
 - **Es un plan regional de Aysén.** No decir ni insinuar que se pavimentará toda
   la ruta Puerto Montt–O'Higgins para 2030.
+
+**Ocupación hotelera de Aysén — última temporada**
+*Fuente: Sernatur.*
+- **76,8% en enero** y **75,7% en febrero**, entre las más altas del país y sobre
+  el promedio nacional.
+- El **alcalde de Cochrane** ha señalado que obras de esta magnitud generan
+  demanda de mano de obra "además de servicios asociados como **alojamiento**,
+  alimentación, transporte y abastecimiento".
+- **La conclusión sobre la presión de camas es una lectura nuestra, no un dato
+  publicado**: presentarla como tal (ver §5-bis).
 
 **Origen de los datos**
 - El alojamiento parte de registros públicos de **SERNATUR** y se corrige con
