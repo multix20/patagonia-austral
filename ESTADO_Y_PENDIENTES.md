@@ -779,6 +779,27 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ Actualización visible de la PWA — HECHO (30-jul-2026):** hasta ahora el
+  service worker se registraba con `registerType: 'autoUpdate'`: la versión nueva
+  entraba sola y **la app se recargaba sin decir nada**. En la ruta, con el mapa
+  abierto, ese reinicio espontáneo parece una caída. Ahora el ciclo es explícito
+  (`frontend/src/actualizacion.js`, `registerType: 'prompt'`):
+  - **Indicador en el icono** de la app instalada (Badging API `setAppBadge`)
+    cuando queda una versión esperando: se ve en el escritorio / pantalla de
+    inicio **aunque la app esté cerrada**, y es lo que trae al usuario de vuelta.
+  - **Al abrir con una versión esperando se aplica sola**, mostrando el cartel
+    "Actualizando la app…" (con la nota de que los mapas y reportes guardados no
+    se pierden) y, tras el reinicio, el toast "App actualizada". El reinicio deja
+    de ser un parpadeo sin motivo.
+  - **Si la versión llega con la app en uso NO se interrumpe**: aparece un aviso
+    con el botón "Actualizar" (y el punto en el botón de menú); si no lo tocan,
+    la aplica la próxima apertura. Se chequea al abrir, al volver a primer plano
+    y cada hora, siempre con señal.
+  - **Menú → "Versión de la app"**: fecha del build (`__VERSION_APP__`) y chequeo
+    manual. Sirve para confirmar de un vistazo que la actualización sí entró.
+  - Ojo: `clientsClaim: true` quedó explícito en el `workbox` del vite.config —
+    lo ponía `autoUpdate` por su cuenta y sin él la primera visita se quedaba sin
+    service worker (o sea, sin offline) hasta la visita siguiente.
 - **✅ Icono nuevo y arranque de la PWA — RESUELTO (30-jul-2026):** el icono
   anterior (montaña + sol en blanco sobre verde) se confundía con el glifo de
   "imagen rota" y, sobre todo, estaba **mal declarado**: la entrada `maskable`

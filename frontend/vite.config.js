@@ -5,10 +5,20 @@ import { VitePWA } from 'vite-plugin-pwa'
 // PWA Patagonia Austral Turismo - Carretera Austral (Puerto Montt a Villa O'Higgins)
 // Offline-first: precache del app shell + cache de teselas OSM + cache de API
 export default defineConfig({
+  // Versión visible en el menú. No hay versionado semántico (el despliegue es
+  // continuo desde `main`), y lo que le sirve al viajero es saber DE CUÁNDO es
+  // la app que tiene instalada para reconocer que la actualización sí entró.
+  define: {
+    __VERSION_APP__: JSON.stringify(new Date().toISOString().slice(0, 10)),
+  },
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt' (antes 'autoUpdate'): la versión nueva queda ESPERANDO y el
+      // relevo lo pide la app, que así puede mostrar el indicador en el icono y
+      // el cartel "Actualizando la app…" antes de recargar. Con 'autoUpdate' la
+      // recarga ocurría sola y sin explicación. Ver src/actualizacion.js.
+      registerType: 'prompt',
       includeAssets: [
         'icons/icon-192.png',
         'icons/icon-512.png',
@@ -45,6 +55,12 @@ export default defineConfig({
       devOptions: { enabled: true, type: 'module' },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
+        // La PRIMERA instalación sí toma el control de inmediato (esto lo hacía
+        // 'autoUpdate' por su cuenta): sin esto la app recién abierta se queda
+        // sin service worker hasta la siguiente visita, o sea sin offline. No
+        // afecta a las actualizaciones: el SW que espera no reclama nada hasta
+        // que se activa, y eso lo decide la app.
+        clientsClaim: true,
         // La landing de presentacion (municipios / servicios turisticos) NO va al
         // precache: se lee una vez, con senal, desde un computador de oficina. El
         // precache es para lo que el viajero necesita sin conexion en la ruta.

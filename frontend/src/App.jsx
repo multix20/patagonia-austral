@@ -19,6 +19,7 @@ import {
   votarReporte,
 } from './api/client'
 import { activarPush, pushSoportado } from './push'
+import { useActualizacion, seRecienActualizo } from './actualizacion'
 import Icon from './components/Icon'
 import MapView from './components/MapView'
 import PlaceDetail from './components/PlaceDetail'
@@ -92,6 +93,17 @@ function AppInterna() {
 
   const [sinRed, setSinRed] = useState(!navigator.onLine)
   const offline = sinRed
+
+  // Actualización de la app: 'lista' (versión esperando) → aviso; 'aplicando' →
+  // cartel a pantalla completa mientras se reinicia. El aviso se puede cerrar
+  // (vuelve a la próxima apertura, que ya la aplica sola).
+  const {
+    estadoAct,
+    aplicar: aplicarActualizacion,
+    buscar: buscarActualizacion,
+  } = useActualizacion()
+  const [avisoActCerrado, setAvisoActCerrado] = useState(false)
+  const mostrarAvisoAct = estadoAct === 'lista' && !avisoActCerrado
 
   // Avisos vistos (contador de la campanita), persistido en el dispositivo.
   const [avisosVistos, setAvisosVistos] = useState(() => {
@@ -207,6 +219,27 @@ function AppInterna() {
     setToast(msg)
     if (timerToast.current) clearTimeout(timerToast.current)
     timerToast.current = setTimeout(() => setToast(null), 3000)
+  }
+
+  // Al volver de la recarga, confirmar que la actualización entró (si no se
+  // dice, el reinicio de la app queda como un parpadeo sin explicación).
+  useEffect(() => {
+    if (seRecienActualizo()) mostrarToast(t('updListo'))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  /** Menú: aplica la versión que espera, o busca una si no hay ninguna. */
+  const revisarActualizaciones = async () => {
+    // Se cierra el menú siempre: la respuesta (toast o aviso de versión nueva)
+    // vive fuera de la hoja, y con la hoja abierta el aviso queda tras el velo.
+    setHoja(null)
+    if (estadoAct === 'lista') {
+      aplicarActualizacion()
+      return
+    }
+    mostrarToast(t('updBuscando'))
+    const hay = await buscarActualizacion()
+    if (!hay) mostrarToast(t('updAlDia'))
   }
 
   const habilitarPush = async () => {
@@ -472,7 +505,9 @@ function AppInterna() {
           aria-label={lang === 'es' ? 'Menú' : 'Menu'}
         >
           <Icon nombre="menu" tam={22} color="var(--tinta)" />
-          {noLeidos > 0 && <span className="fab-dot" />}
+          {/* El punto también marca la versión esperando: si cierran el aviso,
+              el camino a "Actualizar" sigue señalizado desde el menú. */}
+          {(noLeidos > 0 || estadoAct === 'lista') && <span className="fab-dot" />}
         </button>
 
         <button
@@ -718,6 +753,18 @@ function AppInterna() {
               <div className="m-sub">{t('menuAcercaSub')}</div>
             </div>
           </div>
+          <div className="menu-row" onClick={revisarActualizaciones}>
+            <span className="m-ico">
+              <Icon nombre="download" tam={20} color="var(--verde)" />
+            </span>
+            <div>
+              <b>{t('menuVersion')}</b>
+              <div className="m-sub">
+                {__VERSION_APP__} · {estadoAct === 'lista' ? t('updBoton') : t('menuVersionSub')}
+              </div>
+            </div>
+            {estadoAct === 'lista' && <span className="menu-badge">1</span>}
+          </div>
           <div className="menu-row">
             <span className="m-ico">
               <Icon nombre="globe" tam={20} color="var(--verde)" />
@@ -883,7 +930,44 @@ function AppInterna() {
         localidadNombre={locActiva ? locActiva.nombre[lang] : null}
       />
 
-      {mostrarTarjetaPush && (
+      {/* Aviso de versión nueva con la app ya en uso: no interrumpe, ofrece el
+          relevo. Ocupa el mismo lugar que los banners de instalar/push, por eso
+          esos dos se apartan mientras está visible. */}
+      {mostrarAvisoAct && (
+        <div className="act-banner">
+          <span className="ab-ico">
+            <Icon nombre="download" tam={22} />
+          </span>
+          <div className="ab-txt">
+            <b>{t('updTitulo')}</b>
+            <br />
+            {t('updTexto')}
+          </div>
+          <button onClick={aplicarActualizacion}>{t('updBoton')}</button>
+          <button
+            className="cerrar"
+            onClick={() => setAvisoActCerrado(true)}
+            aria-label={lang === 'es' ? 'Cerrar' : 'Close'}
+          >
+            <Icon nombre="x" tam={14} />
+          </button>
+        </div>
+      )}
+
+      {/* Reinicio explicado: sin esto la app se recargaba sola y sin motivo
+          visible. Tapa la pantalla a propósito — dura menos de dos segundos y
+          lo que sigue es un arranque en frío. */}
+      {estadoAct === 'aplicando' && (
+        <div className="act-overlay" role="status" aria-live="polite">
+          <div className="act-caja">
+            <span className="act-spinner" aria-hidden="true" />
+            <b>{t('updAplicando')}</b>
+            <small>{t('updAplicandoSub')}</small>
+          </div>
+        </div>
+      )}
+
+      {mostrarTarjetaPush && !mostrarAvisoAct && (
         <div className="tarjeta-push">
           <span className="tp-ico">
             <Icon nombre="bell" tam={22} />
@@ -906,7 +990,7 @@ function AppInterna() {
         </div>
       )}
 
-      {!bannerCerrado && !instaladaStandalone && (promptInstalar || esIOS) && (
+      {!bannerCerrado && !instaladaStandalone && !mostrarAvisoAct && (promptInstalar || esIOS) && (
         <div className="instalar">
           <Icon nombre="smartphone" tam={24} />
           <div className="i-txt">
