@@ -711,9 +711,16 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
   - **Nota:** con esto queda **completo el análisis de Figma AI** (todos los
     componentes). Lo único de UX que sigue en backlog aparte son el selector por
     km / mini-mapa y la card como bottom-sheet (más abajo).
-  - **MapView (menores):** feedback del botón *ubicarme* (spinner/texto mientras
-    busca, porque en móvil el `title` no se ve); **fade** de la línea de ruta al
-    deseleccionar.
+  - **✅ MapView (menores) — HECHO (30-jul-2026):** (a) **feedback del botón
+    *ubicarme***: `MapView` reporta el estado del GPS (`onEstadoGeo`:
+    `buscando`/`ok`/`sin`) y el botón del rail **ya no se deshabilita** — mientras
+    busca fix muestra un **spinner** (`aria-busy`), y al tocarlo sin ubicación
+    responde con un **toast** que dice si está buscando o si falta el permiso (en
+    el celular el `title` no se ve, y un botón gris y mudo no explica nada);
+    (b) **fade de la línea de ruta**: la Ruta 7 se dibuja en un **pane propio**
+    (`ruta7`, z 400) con `transition` de opacidad, así se **desvanece** al entrar
+    a un pueblo y vuelve con fundido de entrada, en vez del parpadeo de antes; la
+    capa se saca del mapa recién al terminar la transición.
   - **✅ Icon (trivial) — HECHO (21-jul-2026):** `locate` añadido a `EXTRAS` del
     componente React (los círculos del crosshair que ya estaban en `iconoHTML`).
 
