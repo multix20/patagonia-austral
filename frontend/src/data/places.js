@@ -166,13 +166,21 @@ export const LOCALIDADES_DESTACADAS = [
 // mapa no queda tan vacío sin descuadrar la jerarquía de las 4 destacadas.
 export const LOCALIDADES_ROTULADAS = [
   'la-junta', // nudo norte (cruce a Raúl Marín / Palena-Futaleufú)
-  // Puyuhuapi queda como localidad normal (etiqueta solo al acercar): está muy
-  // cerca de La Junta y sus rótulos fijos se encimaban en la vista general.
+  // Puyuhuapi vuelve a rotular fijo: se había sacado porque su nombre chocaba con
+  // el de La Junta, y eso lo resuelve el lado (ahora rotula a la IZQUIERDA, ver
+  // ETIQUETAS_LOCALIDAD), no el sacarle la etiqueta.
+  'puyuhuapi', // fiordo Puyuhuapi, termas y puerta del Queulat
   'puerto-cisnes', // desvío costero de la Ruta X-25
   'puerto-aysen', // Ruta 240, acceso a Chacabuco y los fiordos
   'puerto-rio-tranquilo', // base de las Capillas de Mármol
   'chile-chico', // ribera sur del lago General Carrera (etiqueta a la derecha)
   'villa-ohiggins', // extremo sur de la Carretera Austral
+  // Los dos desvíos al este desde Villa Santa Lucía / Puerto Ramírez (Ruta 235).
+  // Van rotulados porque el borde argentino del mapa es espacio limpio: se leen
+  // sin tapar nada y explican un cruce de frontera que en la ruta se pregunta
+  // mucho. Sin etiqueta eran dos puntos verdes mudos al este de Chaitén.
+  'futaleufu', // río Futaleufú (rafting) y paso Futaleufú → Trevelin/Esquel
+  'palena', // valle del río Palena y paso Río Encuentro
 ]
 
 // Ajustes finos del rótulo del pin de localidad (slug → clases extra). Por
@@ -180,9 +188,20 @@ export const LOCALIDADES_ROTULADAS = [
 // excepciones evitan que dos rótulos vecinos se encimen en la vista general:
 //   'izq'  → el nombre va a la IZQUIERDA del punto
 //   'alta' → el nombre sube una línea
+// Criterio general del costado: la Carretera Austral corre pegada al borde
+// oeste del continente, así que a la DERECHA de un pueblo suele haber cordillera
+// y route, y a la IZQUIERDA, mar o fiordo — es decir, mapa vacío donde el nombre
+// se lee limpio y no tapa nada. Por eso los pueblos costeros rotulan al agua.
 export const ETIQUETAS_LOCALIDAD = {
-  // Casi a la misma latitud que Coyhaique: sin subirlo, los dos nombres chocan.
-  'puerto-aysen': 'alta',
+  // Costeros del tramo norte: a su derecha corre la Ruta 7 con los pueblos
+  // vecinos; a su izquierda está el mar, que es donde cabe el nombre.
+  chaiten: 'izq',
+  puyuhuapi: 'izq',
+  // Puerto Aysén llevaba 'alta' (subido una línea) porque su nombre chocaba con
+  // el de Coyhaique, que está casi a su misma latitud. Al mandarlo al fiordo el
+  // choque desaparece por el lado, así que el 'alta' se quitó: sobraba, y solo
+  // despegaba la etiqueta de su propio punto.
+  'puerto-aysen': 'izq',
   // Los dos pueblos del lago General Carrera rotulan hacia AFUERA del lago, cada
   // uno hacia su propia orilla: Chile Chico está en el borde ESTE, así que su
   // nombre va a la derecha (hacia Argentina, que en el mapa es espacio limpio), y
@@ -190,6 +209,9 @@ export const ETIQUETAS_LOCALIDAD = {
   // ambos rotularan hacia adentro, los dos nombres se juntarían sobre el lago.
   // Chile Chico usa el lado derecho por defecto: no necesita entrada aquí.
   'puerto-rio-tranquilo': 'izq',
+  // Tortel está metido en el estuario del Baker: a su derecha quedan el río y el
+  // camino a Cochrane, y a su izquierda los canales — ahí el nombre va suelto.
+  'caleta-tortel': 'izq',
 }
 
 // Tercer nivel: localidades "menores" que se conservan (con sus lugares) pero se

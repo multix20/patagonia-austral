@@ -816,6 +816,31 @@ necesaria justo al arrancar la Fase 3:
   tira la ventaja de Filament); ni adelantar infra que aún no se necesita.
 
 ### Menores
+- **✅ Rótulos del mapa: costeros al agua y los dos pasos del este — HECHO
+  (31-jul-2026):** a pedido tras revisar la vista general en el celular.
+  - **Cinco pueblos rotulan a la IZQUIERDA** (`ETIQUETAS_LOCALIDAD`): Chaitén,
+    Puyuhuapi, Puerto Aysén y Caleta Tortel se suman a Puerto Río Tranquilo. El
+    criterio quedó escrito junto a la constante: la Ruta 7 corre pegada al borde
+    oeste del continente, así que a la **derecha** de un pueblo costero hay
+    cordillera, ruta y pueblos vecinos, y a la **izquierda** hay mar o fiordo —
+    mapa vacío donde el nombre se lee limpio y no tapa nada.
+  - **Puyuhuapi vuelve a tener etiqueta fija** (`LOCALIDADES_ROTULADAS`). Se
+    había sacado en su momento porque su nombre chocaba con el de La Junta; el
+    arreglo correcto era el **lado**, no quitarle el rótulo.
+  - **Futaleufú y Palena ahora se rotulan.** Las localidades ya existían en el
+    seed (orden 55 y 58) pero eran **dos puntos verdes mudos** al este de
+    Chaitén: sin nombre no se entendía que son los dos desvíos al este desde
+    Villa Santa Lucía / Puerto Ramírez (Ruta 235) ni que son pasos a Argentina
+    (Trevelin/Esquel y Río Encuentro), algo que en la ruta se pregunta mucho. El
+    borde argentino del mapa es espacio limpio, así que rotulan a la derecha.
+  - **`alta` de Puerto Aysén eliminado:** existía solo para que su nombre no
+    chocara con Coyhaique; al mandarlo al fiordo el choque desaparece por el
+    lado, y el `alta` únicamente despegaba la etiqueta de su propio punto.
+  - **Verificado en navegador** (Playwright, 390×844): los 14 rótulos fijos de la
+    vista general, con su lado y su caja medidos — 5 a la izquierda, Futaleufú y
+    Palena presentes, **cero solapamientos** entre pares de etiquetas y sin
+    errores JS. Build + lint OK. Solo tocó `data/places.js` (constantes de
+    presentación del frontend; no hay espejo en el backend).
 - **✅ Actualización visible de la PWA — HECHO (30-jul-2026):** hasta ahora el
   service worker se registraba con `registerType: 'autoUpdate'`: la versión nueva
   entraba sola y **la app se recargaba sin decir nada**. En la ruta, con el mapa
