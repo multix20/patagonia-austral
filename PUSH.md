@@ -18,6 +18,26 @@ push a los dispositivos suscritos.
 Las claves VAPID ya están en `backend/.env` y en `frontend/.env.local`
 (la pública es la misma en ambos lados).
 
+### Segundo uso del mismo canal: "hay versión nueva de la app"
+
+Además de los avisos municipales, el push transporta un tipo `nueva-version`.
+Lo dispara el **hook de despliegue** (`POST /api/version/desplegada`, que llama
+Netlify al publicar producción — ver DEPLOY.md §2.6) y su razón de ser es que el
+indicador de actualización llegue con la **app cerrada**: abierta, el service
+worker se entera solo; cerrada no corre nada, y en **Android no existe la
+Badging API**, así que el punto del lanzador solo lo pone una notificación.
+
+Diferencias con un aviso normal, todas en `frontend/public/push-listener.js`:
+
+- Va **silenciosa** (`silent: true`) y con `tag: 'actualizacion-app'`, la misma
+  que usa la app abierta cuando detecta la versión por su cuenta: nunca se ven
+  dos notificaciones por lo mismo.
+- Al tocarla, el service worker le pide a la app que **aplique la versión**
+  (`postMessage`), en vez de solo traerla al frente.
+- En escritorio enciende además el punto del icono (`setAppBadge`) desde el
+  service worker, que es lo que una página cerrada no puede hacer.
+- Se cierra sola cuando la app se actualiza (`frontend/src/actualizacion.js`).
+
 ## Puesta en marcha (una sola vez)
 
 ```powershell

@@ -58,9 +58,10 @@ function emitir(nuevo) {
   oyentes.forEach((fn) => fn(nuevo))
 }
 
-// Punto en el icono de la app instalada (escritorio / pantalla de inicio). El
-// soporte es parcial (no hay en Firefox ni en iOS sin permiso de avisos), así
-// que nunca puede romper el resto del flujo.
+// Punto en el icono de la app instalada, vía Badging API. Solo lo pintan
+// Windows y macOS con la PWA instalada: en Linux el soporte es parcial y
+// **Chrome en Android no expone la API** — para Android está la notificación de
+// más abajo. Nunca puede romper el resto del flujo.
 function marcarIcono(hay) {
   try {
     if (hay) navigator.setAppBadge?.(1)
@@ -68,6 +69,64 @@ function marcarIcono(hay) {
   } catch {
     /* navegador sin Badging API */
   }
+}
+
+// Notificación silenciosa: es el ÚNICO indicador que Android pone en el icono
+// del lanzador (el puntito sale de tener una notificación activa, no de la
+// Badging API). Se emite una sola —misma `tag`— y se cierra al actualizar, para
+// que el punto no quede pegado. Sin sonido ni vibración: no es una urgencia de
+// la ruta, es un recado.
+const ETIQUETA_NOTIF = 'actualizacion-app'
+
+// Los textos viven aquí y no en i18n.jsx porque este módulo corre fuera de
+// React (no hay contexto del que leer el idioma); el idioma elegido sí está en
+// localStorage, que es donde lo deja el I18nProvider.
+const TEXTOS_NOTIF = {
+  es: {
+    titulo: 'Nueva versión lista',
+    cuerpo: 'Abre Patagonia Austral para actualizarla. Demora un segundo.',
+  },
+  en: {
+    titulo: 'New version ready',
+    cuerpo: 'Open Patagonia Austral to update it. It takes a second.',
+  },
+}
+
+function idioma() {
+  try {
+    return localStorage.getItem('lang') === 'en' ? 'en' : 'es'
+  } catch {
+    return 'es'
+  }
+}
+
+// Nunca pide permiso: si el viajero no lo dio (o lo negó), se queda sin este
+// indicador y punto. El permiso se pide una sola vez, al instalar la app.
+function avisarEnElIcono() {
+  if (!registroSW) return
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return
+  const txt = TEXTOS_NOTIF[idioma()]
+  registroSW
+    .showNotification(txt.titulo, {
+      body: txt.cuerpo,
+      tag: ETIQUETA_NOTIF,
+      silent: true,
+      icon: '/icons/icon-192.png',
+      badge: '/icons/icon-192.png',
+      lang: idioma(),
+      // Lo lee el `notificationclick` de push-listener.js para aplicar la
+      // versión al toque, en vez de solo traer la app al frente.
+      data: { tipo: 'actualizacion' },
+    })
+    .catch(() => {})
+}
+
+function borrarAvisoDelIcono() {
+  if (!registroSW?.getNotifications) return
+  registroSW
+    .getNotifications({ tag: ETIQUETA_NOTIF })
+    .then((lista) => lista.forEach((n) => n.close()))
+    .catch(() => {})
 }
 
 // sessionStorage puede no existir (Safari en privado); sin él solo se pierden el
@@ -98,6 +157,7 @@ export function aplicarActualizacion() {
   escribirSesion(CLAVE_APLICANDO, '1')
   escribirSesion(CLAVE_INTENTOS, String(intentos() + 1))
   marcarIcono(false)
+  borrarAvisoDelIcono()
   setTimeout(() => {
     // `aplicarSW` pide el relevo; la recarga la dispara registerSW cuando el
     // service worker nuevo toma el control.
@@ -156,14 +216,38 @@ export function iniciarActualizaciones() {
         return
       }
       marcarIcono(true)
+      avisarEnElIcono()
       emitir('lista')
     },
     onRegisteredSW(_url, registro) {
       if (!registro) return
       registroSW = registro
+      // El registro puede llegar DESPUÉS del primer `onNeedRefresh` (el aviso
+      // de una versión que ya estaba esperando sale de la propia inscripción),
+      // así que la notificación se resuelve también acá: si quedó algo
+      // esperando se emite ahora, y si no, se limpia la del ciclo anterior.
+      if (estado === 'lista') avisarEnElIcono()
+      else borrarAvisoDelIcono()
       programarChequeos(registro)
     },
   })
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (ev) => {
+      // Toque en la notificación con la app ya abierta: push-listener.js la trae
+      // al frente y manda este recado para que se aplique sola, sin otro toque.
+      if (ev.data?.tipo === 'aplicar-actualizacion' && estado === 'lista') {
+        aplicarActualizacion()
+        return
+      }
+      // Push del hook de despliegue con la app abierta: el push solo avisa que
+      // se publicó algo, la versión hay que ir a buscarla igual.
+      if (ev.data?.tipo === 'nueva-version') {
+        ultimoChequeo = 0 // este aviso manda por sobre el piso entre chequeos
+        buscarActualizacion()
+      }
+    })
+  }
 
   // Si la app lleva un rato andando sin nada esperando, el ciclo cerró bien: se
   // olvidan los intentos para no arrastrarle el freno a la próxima versión.

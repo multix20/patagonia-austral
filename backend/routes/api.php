@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\NoticeController;
 use App\Http\Controllers\Api\PlaceController;
 use App\Http\Controllers\Api\PushController;
 use App\Http\Controllers\Api\ReporteController;
+use App\Http\Controllers\Api\VersionController;
 use Illuminate\Support\Facades\Route;
 
 // API pública de la PWA (solo lectura). El CMS Filament gestiona la escritura.
@@ -24,3 +25,10 @@ Route::get('/reportes', [ReporteController::class, 'index']);
 Route::post('/reportes', [ReporteController::class, 'store'])->middleware('throttle:10,1');
 Route::post('/reportes/{reporte}/voto', [ReporteController::class, 'votar'])
     ->middleware('throttle:30,1');
+
+// Hook de despliegue de la PWA (lo llama Netlify al publicar producción): manda
+// el push de "versión nueva", que es lo que pone el indicador con la app
+// cerrada. Va con token y con rate limit bajo: sin él, adivinar el token a
+// fuerza bruta sería spamear a todos los dispositivos.
+Route::post('/version/desplegada', [VersionController::class, 'desplegada'])
+    ->middleware('throttle:6,1');

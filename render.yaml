@@ -54,6 +54,12 @@ services:
         value: BHXyuwrehAa5BbAxa02Q76oIza-obs5baPkAl05sjiKF-wB8YaHDxflkFG4l0NwRrEnHWnAV6FLvApRXr2l2-iE
       - key: VAPID_PRIVATE_KEY
         sync: false
+      # Hook de despliegue de la PWA: Netlify lo llama al publicar producción y
+      # de ahí sale el push de "versión nueva" (el único indicador que llega con
+      # la app cerrada). SECRETO — viaja en la URL del webhook de Netlify, que
+      # por eso también es secreta. Vacío = hook cerrado. Ver DEPLOY.md §2.6.
+      - key: DEPLOY_PUSH_TOKEN
+        sync: false
       # Fotos de las fichas — Cloudflare R2 (S3-compatible, egress gratis).
       # OBLIGATORIO en producción: con el disco local las fotos se pierden en
       # cada deploy, porque el disco de Render free es efímero.
