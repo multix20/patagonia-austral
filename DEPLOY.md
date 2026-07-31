@@ -246,3 +246,10 @@ esa fase: respaldos + restauración, logs y monitoreo, y dominio propio.
 El almacenamiento de imágenes en la nube ya está resuelto (R2, paso 2.5); al
 montar el dominio propio, apuntar también un subdominio al bucket para salir del
 `r2.dev` con rate limit (basta cambiar `R2_URL`).
+
+**Dominio `.cl` — checklist completo** (qué variable tocar en cada servicio, y
+por qué el CORS es la trampa): `ESTADO_Y_PENDIENTES.md` → Fase 4, "Dominios
+`.cl`". Resumen: dominio en Netlify, y luego `FRONTEND_URL` (CORS — un `.cl` no
+calza con los patrones comodín de `config/cors.php`), `APP_URL`, `R2_URL` y, si
+la API se muda a `api.<dominio>.cl`, `VITE_API_URL` **con redeploy** de Netlify
+por ser build-time.

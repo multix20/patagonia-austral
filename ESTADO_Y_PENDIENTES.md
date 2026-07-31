@@ -759,6 +759,43 @@ Dominio propio + SSL, respaldos + restauración, logs y monitoreo,
 almacenamiento de imágenes en la nube (S3 o equivalente), difusión.
 Base lista: `docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`.
 
+**Dominios `.cl` — PENDIENTE, y es el gasto #1 del plan de inversión
+(anotado 31-jul-2026).** Cuesta ~CLP 10.000/año y **no se compra para la app: se
+compra para el correo**. La campaña a encargadas de turismo municipal y a dueños
+de alojamiento —la que decide cuántas de las 83 fichas `preliminar: true` se
+vuelven reales— se responde si sale de `@<dominio>.cl` con un sitio detrás; desde
+Gmail apuntando a `netlify.app` parece spam. Por eso va **antes** que el
+always-on, aunque técnicamente el always-on valga más.
+
+- **Dónde:** NIC Chile (`nic.cl`), registro directo. Un `.cl` exige RUT o
+  representante en Chile — el fundador lo tiene, así que no hay fricción.
+- **Cuáles registrar:** el nombre elegido **más las variantes que se confunden al
+  dictarlo por teléfono** (con/sin guion, singular/plural). Es el único momento
+  barato para hacerlo: después, si el proyecto camina, la variante la compra un
+  revendedor. Las secundarias solo redirigen a la principal, no se despliega nada
+  en ellas. **Decisión pendiente: el nombre.**
+- **Qué hay que tocar cuando esté comprado** (ninguno es automático):
+  1. **Netlify** → dominio personalizado + SSL (Let's Encrypt automático).
+  2. **`FRONTEND_URL` en Render** → la URL nueva. **Esta es la trampa:**
+     `backend/config/cors.php` tiene patrones comodín solo para `netlify.app` y
+     `onrender.com`; un dominio `.cl` **no calza con ninguno**, así que si no se
+     actualiza esa variable la PWA queda servida pero **sin datos**, y el error
+     sale como CORS en la consola, no como caída.
+  3. **`VITE_API_URL`** si además la API pasa a `api.<dominio>.cl` — es
+     **build-time**: hay que **redesplegar Netlify**, no basta con guardarla.
+  4. **`APP_URL`** en Render (Laravel la usa para las URLs absolutas).
+  5. **`R2_URL`** → subdominio propio del bucket (`fotos.<dominio>.cl`): saca las
+     fotos del rate limit de `r2.dev` y evita migrar filas después, porque en la
+     BD se guarda la ruta, no la URL completa (`DEPLOY.md` §2.5).
+  6. **Key de Stadia** → restringirla al dominio nuevo (`DEPLOY.md`, paso del
+     basemap de terreno), o el basemap deja de cargar.
+  7. **Correo del dominio** — que es el motivo de todo esto. Zoho Mail free o
+     Google Workspace; el buzón tiene que existir **antes** de mandar la campaña.
+- **Ojo con la PWA:** cambiar de origen (`netlify.app` → `.cl`) es un origen
+  nuevo para el navegador. Quien ya tenga la app instalada conserva la vieja con
+  su IndexedDB y su suscripción de push apuntando al origen viejo; conviene dejar
+  el sitio de Netlify redirigiendo y no darlo de baja el mismo día.
+
 **Plan de migración de infraestructura (anotado 20-jul-2026).** Veredicto: el
 stack de frameworks (React/Vite/PWA + Laravel/Filament + Postgres) es el
 adecuado — NO reescribir. La mejora real está en el deploy, y se vuelve
@@ -1056,7 +1093,9 @@ donde compre tiempo.
    de esa campaña decide cuántas de las fichas `preliminar: true` se vuelven
    reales — es la variable más determinante del producto y cuesta casi nada.
    De paso habilita el subdominio para el bucket R2 (salir del `r2.dev` con rate
-   limit, ver `DEPLOY.md` §2.5).
+   limit, ver `DEPLOY.md` §2.5). **Checklist de qué tocar al comprarlo** (Netlify,
+   `FRONTEND_URL`/CORS, `VITE_API_URL`, `APP_URL`, `R2_URL`, key de Stadia,
+   correo): en la Fase 4, "Dominios `.cl`".
 
 2. **Backend always-on — ~US$6/mes (VPS) o ~US$7/mes (Render pago).**
    Ya estaba anotado arriba como "la mejora que mueve la aguja", pero el motivo
