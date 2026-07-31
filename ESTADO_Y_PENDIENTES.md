@@ -800,6 +800,29 @@ necesaria justo al arrancar la Fase 3:
   - Ojo: `clientsClaim: true` quedó explícito en el `workbox` del vite.config —
     lo ponía `autoUpdate` por su cuenta y sin él la primera visita se quedaba sin
     service worker (o sea, sin offline) hasta la visita siguiente.
+- **✅ Aviso de versión nueva con la app cerrada — HECHO (31-jul-2026):** el punto
+  en el icono de arriba solo lo pintan Windows y macOS: **Chrome en Android no
+  expone la Badging API**, y ahí el puntito del lanzador sale de tener una
+  **notificación activa**. Además, con la app cerrada no corre nada que pueda
+  detectar la versión. Las dos cosas se resuelven con el canal que ya existía:
+  - **Notificación silenciosa** al detectar la versión (`actualizacion.js`), con
+    `tag` única, que se **cierra sola** al actualizar para que el punto no quede
+    pegado. Nunca pide permiso: si el viajero no lo dio, se queda sin ese
+    indicador y listo.
+  - **Push desde el backend al desplegar**: `POST /api/version/desplegada`
+    (`VersionController` + `WebPushSender::enviarNuevaVersion`), que llama el
+    **webhook de Netlify** al publicar producción. Es lo único que llega con la
+    app cerrada. Va con token (`DEPLOY_PUSH_TOKEN`, secreto del dashboard; vacío
+    = hook cerrado), solo atiende `context: production`, tiene ventana de 15 min
+    (Netlify dispara el hook más de una vez por deploy y un push va a **todos**
+    los teléfonos) y rate limit por si alguien prueba el token a fuerza bruta.
+    Tests: `backend/tests/Feature/VersionPushTest.php`.
+  - Al tocar la notificación, el SW le pide a la app que **aplique la versión**
+    (`postMessage`), no solo que se abra. Con la app abierta, el push únicamente
+    avisa: la versión se busca igual contra el service worker.
+  - Falta **acción manual**: crear `DEPLOY_PUSH_TOKEN` en Render y configurar el
+    outgoing webhook en Netlify (`DEPLOY.md` §2.6). Sin eso, todo lo demás
+    funciona salvo el aviso con la app cerrada.
 - **✅ Icono nuevo y arranque de la PWA — RESUELTO (30-jul-2026):** el icono
   anterior (montaña + sol en blanco sobre verde) se confundía con el glifo de
   "imagen rota" y, sobre todo, estaba **mal declarado**: la entrada `maskable`

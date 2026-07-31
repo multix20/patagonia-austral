@@ -148,6 +148,68 @@ más — cero migración de datos, cero fichas que tocar.
 
 ---
 
+## 2.6) Aviso de versión nueva — webhook de Netlify → push
+
+Opcional, pero es lo **único** que hace aparecer el indicador de actualización
+con la app **cerrada**. Con la app abierta el service worker se entera solo; una
+app cerrada no corre nada. Y en **Android no existe la Badging API** (Chrome no
+la expone), así que el punto del lanzador solo lo pone una notificación activa.
+
+El circuito: Netlify publica producción → llama al hook del backend → sale un
+Web Push silencioso → el teléfono muestra "Nueva versión lista" y el icono queda
+con el punto → al tocarlo, la PWA aplica la versión y cierra la notificación.
+
+1. **Inventa el token** (una cadena larga al azar, tratarla como contraseña):
+
+   ```bash
+   openssl rand -hex 24
+   ```
+
+2. **Cárgalo en Render** (dashboard del servicio → *Environment*):
+
+   | Variable | Valor |
+   |---|---|
+   | `DEPLOY_PUSH_TOKEN` | el token del paso 1 |
+
+   Sin esta variable el hook responde `503` y no notifica a nadie: es la puerta
+   de "avisarle a todos los dispositivos", así que **cerrada por omisión**.
+
+3. **Configura el webhook en Netlify**: *Site configuration* → *Build & deploy*
+   → *Notifications* → *Add notification* → **Outgoing webhook**, evento
+   **Deploy succeeded**, URL:
+
+   ```
+   https://patagonia-austral-api.onrender.com/api/version/desplegada?token=<TOKEN>
+   ```
+
+   La URL lleva el token porque Netlify no deja mandar cabeceras propias. Por eso
+   **la URL del webhook es un secreto** — no pegarla en el repo ni en un issue.
+
+4. **Pruébalo a mano** (no necesitas desplegar):
+
+   ```bash
+   curl -X POST -H 'X-Deploy-Token: <TOKEN>' \
+     https://patagonia-austral-api.onrender.com/api/version/desplegada
+   ```
+
+   Responde `{"ok":true,"enviado":true}` la primera vez y
+   `{"enviado":false,"motivo":"ya-avisado"}` si repites dentro de 15 minutos —
+   ese freno existe porque Netlify dispara el hook más de una vez por deploy y
+   un push va a **todos** los teléfonos.
+
+**Detalles que evitan sustos:**
+
+- Solo notifica los deploys con `context: production`; los *deploy previews* y
+  las ramas se responden con `enviado: false`.
+- El push llega solo a quien **dio permiso de notificaciones** (se pide al
+  instalar la PWA). Quien no lo dio ve el indicador dentro de la app y nada más.
+- La notificación es **silenciosa** (sin sonido ni vibración) y usa la misma
+  `tag` que la que emite la app abierta: nunca se apilan dos.
+- Render free duerme tras 15 min: el primer hook puede tardar ~1 minuto en
+  responder mientras despierta. No pasa nada, Netlify no reintenta en exceso.
+
+---
+
 ## 3) Prueba de fuego en producción
 
 1. Abre la PWA (URL de Netlify) → cargan los lugares desde la API.
