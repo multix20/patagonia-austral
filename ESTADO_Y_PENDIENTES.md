@@ -22,6 +22,82 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
+## Lo que depende de TI — acciones manuales (al 31-jul-2026)
+
+Todo lo de abajo está **fuera del alcance de una sesión de Claude**: pide tarjeta,
+dashboard, una decisión tuya o acceso a la BD de producción. Está ordenado por lo
+que desbloquea, no por dificultad. Cuando algo se haga, marcar la casilla acá.
+
+> **El reloj manda.** Temporada alta de Aysén = **diciembre–marzo**. La fecha
+> límite real no es diciembre sino **septiembre**, porque lo que viene después de
+> la campaña de correos tiene latencia propia (2–3 semanas de respuestas, edición
+> de fichas, y un eventual viaje de fotos que conviene hacer en primavera).
+
+### 1. Dominio `.cl` + correo — ~CLP 10.000/año — desbloquea la campaña entera
+- [ ] **Decidir el nombre** (lo único que nadie más puede decidir).
+- [ ] Registrarlo en **NIC Chile** (`nic.cl`), más las variantes que se confunden
+      al dictarlas por teléfono (con/sin guion, singular/plural).
+- [ ] Montar el **buzón** (Zoho Mail free o Google Workspace).
+- [ ] Cablearlo: dominio en Netlify · **`FRONTEND_URL` en Render** (si no, la PWA
+      queda sin datos por CORS — ver el checklist) · `APP_URL` · `R2_URL` ·
+      `VITE_API_URL` **con redeploy** si la API se muda · key de Stadia.
+
+  Detalle de cada variable: **Fase 4 → "Dominios `.cl`"** en este mismo archivo.
+
+### 2. Bucket R2 + 6 variables en Render — ~20 min — desbloquea las fotos
+- [ ] Registrar **tarjeta en Cloudflare** (la exige aunque el uso sea gratis).
+- [ ] Crear el bucket, habilitar el acceso público `r2.dev` y crear el token
+      *Object Read & Write*.
+- [ ] Cargar en Render: `FOTOS_DISK=r2`, `R2_ACCESS_KEY_ID`,
+      `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_ENDPOINT`, `R2_URL`.
+- [ ] Verificar subiendo una foto a un lugar en `/admin`.
+
+  Paso a paso: **`DEPLOY.md` §2.5**.
+
+### 3. `DEPLOY_PUSH_TOKEN` + webhook de Netlify — ~10 min — cierra lo del 31-jul
+- [ ] Generar el token (`openssl rand -hex 24`) y cargarlo en Render.
+- [ ] Crear el *outgoing webhook* en Netlify (evento **Deploy succeeded**).
+- [ ] Probarlo con el `curl` de la guía.
+
+  Paso a paso: **`DEPLOY.md` §2.6**. Sin esto el aviso de versión funciona con la
+  app abierta, pero **no** con la app cerrada — que era el punto.
+
+### 4. Backend *always-on* — ~US$7/mes (Render pago) o ~US$6 (VPS)
+- [ ] Decidir Render pago vs. VPS y activarlo.
+
+  **Recomendación: hacerlo ANTES de la campaña, no después.** El plan de
+  inversión lo pone en segundo lugar pensando en el crowdsourcing, pero vas a
+  mandar 26 correos con un link: si el primer clic de una encargada de turismo se
+  come **50 s de arranque en frío**, perdiste esa respuesta y era el único tiro.
+
+### 5. Landing `/proyecto` — depende del punto 1
+- [ ] Reemplazar los **tres marcadores en rojo**: nombre y apellido de quien
+      firma, correo (del dominio, no Gmail) y WhatsApp. Ver `BRIEF_LANDING.md` §9.
+
+### 6. Campaña de correos — depende de 1 y 5, y es la que decide el producto
+- [ ] Mandarla a las 26 encargadas de turismo municipal + dueños de alojamiento
+      y comida. Es lo que convierte las **76 fichas `preliminar`** en dato real.
+
+  *Yo puedo redactar los dos correos y armar la lista de contactos —
+  hoy no existe en el repo— para que salga el mismo día que llegue el dominio.*
+
+### 7. Tus dos fichas reales (las primeras destacadas de verdad)
+- [ ] Datos de la **hamburguesería del km 1020**: nombre, horario, teléfono, fotos.
+- [ ] Ídem del **transporte + encomiendas Tortel↔Cochrane**.
+- [ ] Cargarlas en `/admin` y marcarlas `destacado`.
+
+### 8. Contenido SERNATUR, cuando toque republicar
+- [ ] Correr el pipeline + `SernaturPlaceSeeder` **en local contra Neon**: el CSV
+      fuente vive fuera del repo y desde la web no hay acceso a la BD de
+      producción. Ver `scripts/sernatur/README.md`.
+
+### 9. Sentry (free)
+- [ ] Crear la cuenta. Cuesta cero y conviene **antes** de tener usuarios reales,
+      para que el primer bug en la ruta no llegue como "no me funcionó" por
+      WhatsApp y sin forma de reproducirlo.
+
+---
+
 ## Entorno local (heredado de la base Cochrane)
 
 - **PHP 8.4.23** y **Composer 2.10.1** vía **Laravel Herd** (Windows). `php` y `composer` en el PATH.
