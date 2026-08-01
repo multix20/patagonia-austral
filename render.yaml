@@ -38,6 +38,15 @@ services:
         sync: false
       - key: SESSION_DRIVER
         value: database
+      # Sesión larga a propósito (8 h en vez de las 2 h por defecto). El CMS lo
+      # usa UNA sola persona y las sesiones de contenido son largas: se abre una
+      # ficha, se redacta, se buscan datos en otra pestaña y recién ahí se sube la
+      # foto y se guarda. Con 120 min eso termina en un 419 "This page has
+      # expired" AL GUARDAR — o sea, perdiendo lo escrito, que es el peor momento
+      # posible. Además el plan free duerme el servicio a los ~15 min de
+      # inactividad, así que el tiempo muerto se acumula rapidísimo.
+      - key: SESSION_LIFETIME
+        value: "480"
       - key: CACHE_STORE
         value: database
       # Origen permitido por CORS = URL pública de la PWA en Netlify.
