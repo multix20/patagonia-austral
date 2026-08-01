@@ -6,6 +6,7 @@ use App\Filament\Concerns\TieneCampoUbicacionGoogleMaps;
 use App\Filament\Resources\PlaceResource\Pages;
 use App\Models\Localidad;
 use App\Models\Place;
+use App\Services\AlmacenamientoFotos;
 use App\Services\GuardarFoto;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -138,11 +139,20 @@ class PlaceResource extends Resource
                         ->appendFiles()
                         ->maxFiles(config('fotos.max_por_ficha'))
                         ->maxSize(config('fotos.max_subida_kb'))
-                        ->helperText(
-                            'Hasta '.config('fotos.max_por_ficha').' fotos, máx. '
-                            .round(config('fotos.max_subida_kb') / 1024).' MB cada una. Se convierten '
-                            .'solas a WebP de '.config('fotos.lado_maximo').' px: no hace falta '
-                            .'achicarlas antes. Usa fotos propias o cedidas por el negocio.'
+                        // Sin las credenciales de R2 el campo ACEPTA el archivo
+                        // (la subida temporal es local) y recién revienta al
+                        // guardar, con un error del SDK de AWS y la ficha ya
+                        // escrita. Apagarlo y decir por qué evita ese viaje.
+                        ->disabled(fn (): bool => ! app(AlmacenamientoFotos::class)->listo())
+                        ->helperText(fn (): string => app(AlmacenamientoFotos::class)->listo()
+                            ? 'Hasta '.config('fotos.max_por_ficha').' fotos, máx. '
+                                .round(config('fotos.max_subida_kb') / 1024).' MB cada una. Se convierten '
+                                .'solas a WebP de '.config('fotos.lado_maximo').' px: no hace falta '
+                                .'achicarlas antes. Usa fotos propias o cedidas por el negocio.'
+                            : 'El almacenamiento de fotos (Cloudflare R2) todavía no está '
+                                .'configurado: faltan las variables R2_* en el dashboard de Render. '
+                                .'Mientras tanto el resto de la ficha se guarda normal — solo las '
+                                .'fotos quedan bloqueadas. Pasos: DEPLOY.md §2.5.'
                         )
                         // La conversión ocurre aquí y no en un job: Render free no
                         // corre worker de colas, así que lo que no se haga en la
