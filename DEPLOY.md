@@ -210,6 +210,38 @@ con el punto → al tocarlo, la PWA aplica la versión y cierra la notificación
 
 ---
 
+## 2.7) "This page has expired" (error 419) al guardar en el CMS
+
+Pasa al apretar **Save changes**, típicamente después de tener la ficha abierta
+un rato. Es **expiración de sesión** (Laravel responde 419 cuando el token CSRF
+del formulario ya no calza con la sesión), no un problema de la foto ni de R2.
+
+En el plan free se dispara mucho más seguido que en un servidor normal, por dos
+razones que se suman:
+
+- El servicio **duerme a los ~15 min** sin tráfico, así que el tiempo muerto se
+  acumula sin que uno lo note.
+- Editar contenido es lento por naturaleza: se abre la ficha, se redacta, se
+  buscan datos en otra pestaña, y recién ahí se sube la foto y se guarda.
+
+**Ya mitigado:** `SESSION_LIFETIME=480` (8 h) en `render.yaml`, en vez de las 2 h
+por defecto. El CMS lo usa una sola persona, así que la sesión larga no abre un
+riesgo real. **Requiere que el blueprint se sincronice** para tomar efecto.
+
+**Si igual aparece:** *Aceptar* en el diálogo recarga la página — pero **lo
+escrito en el formulario se pierde**, así que conviene recargar, volver a entrar
+y rehacer el cambio de una sola pasada.
+
+> **Trampa aparte, del mismo origen.** Las fotos que arrastras quedan primero en
+> una **carpeta temporal del contenedor** (`livewire-tmp`), no en R2: el
+> "Upload complete" verde es esa subida temporal. Recién al **guardar** pasan al
+> disco definitivo. Como el disco de Render free es efímero, si el servicio se
+> duerme entre la subida y el guardado, **el archivo temporal desaparece** y el
+> guardado falla aunque la sesión siga viva. Mientras el backend no sea
+> *always-on*: subir y guardar **de inmediato**, una ficha a la vez.
+
+---
+
 ## 3) Prueba de fuego en producción
 
 1. Abre la PWA (URL de Netlify) → cargan los lugares desde la API.
