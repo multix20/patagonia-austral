@@ -50,44 +50,49 @@ const TESELA_TERRENO = {
     attribution: '© Stadia Maps © Stamen Design © OpenMapTiles © OpenStreetMap',
     maxZoom: 18,
   },
+  esStadia: true,
 }
 // Calles de calidad "Google Maps" para la cercanía (Stadia `osm_bright`): mapa
 // callejero colorido CON nombres de calles, POIs y parques — muy superior al
 // Voyager sin rótulos, que se veía pelado. Solo disponible con key de Stadia; sin
 // key se cae a Voyager (el fallback keyless de siempre).
-const TESELA_CALLES = STADIA_KEY
-  ? {
-      url: `https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png?api_key=${STADIA_KEY}`,
-      options: {
-        attribution: '© Stadia Maps © OpenMapTiles © OpenStreetMap',
-        maxZoom: 20,
-      },
-    }
-  : TESELA_VOYAGER
-
-const CAPAS = {
-  mapa: STADIA_KEY
-    ? [
-        // Terreno hasta el corte; calles osm_bright (con rótulos) de ahí en adelante.
-        { ...TESELA_TERRENO, options: { ...TESELA_TERRENO.options, maxZoom: ZOOM_CORTE_TERRENO } },
-        { ...TESELA_CALLES, options: { ...TESELA_CALLES.options, minZoom: ZOOM_CORTE_TERRENO } },
-      ]
-    : [TESELA_VOYAGER],
-  satelite: [
-    {
-      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      options: {
-        attribution: 'Imágenes © Esri, Maxar, Earthstar Geographics',
-        maxZoom: 19,
-      },
-    },
-  ],
+const TESELA_CALLES = {
+  url: `https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png?api_key=${STADIA_KEY}`,
+  options: {
+    attribution: '© Stadia Maps © OpenMapTiles © OpenStreetMap',
+    maxZoom: 20,
+  },
+  esStadia: true,
 }
 
-// ¿El basemap "Mapa" activo usa el terreno de Stadia? (para el filtro de color y
-// la clase `terreno`). El filtro casi neutro solo importa lejos, donde manda el
-// terreno; al acercar, Voyager se ve bien igual con ese filtro suave.
-const MAPA_ES_TERRENO = !!STADIA_KEY
+const TESELA_SATELITE = {
+  url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  options: {
+    attribution: 'Imágenes © Esri, Maxar, Earthstar Geographics',
+    maxZoom: 19,
+  },
+}
+
+// Teselas de la capa elegida. `stadiaOk` NO es lo mismo que "hay key": una key
+// presente pero RECHAZADA (dominio no autorizado, plan vencido) deja el mapa en
+// blanco, y eso pasó de verdad al estrenar rutaaustral.cl — la key seguía ahí,
+// restringida al dominio viejo, así que el fallback por "falta la key" no
+// entraba. Por eso el mapa también se cae a Voyager cuando las teselas fallan.
+function teselasDe(capa, stadiaOk) {
+  if (capa === 'satelite') return [TESELA_SATELITE]
+  if (!stadiaOk) return [TESELA_VOYAGER]
+
+  // Terreno hasta el corte; calles osm_bright (con rótulos) de ahí en adelante.
+  return [
+    { ...TESELA_TERRENO, options: { ...TESELA_TERRENO.options, maxZoom: ZOOM_CORTE_TERRENO } },
+    { ...TESELA_CALLES, options: { ...TESELA_CALLES.options, minZoom: ZOOM_CORTE_TERRENO } },
+  ]
+}
+
+// Cuántas teselas de Stadia tienen que fallar para dar la fuente por caída. Con
+// la key rechazada fallan TODAS, así que se llega al tope de inmediato; el
+// margen está para que un tropiezo suelto de red no degrade el mapa.
+const FALLOS_STADIA_PARA_CAER = 3
 
 const CENTRO_RUTA = [-45.5, -72.6]
 
@@ -181,6 +186,13 @@ const MapView = forwardRef(function MapView(
   // React en el className, no con classList (si no, un re-render las borraría).
   const [capa, setCapa] = useState('mapa')
   const [etiquetasVisibles, setEtiquetasVisibles] = useState(false)
+  // Stadia se dio por caída en esta sesión (teselas rechazadas): el basemap pasa
+  // a Voyager. No se reintenta solo — si la key volvió, se arregla al recargar.
+  const [stadiaCaido, setStadiaCaido] = useState(false)
+  const fallosStadia = useRef(0)
+  // ¿Se puede usar Stadia? Hay key Y todavía no nos rechazó. Manda el basemap de
+  // terreno y también el filtro de color (clase `terreno`).
+  const stadiaOk = !!STADIA_KEY && !stadiaCaido
   // Estado del GPS, para que el rail pueda dar feedback en el botón "ubicarme":
   //   'buscando' = watchPosition pedido, todavía sin fix (spinner)
   //   'ok'       = hay posición
@@ -236,20 +248,32 @@ const MapView = forwardRef(function MapView(
     }
   }, [])
 
-  // Monta / cambia la capa base cuando el usuario elige Mapa ↔ Satélite.
+  // Monta / cambia la capa base cuando el usuario elige Mapa ↔ Satélite, o
+  // cuando Stadia se cae y hay que reemplazarla por Voyager.
   useEffect(() => {
     const mapa = mapaRef.current
     if (!mapa) return
     tileLayersRef.current.forEach((l) => mapa.removeLayer(l))
     tileLayersRef.current = []
-    const cfgs = CAPAS[capa] || CAPAS.mapa
-    cfgs.forEach((cfg) => {
+
+    // Sin conexión fallan TODAS las teselas, también las de CARTO: ahí el
+    // problema no es la key y cambiar de proveedor no arregla nada, solo dejaría
+    // al viajero sin el terreno cuando vuelva la señal. Justo el escenario de
+    // esta app, así que se ignora.
+    const alFallarStadia = () => {
+      if (navigator.onLine === false) return
+      fallosStadia.current += 1
+      if (fallosStadia.current >= FALLOS_STADIA_PARA_CAER) setStadiaCaido(true)
+    }
+
+    teselasDe(capa, stadiaOk).forEach((cfg) => {
       const l = L.tileLayer(cfg.url, cfg.options)
       l.setZIndex(0) // siempre por debajo de la ruta y los pines
+      if (cfg.esStadia) l.on('tileerror', alFallarStadia)
       l.addTo(mapa)
       tileLayersRef.current.push(l)
     })
-  }, [capa])
+  }, [capa, stadiaOk])
 
   // Traza la Ruta 7 destacada (dato estático, una sola vez): línea naranja con
   // contorno blanco sobre el mapa base; los tramos en barcaza van punteados. Ya
@@ -501,7 +525,7 @@ const MapView = forwardRef(function MapView(
     <>
       <div
         ref={contRef}
-        className={`mapa-full capa-${capa} ${MAPA_ES_TERRENO ? 'terreno' : ''} ${etiquetasVisibles ? 'labels-on' : ''}`}
+        className={`mapa-full capa-${capa} ${stadiaOk ? 'terreno' : ''} ${etiquetasVisibles ? 'labels-on' : ''}`}
       />
       <div
         className="mapa-capas"
