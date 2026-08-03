@@ -35,20 +35,35 @@ que desbloquea, no por dificultad. Cuando algo se haga, marcar la casilla acá.
 
 ### 1. Dominio `.cl` + correo — ~CLP 10.000/año — desbloquea la campaña entera
 - [x] **Decidir el nombre** → **`rutaaustral.cl`** (3-ago-2026).
-- [ ] Registrarlo en **NIC Chile** (`nic.cl`), más las variantes que se confunden
-      al dictarlas por teléfono (`ruta-austral.cl`, `rutasaustral.cl`).
-- [ ] DNS a Netlify + dominio personalizado + SSL (`DEPLOY.md` §2.4).
+- [x] Registrarlo en **NIC Chile** (`nic.cl`), con los nameservers de Netlify
+      (`dns*.p06.nsone.net`). **Sin secundario de NIC y sin DNSSEC**: Netlify
+      (NS1) no soporta transferencia de zona ni firma.
+- [x] DNS a Netlify + dominio personalizado + SSL (`DEPLOY.md` §2.4).
+- [x] `FRONTEND_URL=https://rutaaustral.cl` cargado en Render.
+- [x] Key de Stadia restringida también a `rutaaustral.cl` (**Add Domain**, con
+      *Allow All Subdomains*; no editar la entrada de Netlify, que sigue
+      sirviendo a los `deploy-preview-*`).
+- [ ] Registrar las variantes que se confunden al dictarlo por teléfono
+      (`ruta-austral.cl`, `rutasaustral.cl`) — solo redirigen a la principal.
 - [ ] Montar el **buzón `contacto@rutaaustral.cl`** (Zoho Mail free o Google
-      Workspace) — la landing ya enlaza a esa casilla.
-- [ ] Cargar **`FRONTEND_URL=https://rutaaustral.cl` en Render** (ya viene en el
-      blueprint, pero en Render hay que aplicarlo) y restringir la key de Stadia
-      al dominio nuevo.
+      Workspace) — la landing ya enlaza a esa casilla, así que hoy ese botón
+      apunta a un buzón que no existe. Los MX van en el panel de **Netlify DNS**,
+      no en NIC.
 
   Ya hecho en el repo (3-ago-2026): `render.yaml` (`FRONTEND_URL` + `APP_URL`),
   comodín de `rutaaustral.cl` en `backend/config/cors.php`, correo y `canonical`
   en la landing `/proyecto`, y el paso a paso en **`DEPLOY.md` §2.4**.
 
+  **Trampa que costó una caída:** el merge que tocó `render.yaml` resincronizó el
+  blueprint en Render, y eso activó `FOTOS_DISK=r2` con las cinco `R2_*` todavía
+  vacías → `/api/places` devolvió 500 hasta que se arregló. Ya no puede repetirse
+  (ver "Fotos" en el punto 2), pero vale la advertencia: **tocar `render.yaml`
+  aplica TODO el blueprint**, no solo la línea que cambiaste.
+
 ### 2. Bucket R2 + 6 variables en Render — ~20 min — desbloquea las fotos
+> **Ya no es urgente ni bloqueante** (3-ago-2026): sin R2 la app funciona
+> completa, solo que las fichas van sin foto. Antes no era así — con
+> `FOTOS_DISK=r2` y las variables vacías, `/api/places` devolvía 500 entero.
 - [ ] Registrar **tarjeta en Cloudflare** (la exige aunque el uso sea gratis).
 - [ ] Crear el bucket, habilitar el acceso público `r2.dev` y crear el token
       *Object Read & Write*.
@@ -1253,6 +1268,87 @@ millones en obras **2026–2030 justo en Aysén**, donde la app ya tiene todo el
 contenido. Obras = cortes y desvíos = exactamente el problema que el
 crowdsourcing resuelve. Estar always-on cuando eso arranque vale más que
 cualquier campaña pagada.
+
+---
+
+## Proveedor de mapas — decisión aplazada (anotado 3-ago-2026)
+
+Queda escrito porque la decisión **no toca hasta que exista la capa comercial**,
+y para entonces el razonamiento se habrá perdido. Hoy no hay nada que hacer.
+
+### Qué usa el mapa hoy
+
+- **Stadia Maps** (key de cliente, `VITE_STADIA_API_KEY`), repartida por zoom:
+  lejos `stamen_terrain_background` (el relieve verde/pardo/blanco de toda la
+  ruta), cerca `osm_bright` (**calles con nombre**, POIs, parques). Corte en
+  zoom 11 (`ZOOM_CORTE_TERRENO`).
+- **CARTO Voyager** como respaldo, sin rótulos y sin key.
+- **Esri World Imagery** para la capa Satélite — proveedor aparte, gratis, no
+  entra en esta decisión.
+
+Los pines de localidades y lugares, y la línea de la Ruta 7, **no dependen de
+ningún proveedor**: la app nunca queda inservible por esto, solo más fea y sin
+nombres de calle. Lo que se pierde de verdad es lo de cerca (utilidad); el
+relieve es estética.
+
+### El problema, con fecha
+
+El **trial de Stadia Professional vence el 8-ago-2026**. Al vencer la cuenta
+**cae sola al plan gratis** (no se apaga), y ahí caben 200.000 créditos/mes —
+sobra: el uso real iba en **11.257 créditos en dos semanas**. El volumen nunca
+va a ser el problema.
+
+El problema es la letra chica: **el plan gratis de Stadia es para uso NO
+comercial** (desarrollo, evaluación, académico). Mientras la app sea gratis para
+el turista, calza. En cuanto exista la capa comercial de la Fase 3 (fichas
+destacadas, planes), deja de calzar y son ~US$20/mes.
+
+Ese número importa por comparación: **la infraestructura completa cuesta
+~US$10/mes**. Pagar el mapa la triplicaría.
+
+### Las opciones, cuando toque
+
+1. **Pagar Stadia** (~US$20/mes). Cero trabajo, se queda todo como está.
+2. **Mapbox.** Es el único de los grandes cuyo tier gratis (50.000 cargas de
+   mapa/mes) **sí permite uso comercial**. Pero es un cambio lateral: sigues
+   alquilando el mapa y cambias un techo por otro.
+   (MapTiler no sirve de escape: su plan gratis también es no comercial.)
+3. **Protomaps / PMTiles en el bucket R2 que ya vamos a tener.** El basemap
+   entero es **un archivo estático**; el navegador lee solo el trozo que necesita
+   con HTTP range requests. Sin cláusula de uso comercial (es OpenStreetMap), y
+   con el egress gratis de R2 el costo real es de unos pocos dólares al mes o
+   cero. No hace falta el planeta: basta un extracto de la Carretera Austral.
+
+### Por qué la 3 es la que encaja con ESTE proyecto
+
+No por el ahorro, sino por coherencia con lo que la app promete: **hoy el mapa
+offline es verdad a medias**. El service worker cachea las teselas que el viajero
+ya pidió con señal, así que el tramo que no visitó antes aparece en blanco justo
+donde no hay cobertura — el escenario central del producto. Un archivo regional
+se puede **precargar entero**, y recién ahí "funciona sin señal" es literal.
+
+**Lo que cuesta:** no es cambiar una variable. Hay que pasar a MapLibre GL (o al
+plugin de pmtiles para Leaflet), generar y mantener el extracto, y se pierde el
+sombreado de relieve (Protomaps es callejero; el terreno sería una capa aparte).
+La latencia desde R2 es mayor (~500 ms vs ~200 ms). Un par de días de trabajo,
+no una tarde.
+
+### Veredicto
+
+**No hacer nada ahora.** Stadia funciona y es gratis mientras la app no cobre.
+Revisar cuando aparezca la primera ficha pagada — no antes, y no por el 8 de
+agosto, que el mapa ya sabe sobrevivirlo.
+
+Y al revisarlo, la pregunta no es "¿Stadia o Mapbox?" sino **"¿alquilar el mapa
+o ser dueño de él?"**. Para una app que se vende como offline-first, ser dueño
+tiene más sentido que el ahorro.
+
+> **Red de seguridad ya implementada** (3-ago-2026): el basemap escucha
+> `tileerror` y, tras 3 fallos con conexión, se pasa solo a CARTO Voyager. Antes
+> el respaldo solo entraba si la key estaba **vacía**, así que una key *presente
+> pero rechazada* dejaba el mapa en blanco — pasó al estrenar `rutaaustral.cl`,
+> con la key aún restringida al dominio viejo. Los fallos sin conexión no cuentan
+> (ahí falla también CARTO). Detalle en `MapView.jsx` y `DEPLOY.md` §2.
 
 ---
 
