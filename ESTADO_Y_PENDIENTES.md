@@ -34,15 +34,19 @@ que desbloquea, no por dificultad. Cuando algo se haga, marcar la casilla acá.
 > de fichas, y un eventual viaje de fotos que conviene hacer en primavera).
 
 ### 1. Dominio `.cl` + correo — ~CLP 10.000/año — desbloquea la campaña entera
-- [ ] **Decidir el nombre** (lo único que nadie más puede decidir).
+- [x] **Decidir el nombre** → **`rutaaustral.cl`** (3-ago-2026).
 - [ ] Registrarlo en **NIC Chile** (`nic.cl`), más las variantes que se confunden
-      al dictarlas por teléfono (con/sin guion, singular/plural).
-- [ ] Montar el **buzón** (Zoho Mail free o Google Workspace).
-- [ ] Cablearlo: dominio en Netlify · **`FRONTEND_URL` en Render** (si no, la PWA
-      queda sin datos por CORS — ver el checklist) · `APP_URL` · `R2_URL` ·
-      `VITE_API_URL` **con redeploy** si la API se muda · key de Stadia.
+      al dictarlas por teléfono (`ruta-austral.cl`, `rutasaustral.cl`).
+- [ ] DNS a Netlify + dominio personalizado + SSL (`DEPLOY.md` §2.4).
+- [ ] Montar el **buzón `contacto@rutaaustral.cl`** (Zoho Mail free o Google
+      Workspace) — la landing ya enlaza a esa casilla.
+- [ ] Cargar **`FRONTEND_URL=https://rutaaustral.cl` en Render** (ya viene en el
+      blueprint, pero en Render hay que aplicarlo) y restringir la key de Stadia
+      al dominio nuevo.
 
-  Detalle de cada variable: **Fase 4 → "Dominios `.cl`"** en este mismo archivo.
+  Ya hecho en el repo (3-ago-2026): `render.yaml` (`FRONTEND_URL` + `APP_URL`),
+  comodín de `rutaaustral.cl` en `backend/config/cors.php`, correo y `canonical`
+  en la landing `/proyecto`, y el paso a paso en **`DEPLOY.md` §2.4**.
 
 ### 2. Bucket R2 + 6 variables en Render — ~20 min — desbloquea las fotos
 - [ ] Registrar **tarjeta en Cloudflare** (la exige aunque el uso sea gratis).
@@ -845,11 +849,14 @@ always-on, aunque técnicamente el always-on valga más.
 
 - **Dónde:** NIC Chile (`nic.cl`), registro directo. Un `.cl` exige RUT o
   representante en Chile — el fundador lo tiene, así que no hay fricción.
-- **Cuáles registrar:** el nombre elegido **más las variantes que se confunden al
-  dictarlo por teléfono** (con/sin guion, singular/plural). Es el único momento
-  barato para hacerlo: después, si el proyecto camina, la variante la compra un
-  revendedor. Las secundarias solo redirigen a la principal, no se despliega nada
-  en ellas. **Decisión pendiente: el nombre.**
+- **Nombre elegido (3-ago-2026): `rutaaustral.cl`.** Dice qué es sin explicar
+  nada, se dicta por teléfono sin deletrear y no se pisa con el nombre del
+  producto en la app ("Patagonia Austral"), que sigue igual.
+- **Cuáles registrar:** el elegido **más las variantes que se confunden al
+  dictarlo por teléfono**: `ruta-austral.cl` (con guion) y `rutasaustral.cl`
+  (plural). Es el único momento barato para hacerlo: después, si el proyecto
+  camina, la variante la compra un revendedor. Las secundarias solo redirigen a
+  la principal, no se despliega nada en ellas.
 - **Qué hay que tocar cuando esté comprado** (ninguno es automático):
   1. **Netlify** → dominio personalizado + SSL (Let's Encrypt automático).
   2. **`FRONTEND_URL` en Render** → la URL nueva. **Esta es la trampa:**

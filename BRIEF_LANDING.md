@@ -271,9 +271,11 @@ de frente es lo que hace que un municipio conteste en vez de desconfiar.
 
 ## 9. Pendiente antes de publicar
 
-Reemplazar los tres marcadores (van visibles en rojo a propósito para que no se
-escapen): nombre y apellido de quien firma, correo de contacto y WhatsApp.
+Quedan **dos** marcadores (van visibles en rojo a propósito para que no se
+escapen): nombre y apellido de quien firma, y WhatsApp.
 
-El correo debería ser **del dominio propio**, no Gmail: es el punto 1 del plan de
-inversión (ver `ESTADO_Y_PENDIENTES.md`) justamente porque de eso depende que
-contesten.
+El correo ya está puesto: **`contacto@rutaaustral.cl`** (dominio decidido el
+3-ago-2026). Falta que el **buzón exista** — Zoho Mail free o Google Workspace —
+antes de mandar la campaña: un `mailto:` a una casilla que rebota es peor que no
+tener el botón. Era el punto 1 del plan de inversión precisamente porque de eso
+depende que contesten.
