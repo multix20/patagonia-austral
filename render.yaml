@@ -49,10 +49,17 @@ services:
         value: "480"
       - key: CACHE_STORE
         value: database
-      # Origen permitido por CORS = URL pública de la PWA en Netlify.
-      # Ajustar cuando exista el sitio real (o si se usa dominio propio).
+      # Origen permitido por CORS = URL pública de la PWA.
+      # Dominio propio (decidido 3-ago-2026). Mientras el DNS no esté propagado,
+      # el sitio de Netlify sigue funcionando por el patrón comodín de
+      # config/cors.php, así que se puede cargar este valor desde ya.
       - key: FRONTEND_URL
-        value: https://patagonia-austral.netlify.app
+        value: https://rutaaustral.cl
+      # URL pública de la API (Laravel la usa para las URLs absolutas: enlaces
+      # del CMS, correos, assets). Cambiar a https://api.rutaaustral.cl si algún
+      # día la API se muda al dominio propio.
+      - key: APP_URL
+        value: https://patagonia-austral-api.onrender.com
       # Web Push (VAPID). Par de claves PROPIO de este proyecto (no reutilizar las
       # de Cochrane; cambiar el par invalida las suscripciones ya hechas).
       # La pública no es secreta (viaja al navegador); la privada se ingresa en el

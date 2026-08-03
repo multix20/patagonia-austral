@@ -33,6 +33,13 @@ function db() {
 export async function guardarLugares(lista) {
   const d = await db()
   const tx = d.transaction('lugares', 'readwrite')
+  // clear() y no solo put(): despublicar una ficha en el CMS la saca de
+  // /api/places, pero la respuesta no dice "esta se fue" — simplemente no viene.
+  // Sin el clear, el lugar despublicado se quedaba PARA SIEMPRE en el IndexedDB
+  // de quien ya lo tenía sincronizado. Los dos llamadores mandan la lista
+  // canónica completa (respuesta de la API, o la semilla filtrada), así que
+  // reemplazar es lo correcto — igual que en localidades y avisos.
+  await tx.store.clear()
   await Promise.all(lista.map((l) => tx.store.put(l)))
   await tx.done
 }

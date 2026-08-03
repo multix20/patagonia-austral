@@ -85,9 +85,38 @@ Proyecto **personal/comercial propio**. Arquitectura del despliegue (todo gratis
 3. Si quieres URL fija: **Site configuration → Change site name** →
    `patagonia-austral` → queda `https://patagonia-austral.netlify.app`.
 4. **CORS**: la variable `FRONTEND_URL` del web service en Render debe ser
-   exactamente la URL pública de Netlify (el blueprint trae
-   `https://patagonia-austral.netlify.app`; ajústala en el dashboard si el
-   nombre del sitio termina siendo otro).
+   exactamente la URL pública del sitio. El blueprint trae el dominio propio
+   (`https://rutaaustral.cl`); mientras el DNS no esté listo, la URL de Netlify
+   sigue permitida por los patrones comodín de `config/cors.php`.
+
+### 2.4) Dominio propio — `rutaaustral.cl`
+
+Elegido el 3-ago-2026. Registrado en **NIC Chile** (`nic.cl`). Orden de los pasos
+(el DNS es lo primero porque todo lo demás espera su propagación):
+
+1. **NIC Chile → DNS**: apuntar el dominio a Netlify. En Netlify:
+   **Domain management → Add a domain** → `rutaaustral.cl`. Netlify indica si
+   usar sus *nameservers* (`dns1.p0X.nsone.net`, lo más simple) o registros
+   `A`/`CNAME`. El SSL de Let's Encrypt se emite solo, a los minutos de propagar.
+2. Dejar `www.rutaaustral.cl` **redirigiendo** al apex (Netlify lo hace solo al
+   agregar el dominio; verificar que el primario sea el apex).
+3. **No dar de baja el sitio `.netlify.app`**: quien ya tenga la PWA instalada la
+   conserva apuntando al origen viejo, con su IndexedDB y su suscripción de push.
+   Dejarlo redirigiendo un tiempo.
+4. **Render → Environment**: `FRONTEND_URL = https://rutaaustral.cl`. Sin esto la
+   PWA queda servida pero **sin datos**, y el error sale como CORS en consola.
+   (El comodín de `config/cors.php` ya cubre el dominio y sus subdominios, así
+   que esto es cinturón y tirantes — pero cargarlo igual.)
+5. **Stadia Maps** → restringir la API key al dominio nuevo, o el basemap de
+   terreno deja de cargar (ver el paso 2 de esta guía).
+6. **Correo** — el motivo real de comprar el dominio: montar
+   `contacto@rutaaustral.cl` en **Zoho Mail free** (o Google Workspace) y agregar
+   los registros `MX` + `SPF`/`DKIM` que indique el proveedor. La landing
+   `/proyecto` ya enlaza a esa casilla.
+7. **Opcional, cuando toque**: `fotos.rutaaustral.cl` como dominio público del
+   bucket R2 (`R2_URL`) para salir del rate limit de `r2.dev` — paso 2.5. Y
+   `api.rutaaustral.cl` para la API, que además obliga a cambiar `APP_URL` en
+   Render y `VITE_API_URL` en Netlify **con redeploy** (es build-time).
 
 ## 2.5) Fotos de las fichas — Cloudflare R2
 
@@ -242,6 +271,38 @@ y rehacer el cambio de una sola pasada.
 
 ---
 
+## 2.8) Los seeders y el contenido curado en el CMS
+
+`docker/start.sh` corre `php artisan migrate --force --seed` **en cada arranque
+del contenedor**, y en el plan free el servicio se duerme a los ~15 min: en la
+práctica los seeders se ejecutan varias veces al día.
+
+`PlaceSeeder` hace `updateOrCreate` con **todos** los campos de la ficha,
+`publicado` y `destacado` incluidos. Sin freno, cada despertar del servicio
+revertía a `places.json` lo que se hubiera curado en `/admin` — y el síntoma es
+mudo: no hay error, la selección simplemente vuelve sola a la del JSON.
+
+**Desde ago-2026 el seeder se salta si ya hay lugares en la BD.** Lo que se
+edita en el CMS manda.
+
+**Para reimportar a propósito** (contenido nuevo agregado a `places.json`):
+
+```bash
+SEMBRAR_LUGARES=1 php artisan db:seed --class=Database\\Seeders\\PlaceSeeder
+```
+
+Ojo: esa pasada **sí** pisa `publicado` y `destacado` de las 231 fichas semilla
+con lo que diga el JSON. Si ya hay curación hecha en el CMS, respaldarla antes:
+
+```sql
+CREATE TABLE respaldo_publicados AS SELECT id FROM places WHERE publicado;
+```
+
+`SernaturPlaceSeeder` no corre solo (no está en `DatabaseSeeder`): es manual y
+siempre lo fue.
+
+---
+
 ## 3) Prueba de fuego en producción
 
 1. Abre la PWA (URL de Netlify) → cargan los lugares desde la API.
@@ -279,9 +340,6 @@ El almacenamiento de imágenes en la nube ya está resuelto (R2, paso 2.5); al
 montar el dominio propio, apuntar también un subdominio al bucket para salir del
 `r2.dev` con rate limit (basta cambiar `R2_URL`).
 
-**Dominio `.cl` — checklist completo** (qué variable tocar en cada servicio, y
-por qué el CORS es la trampa): `ESTADO_Y_PENDIENTES.md` → Fase 4, "Dominios
-`.cl`". Resumen: dominio en Netlify, y luego `FRONTEND_URL` (CORS — un `.cl` no
-calza con los patrones comodín de `config/cors.php`), `APP_URL`, `R2_URL` y, si
-la API se muda a `api.<dominio>.cl`, `VITE_API_URL` **con redeploy** de Netlify
-por ser build-time.
+**Dominio `.cl` — `rutaaustral.cl`, elegido el 3-ago-2026.** Pasos concretos en
+el **§2.4** de esta misma guía; el porqué de cada decisión, en
+`ESTADO_Y_PENDIENTES.md` → Fase 4, "Dominios `.cl`".
