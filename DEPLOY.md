@@ -78,10 +78,17 @@ Proyecto **personal/comercial propio**. Arquitectura del despliegue (todo gratis
    > **`VITE_STADIA_API_KEY`** (opcional): activa el basemap de terreno verde
    > (Stamen Terrain) en la capa "Mapa". Se registra gratis en
    > https://stadiamaps.com → crea una *Property* → **Authentication → API keys**.
-   > En el panel de Stadia, restringe la key a los dominios propios (la URL de
-   > Netlify y, si aplica, los `deploy-preview-*.netlify.app`). Es una clave de
-   > cliente restringida por dominio, no un secreto. Si se deja vacía, la capa
-   > "Mapa" cae de vuelta a CARTO Voyager (el mapa no se rompe).
+   > En el panel de Stadia, restringe la key a los dominios propios
+   > (`rutaaustral.cl`, `www.rutaaustral.cl`, la URL de Netlify y, si aplica, los
+   > `deploy-preview-*.netlify.app`). Es una clave de cliente restringida por
+   > dominio, no un secreto.
+   >
+   > **Si la key falta, la capa "Mapa" cae a CARTO Voyager. Y si la key está pero
+   > la rechazan** —dominio no autorizado, plan vencido— **también**: el mapa
+   > detecta las teselas fallidas y cambia de proveedor solo. Antes no lo hacía y
+   > el mapa quedaba en blanco; pasó al estrenar `rutaaustral.cl`, con la key
+   > todavía restringida al dominio viejo. Ojo con el plan: el trial de Stadia
+   > Professional vence, y al vencer la key deja de servir teselas.
 3. Si quieres URL fija: **Site configuration → Change site name** →
    `patagonia-austral` → queda `https://patagonia-austral.netlify.app`.
 4. **CORS**: la variable `FRONTEND_URL` del web service en Render debe ser
