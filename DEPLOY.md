@@ -271,6 +271,38 @@ y rehacer el cambio de una sola pasada.
 
 ---
 
+## 2.8) Los seeders y el contenido curado en el CMS
+
+`docker/start.sh` corre `php artisan migrate --force --seed` **en cada arranque
+del contenedor**, y en el plan free el servicio se duerme a los ~15 min: en la
+práctica los seeders se ejecutan varias veces al día.
+
+`PlaceSeeder` hace `updateOrCreate` con **todos** los campos de la ficha,
+`publicado` y `destacado` incluidos. Sin freno, cada despertar del servicio
+revertía a `places.json` lo que se hubiera curado en `/admin` — y el síntoma es
+mudo: no hay error, la selección simplemente vuelve sola a la del JSON.
+
+**Desde ago-2026 el seeder se salta si ya hay lugares en la BD.** Lo que se
+edita en el CMS manda.
+
+**Para reimportar a propósito** (contenido nuevo agregado a `places.json`):
+
+```bash
+SEMBRAR_LUGARES=1 php artisan db:seed --class=Database\\Seeders\\PlaceSeeder
+```
+
+Ojo: esa pasada **sí** pisa `publicado` y `destacado` de las 231 fichas semilla
+con lo que diga el JSON. Si ya hay curación hecha en el CMS, respaldarla antes:
+
+```sql
+CREATE TABLE respaldo_publicados AS SELECT id FROM places WHERE publicado;
+```
+
+`SernaturPlaceSeeder` no corre solo (no está en `DatabaseSeeder`): es manual y
+siempre lo fue.
+
+---
+
 ## 3) Prueba de fuego en producción
 
 1. Abre la PWA (URL de Netlify) → cargan los lugares desde la API.
