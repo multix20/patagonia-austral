@@ -150,4 +150,29 @@ class FotosFichaTest extends TestCase
 
         $this->assertSame([], $ficha['imagenes']);
     }
+
+    public function test_la_api_responde_aunque_r2_no_este_configurado(): void
+    {
+        // Caída real en producción (3-ago-2026): el blueprint fija FOTOS_DISK=r2
+        // pero las cinco R2_* viven solo en el dashboard y estaban SIN CARGAR.
+        // flysystem exige un bucket `string`, recibía null y Storage::disk('r2')
+        // lanzaba TypeError — dentro del map de toApi(), o sea que /api/places
+        // devolvía 500 entero y la PWA quedaba sin lugares ni mapa.
+        //
+        // Los valores van a null a propósito: una variable AUSENTE da null,
+        // mientras que un `.env` con `R2_BUCKET=` da `''`, que es string y no
+        // reproduce el fallo. Esa diferencia es justo la que lo escondió.
+        config()->set('fotos.disco', 'r2');
+        foreach (['key', 'secret', 'bucket', 'endpoint', 'url'] as $clave) {
+            config()->set("filesystems.disks.r2.{$clave}", null);
+        }
+
+        $this->ficha(['imagenes' => ['fichas/uno.webp']]);
+
+        $datos = $this->getJson('/api/places')->assertOk()->json();
+        $ficha = collect($datos)->firstWhere('nombre.es', 'Cabañas');
+
+        // Sin almacenamiento no hay URL que dar, pero la ficha viaja igual.
+        $this->assertSame([], $ficha['imagenes']);
+    }
 }

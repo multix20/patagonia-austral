@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\AlmacenamientoFotos;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
@@ -39,12 +40,25 @@ class Place extends Model
      */
     public function imagenesUrl(): array
     {
+        $rutas = array_values(array_filter($this->imagenes ?? [], 'is_string'));
+
+        // Sin las variables R2_* el disco NI SIQUIERA se puede construir:
+        // flysystem exige un bucket `string` y recibe null, así que
+        // Storage::disk('r2') lanza TypeError. Como esto corre por CADA ficha
+        // dentro de toApi(), el efecto no era "la foto no carga" sino que TODO
+        // /api/places devolvía 500 y la PWA quedaba sin datos — por fotos que
+        // ni siquiera existen todavía. Mientras el almacenamiento no esté
+        // configurado, las fichas van sin foto: el degradado que la app ya sabe
+        // manejar. (Ojo con reproducirlo en local: un .env con `R2_BUCKET=`
+        // vacío da `''`, que SÍ es string y no falla. El fallo pide la variable
+        // ausente del todo, como en Render.)
+        if ($rutas === [] || ! app(AlmacenamientoFotos::class)->listo()) {
+            return [];
+        }
+
         $disco = Storage::disk(config('fotos.disco'));
 
-        return array_values(array_map(
-            fn (string $ruta) => $this->absoluta($disco->url($ruta)),
-            array_filter($this->imagenes ?? [], 'is_string')
-        ));
+        return array_map(fn (string $ruta) => $this->absoluta($disco->url($ruta)), $rutas);
     }
 
     /**
