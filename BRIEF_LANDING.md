@@ -252,8 +252,13 @@ de frente es lo que hace que un municipio conteste en vez de desconfiar.
 - Accesible: contraste suficiente, foco visible, respeto a
   `prefers-reduced-motion`.
 - El build (`npm run build`) y el lint del frontend tienen que seguir pasando, y
-  el precache tiene que quedar en **10 entradas / ~573 KiB** — si sube, algo se
-  coló.
+  **`proyecto.html` no puede aparecer en el manifiesto del service worker**
+  (`dist/sw.js`) — esa es la comprobación que importa, no el total.
+  *(Corrección 4-ago-2026: acá decía "10 entradas / ~573 KiB". Ese número ya no
+  calza —medido hoy: **16 entradas / 623,27 KiB**, idéntico con y sin cambios en
+  la landing— porque el precache creció con la app. Comparar contra esa cifra
+  vieja hace perseguir una regresión que no existe; lo que hay que revisar es
+  que `proyecto.html` no esté en la lista.)*
 
 ---
 
@@ -271,11 +276,33 @@ de frente es lo que hace que un municipio conteste en vez de desconfiar.
 
 ## 9. Pendiente antes de publicar
 
-Quedan **dos** marcadores (van visibles en rojo a propósito para que no se
-escapen): nombre y apellido de quien firma, y WhatsApp.
+**No queda ningún marcador en rojo** (4-ago-2026). Los tres:
 
-El correo ya está puesto: **`contacto@rutaaustral.cl`** (dominio decidido el
-3-ago-2026). Falta que el **buzón exista** — Zoho Mail free o Google Workspace —
-antes de mandar la campaña: un `mailto:` a una casilla que rebota es peor que no
-tener el botón. Era el punto 1 del plan de inversión precisamente porque de eso
-depende que contesten.
+- **Firma** — **Juan Pablo Monsalve Suazo**, en "Quién está detrás". Con
+  apellido porque, como dice §5.7, sin eso un municipio no contesta.
+
+- **Correo** — `contacto@rutaaustral.cl`, con el buzón montado en **Purelymail**
+  (el proveedor se decidió el 4-ago; Zoho quedó descartado). El `mailto:` ya no
+  apunta a una casilla que rebota, que era el riesgo real de mandar la campaña
+  antes de tiempo.
+- **WhatsApp** — `56951569704`, en formato internacional dentro del `wa.me`. Dos
+  decisiones sobre cómo va puesto: **solo como botón**, sin el número escrito en
+  la página (no queda indexado en texto plano para spam), y con **mensaje
+  prellenado**, para que un contacto que llega por la landing se distinga de
+  cualquier otro mensaje del día.
+
+### Lo que sigue pendiente, y no es un marcador
+
+Cerrar los tres deja la página **completa en lo operativo**, no lista para
+mandarla. Falta lo de §2, que es lo que este brief vino a encargar:
+
+1. **El copy sigue siendo el de la versión provisoria** y abre con el argumento
+   equivocado — *"En gran parte de la Carretera Austral no hay señal… no puede
+   buscar en Google"*. Está **en vivo** en `/proyecto`. Mientras no se reescriba,
+   el criterio 4 de §8 ("nadie que viva en la ruta puede señalar una sola
+   afirmación falsa") **no se cumple**, y es el lector exacto de la campaña.
+
+2. **La entregabilidad del buzón está sin medir.** Purelymail se eligió asumiendo
+   el riesgo de IPs compartidas, con el compromiso de comprobarlo con mail-tester
+   **antes** de la campaña (`DEPLOY.md` §2.4.1, paso 8). Un `mailto:` que existe
+   pero cae en spam falla igual que uno que rebota, solo que sin avisar.

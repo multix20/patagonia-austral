@@ -129,8 +129,25 @@ después de escribirlo todo.
   ya escribiste la ficha entera.
 
 ### 5. Landing `/proyecto` — depende del punto 1
-- [ ] Reemplazar los **tres marcadores en rojo**: nombre y apellido de quien
-      firma, correo (del dominio, no Gmail) y WhatsApp. Ver `BRIEF_LANDING.md` §9.
+Los **tres marcadores en rojo** quedaron cerrados:
+- [x] **Correo** → `contacto@rutaaustral.cl` (3-ago-2026).
+- [x] **WhatsApp** → `56951569704` (4-ago-2026). Va **solo como botón**, sin el
+      número escrito en la página, para no dejarlo indexado en texto plano; el
+      enlace `wa.me` lleva mensaje prellenado para reconocer de dónde llega el
+      contacto.
+- [x] **Firma** → Juan Pablo Monsalve Suazo (4-ago-2026), en "Quién está detrás".
+
+Ver `BRIEF_LANDING.md` §9.
+
+> **⚠ La landing todavía NO está lista para mandarla.** Cerrar los marcadores la
+> deja completa en lo operativo, pero el cuerpo sigue siendo la **versión
+> provisoria** del 29-jul: la sección "El problema" abre con *"En gran parte de
+> la Carretera Austral no hay señal. El turista … no puede buscar en Google"*,
+> que es justo lo que la corrección de conectividad descarta (en el pueblo sí
+> hay señal). Está **en vivo** en `/proyecto` desde que se mergeó a `main`, pese
+> a la nota "NO MERGEAR COMO ESTÁ" del backlog. **Corregir ese copy es
+> requisito de la campaña** (punto 6): lo va a leer gente que vive en la ruta.
+> El encargo de la versión buena está en `BRIEF_LANDING.md`.
 
 ### 6. Campaña de correos — depende de 1 y 5, y es la que decide el producto
 - [ ] Mandarla a las 26 encargadas de turismo municipal + dueños de alojamiento
