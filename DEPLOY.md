@@ -248,23 +248,29 @@ que es único por cuenta).
 
 4. **Verificar el dominio** en el panel de Purelymail. Suele tomar minutos.
 5. **Crear el usuario `contacto`** → queda `contacto@rutaaustral.cl`.
-6. **Routing — una sola regla, con dos destinos.** En *Routing → Add New Rule*:
-   dominio `rutaaustral.cl`, *Match* en la opción de **catch-all** (cualquier
-   dirección), y en *Send To* **los dos separados por coma**:
-   `contacto@rutaaustral.cl, jp.devtravel@gmail.com`.
+6. **Routing — dos reglas, cada una con dos destinos.** En *Routing → Add New
+   Rule*, dominio `rutaaustral.cl` en ambas, y en *Send To* siempre los dos
+   separados por coma: `contacto@rutaaustral.cl,jp.devtravel@gmail.com`.
 
-   > **Por qué los dos, y no solo el Gmail.** La ayuda de esa pantalla avisa:
-   > *"If a routing rule matches an existing User's address, the User will not
-   > receive the email"*. O sea que una regla que mande `contacto@` solo al Gmail
-   > **deja el buzón vacío**: no queda copia en Purelymail ni en IMAP, y si algún
-   > día Gmail rechaza el reenvío, el correo se perdió sin dejar rastro.
-   > Poniendo también `contacto@rutaaustral.cl` en los destinos, queda copia en
-   > el buzón **y** llega al Gmail. Enrutar a un usuario de la propia cuenta es
-   > justo el patrón que documenta Purelymail para el catch-all, así que no hay
-   > bucle.
+   | Match | Cubre |
+   |---|---|
+   | `The exact address` → `contacto` | El correo real: la landing y la campaña |
+   | `Any address except valid user addresses (catchall)` | `hola@`, `info@`, el `contato@` mal tipeado |
 
-   De paso, el catch-all hace que `hola@`, `info@` o el inevitable `contato@`
-   mal escrito tampoco reboten.
+   > **Las dos hacen falta, y por razones opuestas.** El catch-all dice
+   > literalmente *"except valid user addresses"*: `contacto@` **es** un usuario
+   > válido, así que el catch-all no lo toca y por sí solo nunca lo reenviaría al
+   > Gmail. Y la regla exacta necesita llevar `contacto@rutaaustral.cl` entre sus
+   > destinos porque, como avisa esa misma pantalla, *"if a routing rule matches
+   > an existing User's address, the User will not receive the email"* — sin ese
+   > destino explícito el buzón queda vacío, sin copia en IMAP, y un rechazo de
+   > Gmail se traga el correo sin dejar rastro.
+   >
+   > Si la regla exacta con auto-destino no funcionara (bucle o rechazo), el plan
+   > B es dejarla solo hacia el Gmail y leer el buzón por **POP3 desde Gmail**
+   > (*Cuentas e importación → Consultar el correo de otras cuentas*), con
+   > "dejar copia en el servidor": no depende del reenvío, pero tarda hasta una
+   > hora en traer los mensajes.
 
 7. **Enchufarlo al Gmail que ya usas** — esto es lo que evita que el buzón quede
    como una segunda bandeja que hay que acordarse de revisar (una de las dos
