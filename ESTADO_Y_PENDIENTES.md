@@ -62,12 +62,19 @@ después de escribirlo todo.
       sirviendo a los `deploy-preview-*`).
 - [ ] Registrar las variantes que se confunden al dictarlo por teléfono
       (`ruta-austral.cl`, `rutasaustral.cl`) — solo redirigen a la principal.
-- [ ] Montar el **buzón `contacto@rutaaustral.cl`** — la landing ya enlaza a esa
-      casilla, así que hoy ese botón apunta a un buzón que no existe. Los MX van
-      en el panel de **Netlify DNS**, no en NIC.
-      **Paso a paso completo: `DEPLOY.md` §2.4.1** (4-ago-2026), incluida la
-      verificación con `spf=pass`/`dkim=pass` y las precauciones de
-      entregabilidad para que la campaña no caiga en spam.
+- [x] **Buzón `contacto@rutaaustral.cl` montado y funcionando (4-ago-2026)** —
+      el botón de la landing ya apunta a una casilla que existe. Quedó así:
+      DNS en **Netlify** (MX, SPF como `TXT`, tres DKIM `CNAME`, DMARC), usuario
+      `contacto` en Purelymail, una regla de *routing* exacta con doble destino
+      (buzón + Gmail) y "Enviar como" en Gmail por `smtp.purelymail.com:465`.
+      Verificado en los dos sentidos: un correo enviado desde la dirección nueva
+      llega con **enviado por / firmado por `rutaaustral.cl`** (SPF y DKIM
+      alineados, no `gmail.com`).
+      **Paso a paso completo y trampas: `DEPLOY.md` §2.4.1.**
+- [ ] **Medir la entregabilidad antes de la campaña** — `mail-tester.com` desde
+      `contacto@rutaaustral.cl`, objetivo **≥ 8/10**, mirando en particular las
+      listas negras: el dominio tuvo dueño anterior y arrastra su reputación.
+      Es la prueba que decide si Purelymail se queda o se migra a Workspace.
       **Zoho quedó descartado (4-ago-2026)**: el dominio está reclamado por una
       organización Zoho del dueño anterior del `.cl` (el asistente rebota antes
       del checkout, se destraba solo con un ticket a soporte) y, además, el plan
