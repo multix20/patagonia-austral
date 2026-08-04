@@ -22,7 +22,7 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
-## Lo que depende de TI — acciones manuales (al 31-jul-2026)
+## Lo que depende de TI — acciones manuales (al 4-ago-2026)
 
 Todo lo de abajo está **fuera del alcance de una sesión de Claude**: pide tarjeta,
 dashboard, una decisión tuya o acceso a la BD de producción. Está ordenado por lo
@@ -32,6 +32,23 @@ que desbloquea, no por dificultad. Cuando algo se haga, marcar la casilla acá.
 > límite real no es diciembre sino **septiembre**, porque lo que viene después de
 > la campaña de correos tiene latencia propia (2–3 semanas de respuestas, edición
 > de fichas, y un eventual viaje de fotos que conviene hacer en primavera).
+
+**Orden acordado (4-ago-2026)** — los puntos de abajo están ordenados por lo que
+desbloquean, no por el orden en que conviene hacerlos. El orden de ejecución es:
+
+1. **Buzón `contacto@rutaaustral.cl`** (punto 1) — hoy la landing enlaza a una
+   casilla que no existe.
+2. **Nombre y WhatsApp en la landing** (punto 5) — cierra los marcadores en rojo.
+3. **R2 (punto 2), *always-on* (punto 4) y Sentry (punto 9)** — infraestructura,
+   toda junta y **antes** de la pasada de contenido.
+4. **Curar el contenido** (las 156 fichas; acá caen los puntos 7 y 8).
+5. **Campaña de correos** (punto 6).
+
+El 3 va antes que el 4 por dos razones concretas, no por gusto: con R2 andando,
+cada ficha que abras para curar se puede cargar con su foto en la misma pasada
+(al revés hay que recorrer las 156 dos veces), y el *always-on* evita que el
+servicio se duerma a los 15 min y te devuelva un **419 al guardar**, justo
+después de escribirlo todo.
 
 ### 1. Dominio `.cl` + correo — ~CLP 10.000/año — desbloquea la campaña entera
 - [x] **Decidir el nombre** → **`rutaaustral.cl`** (3-ago-2026).
@@ -61,9 +78,11 @@ que desbloquea, no por dificultad. Cuando algo se haga, marcar la casilla acá.
   aplica TODO el blueprint**, no solo la línea que cambiaste.
 
 ### 2. Bucket R2 + 6 variables en Render — ~20 min — desbloquea las fotos
-> **Ya no es urgente ni bloqueante** (3-ago-2026): sin R2 la app funciona
-> completa, solo que las fichas van sin foto. Antes no era así — con
-> `FOTOS_DISK=r2` y las variables vacías, `/api/places` devolvía 500 entero.
+> **Ya no es bloqueante para la app** (3-ago-2026): sin R2 funciona completa,
+> solo que las fichas van sin foto. Antes no era así — con `FOTOS_DISK=r2` y las
+> variables vacías, `/api/places` devolvía 500 entero. **Pero sí va antes de
+> curar el contenido** (4-ago-2026): con R2 arriba, cada ficha se abre una sola
+> vez — datos y foto en la misma pasada.
 - [ ] Registrar **tarjeta en Cloudflare** (la exige aunque el uso sea gratis).
 - [ ] Crear el bucket, habilitar el acceso público `r2.dev` y crear el token
       *Object Read & Write*.
@@ -88,6 +107,10 @@ que desbloquea, no por dificultad. Cuando algo se haga, marcar la casilla acá.
   inversión lo pone en segundo lugar pensando en el crowdsourcing, pero vas a
   mandar 26 correos con un link: si el primer clic de una encargada de turismo se
   come **50 s de arranque en frío**, perdiste esa respuesta y era el único tiro.
+
+  **Y antes de curar** (4-ago-2026): con el plan gratis el servicio se duerme a
+  los 15 min y la sesión del CMS se cae con un **419 al guardar**, justo cuando
+  ya escribiste la ficha entera.
 
 ### 5. Landing `/proyecto` — depende del punto 1
 - [ ] Reemplazar los **tres marcadores en rojo**: nombre y apellido de quien
