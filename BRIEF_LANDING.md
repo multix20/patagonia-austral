@@ -276,9 +276,10 @@ de frente es lo que hace que un municipio conteste en vez de desconfiar.
 
 ## 9. Pendiente antes de publicar
 
-Queda **un** marcador visible en rojo: **nombre y apellido de quien firma**.
+**No queda ningún marcador en rojo** (4-ago-2026). Los tres:
 
-Ya resueltos (4-ago-2026):
+- **Firma** — **Juan Pablo Monsalve Suazo**, en "Quién está detrás". Con
+  apellido porque, como dice §5.7, sin eso un municipio no contesta.
 
 - **Correo** — `contacto@rutaaustral.cl`, con el buzón montado en **Purelymail**
   (el proveedor se decidió el 4-ago; Zoho quedó descartado). El `mailto:` ya no
@@ -289,3 +290,19 @@ Ya resueltos (4-ago-2026):
   la página (no queda indexado en texto plano para spam), y con **mensaje
   prellenado**, para que un contacto que llega por la landing se distinga de
   cualquier otro mensaje del día.
+
+### Lo que sigue pendiente, y no es un marcador
+
+Cerrar los tres deja la página **completa en lo operativo**, no lista para
+mandarla. Falta lo de §2, que es lo que este brief vino a encargar:
+
+1. **El copy sigue siendo el de la versión provisoria** y abre con el argumento
+   equivocado — *"En gran parte de la Carretera Austral no hay señal… no puede
+   buscar en Google"*. Está **en vivo** en `/proyecto`. Mientras no se reescriba,
+   el criterio 4 de §8 ("nadie que viva en la ruta puede señalar una sola
+   afirmación falsa") **no se cumple**, y es el lector exacto de la campaña.
+
+2. **La entregabilidad del buzón está sin medir.** Purelymail se eligió asumiendo
+   el riesgo de IPs compartidas, con el compromiso de comprobarlo con mail-tester
+   **antes** de la campaña (`DEPLOY.md` §2.4.1, paso 8). Un `mailto:` que existe
+   pero cae en spam falla igual que uno que rebota, solo que sin avisar.
