@@ -72,9 +72,16 @@ después de escribirlo todo.
       organización Zoho del dueño anterior del `.cl` (el asistente rebota antes
       del checkout, se destraba solo con un ticket a soporte) y, además, el plan
       gratis no tiene SMTP ni reenvío, así que no podría mandar la campaña.
-      **Falta decidir proveedor** — recomendado Google Workspace (~US$84/año) por
-      entregabilidad; Migadu (~US$19/año) si se aprieta el presupuesto. Tabla
-      comparativa en §2.4.1.
+      **Proveedor decidido (4-ago-2026): Purelymail, ~US$10/año** — tiene SMTP e
+      IMAP, tarifa plana con dominios ilimitados (sirve después para los negocios
+      del fundador) y reglas de *routing* para reenviar al Gmail de siempre, que
+      es lo que evita la segunda bandeja olvidada. Se eligió por sobre Google
+      Workspace (~US$84/año) porque **cambiar de proveedor es cambiar los MX**:
+      no es puerta de una sola vía, y el gasto dobla el presupuesto anual del
+      proyecto. El riesgo asumido es la entregabilidad a cuentas municipales
+      desde IPs compartidas de un proveedor chico → **se mide con mail-tester
+      antes de la campaña** (paso 8 de §2.4.1); si sale bajo, se migra a
+      Workspace en una tarde y recién ahí se paga.
 
   Ya hecho en el repo (3-ago-2026): `render.yaml` (`FRONTEND_URL` + `APP_URL`),
   comodín de `rutaaustral.cl` en `backend/config/cors.php`, correo y `canonical`
@@ -919,8 +926,9 @@ always-on, aunque técnicamente el always-on valga más.
      BD se guarda la ruta, no la URL completa (`DEPLOY.md` §2.5).
   6. **Key de Stadia** → restringirla al dominio nuevo (`DEPLOY.md`, paso del
      basemap de terreno), o el basemap deja de cargar.
-  7. **Correo del dominio** — que es el motivo de todo esto. Zoho Mail free o
-     Google Workspace; el buzón tiene que existir **antes** de mandar la campaña.
+  7. **Correo del dominio** — que es el motivo de todo esto. **Purelymail**
+     (decidido 4-ago-2026, ~US$10/año); el buzón tiene que existir **antes** de
+     mandar la campaña. Paso a paso en `DEPLOY.md` §2.4.1.
 - **Ojo con la PWA:** cambiar de origen (`netlify.app` → `.cl`) es un origen
   nuevo para el navegador. Quien ya tenga la app instalada conserva la vieja con
   su IndexedDB y su suscripción de push apuntando al origen viejo; conviene dejar

@@ -136,8 +136,7 @@ Netlify → *Domains* → `rutaaustral.cl` → *DNS records* → *Add new record
 > ## ⚠️ Zoho quedó descartado (4-ago-2026) — leer antes de seguir
 >
 > Se intentó la ruta de Zoho y **está bloqueada por dos motivos independientes**.
-> Los pasos de abajo quedan como referencia de DNS (sirven para cualquier
-> proveedor), pero **no sigas el registro en Zoho**:
+> Queda escrito para no volver a intentarlo dentro de tres meses:
 >
 > 1. **El dominio está reclamado por otra organización de Zoho.** Al agregarlo
 >    responde `This domain is already associated with this account i*****o@r*****`
@@ -156,67 +155,108 @@ Netlify → *Domains* → `rutaaustral.cl` → *DNS records* → *Add new record
 > por los MX, y los MX los controlamos nosotros en Netlify. Es un papel viejo,
 > no acceso.
 
-**Qué proveedor** (pendiente de decisión al 4-ago-2026)
+**Qué proveedor — decidido: Purelymail (4-ago-2026), ~US$10/año**
 
 | | Precio | IMAP/SMTP | Nota |
 |---|---|---|---|
-| Google Workspace | ~US$84/año | sí | La mejor entregabilidad, y es el Gmail que ya se usa. |
-| Migadu | ~US$19/año | sí | Buzones y alias ilimitados. |
-| Purelymail | ~US$10/año | sí | El más barato; proyecto de una sola persona. |
-| Zoho Mail Lite | ~US$12/año | sí | Solo si soporte libera el dominio. |
-| ImprovMX | US$0 | **no** | Solo reenvía; no puede enviar la campaña. |
+| **Purelymail** | **~US$10/año** | sí | **Elegido.** Tarifa plana con buzones y **dominios ilimitados**. Contra: lo lleva una sola persona sobre AWS (ha tenido caídas puntuales) y el webmail es flojo — se resuelve leyendo y escribiendo desde el Gmail de siempre (paso 7). |
+| Migadu Micro | ~US$19/año | sí | Suizo, con más rodaje. Pero es **un solo dominio** y **20 envíos/día**: alcanza para la campaña en tandas, no para los dominios de los otros negocios. |
+| Google Workspace | ~US$84/año | sí | La mejor entregabilidad y es el Gmail que ya se usa. Más que **dobla** el gasto anual del proyecto (~US$150). |
+| Zoho Mail Lite | ~US$12/año | sí | Bloqueado por lo de arriba mientras soporte no libere el dominio. |
+| ImprovMX / Cloudflare Email Routing | US$0 | **no** | Solo reenvían. No pueden **enviar** la campaña, que es para lo que se compró el dominio. |
 
-**Recomendación: Google Workspace.** La campaña va a **cuentas municipales, que
-filtran fuerte**, y para 26 correos que deciden el contenido del producto la
-reputación de envío de Google vale más que los ~US$65 de diferencia con Migadu.
-Si hay que apretar el presupuesto, Migadu es una elección sensata.
+**Por qué Purelymail y no Workspace.** Porque esto **no es una puerta de una sola
+vía**: los MX se controlan desde Netlify, así que cambiar de proveedor es editar
+el DNS y arrastrar el correo viejo por IMAP —a esta altura, una bandeja vacía—.
+Gastar US$84 por adelantado para cubrirse de un riesgo que se mide en una tarde
+(paso 8) es pagar un seguro más caro que el siniestro. La tarifa plana además
+cubre los dominios de la hamburguesería y el transporte cuando toque, sin subir
+de plan.
 
-**El plan gratis no es opción para este proyecto**, con o sin el bloqueo del
-dominio: sin SMTP no se puede enviar desde `contacto@rutaaustral.cl`, que es
-justamente para lo que se compró el dominio.
+**El riesgo real, dicho claro**: la campaña va a **cuentas municipales, que
+filtran fuerte**, y sale desde IPs compartidas de un proveedor chico y un dominio
+recién nacido. Por eso el paso 8 —medir la entregabilidad **antes** de la
+campaña— no es opcional. Si sale mal ahí, se migra a Workspace cambiando los MX;
+lo que no puede pasar es enterarse con los 26 correos ya enviados.
 
-**Pasos** — escritos para Zoho, pero el patrón (verificar el dominio → MX → SPF →
-DKIM → DMARC → probar) es idéntico en Workspace, Migadu o Purelymail; solo cambian
-los valores, que **siempre se copian del panel del proveedor**, no de aquí.
+**Ningún plan gratis sirve acá**: sin SMTP propio no se puede enviar desde
+`contacto@rutaaustral.cl`.
 
-1. Registrarse en Zoho Mail y elegir la opción de **dominio propio** ("Sign up
-   with a domain I already own") → `rutaaustral.cl`. Ojo: **el datacenter que
-   elijas (US/EU) no se cambia después**, y define los valores de los pasos
-   siguientes (`zoho.com` vs `zoho.eu`).
-2. **Verificar el dominio**: Zoho entrega un `TXT` (o `CNAME`). Agregarlo en
-   Netlify DNS y volver a Zoho a darle *Verify*. Suele tomar minutos.
-3. **Crear el usuario `contacto`** → queda `contacto@rutaaustral.cl`.
-4. **MX** en Netlify DNS. Copiar los valores de la pantalla *DNS Mapping* del
-   panel de Zoho; con el datacenter de EE.UU. quedan así:
+**Pasos** — el patrón (crear cuenta → verificar el dominio → MX → SPF → DKIM →
+DMARC → probar) es el mismo en cualquier proveedor; lo que cambia son los
+valores, que **siempre se copian del panel**, no de aquí. La tabla del paso 3 es
+para saber qué esperar (valores al 4-ago-2026), no para pegarla a ciegas.
+
+1. **Crear la cuenta** en `purelymail.com` y pagar el año (US$10, por adelantado;
+   no hay plan gratis — que acá es una ventaja: el gratis de Zoho fue justamente
+   el que no servía).
+2. **Agregar el dominio**: *Domains → Add domain* → `rutaaustral.cl`. El panel
+   devuelve los registros, incluido un `TXT` de propiedad.
+3. **Cargar los registros en Netlify DNS** (*Domains → `rutaaustral.cl` → DNS
+   records*):
 
    | Tipo | Nombre | Valor | Prioridad |
    |---|---|---|---|
-   | MX | `@` (o vacío) | `mx.zoho.com` | 10 |
-   | MX | `@` | `mx2.zoho.com` | 20 |
-   | MX | `@` | `mx3.zoho.com` | 50 |
+   | TXT | `@` | el de propiedad que muestre el panel | — |
+   | MX | `@` (o vacío) | `mailserver.purelymail.com` | 10 |
+   | TXT | `@` | `v=spf1 include:_spf.purelymail.com ~all` | — |
+   | CNAME | `purelymail1._domainkey` | `key1.dkimroot.purelymail.com` | — |
+   | CNAME | `purelymail2._domainkey` | `key2.dkimroot.purelymail.com` | — |
+   | CNAME | `purelymail3._domainkey` | `key3.dkimroot.purelymail.com` | — |
+   | CNAME | `_dmarc` | `dmarcroot.purelymail.com` | — |
 
-   > **Borrar cualquier otro MX** que tenga el dominio. Uno solo que sobre
-   > desvía parte del correo, y el síntoma es "algunos correos no llegan" —
-   > bastante peor de diagnosticar que "no llega ninguno".
-5. **SPF** — un `TXT` en `@` con valor `v=spf1 include:zoho.com ~all`.
-   **Un solo registro SPF por dominio**: si ya existe uno, se fusionan los
-   `include` dentro del mismo, no se agrega un segundo.
-6. **DKIM** — en Zoho, *Email Authentication → DKIM*, generar el par y agregar el
-   `TXT` que entregue en `<selector>._domainkey` (el selector por defecto suele
-   ser `zmail`). Volver a Zoho a darle *Verify*.
-7. **DMARC** (opcional, 2 minutos, conviene) — `TXT` en `_dmarc` con
-   `v=DMARC1; p=none; rua=mailto:contacto@rutaaustral.cl`. Con `p=none` no
-   bloquea nada: sirve para enterarte si alguien suplanta el dominio, y suma un
-   poco de entregabilidad.
+   Cuatro trampas, en orden de qué tan caro sale cada una:
 
-**Verificar** — no darlo por hecho hasta que estas tres pasen:
+   > - **Borrar cualquier otro MX** que tenga el dominio. Uno que sobre desvía
+   >   parte del correo, y el síntoma es "algunos correos no llegan" — bastante
+   >   peor de diagnosticar que "no llega ninguno". Con un solo MX, el número de
+   >   prioridad da lo mismo.
+   > - **Un solo registro SPF por dominio.** Si ya existe uno, se fusionan los
+   >   `include` **dentro** del mismo; dos registros SPF = SPF inválido = spam.
+   > - **Los DKIM son `CNAME`, no `TXT`.** Es el error clásico al venir de otros
+   >   proveedores, que entregan una llave larga en TXT. Acá son tres alias.
+   > - **DMARC: o el `CNAME` o un `TXT` propio, nunca los dos.** El `CNAME` deja
+   >   la política en manos de Purelymail (`p=none`) y es cero mantenimiento. Si
+   >   prefieres recibir los reportes, usa en su lugar un `TXT` en `_dmarc` con
+   >   `v=DMARC1; p=none; rua=mailto:contacto@rutaaustral.cl`.
+
+4. **Verificar el dominio** en el panel de Purelymail. Suele tomar minutos.
+5. **Crear el usuario `contacto`** → queda `contacto@rutaaustral.cl`.
+6. **Catch-all** (opcional, 1 minuto, conviene): *Routing* → una regla que mande
+   cualquier dirección del dominio a `contacto`. Así `hola@`, `info@` o el
+   inevitable `contato@` mal escrito no rebotan.
+7. **Enchufarlo al Gmail que ya usas** — este paso es el que evita que el buzón
+   quede como una segunda bandeja que hay que acordarse de revisar (una de las
+   dos razones por las que Zoho free no servía):
+   - **Recibir**: en *Routing*, una regla que reenvíe `contacto@rutaaustral.cl` a
+     tu Gmail. Llega al instante, a diferencia del POP3 de Gmail, que puede
+     tardar una hora — y durante la campaña las respuestas se contestan rápido.
+   - **Enviar**: Gmail → *Ver todos los ajustes → Cuentas e importación → Enviar
+     como → Agregar otra dirección* → `contacto@rutaaustral.cl`, servidor
+     `smtp.purelymail.com`, puerto **465** con SSL (o 587 con STARTTLS), usuario
+     y clave del buzón. Gmail manda un código de confirmación a esa dirección,
+     que ya te llega por el reenvío del punto anterior.
+   - Queda así: escribes desde el Gmail de siempre y el correo **sale por
+     Purelymail**, firmado con el SPF y el DKIM del dominio. Sin esto, Gmail
+     mandaría desde `@gmail.com` y la campaña perdería justamente lo que se fue
+     a buscar al comprar el dominio.
+   - En el teléfono, si prefieres app aparte: IMAP `imap.purelymail.com`, puerto
+     `993`, SSL.
+
+**Verificar** — no darlo por hecho hasta que estas cuatro pasen:
 
 - Mandar un correo **desde fuera** (tu Gmail) a `contacto@rutaaustral.cl` y que
-  llegue al webmail.
-- Responder desde Zoho a tu Gmail, abrir el mensaje y ver *Mostrar original*:
-  tiene que decir `spf=pass` y `dkim=pass`. Si sale `dkim=neutral`, falta el
-  paso 6 o todavía no propaga.
+  llegue.
+- Responder **con la dirección nueva** a tu Gmail, abrir el mensaje y ver
+  *Mostrar original*: tiene que decir `spf=pass` y `dkim=pass`, y el `dkim` con
+  `header.d=rutaaustral.cl` (si dice `gmail.com`, el paso 7 quedó a medias y
+  estás enviando como Gmail disfrazado). Si sale `dkim=neutral`, falta un CNAME
+  o todavía no propaga.
 - Abrir `/proyecto` y probar el botón de contacto.
+- **Antes de la campaña**: mandar un correo a `mail-tester.com` desde la
+  dirección nueva y que dé **≥ 8/10** (lo normal con todo bien puesto es 10/10).
+  Si sale bajo por reputación de IP, ahí es donde se decide migrar a Workspace
+  —cambiando los MX— y no con los 26 correos ya salidos.
 
 Propagación: los MX suelen andar en 1–2 h; SPF y DKIM pueden tardar hasta 24–48 h.
 
