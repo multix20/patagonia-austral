@@ -224,8 +224,15 @@ que es único por cuenta).
    > El **punto final** de los valores que muestra Purelymail
    > (`mailserver.purelymail.com.`) es opcional: si Netlify lo rechaza, sin punto.
 
-   Cuatro trampas más, en orden de qué tan caro sale cada una:
+   Cinco trampas más, en orden de qué tan caro sale cada una:
 
+   > - **El SPF va como `TXT`, aunque Netlify ofrezca un tipo `SPF`.** Es la
+   >   trampa más fácil de caer acá, porque el desplegable lo sugiere solito. El
+   >   tipo de registro `SPF` (el 99) quedó **obsoleto en el RFC 7208, de 2014**:
+   >   ningún servidor lo consulta ya, todos leen el `TXT`. Un `v=spf1` guardado
+   >   como tipo `SPF` se ve perfecto en el panel y **no existe** para Gmail —
+   >   resultado, `spf=fail` y la campaña al spam. Pasó el 4-ago-2026: se cargó
+   >   así y hubo que rehacerlo.
    > - **Borrar cualquier otro MX** que tenga el dominio. Uno que sobre desvía
    >   parte del correo, y el síntoma es "algunos correos no llegan" — bastante
    >   peor de diagnosticar que "no llega ninguno". Con un solo MX, el número de
