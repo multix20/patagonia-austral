@@ -248,15 +248,30 @@ que es único por cuenta).
 
 4. **Verificar el dominio** en el panel de Purelymail. Suele tomar minutos.
 5. **Crear el usuario `contacto`** → queda `contacto@rutaaustral.cl`.
-6. **Catch-all** (opcional, 1 minuto, conviene): *Routing* → una regla que mande
-   cualquier dirección del dominio a `contacto`. Así `hola@`, `info@` o el
-   inevitable `contato@` mal escrito no rebotan.
-7. **Enchufarlo al Gmail que ya usas** — este paso es el que evita que el buzón
-   quede como una segunda bandeja que hay que acordarse de revisar (una de las
-   dos razones por las que Zoho free no servía):
-   - **Recibir**: en *Routing*, una regla que reenvíe `contacto@rutaaustral.cl` a
-     tu Gmail. Llega al instante, a diferencia del POP3 de Gmail, que puede
-     tardar una hora — y durante la campaña las respuestas se contestan rápido.
+6. **Routing — una sola regla, con dos destinos.** En *Routing → Add New Rule*:
+   dominio `rutaaustral.cl`, *Match* en la opción de **catch-all** (cualquier
+   dirección), y en *Send To* **los dos separados por coma**:
+   `contacto@rutaaustral.cl, jp.devtravel@gmail.com`.
+
+   > **Por qué los dos, y no solo el Gmail.** La ayuda de esa pantalla avisa:
+   > *"If a routing rule matches an existing User's address, the User will not
+   > receive the email"*. O sea que una regla que mande `contacto@` solo al Gmail
+   > **deja el buzón vacío**: no queda copia en Purelymail ni en IMAP, y si algún
+   > día Gmail rechaza el reenvío, el correo se perdió sin dejar rastro.
+   > Poniendo también `contacto@rutaaustral.cl` en los destinos, queda copia en
+   > el buzón **y** llega al Gmail. Enrutar a un usuario de la propia cuenta es
+   > justo el patrón que documenta Purelymail para el catch-all, así que no hay
+   > bucle.
+
+   De paso, el catch-all hace que `hola@`, `info@` o el inevitable `contato@`
+   mal escrito tampoco reboten.
+
+7. **Enchufarlo al Gmail que ya usas** — esto es lo que evita que el buzón quede
+   como una segunda bandeja que hay que acordarse de revisar (una de las dos
+   razones por las que Zoho free no servía). Con la regla del paso 6, **recibir**
+   ya está: llega al instante, a diferencia del POP3 de Gmail, que puede tardar
+   una hora — y durante la campaña las respuestas se contestan rápido. Falta
+   enviar:
    - **Enviar**: Gmail → *Ver todos los ajustes → Cuentas e importación → Enviar
      como → Agregar otra dirección* → `contacto@rutaaustral.cl`, servidor
      `smtp.purelymail.com`, puerto **465** con SSL (o 587 con STARTTLS), usuario
