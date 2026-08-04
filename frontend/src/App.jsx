@@ -131,13 +131,15 @@ function AppInterna() {
   // consulta al navegador, que es el unico que lo sabe. Solo existe en Chrome
   // Android/Windows; donde no, queda en false y manda la logica de siempre.
   const [instaladaSegunNavegador, setInstaladaSegunNavegador] = useState(false)
-  // Clave v2 a propósito: la v1 se guardaba también al INSTALAR, y como el
-  // localStorage sobrevive a la desinstalación, quien instalaba y luego
-  // desinstalaba no volvía a ver el banner nunca. Estrenando clave, esos
-  // usuarios quedan desatascados; ahora solo la cruz escribe aquí.
-  const [bannerCerrado, setBannerCerrado] = useState(
-    () => localStorage.getItem('bannerInstalarCerrado.v2') === '1'
-  )
+  // La cruz cierra el banner SOLO por esta vez: no se guarda nada, así que a la
+  // próxima apertura vuelve a ofrecerse. Antes se persistía en localStorage y
+  // una sola cruz lo silenciaba para siempre — quien lo cerraba sin pensar
+  // mirando el mapa en Puerto Montt no volvía a ver la invitación en todo el
+  // viaje, justo cuando más le convenía tenerla instalada. Mientras no la
+  // instale se le sigue preguntando; instalada, el banner no aparece más
+  // (`instaladaStandalone` / `instaladaSegunNavegador`), que es el único
+  // silencio que corresponde.
+  const [bannerCerrado, setBannerCerrado] = useState(false)
   // iOS no dispara `beforeinstallprompt` (no hay instalación programática), así
   // que allí el banner no puede depender de tener un prompt vivo.
   const esIOS = useMemo(
@@ -309,10 +311,18 @@ function AppInterna() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const cerrarBannerInstalar = () => {
-    setBannerCerrado(true)
-    localStorage.setItem('bannerInstalarCerrado.v2', '1')
-  }
+  const cerrarBannerInstalar = () => setBannerCerrado(true)
+
+  // Limpia la marca que dejó la regla anterior. Sin esto no pasaría nada malo
+  // (ya nadie la lee), pero quedaría para siempre en el teléfono de quien
+  // alguna vez cerró el banner, confundiendo cualquier revisión futura.
+  useEffect(() => {
+    try {
+      localStorage.removeItem('bannerInstalarCerrado.v2')
+    } catch {
+      /* modo privado sin localStorage */
+    }
+  }, [])
 
   const instalar = async () => {
     if (promptInstalar) {
