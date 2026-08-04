@@ -74,7 +74,10 @@ export default defineConfig({
         // La landing de presentacion (municipios / servicios turisticos) NO va al
         // precache: se lee una vez, con senal, desde un computador de oficina. El
         // precache es para lo que el viajero necesita sin conexion en la ruta.
-        globIgnores: ['proyecto.html'],
+        // El QR se suma por lo mismo: vive en la landing, para imprimirlo desde
+        // un computador de oficina. Al viajero no le sirve de nada llevarlo
+        // guardado en el telefono.
+        globIgnores: ['proyecto.html', 'qr-rutaaustral.*'],
         // ...pero sacarla del precache NO basta para que /proyecto se vea. El SW
         // registra una NavigationRoute que responde index.html a CUALQUIER
         // navegacion (es lo que hace funcionar la SPA sin conexion), asi que a

@@ -111,8 +111,6 @@ const DICCIONARIO = {
     repFauna: 'Fauna en ruta',
     repEvento: 'Evento local',
     // ---- Actualización de la app (ver src/actualizacion.js) ----
-    updTitulo: 'Nueva versión lista',
-    updTexto: 'Tócala para actualizar ahora, o se aplicará sola la próxima vez que abras la app.',
     updBoton: 'Actualizar',
     updAplicando: 'Actualizando la app…',
     updAplicandoSub: 'Se reinicia sola en un momento. Tus mapas y reportes guardados no se pierden.',
@@ -227,8 +225,6 @@ const DICCIONARIO = {
     repFauna: 'Wildlife',
     repEvento: 'Local event',
     // ---- App update (see src/actualizacion.js) ----
-    updTitulo: 'New version ready',
-    updTexto: 'Tap to update now, or it will be applied next time you open the app.',
     updBoton: 'Update',
     updAplicando: 'Updating the app…',
     updAplicandoSub: 'It restarts by itself in a moment. Your saved maps and reports stay put.',

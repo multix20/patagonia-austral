@@ -1,25 +1,30 @@
-// Ciclo de actualización de la PWA — visible, no silencioso.
+// Ciclo de actualización de la PWA — sin pedirle nada al viajero.
 //
-// Antes el service worker se registraba con `autoUpdate`: la versión nueva
-// entraba sola y la página se recargaba sin avisar. Al viajero se le reiniciaba
-// la app "porque sí" (y en la ruta, con el mapa abierto, eso asusta). Ahora el
-// ciclo es explícito:
+// Historia, porque esto ya dio dos vueltas. Primero era `autoUpdate`: la página
+// se recargaba sola y sin aviso, y con el mapa abierto en la ruta eso asusta.
+// Se pasó entonces a un aviso con botón "Actualizar", y apareció el problema
+// contrario y peor: la gente no lo toca. Quedaban teléfonos con versiones
+// viejas por semanas, con los arreglos ya publicados pero sin llegar a nadie.
+//
+// El ciclo de ahora se queda con lo bueno de los dos: actualiza solo, pero
+// nunca encima del viajero.
 //
 //   1. Se busca versión nueva al abrir, al volver a primer plano y cada hora
 //      mientras la app esté abierta con señal.
-//   2. Cuando hay una esperando se marca el icono de la app instalada con un
-//      punto (Badging API): ese es el indicador que se ve en el escritorio o en
-//      la pantalla de inicio, incluso con la app cerrada.
-//   3. Al abrir la app con una versión esperando, se aplica sola mostrando
-//      "Actualizando la app…" — se entiende qué está pasando y por qué se
-//      reinicia.
-//   4. Si la versión llega con la app ya en uso NO se interrumpe: aparece un
-//      aviso con el botón "Actualizar"; si no lo tocan, la aplica la próxima
-//      apertura.
+//   2. Si aparece recién abierta la app, se aplica al tiro con el cartel
+//      "Actualizando la app…": el reinicio ocurre antes de que el viajero se
+//      haya puesto a hacer algo, y el cartel explica por qué se reinicia.
+//   3. Si aparece con la app EN USO no se interrumpe nada ni se le avisa: se
+//      espera a que la app quede en segundo plano y se aplica ahí, callada.
+//      Cuando el viajero vuelve, ya está en la versión nueva.
+//   4. Si nunca queda en segundo plano, la aplica la próxima apertura (2).
+//
+// O sea que no hay ningún caso en que haya que tocar algo para actualizar. En
+// el menú queda igual "Buscar actualizaciones", para forzarla a mano si se
+// quiere, pero ya no es el camino por el que llega la versión nueva.
 //
 // La recarga la dispara `registerSW` (de vite-plugin-pwa) cuando el service
-// worker nuevo toma el control; aquí solo se le pide el relevo y se muestra el
-// cartel mientras tanto.
+// worker nuevo toma el control; aquí solo se le pide el relevo.
 import { useEffect, useState } from 'react'
 import { registerSW } from 'virtual:pwa-register'
 
@@ -71,55 +76,12 @@ function marcarIcono(hay) {
   }
 }
 
-// Notificación silenciosa: es el ÚNICO indicador que Android pone en el icono
-// del lanzador (el puntito sale de tener una notificación activa, no de la
-// Badging API). Se emite una sola —misma `tag`— y se cierra al actualizar, para
-// que el punto no quede pegado. Sin sonido ni vibración: no es una urgencia de
-// la ruta, es un recado.
+// Ya no se emite ninguna notificación de "hay versión nueva": no hay nada que
+// pedirle al viajero, la versión entra sola. La etiqueta y el borrado siguen
+// aquí para LIMPIAR las que dejó la versión anterior de la app, que sí las
+// emitía — si no, ese puntito en el icono se queda pegado para siempre en los
+// teléfonos que vienen del ciclo viejo.
 const ETIQUETA_NOTIF = 'actualizacion-app'
-
-// Los textos viven aquí y no en i18n.jsx porque este módulo corre fuera de
-// React (no hay contexto del que leer el idioma); el idioma elegido sí está en
-// localStorage, que es donde lo deja el I18nProvider.
-const TEXTOS_NOTIF = {
-  es: {
-    titulo: 'Nueva versión lista',
-    cuerpo: 'Abre Patagonia Austral para actualizarla. Demora un segundo.',
-  },
-  en: {
-    titulo: 'New version ready',
-    cuerpo: 'Open Patagonia Austral to update it. It takes a second.',
-  },
-}
-
-function idioma() {
-  try {
-    return localStorage.getItem('lang') === 'en' ? 'en' : 'es'
-  } catch {
-    return 'es'
-  }
-}
-
-// Nunca pide permiso: si el viajero no lo dio (o lo negó), se queda sin este
-// indicador y punto. El permiso se pide una sola vez, al instalar la app.
-function avisarEnElIcono() {
-  if (!registroSW) return
-  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return
-  const txt = TEXTOS_NOTIF[idioma()]
-  registroSW
-    .showNotification(txt.titulo, {
-      body: txt.cuerpo,
-      tag: ETIQUETA_NOTIF,
-      silent: true,
-      icon: '/icons/icon-192.png',
-      badge: '/icons/icon-192.png',
-      lang: idioma(),
-      // Lo lee el `notificationclick` de push-listener.js para aplicar la
-      // versión al toque, en vez de solo traer la app al frente.
-      data: { tipo: 'actualizacion' },
-    })
-    .catch(() => {})
-}
 
 function borrarAvisoDelIcono() {
   if (!registroSW?.getNotifications) return
@@ -150,10 +112,16 @@ function escribirSesion(clave, valor) {
 
 const intentos = () => Number(leerSesion(CLAVE_INTENTOS) || 0)
 
-/** Aplica la versión que está esperando: cartel, relevo del SW y recarga. */
-export function aplicarActualizacion() {
+/**
+ * Aplica la versión que está esperando: relevo del service worker y recarga.
+ *
+ * Con `silencioso` no se muestra el cartel ni se espera a que se lea: es el
+ * camino de la app en segundo plano, donde no hay nadie mirando la pantalla y
+ * un cartel solo retrasaría el relevo.
+ */
+export function aplicarActualizacion({ silencioso = false } = {}) {
   if (estado === 'aplicando') return
-  emitir('aplicando')
+  if (!silencioso) emitir('aplicando')
   escribirSesion(CLAVE_APLICANDO, '1')
   escribirSesion(CLAVE_INTENTOS, String(intentos() + 1))
   marcarIcono(false)
@@ -163,7 +131,28 @@ export function aplicarActualizacion() {
     // service worker nuevo toma el control.
     Promise.resolve(aplicarSW?.(true)).catch(() => window.location.reload())
     setTimeout(() => window.location.reload(), MS_RESCATE)
-  }, MS_CARTEL)
+  }, silencioso ? 0 : MS_CARTEL)
+}
+
+/**
+ * Deja la versión aplicándose en cuanto la app quede en segundo plano.
+ *
+ * Es el reemplazo del aviso con botón "Actualizar". La recarga ocurre cuando el
+ * viajero está en otra app o con la pantalla apagada, así que no le interrumpe
+ * nada: al volver se encuentra la versión nueva ya andando. Si nunca la deja en
+ * segundo plano, la aplica la próxima apertura, que es el camino de siempre.
+ */
+function aplicarAlQuedarOculta() {
+  // El freno de intentos vale igual acá: si el relevo no prende, esto se
+  // repetiría en cada cambio de pestaña.
+  if (intentos() >= MAX_INTENTOS_AUTO) return
+  const alOcultarse = () => {
+    if (document.visibilityState !== 'hidden') return
+    document.removeEventListener('visibilitychange', alOcultarse)
+    aplicarActualizacion({ silencioso: true })
+  }
+  if (document.visibilityState === 'hidden') alOcultarse()
+  else document.addEventListener('visibilitychange', alOcultarse)
 }
 
 /**
@@ -215,19 +204,18 @@ export function iniciarActualizaciones() {
         aplicarActualizacion()
         return
       }
-      marcarIcono(true)
-      avisarEnElIcono()
+      // Llegó con la app en uso. No se avisa ni se interrumpe: queda anotada
+      // (el menú la muestra, para quien quiera forzarla) y se aplica sola en
+      // cuanto la app pase a segundo plano.
       emitir('lista')
+      aplicarAlQuedarOculta()
     },
     onRegisteredSW(_url, registro) {
       if (!registro) return
       registroSW = registro
-      // El registro puede llegar DESPUÉS del primer `onNeedRefresh` (el aviso
-      // de una versión que ya estaba esperando sale de la propia inscripción),
-      // así que la notificación se resuelve también acá: si quedó algo
-      // esperando se emite ahora, y si no, se limpia la del ciclo anterior.
-      if (estado === 'lista') avisarEnElIcono()
-      else borrarAvisoDelIcono()
+      // Limpia lo que haya dejado el ciclo viejo (notificación de "versión
+      // nueva" que ya no se emite), ahora que hay registro para consultarla.
+      borrarAvisoDelIcono()
       programarChequeos(registro)
     },
   })
