@@ -252,8 +252,13 @@ de frente es lo que hace que un municipio conteste en vez de desconfiar.
 - Accesible: contraste suficiente, foco visible, respeto a
   `prefers-reduced-motion`.
 - El build (`npm run build`) y el lint del frontend tienen que seguir pasando, y
-  el precache tiene que quedar en **10 entradas / ~573 KiB** — si sube, algo se
-  coló.
+  **`proyecto.html` no puede aparecer en el manifiesto del service worker**
+  (`dist/sw.js`) — esa es la comprobación que importa, no el total.
+  *(Corrección 4-ago-2026: acá decía "10 entradas / ~573 KiB". Ese número ya no
+  calza —medido hoy: **16 entradas / 623,27 KiB**, idéntico con y sin cambios en
+  la landing— porque el precache creció con la app. Comparar contra esa cifra
+  vieja hace perseguir una regresión que no existe; lo que hay que revisar es
+  que `proyecto.html` no esté en la lista.)*
 
 ---
 
@@ -271,11 +276,16 @@ de frente es lo que hace que un municipio conteste en vez de desconfiar.
 
 ## 9. Pendiente antes de publicar
 
-Quedan **dos** marcadores (van visibles en rojo a propósito para que no se
-escapen): nombre y apellido de quien firma, y WhatsApp.
+Queda **un** marcador visible en rojo: **nombre y apellido de quien firma**.
 
-El correo ya está puesto: **`contacto@rutaaustral.cl`** (dominio decidido el
-3-ago-2026). Falta que el **buzón exista** — Zoho Mail free o Google Workspace —
-antes de mandar la campaña: un `mailto:` a una casilla que rebota es peor que no
-tener el botón. Era el punto 1 del plan de inversión precisamente porque de eso
-depende que contesten.
+Ya resueltos (4-ago-2026):
+
+- **Correo** — `contacto@rutaaustral.cl`, con el buzón montado en **Purelymail**
+  (el proveedor se decidió el 4-ago; Zoho quedó descartado). El `mailto:` ya no
+  apunta a una casilla que rebota, que era el riesgo real de mandar la campaña
+  antes de tiempo.
+- **WhatsApp** — `56951569704`, en formato internacional dentro del `wa.me`. Dos
+  decisiones sobre cómo va puesto: **solo como botón**, sin el número escrito en
+  la página (no queda indexado en texto plano para spam), y con **mensaje
+  prellenado**, para que un contacto que llega por la landing se distinga de
+  cualquier otro mensaje del día.

@@ -129,8 +129,17 @@ después de escribirlo todo.
   ya escribiste la ficha entera.
 
 ### 5. Landing `/proyecto` — depende del punto 1
-- [ ] Reemplazar los **tres marcadores en rojo**: nombre y apellido de quien
-      firma, correo (del dominio, no Gmail) y WhatsApp. Ver `BRIEF_LANDING.md` §9.
+De los **tres marcadores en rojo** queda **uno**:
+- [x] **Correo** → `contacto@rutaaustral.cl` (3-ago-2026).
+- [x] **WhatsApp** → `56951569704` (4-ago-2026). Va **solo como botón**, sin el
+      número escrito en la página, para no dejarlo indexado en texto plano; el
+      enlace `wa.me` lleva mensaje prellenado para reconocer de dónde llega el
+      contacto.
+- [ ] **Nombre y apellido** de quien firma. Es el único dato que no está en el
+      repo y no se puede deducir: en git solo aparece "Juan Pablo". Sigue
+      pintado en rojo en la página **en vivo**.
+
+Ver `BRIEF_LANDING.md` §9.
 
 ### 6. Campaña de correos — depende de 1 y 5, y es la que decide el producto
 - [ ] Mandarla a las 26 encargadas de turismo municipal + dueños de alojamiento
