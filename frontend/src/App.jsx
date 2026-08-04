@@ -124,7 +124,14 @@ function AppInterna() {
   const [tarjetaPushCerrada, setTarjetaPushCerrada] = useState(
     () => localStorage.getItem('tarjetaPushCerrada') === '1'
   )
-  const [promptInstalar, setPromptInstalar] = useState(null)
+  // Arranca con el evento que index.html ya pudo haber atrapado antes de que
+  // React montara (ver el <script> del <head>): si se espera al useEffect, en
+  // visita repetida el evento ya paso y el banner no sale nunca.
+  const [promptInstalar, setPromptInstalar] = useState(() => window.__instalarPrompt || null)
+  // Instalada pero abierta en una pestaña del navegador (no en standalone). Se
+  // consulta al navegador, que es el unico que lo sabe. Solo existe en Chrome
+  // Android/Windows; donde no, queda en false y manda la logica de siempre.
+  const [instaladaSegunNavegador, setInstaladaSegunNavegador] = useState(false)
   // Clave v2 a propósito: la v1 se guardaba también al INSTALAR, y como el
   // localStorage sobrevive a la desinstalación, quien instalaba y luego
   // desinstalaba no volvía a ver el banner nunca. Estrenando clave, esos
@@ -207,8 +214,26 @@ function AppInterna() {
       e.preventDefault()
       setPromptInstalar(e)
     }
+    // Si el evento llega mientras la app monta, index.html lo guarda y avisa.
+    const recoger = () => setPromptInstalar(window.__instalarPrompt || null)
     window.addEventListener('beforeinstallprompt', h)
-    return () => window.removeEventListener('beforeinstallprompt', h)
+    window.addEventListener('instalar-prompt-listo', recoger)
+    return () => {
+      window.removeEventListener('beforeinstallprompt', h)
+      window.removeEventListener('instalar-prompt-listo', recoger)
+    }
+  }, [])
+
+  // ¿La tiene instalada aunque la esté viendo en el navegador? Sin esto no hay
+  // forma de distinguir "no la ha instalado" de "la instaló y entró por el
+  // navegador": en los dos casos la app se ve igual. Saberlo evita ofrecerle
+  // instalar algo que ya tiene, que es justo lo que confunde.
+  useEffect(() => {
+    if (!navigator.getInstalledRelatedApps) return
+    navigator
+      .getInstalledRelatedApps()
+      .then((apps) => setInstaladaSegunNavegador(apps.length > 0))
+      .catch(() => {})
   }, [])
 
   // Cada toast reinicia su propio temporizador: sin esto, el timer del toast
@@ -299,6 +324,7 @@ function AppInterna() {
       // desinstala, vuelve a dispararse y el banner reaparece, que es
       // justamente lo que antes no pasaba.
       setPromptInstalar(null)
+      window.__instalarPrompt = null
       return
     }
     // Sin prompt (iOS): no hay instalación que esperar, el único cierre posible
@@ -990,15 +1016,27 @@ function AppInterna() {
         </div>
       )}
 
-      {!bannerCerrado && !instaladaStandalone && !mostrarAvisoAct && (promptInstalar || esIOS) && (
+      {!bannerCerrado &&
+        !instaladaStandalone &&
+        !instaladaSegunNavegador &&
+        !mostrarAvisoAct &&
+        (promptInstalar || esIOS) && (
         <div className="instalar">
           <Icon nombre="smartphone" tam={24} />
           <div className="i-txt">
             <b>{t('instalarTitulo')}</b>
             <br />
-            {t('instalarTexto')}
+            {/* Sin prompt vivo el caso es iOS, donde no existe la instalación
+                programática. Ofrecer ahí un botón "Instalar" era un callejón sin
+                salida: se tocaba, el banner se cerraba y no pasaba nada, así que
+                se leía como que la app no se puede instalar. Se muestra el gesto
+                real (Compartir → Añadir a pantalla de inicio) y el botón pasa a
+                ser lo único que puede ser: un acuse de recibo. */}
+            {promptInstalar ? t('instalarTexto') : t('instalarTextoIOS')}
           </div>
-          <button onClick={instalar}>{t('instalar')}</button>
+          <button onClick={instalar}>
+            {promptInstalar ? t('instalar') : t('instalarEntendido')}
+          </button>
           <button
             className="cerrar"
             onClick={cerrarBannerInstalar}

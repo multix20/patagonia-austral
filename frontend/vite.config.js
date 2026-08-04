@@ -36,6 +36,16 @@ export default defineConfig({
         background_color: '#F7F5F0',
         display: 'standalone',
         start_url: '/',
+        // Le permite a la app preguntarle al navegador si YA esta instalada
+        // (navigator.getInstalledRelatedApps), cosa de no ofrecerle instalar a
+        // quien ya la tiene. Necesita la URL absoluta del manifest, por eso el
+        // dominio va escrito: en otros origenes (previews de Netlify) la
+        // consulta simplemente no encuentra nada y no molesta.
+        // OJO: NO agregar prefer_related_applications: true — eso le dice al
+        // navegador que prefiera una app nativa y desactiva el instalar de la PWA.
+        related_applications: [
+          { platform: 'webapp', url: 'https://rutaaustral.cl/manifest.webmanifest' },
+        ],
         icons: [
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
@@ -65,6 +75,14 @@ export default defineConfig({
         // precache: se lee una vez, con senal, desde un computador de oficina. El
         // precache es para lo que el viajero necesita sin conexion en la ruta.
         globIgnores: ['proyecto.html'],
+        // ...pero sacarla del precache NO basta para que /proyecto se vea. El SW
+        // registra una NavigationRoute que responde index.html a CUALQUIER
+        // navegacion (es lo que hace funcionar la SPA sin conexion), asi que a
+        // quien tiene la app instalada le servia el mapa en vez de la landing:
+        // el redirect de netlify.toml ni siquiera llegaba a evaluarse, porque la
+        // peticion moria en el service worker. Por eso /proyecto queda excluido
+        // de la ruta de navegacion y sale a la red como una pagina normal.
+        navigateFallbackDenylist: [/^\/proyecto/],
         // Importa el manejador de Web Push (push/notificationclick) al SW generado.
         importScripts: ['push-listener.js'],
         runtimeCaching: [

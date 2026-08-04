@@ -27,6 +27,22 @@
       content="Guía turística de la Carretera Austral, de Puerto Montt a Villa O'Higgins. Atractivos, alojamiento, gastronomía, servicios y emergencias de cada localidad. Funciona sin conexión."
     />
     <title>Patagonia Austral — Guía de la Carretera Austral</title>
+    <!-- `beforeinstallprompt` se dispara UNA sola vez y no se repite: si en ese
+         instante nadie lo está escuchando, el evento se pierde y el banner de
+         instalar ya no puede aparecer en toda la visita. Chrome lo lanza apenas
+         valida el manifest y el service worker, que en una visita repetida (con
+         ambos ya en caché) ocurre ANTES de que descargue el bundle y React monte
+         su listener. Por eso se atrapa acá, en un script normal del <head> que
+         corre antes que todo lo demás, y la app lo recoge cuando monta. Sin
+         esto el banner aparecía o no según quién ganara la carrera. -->
+    <script>
+      window.__instalarPrompt = null
+      window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault()
+        window.__instalarPrompt = e
+        window.dispatchEvent(new Event('instalar-prompt-listo'))
+      })
+    </script>
   </head>
   <body>
     <div id="root"></div>
