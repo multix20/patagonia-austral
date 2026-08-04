@@ -117,13 +117,97 @@ Elegido el 3-ago-2026. Registrado en **NIC Chile** (`nic.cl`). Orden de los paso
 5. **Stadia Maps** → restringir la API key al dominio nuevo, o el basemap de
    terreno deja de cargar (ver el paso 2 de esta guía).
 6. **Correo** — el motivo real de comprar el dominio: montar
-   `contacto@rutaaustral.cl` en **Zoho Mail free** (o Google Workspace) y agregar
-   los registros `MX` + `SPF`/`DKIM` que indique el proveedor. La landing
-   `/proyecto` ya enlaza a esa casilla.
+   `contacto@rutaaustral.cl`. Paso a paso en **§2.4.1**, acá abajo.
 7. **Opcional, cuando toque**: `fotos.rutaaustral.cl` como dominio público del
    bucket R2 (`R2_URL`) para salir del rate limit de `r2.dev` — paso 2.5. Y
    `api.rutaaustral.cl` para la API, que además obliga a cambiar `APP_URL` en
    Render y `VITE_API_URL` en Netlify **con redeploy** (es build-time).
+
+### 2.4.1) Buzón del dominio — `contacto@rutaaustral.cl`
+
+La landing `/proyecto` ya enlaza a esa casilla con un `mailto:`, así que hoy ese
+botón apunta a un buzón que **no existe**. Es además el remitente de la campaña a
+las 26 encargadas de turismo municipal: sin buzón no hay campaña.
+
+**Dónde van los registros: en Netlify DNS, no en NIC Chile.** El dominio usa los
+*nameservers* de Netlify (`dns*.p06.nsone.net`), así que NIC ya no resuelve nada.
+Netlify → *Domains* → `rutaaustral.cl` → *DNS records* → *Add new record*.
+
+**Qué proveedor**
+
+| | Zoho Mail *Forever Free* | Google Workspace |
+|---|---|---|
+| Precio | US$0 | ~US$7/usuario/mes |
+| Buzones | hasta 5, 5 GB c/u | 1+, 30 GB |
+| Acceso | **solo webmail y app móvil** | todo |
+| IMAP/POP/SMTP | no (viene en Mail Lite, ~US$1/usuario/mes) | sí |
+
+**Recomendación: Zoho free.** Dos advertencias que conviene leer *antes* de
+invertir media hora en esto:
+
+- El plan gratis **no se ofrece en todas las regiones** y Zoho lo ha ido
+  recortando. Si al registrarte no aparece la opción *Forever Free*, es eso —
+  no la busques más.
+- Sin IMAP/SMTP, la campaña se manda **desde el webmail de Zoho**, y el buzón no
+  se puede leer desde el cliente que uses hoy. Si eso molesta, el salto barato es
+  Mail Lite (~US$1/usuario/mes), no Workspace.
+
+**Pasos**
+
+1. Registrarse en Zoho Mail y elegir la opción de **dominio propio** ("Sign up
+   with a domain I already own") → `rutaaustral.cl`. Ojo: **el datacenter que
+   elijas (US/EU) no se cambia después**, y define los valores de los pasos
+   siguientes (`zoho.com` vs `zoho.eu`).
+2. **Verificar el dominio**: Zoho entrega un `TXT` (o `CNAME`). Agregarlo en
+   Netlify DNS y volver a Zoho a darle *Verify*. Suele tomar minutos.
+3. **Crear el usuario `contacto`** → queda `contacto@rutaaustral.cl`.
+4. **MX** en Netlify DNS. Copiar los valores de la pantalla *DNS Mapping* del
+   panel de Zoho; con el datacenter de EE.UU. quedan así:
+
+   | Tipo | Nombre | Valor | Prioridad |
+   |---|---|---|---|
+   | MX | `@` (o vacío) | `mx.zoho.com` | 10 |
+   | MX | `@` | `mx2.zoho.com` | 20 |
+   | MX | `@` | `mx3.zoho.com` | 50 |
+
+   > **Borrar cualquier otro MX** que tenga el dominio. Uno solo que sobre
+   > desvía parte del correo, y el síntoma es "algunos correos no llegan" —
+   > bastante peor de diagnosticar que "no llega ninguno".
+5. **SPF** — un `TXT` en `@` con valor `v=spf1 include:zoho.com ~all`.
+   **Un solo registro SPF por dominio**: si ya existe uno, se fusionan los
+   `include` dentro del mismo, no se agrega un segundo.
+6. **DKIM** — en Zoho, *Email Authentication → DKIM*, generar el par y agregar el
+   `TXT` que entregue en `<selector>._domainkey` (el selector por defecto suele
+   ser `zmail`). Volver a Zoho a darle *Verify*.
+7. **DMARC** (opcional, 2 minutos, conviene) — `TXT` en `_dmarc` con
+   `v=DMARC1; p=none; rua=mailto:contacto@rutaaustral.cl`. Con `p=none` no
+   bloquea nada: sirve para enterarte si alguien suplanta el dominio, y suma un
+   poco de entregabilidad.
+
+**Verificar** — no darlo por hecho hasta que estas tres pasen:
+
+- Mandar un correo **desde fuera** (tu Gmail) a `contacto@rutaaustral.cl` y que
+  llegue al webmail.
+- Responder desde Zoho a tu Gmail, abrir el mensaje y ver *Mostrar original*:
+  tiene que decir `spf=pass` y `dkim=pass`. Si sale `dkim=neutral`, falta el
+  paso 6 o todavía no propaga.
+- Abrir `/proyecto` y probar el botón de contacto.
+
+Propagación: los MX suelen andar en 1–2 h; SPF y DKIM pueden tardar hasta 24–48 h.
+
+**Antes de la campaña — entregabilidad.** El dominio es de agosto de 2026: su
+reputación es cero. Mandar 26 correos de golpe desde un dominio recién nacido es
+justo el patrón que marca spam, y estos correos van a **cuentas municipales**,
+que suelen filtrar con la mano pesada.
+
+- Repartirlos en tandas de 5–8 a lo largo de varios días.
+- Texto plano o casi, **un solo enlace**, sin adjuntos, con firma real (nombre,
+  teléfono, localidad).
+- Uno por uno y con el nombre de la persona. Nada de CCO masivo.
+- Responder rápido a quien conteste: las respuestas construyen más reputación
+  que cualquier registro DNS.
+
+---
 
 ## 2.5) Fotos de las fichas — Cloudflare R2
 

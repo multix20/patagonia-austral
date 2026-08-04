@@ -62,10 +62,12 @@ después de escribirlo todo.
       sirviendo a los `deploy-preview-*`).
 - [ ] Registrar las variantes que se confunden al dictarlo por teléfono
       (`ruta-austral.cl`, `rutasaustral.cl`) — solo redirigen a la principal.
-- [ ] Montar el **buzón `contacto@rutaaustral.cl`** (Zoho Mail free o Google
-      Workspace) — la landing ya enlaza a esa casilla, así que hoy ese botón
-      apunta a un buzón que no existe. Los MX van en el panel de **Netlify DNS**,
-      no en NIC.
+- [ ] Montar el **buzón `contacto@rutaaustral.cl`** (Zoho Mail free) — la landing
+      ya enlaza a esa casilla, así que hoy ese botón apunta a un buzón que no
+      existe. Los MX van en el panel de **Netlify DNS**, no en NIC.
+      **Paso a paso completo: `DEPLOY.md` §2.4.1** (4-ago-2026), incluida la
+      verificación con `spf=pass`/`dkim=pass` y las precauciones de
+      entregabilidad para que la campaña no caiga en spam.
 
   Ya hecho en el repo (3-ago-2026): `render.yaml` (`FRONTEND_URL` + `APP_URL`),
   comodín de `rutaaustral.cl` en `backend/config/cors.php`, correo y `canonical`
