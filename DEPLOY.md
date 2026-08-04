@@ -184,28 +184,47 @@ lo que no puede pasar es enterarse con los 26 correos ya enviados.
 
 **Pasos** — el patrón (crear cuenta → verificar el dominio → MX → SPF → DKIM →
 DMARC → probar) es el mismo en cualquier proveedor; lo que cambia son los
-valores, que **siempre se copian del panel**, no de aquí. La tabla del paso 3 es
-para saber qué esperar (valores al 4-ago-2026), no para pegarla a ciegas.
+valores, que **siempre se copian del panel**, no de aquí. La tabla del paso 3
+está **confirmada contra el panel el 4-ago-2026** (salvo el token de propiedad,
+que es único por cuenta).
 
 1. **Crear la cuenta** en `purelymail.com` y pagar el año (US$10, por adelantado;
    no hay plan gratis — que acá es una ventaja: el gratis de Zoho fue justamente
    el que no servía).
 2. **Agregar el dominio**: *Domains → Add domain* → `rutaaustral.cl`. El panel
-   devuelve los registros, incluido un `TXT` de propiedad.
+   muestra los registros **antes** de dejarte guardar: hay que cargarlos en
+   Netlify, darle *Check DNS records* y recién ahí *Save*. Dos ajustes en esa
+   misma pantalla, que no son cosméticos:
+
+   - **Deliver Mail To → `Purelymail`** (el valor por defecto, no tocarlo). Con
+     `External Server` Purelymail entrega según los MX y **se rompe el reenvío a
+     Gmail** del paso 7: las reglas de *routing* solo corren si la entrega es
+     interna.
+   - **Allow Account Reset → apagado.** Si se enciende, cualquiera que controle
+     el DNS de `rutaaustral.cl` puede recuperar la clave del admin y quedarse con
+     la cuenta entera. La clave va al gestor de contraseñas, no al DNS.
+
 3. **Cargar los registros en Netlify DNS** (*Domains → `rutaaustral.cl` → DNS
    records*):
 
    | Tipo | Nombre | Valor | Prioridad |
    |---|---|---|---|
-   | TXT | `@` | el de propiedad que muestre el panel | — |
-   | MX | `@` (o vacío) | `mailserver.purelymail.com` | 10 |
-   | TXT | `@` | `v=spf1 include:_spf.purelymail.com ~all` | — |
+   | TXT | *(vacío)* | `purelymail_ownership_proof=…` (único de la cuenta) | — |
+   | MX | *(vacío)* | `mailserver.purelymail.com` | cualquiera (50) |
+   | TXT | *(vacío)* | `v=spf1 include:_spf.purelymail.com ~all` | — |
    | CNAME | `purelymail1._domainkey` | `key1.dkimroot.purelymail.com` | — |
    | CNAME | `purelymail2._domainkey` | `key2.dkimroot.purelymail.com` | — |
    | CNAME | `purelymail3._domainkey` | `key3.dkimroot.purelymail.com` | — |
    | CNAME | `_dmarc` | `dmarcroot.purelymail.com` | — |
 
-   Cuatro trampas, en orden de qué tan caro sale cada una:
+   > **En Netlify el campo *Name* es relativo**: se escribe `purelymail1._domainkey`
+   > a secas, porque Netlify le agrega `.rutaaustral.cl`. Si pegas el FQDN
+   > completo queda `purelymail1._domainkey.rutaaustral.cl.rutaaustral.cl` y el
+   > DKIM nunca valida. Para los tres registros del ápice, *Name* va **vacío**.
+   > El **punto final** de los valores que muestra Purelymail
+   > (`mailserver.purelymail.com.`) es opcional: si Netlify lo rechaza, sin punto.
+
+   Cuatro trampas más, en orden de qué tan caro sale cada una:
 
    > - **Borrar cualquier otro MX** que tenga el dominio. Uno que sobre desvía
    >   parte del correo, y el síntoma es "algunos correos no llegan" — bastante
