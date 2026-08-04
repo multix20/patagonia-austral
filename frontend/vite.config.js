@@ -65,6 +65,14 @@ export default defineConfig({
         // precache: se lee una vez, con senal, desde un computador de oficina. El
         // precache es para lo que el viajero necesita sin conexion en la ruta.
         globIgnores: ['proyecto.html'],
+        // ...pero sacarla del precache NO basta para que /proyecto se vea. El SW
+        // registra una NavigationRoute que responde index.html a CUALQUIER
+        // navegacion (es lo que hace funcionar la SPA sin conexion), asi que a
+        // quien tiene la app instalada le servia el mapa en vez de la landing:
+        // el redirect de netlify.toml ni siquiera llegaba a evaluarse, porque la
+        // peticion moria en el service worker. Por eso /proyecto queda excluido
+        // de la ruta de navegacion y sale a la red como una pagina normal.
+        navigateFallbackDenylist: [/^\/proyecto/],
         // Importa el manejador de Web Push (push/notificationclick) al SW generado.
         importScripts: ['push-listener.js'],
         runtimeCaching: [
