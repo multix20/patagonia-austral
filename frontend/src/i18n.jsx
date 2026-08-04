@@ -26,6 +26,11 @@ const DICCIONARIO = {
     instalarTitulo: 'Instala Patagonia Austral',
     instalarTexto: 'Agrégala a tu pantalla de inicio y úsala sin internet',
     instalar: 'Instalar',
+    // iOS no permite instalar desde un botón: el gesto lo tiene que hacer la
+    // persona. Por eso allí el banner explica cómo, en vez de ofrecer un
+    // "Instalar" que no puede instalar nada.
+    instalarTextoIOS: 'Toca Compartir abajo y elige «Añadir a pantalla de inicio»',
+    instalarEntendido: 'Entendido',
     pushTitulo: '¿Quieres recibir avisos?',
     pushTexto: 'Te avisamos de cortes de camino, clima y barcazas aunque tengas la app cerrada.',
     pushActivar: 'Activar avisos',
@@ -140,6 +145,8 @@ const DICCIONARIO = {
     instalarTitulo: 'Install Patagonia Austral',
     instalarTexto: 'Add it to your home screen and use it without internet',
     instalar: 'Install',
+    instalarTextoIOS: 'Tap Share below and choose “Add to Home Screen”',
+    instalarEntendido: 'Got it',
     pushTitulo: 'Want to get alerts?',
     pushTexto: 'We\'ll warn you about road closures, weather and ferries even when the app is closed.',
     pushActivar: 'Enable alerts',

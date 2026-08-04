@@ -996,9 +996,17 @@ function AppInterna() {
           <div className="i-txt">
             <b>{t('instalarTitulo')}</b>
             <br />
-            {t('instalarTexto')}
+            {/* Sin prompt vivo el caso es iOS, donde no existe la instalación
+                programática. Ofrecer ahí un botón "Instalar" era un callejón sin
+                salida: se tocaba, el banner se cerraba y no pasaba nada, así que
+                se leía como que la app no se puede instalar. Se muestra el gesto
+                real (Compartir → Añadir a pantalla de inicio) y el botón pasa a
+                ser lo único que puede ser: un acuse de recibo. */}
+            {promptInstalar ? t('instalarTexto') : t('instalarTextoIOS')}
           </div>
-          <button onClick={instalar}>{t('instalar')}</button>
+          <button onClick={instalar}>
+            {promptInstalar ? t('instalar') : t('instalarEntendido')}
+          </button>
           <button
             className="cerrar"
             onClick={cerrarBannerInstalar}
