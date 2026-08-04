@@ -133,26 +133,51 @@ las 26 encargadas de turismo municipal: sin buzón no hay campaña.
 *nameservers* de Netlify (`dns*.p06.nsone.net`), así que NIC ya no resuelve nada.
 Netlify → *Domains* → `rutaaustral.cl` → *DNS records* → *Add new record*.
 
-**Qué proveedor**
+> ## ⚠️ Zoho quedó descartado (4-ago-2026) — leer antes de seguir
+>
+> Se intentó la ruta de Zoho y **está bloqueada por dos motivos independientes**.
+> Los pasos de abajo quedan como referencia de DNS (sirven para cualquier
+> proveedor), pero **no sigas el registro en Zoho**:
+>
+> 1. **El dominio está reclamado por otra organización de Zoho.** Al agregarlo
+>    responde `This domain is already associated with this account i*****o@r*****`
+>    — una cuenta que **no es nuestra**, casi seguro del dueño anterior de
+>    `rutaaustral.cl` (los `.cl` se liberan y se vuelven a registrar). El
+>    asistente devuelve al paso 1 sin importar el plan elegido, así que **ni
+>    siquiera se llega al checkout**. Se destraba solo con un ticket a
+>    `support@zohomail.com` probando la propiedad vía WHOIS de NIC + un TXT en el
+>    DNS, y el plazo depende de ellos.
+> 2. **El plan gratis no sirve para esto igual.** Es solo webmail: **no tiene
+>    IMAP/POP ni reenvío automático** (ambos son de pago desde 2024). O sea que
+>    las respuestas de la campaña quedan encerradas en una segunda bandeja que
+>    hay que acordarse de revisar, sin poder reenviarlas al Gmail de siempre.
+>
+> Que la cuenta ajena tenga el dominio **no es un riesgo**: el correo se enruta
+> por los MX, y los MX los controlamos nosotros en Netlify. Es un papel viejo,
+> no acceso.
 
-| | Zoho Mail *Forever Free* | Google Workspace |
-|---|---|---|
-| Precio | US$0 | ~US$7/usuario/mes |
-| Buzones | hasta 5, 5 GB c/u | 1+, 30 GB |
-| Acceso | **solo webmail y app móvil** | todo |
-| IMAP/POP/SMTP | no (viene en Mail Lite, ~US$1/usuario/mes) | sí |
+**Qué proveedor** (pendiente de decisión al 4-ago-2026)
 
-**Recomendación: Zoho free.** Dos advertencias que conviene leer *antes* de
-invertir media hora en esto:
+| | Precio | IMAP/SMTP | Nota |
+|---|---|---|---|
+| Google Workspace | ~US$84/año | sí | La mejor entregabilidad, y es el Gmail que ya se usa. |
+| Migadu | ~US$19/año | sí | Buzones y alias ilimitados. |
+| Purelymail | ~US$10/año | sí | El más barato; proyecto de una sola persona. |
+| Zoho Mail Lite | ~US$12/año | sí | Solo si soporte libera el dominio. |
+| ImprovMX | US$0 | **no** | Solo reenvía; no puede enviar la campaña. |
 
-- El plan gratis **no se ofrece en todas las regiones** y Zoho lo ha ido
-  recortando. Si al registrarte no aparece la opción *Forever Free*, es eso —
-  no la busques más.
-- Sin IMAP/SMTP, la campaña se manda **desde el webmail de Zoho**, y el buzón no
-  se puede leer desde el cliente que uses hoy. Si eso molesta, el salto barato es
-  Mail Lite (~US$1/usuario/mes), no Workspace.
+**Recomendación: Google Workspace.** La campaña va a **cuentas municipales, que
+filtran fuerte**, y para 26 correos que deciden el contenido del producto la
+reputación de envío de Google vale más que los ~US$65 de diferencia con Migadu.
+Si hay que apretar el presupuesto, Migadu es una elección sensata.
 
-**Pasos**
+**El plan gratis no es opción para este proyecto**, con o sin el bloqueo del
+dominio: sin SMTP no se puede enviar desde `contacto@rutaaustral.cl`, que es
+justamente para lo que se compró el dominio.
+
+**Pasos** — escritos para Zoho, pero el patrón (verificar el dominio → MX → SPF →
+DKIM → DMARC → probar) es idéntico en Workspace, Migadu o Purelymail; solo cambian
+los valores, que **siempre se copian del panel del proveedor**, no de aquí.
 
 1. Registrarse en Zoho Mail y elegir la opción de **dominio propio** ("Sign up
    with a domain I already own") → `rutaaustral.cl`. Ojo: **el datacenter que

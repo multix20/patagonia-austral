@@ -62,12 +62,19 @@ después de escribirlo todo.
       sirviendo a los `deploy-preview-*`).
 - [ ] Registrar las variantes que se confunden al dictarlo por teléfono
       (`ruta-austral.cl`, `rutasaustral.cl`) — solo redirigen a la principal.
-- [ ] Montar el **buzón `contacto@rutaaustral.cl`** (Zoho Mail free) — la landing
-      ya enlaza a esa casilla, así que hoy ese botón apunta a un buzón que no
-      existe. Los MX van en el panel de **Netlify DNS**, no en NIC.
+- [ ] Montar el **buzón `contacto@rutaaustral.cl`** — la landing ya enlaza a esa
+      casilla, así que hoy ese botón apunta a un buzón que no existe. Los MX van
+      en el panel de **Netlify DNS**, no en NIC.
       **Paso a paso completo: `DEPLOY.md` §2.4.1** (4-ago-2026), incluida la
       verificación con `spf=pass`/`dkim=pass` y las precauciones de
       entregabilidad para que la campaña no caiga en spam.
+      **Zoho quedó descartado (4-ago-2026)**: el dominio está reclamado por una
+      organización Zoho del dueño anterior del `.cl` (el asistente rebota antes
+      del checkout, se destraba solo con un ticket a soporte) y, además, el plan
+      gratis no tiene SMTP ni reenvío, así que no podría mandar la campaña.
+      **Falta decidir proveedor** — recomendado Google Workspace (~US$84/año) por
+      entregabilidad; Migadu (~US$19/año) si se aprieta el presupuesto. Tabla
+      comparativa en §2.4.1.
 
   Ya hecho en el repo (3-ago-2026): `render.yaml` (`FRONTEND_URL` + `APP_URL`),
   comodín de `rutaaustral.cl` en `backend/config/cors.php`, correo y `canonical`
