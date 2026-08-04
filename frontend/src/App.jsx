@@ -1008,22 +1008,36 @@ function AppInterna() {
         </div>
       )}
 
+      {/* Se ofrece SIEMPRE mientras no esté instalada, tenga o no el permiso del
+          navegador para instalar de un toque. Antes el banner exigía tener vivo
+          el `beforeinstallprompt`, y ese evento no siempre llega: en Android
+          Chrome puede ofrecer "Instalar aplicación" en su menú y no mandárnoslo
+          nunca, con lo que el banner no aparecía jamás en el teléfono. Un evento
+          que no controlamos no puede ser la condición para invitar a instalar.
+
+          `instaladaSegunNavegador` ya no puede tapar un prompt vivo: si el
+          navegador nos mandó el evento es porque la app NO está instalada, y esa
+          señal manda por sobre la consulta, que puede quedar desactualizada
+          después de desinstalar. */}
       {!bannerCerrado &&
         !instaladaStandalone &&
-        !instaladaSegunNavegador &&
-        (promptInstalar || esIOS) && (
+        (promptInstalar || !instaladaSegunNavegador) && (
         <div className="instalar">
           <Icon nombre="smartphone" tam={24} />
           <div className="i-txt">
             <b>{t('instalarTitulo')}</b>
             <br />
-            {/* Sin prompt vivo el caso es iOS, donde no existe la instalación
-                programática. Ofrecer ahí un botón "Instalar" era un callejón sin
-                salida: se tocaba, el banner se cerraba y no pasaba nada, así que
-                se leía como que la app no se puede instalar. Se muestra el gesto
-                real (Compartir → Añadir a pantalla de inicio) y el botón pasa a
-                ser lo único que puede ser: un acuse de recibo. */}
-            {promptInstalar ? t('instalarTexto') : t('instalarTextoIOS')}
+            {/* Con prompt vivo se instala de un toque. Sin él hay que explicar
+                el gesto a mano, que es distinto en cada sistema: en iOS no
+                existe la instalación programática, y en Android el camino es el
+                menú del navegador. Un botón "Instalar" que no instala es un
+                callejón sin salida — se toca, no pasa nada, y se lee como que la
+                app no se puede instalar. */}
+            {promptInstalar
+              ? t('instalarTexto')
+              : esIOS
+                ? t('instalarTextoIOS')
+                : t('instalarTextoMenu')}
           </div>
           <button onClick={instalar}>
             {promptInstalar ? t('instalar') : t('instalarEntendido')}

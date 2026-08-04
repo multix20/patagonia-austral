@@ -30,6 +30,9 @@ const DICCIONARIO = {
     // persona. Por eso allí el banner explica cómo, en vez de ofrecer un
     // "Instalar" que no puede instalar nada.
     instalarTextoIOS: 'Toca Compartir abajo y elige «Añadir a pantalla de inicio»',
+    // Android cuando el navegador no nos dio permiso de instalar de un toque:
+    // el camino existe igual, pero hay que ir a buscarlo al menú.
+    instalarTextoMenu: 'Abre el menú ⋮ del navegador y elige «Instalar aplicación»',
     instalarEntendido: 'Entendido',
     pushTitulo: '¿Quieres recibir avisos?',
     pushTexto: 'Te avisamos de cortes de camino, clima y barcazas aunque tengas la app cerrada.',
@@ -144,6 +147,7 @@ const DICCIONARIO = {
     instalarTexto: 'Add it to your home screen and use it without internet',
     instalar: 'Install',
     instalarTextoIOS: 'Tap Share below and choose “Add to Home Screen”',
+    instalarTextoMenu: 'Open the browser ⋮ menu and choose “Install app”',
     instalarEntendido: 'Got it',
     pushTitulo: 'Want to get alerts?',
     pushTexto: 'We\'ll warn you about road closures, weather and ferries even when the app is closed.',
