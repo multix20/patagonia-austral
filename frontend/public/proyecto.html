@@ -210,6 +210,45 @@
   .caja-pedido ul { font-size: 14.5px; }
 
   /* contacto */
+  /* Bloque del QR: en pantalla ancha va el código a un lado y la explicación
+     al otro; en teléfono se apila, con el QR primero. */
+  .qr-caja {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(20px, 4vw, 40px);
+    background: var(--papel);
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    padding: clamp(20px, 3vw, 30px);
+  }
+  .qr-caja img {
+    width: 190px;
+    height: 190px;
+    flex: none;
+    /* Fondo blanco propio: el QR necesita contraste franco para leerse, y el
+       papel de la sección es crema. */
+    background: #fff;
+    border-radius: 10px;
+  }
+  .qr-texto { flex: 1 1 300px; }
+  .qr-texto p { color: var(--gris); margin-top: 10px; }
+  .qr-url {
+    font-weight: 700;
+    color: var(--verde);
+    letter-spacing: .01em;
+  }
+  .qr-descargas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .qr-descargas a {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--verde);
+    border: 1px solid var(--borde);
+    border-radius: 999px;
+    padding: 8px 14px;
+    text-decoration: none;
+  }
+  .qr-descargas a:hover { border-color: var(--verde); }
   .contacto { background: var(--verde-hondo); color: #f2efe6; }
   .contacto h2 { color: #fff; }
   .contacto .seccion-cabecera .rotulo { color: #8fc4b1; }
@@ -534,6 +573,38 @@
           SERNATUR, de un municipio ni de ningún organismo público, y no representa a
           ninguno de ellos.
         </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="envoltura">
+      <div class="seccion-cabecera">
+        <span class="rotulo">Para el mesón</span>
+        <h2>Un código para que el viajero la instale ahí mismo</h2>
+        <p class="bajada">
+          Imprímalo y déjelo a la vista en la oficina de información, en la recepción o
+          en el mostrador. El viajero lo escanea con la cámara y la app se abre al
+          instante — no hay que buscarla en ninguna tienda ni descargar nada pesado.
+        </p>
+      </div>
+      <div class="qr-caja">
+        <img src="/qr-rutaaustral.svg" alt="Código QR que abre rutaaustral.cl" width="190" height="190" />
+        <div class="qr-texto">
+          <p>
+            Lleva a <span class="qr-url">rutaaustral.cl</span>. Si alguien prefiere
+            escribirlo a mano, funciona igual.
+          </p>
+          <p>
+            Conviene escanearlo con la cámara del teléfono y no abrir el enlace desde
+            WhatsApp: los enlaces tocados dentro de WhatsApp se abren en su navegador
+            interno, que no permite instalar la aplicación en la pantalla de inicio.
+          </p>
+          <div class="qr-descargas">
+            <a href="/qr-rutaaustral.svg" download>Descargar para imprimir (SVG)</a>
+            <a href="/qr-rutaaustral.png" download>Descargar imagen (PNG)</a>
+          </div>
+        </div>
       </div>
     </div>
   </section>

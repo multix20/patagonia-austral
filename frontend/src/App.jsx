@@ -94,16 +94,15 @@ function AppInterna() {
   const [sinRed, setSinRed] = useState(!navigator.onLine)
   const offline = sinRed
 
-  // Actualización de la app: 'lista' (versión esperando) → aviso; 'aplicando' →
-  // cartel a pantalla completa mientras se reinicia. El aviso se puede cerrar
-  // (vuelve a la próxima apertura, que ya la aplica sola).
+  // Actualización de la app: 'lista' (versión esperando, se aplicará sola en
+  // cuanto la app pase a segundo plano) y 'aplicando' (cartel mientras se
+  // reinicia, solo en el camino de "recién abierta"). 'lista' ya no pinta nada
+  // al viajero: se usa nada más para el texto del menú.
   const {
     estadoAct,
     aplicar: aplicarActualizacion,
     buscar: buscarActualizacion,
   } = useActualizacion()
-  const [avisoActCerrado, setAvisoActCerrado] = useState(false)
-  const mostrarAvisoAct = estadoAct === 'lista' && !avisoActCerrado
 
   // Avisos vistos (contador de la campanita), persistido en el dispositivo.
   const [avisosVistos, setAvisosVistos] = useState(() => {
@@ -132,13 +131,15 @@ function AppInterna() {
   // consulta al navegador, que es el unico que lo sabe. Solo existe en Chrome
   // Android/Windows; donde no, queda en false y manda la logica de siempre.
   const [instaladaSegunNavegador, setInstaladaSegunNavegador] = useState(false)
-  // Clave v2 a propósito: la v1 se guardaba también al INSTALAR, y como el
-  // localStorage sobrevive a la desinstalación, quien instalaba y luego
-  // desinstalaba no volvía a ver el banner nunca. Estrenando clave, esos
-  // usuarios quedan desatascados; ahora solo la cruz escribe aquí.
-  const [bannerCerrado, setBannerCerrado] = useState(
-    () => localStorage.getItem('bannerInstalarCerrado.v2') === '1'
-  )
+  // La cruz cierra el banner SOLO por esta vez: no se guarda nada, así que a la
+  // próxima apertura vuelve a ofrecerse. Antes se persistía en localStorage y
+  // una sola cruz lo silenciaba para siempre — quien lo cerraba sin pensar
+  // mirando el mapa en Puerto Montt no volvía a ver la invitación en todo el
+  // viaje, justo cuando más le convenía tenerla instalada. Mientras no la
+  // instale se le sigue preguntando; instalada, el banner no aparece más
+  // (`instaladaStandalone` / `instaladaSegunNavegador`), que es el único
+  // silencio que corresponde.
+  const [bannerCerrado, setBannerCerrado] = useState(false)
   // iOS no dispara `beforeinstallprompt` (no hay instalación programática), así
   // que allí el banner no puede depender de tener un prompt vivo.
   const esIOS = useMemo(
@@ -310,10 +311,18 @@ function AppInterna() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const cerrarBannerInstalar = () => {
-    setBannerCerrado(true)
-    localStorage.setItem('bannerInstalarCerrado.v2', '1')
-  }
+  const cerrarBannerInstalar = () => setBannerCerrado(true)
+
+  // Limpia la marca que dejó la regla anterior. Sin esto no pasaría nada malo
+  // (ya nadie la lee), pero quedaría para siempre en el teléfono de quien
+  // alguna vez cerró el banner, confundiendo cualquier revisión futura.
+  useEffect(() => {
+    try {
+      localStorage.removeItem('bannerInstalarCerrado.v2')
+    } catch {
+      /* modo privado sin localStorage */
+    }
+  }, [])
 
   const instalar = async () => {
     if (promptInstalar) {
@@ -533,7 +542,9 @@ function AppInterna() {
           <Icon nombre="menu" tam={22} color="var(--tinta)" />
           {/* El punto también marca la versión esperando: si cierran el aviso,
               el camino a "Actualizar" sigue señalizado desde el menú. */}
-          {(noLeidos > 0 || estadoAct === 'lista') && <span className="fab-dot" />}
+          {/* El punto ya no marca "hay actualización": esa entra sola y no
+              necesita que nadie la atienda. Queda solo para avisos sin leer. */}
+          {noLeidos > 0 && <span className="fab-dot" />}
         </button>
 
         <button
@@ -956,29 +967,10 @@ function AppInterna() {
         localidadNombre={locActiva ? locActiva.nombre[lang] : null}
       />
 
-      {/* Aviso de versión nueva con la app ya en uso: no interrumpe, ofrece el
-          relevo. Ocupa el mismo lugar que los banners de instalar/push, por eso
-          esos dos se apartan mientras está visible. */}
-      {mostrarAvisoAct && (
-        <div className="act-banner">
-          <span className="ab-ico">
-            <Icon nombre="download" tam={22} />
-          </span>
-          <div className="ab-txt">
-            <b>{t('updTitulo')}</b>
-            <br />
-            {t('updTexto')}
-          </div>
-          <button onClick={aplicarActualizacion}>{t('updBoton')}</button>
-          <button
-            className="cerrar"
-            onClick={() => setAvisoActCerrado(true)}
-            aria-label={lang === 'es' ? 'Cerrar' : 'Close'}
-          >
-            <Icon nombre="x" tam={14} />
-          </button>
-        </div>
-      )}
+      {/* Acá vivía el aviso "Nueva versión lista" con su botón Actualizar. Se
+          quitó porque no lo tocaban: la versión ahora entra sola cuando la app
+          queda en segundo plano (ver actualizacion.js), así que no hay nada que
+          avisar ni que pedir. */}
 
       {/* Reinicio explicado: sin esto la app se recargaba sola y sin motivo
           visible. Tapa la pantalla a propósito — dura menos de dos segundos y
@@ -993,7 +985,7 @@ function AppInterna() {
         </div>
       )}
 
-      {mostrarTarjetaPush && !mostrarAvisoAct && (
+      {mostrarTarjetaPush && (
         <div className="tarjeta-push">
           <span className="tp-ico">
             <Icon nombre="bell" tam={22} />
@@ -1016,23 +1008,36 @@ function AppInterna() {
         </div>
       )}
 
+      {/* Se ofrece SIEMPRE mientras no esté instalada, tenga o no el permiso del
+          navegador para instalar de un toque. Antes el banner exigía tener vivo
+          el `beforeinstallprompt`, y ese evento no siempre llega: en Android
+          Chrome puede ofrecer "Instalar aplicación" en su menú y no mandárnoslo
+          nunca, con lo que el banner no aparecía jamás en el teléfono. Un evento
+          que no controlamos no puede ser la condición para invitar a instalar.
+
+          `instaladaSegunNavegador` ya no puede tapar un prompt vivo: si el
+          navegador nos mandó el evento es porque la app NO está instalada, y esa
+          señal manda por sobre la consulta, que puede quedar desactualizada
+          después de desinstalar. */}
       {!bannerCerrado &&
         !instaladaStandalone &&
-        !instaladaSegunNavegador &&
-        !mostrarAvisoAct &&
-        (promptInstalar || esIOS) && (
+        (promptInstalar || !instaladaSegunNavegador) && (
         <div className="instalar">
           <Icon nombre="smartphone" tam={24} />
           <div className="i-txt">
             <b>{t('instalarTitulo')}</b>
             <br />
-            {/* Sin prompt vivo el caso es iOS, donde no existe la instalación
-                programática. Ofrecer ahí un botón "Instalar" era un callejón sin
-                salida: se tocaba, el banner se cerraba y no pasaba nada, así que
-                se leía como que la app no se puede instalar. Se muestra el gesto
-                real (Compartir → Añadir a pantalla de inicio) y el botón pasa a
-                ser lo único que puede ser: un acuse de recibo. */}
-            {promptInstalar ? t('instalarTexto') : t('instalarTextoIOS')}
+            {/* Con prompt vivo se instala de un toque. Sin él hay que explicar
+                el gesto a mano, que es distinto en cada sistema: en iOS no
+                existe la instalación programática, y en Android el camino es el
+                menú del navegador. Un botón "Instalar" que no instala es un
+                callejón sin salida — se toca, no pasa nada, y se lee como que la
+                app no se puede instalar. */}
+            {promptInstalar
+              ? t('instalarTexto')
+              : esIOS
+                ? t('instalarTextoIOS')
+                : t('instalarTextoMenu')}
           </div>
           <button onClick={instalar}>
             {promptInstalar ? t('instalar') : t('instalarEntendido')}

@@ -30,6 +30,9 @@ const DICCIONARIO = {
     // persona. Por eso allí el banner explica cómo, en vez de ofrecer un
     // "Instalar" que no puede instalar nada.
     instalarTextoIOS: 'Toca Compartir abajo y elige «Añadir a pantalla de inicio»',
+    // Android cuando el navegador no nos dio permiso de instalar de un toque:
+    // el camino existe igual, pero hay que ir a buscarlo al menú.
+    instalarTextoMenu: 'Abre el menú ⋮ del navegador y elige «Instalar aplicación»',
     instalarEntendido: 'Entendido',
     pushTitulo: '¿Quieres recibir avisos?',
     pushTexto: 'Te avisamos de cortes de camino, clima y barcazas aunque tengas la app cerrada.',
@@ -111,8 +114,6 @@ const DICCIONARIO = {
     repFauna: 'Fauna en ruta',
     repEvento: 'Evento local',
     // ---- Actualización de la app (ver src/actualizacion.js) ----
-    updTitulo: 'Nueva versión lista',
-    updTexto: 'Tócala para actualizar ahora, o se aplicará sola la próxima vez que abras la app.',
     updBoton: 'Actualizar',
     updAplicando: 'Actualizando la app…',
     updAplicandoSub: 'Se reinicia sola en un momento. Tus mapas y reportes guardados no se pierden.',
@@ -146,6 +147,7 @@ const DICCIONARIO = {
     instalarTexto: 'Add it to your home screen and use it without internet',
     instalar: 'Install',
     instalarTextoIOS: 'Tap Share below and choose “Add to Home Screen”',
+    instalarTextoMenu: 'Open the browser ⋮ menu and choose “Install app”',
     instalarEntendido: 'Got it',
     pushTitulo: 'Want to get alerts?',
     pushTexto: 'We\'ll warn you about road closures, weather and ferries even when the app is closed.',
@@ -227,8 +229,6 @@ const DICCIONARIO = {
     repFauna: 'Wildlife',
     repEvento: 'Local event',
     // ---- App update (see src/actualizacion.js) ----
-    updTitulo: 'New version ready',
-    updTexto: 'Tap to update now, or it will be applied next time you open the app.',
     updBoton: 'Update',
     updAplicando: 'Updating the app…',
     updAplicandoSub: 'It restarts by itself in a moment. Your saved maps and reports stay put.',
