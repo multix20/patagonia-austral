@@ -184,29 +184,55 @@ lo que no puede pasar es enterarse con los 26 correos ya enviados.
 
 **Pasos** — el patrón (crear cuenta → verificar el dominio → MX → SPF → DKIM →
 DMARC → probar) es el mismo en cualquier proveedor; lo que cambia son los
-valores, que **siempre se copian del panel**, no de aquí. La tabla del paso 3 es
-para saber qué esperar (valores al 4-ago-2026), no para pegarla a ciegas.
+valores, que **siempre se copian del panel**, no de aquí. La tabla del paso 3
+está **confirmada contra el panel el 4-ago-2026** (salvo el token de propiedad,
+que es único por cuenta).
 
 1. **Crear la cuenta** en `purelymail.com` y pagar el año (US$10, por adelantado;
    no hay plan gratis — que acá es una ventaja: el gratis de Zoho fue justamente
    el que no servía).
 2. **Agregar el dominio**: *Domains → Add domain* → `rutaaustral.cl`. El panel
-   devuelve los registros, incluido un `TXT` de propiedad.
+   muestra los registros **antes** de dejarte guardar: hay que cargarlos en
+   Netlify, darle *Check DNS records* y recién ahí *Save*. Dos ajustes en esa
+   misma pantalla, que no son cosméticos:
+
+   - **Deliver Mail To → `Purelymail`** (el valor por defecto, no tocarlo). Con
+     `External Server` Purelymail entrega según los MX y **se rompe el reenvío a
+     Gmail** del paso 7: las reglas de *routing* solo corren si la entrega es
+     interna.
+   - **Allow Account Reset → apagado.** Si se enciende, cualquiera que controle
+     el DNS de `rutaaustral.cl` puede recuperar la clave del admin y quedarse con
+     la cuenta entera. La clave va al gestor de contraseñas, no al DNS.
+
 3. **Cargar los registros en Netlify DNS** (*Domains → `rutaaustral.cl` → DNS
    records*):
 
    | Tipo | Nombre | Valor | Prioridad |
    |---|---|---|---|
-   | TXT | `@` | el de propiedad que muestre el panel | — |
-   | MX | `@` (o vacío) | `mailserver.purelymail.com` | 10 |
-   | TXT | `@` | `v=spf1 include:_spf.purelymail.com ~all` | — |
+   | TXT | *(vacío)* | `purelymail_ownership_proof=…` (único de la cuenta) | — |
+   | MX | *(vacío)* | `mailserver.purelymail.com` | cualquiera (50) |
+   | TXT | *(vacío)* | `v=spf1 include:_spf.purelymail.com ~all` | — |
    | CNAME | `purelymail1._domainkey` | `key1.dkimroot.purelymail.com` | — |
    | CNAME | `purelymail2._domainkey` | `key2.dkimroot.purelymail.com` | — |
    | CNAME | `purelymail3._domainkey` | `key3.dkimroot.purelymail.com` | — |
    | CNAME | `_dmarc` | `dmarcroot.purelymail.com` | — |
 
-   Cuatro trampas, en orden de qué tan caro sale cada una:
+   > **En Netlify el campo *Name* es relativo**: se escribe `purelymail1._domainkey`
+   > a secas, porque Netlify le agrega `.rutaaustral.cl`. Si pegas el FQDN
+   > completo queda `purelymail1._domainkey.rutaaustral.cl.rutaaustral.cl` y el
+   > DKIM nunca valida. Para los tres registros del ápice, *Name* va **vacío**.
+   > El **punto final** de los valores que muestra Purelymail
+   > (`mailserver.purelymail.com.`) es opcional: si Netlify lo rechaza, sin punto.
 
+   Cinco trampas más, en orden de qué tan caro sale cada una:
+
+   > - **El SPF va como `TXT`, aunque Netlify ofrezca un tipo `SPF`.** Es la
+   >   trampa más fácil de caer acá, porque el desplegable lo sugiere solito. El
+   >   tipo de registro `SPF` (el 99) quedó **obsoleto en el RFC 7208, de 2014**:
+   >   ningún servidor lo consulta ya, todos leen el `TXT`. Un `v=spf1` guardado
+   >   como tipo `SPF` se ve perfecto en el panel y **no existe** para Gmail —
+   >   resultado, `spf=fail` y la campaña al spam. Pasó el 4-ago-2026: se cargó
+   >   así y hubo que rehacerlo.
    > - **Borrar cualquier otro MX** que tenga el dominio. Uno que sobre desvía
    >   parte del correo, y el síntoma es "algunos correos no llegan" — bastante
    >   peor de diagnosticar que "no llega ninguno". Con un solo MX, el número de
@@ -222,15 +248,46 @@ para saber qué esperar (valores al 4-ago-2026), no para pegarla a ciegas.
 
 4. **Verificar el dominio** en el panel de Purelymail. Suele tomar minutos.
 5. **Crear el usuario `contacto`** → queda `contacto@rutaaustral.cl`.
-6. **Catch-all** (opcional, 1 minuto, conviene): *Routing* → una regla que mande
-   cualquier dirección del dominio a `contacto`. Así `hola@`, `info@` o el
-   inevitable `contato@` mal escrito no rebotan.
-7. **Enchufarlo al Gmail que ya usas** — este paso es el que evita que el buzón
-   quede como una segunda bandeja que hay que acordarse de revisar (una de las
-   dos razones por las que Zoho free no servía):
-   - **Recibir**: en *Routing*, una regla que reenvíe `contacto@rutaaustral.cl` a
-     tu Gmail. Llega al instante, a diferencia del POP3 de Gmail, que puede
-     tardar una hora — y durante la campaña las respuestas se contestan rápido.
+6. **Routing — dos reglas, cada una con dos destinos.** En *Routing → Add New
+   Rule*, dominio `rutaaustral.cl` en ambas, y en *Send To* siempre los dos
+   separados por coma: `contacto@rutaaustral.cl,jp.devtravel@gmail.com`.
+
+   | Match | Cubre |
+   |---|---|
+   | `The exact address` → `contacto` | El correo real: la landing y la campaña |
+   | `The exact address` → `hola`, `info` | Los alias que se dictan por teléfono |
+
+   > **No uses el catch-all en este dominio.** `rutaaustral.cl` **tuvo un dueño
+   > anterior** (es lo que provocó el bloqueo de Zoho), y su correo sigue
+   > llegando: con el catch-all puesto, a las dos horas ya había caído una
+   > factura pendiente de Movistar dirigida al titular viejo (4-ago-2026).
+   > Enrutarlo todo significa heredar sus cobranzas, sus notificaciones y
+   > eventuales recuperaciones de clave de servicios que no son tuyos — además
+   > del spam que junta cualquier catch-all. Sin la regla, esos correos **rebotan**,
+   > que es la respuesta correcta: así el que envía se entera de que la dirección
+   > murió. Los alias que de verdad importan se cubren con reglas exactas.
+
+   > **Las dos hacen falta, y por razones opuestas.** El catch-all dice
+   > literalmente *"except valid user addresses"*: `contacto@` **es** un usuario
+   > válido, así que el catch-all no lo toca y por sí solo nunca lo reenviaría al
+   > Gmail. Y la regla exacta necesita llevar `contacto@rutaaustral.cl` entre sus
+   > destinos porque, como avisa esa misma pantalla, *"if a routing rule matches
+   > an existing User's address, the User will not receive the email"* — sin ese
+   > destino explícito el buzón queda vacío, sin copia en IMAP, y un rechazo de
+   > Gmail se traga el correo sin dejar rastro.
+   >
+   > Si la regla exacta con auto-destino no funcionara (bucle o rechazo), el plan
+   > B es dejarla solo hacia el Gmail y leer el buzón por **POP3 desde Gmail**
+   > (*Cuentas e importación → Consultar el correo de otras cuentas*), con
+   > "dejar copia en el servidor": no depende del reenvío, pero tarda hasta una
+   > hora en traer los mensajes.
+
+7. **Enchufarlo al Gmail que ya usas** — esto es lo que evita que el buzón quede
+   como una segunda bandeja que hay que acordarse de revisar (una de las dos
+   razones por las que Zoho free no servía). Con la regla del paso 6, **recibir**
+   ya está: llega al instante, a diferencia del POP3 de Gmail, que puede tardar
+   una hora — y durante la campaña las respuestas se contestan rápido. Falta
+   enviar:
    - **Enviar**: Gmail → *Ver todos los ajustes → Cuentas e importación → Enviar
      como → Agregar otra dirección* → `contacto@rutaaustral.cl`, servidor
      `smtp.purelymail.com`, puerto **465** con SSL (o 587 con STARTTLS), usuario
