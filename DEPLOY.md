@@ -255,7 +255,17 @@ que es único por cuenta).
    | Match | Cubre |
    |---|---|
    | `The exact address` → `contacto` | El correo real: la landing y la campaña |
-   | `Any address except valid user addresses (catchall)` | `hola@`, `info@`, el `contato@` mal tipeado |
+   | `The exact address` → `hola`, `info` | Los alias que se dictan por teléfono |
+
+   > **No uses el catch-all en este dominio.** `rutaaustral.cl` **tuvo un dueño
+   > anterior** (es lo que provocó el bloqueo de Zoho), y su correo sigue
+   > llegando: con el catch-all puesto, a las dos horas ya había caído una
+   > factura pendiente de Movistar dirigida al titular viejo (4-ago-2026).
+   > Enrutarlo todo significa heredar sus cobranzas, sus notificaciones y
+   > eventuales recuperaciones de clave de servicios que no son tuyos — además
+   > del spam que junta cualquier catch-all. Sin la regla, esos correos **rebotan**,
+   > que es la respuesta correcta: así el que envía se entera de que la dirección
+   > murió. Los alias que de verdad importan se cubren con reglas exactas.
 
    > **Las dos hacen falta, y por razones opuestas.** El catch-all dice
    > literalmente *"except valid user addresses"*: `contacto@` **es** un usuario
