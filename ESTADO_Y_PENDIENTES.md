@@ -71,10 +71,17 @@ después de escribirlo todo.
       llega con **enviado por / firmado por `rutaaustral.cl`** (SPF y DKIM
       alineados, no `gmail.com`).
       **Paso a paso completo y trampas: `DEPLOY.md` §2.4.1.**
-- [ ] **Medir la entregabilidad antes de la campaña** — `mail-tester.com` desde
-      `contacto@rutaaustral.cl`, objetivo **≥ 8/10**, mirando en particular las
-      listas negras: el dominio tuvo dueño anterior y arrastra su reputación.
-      Es la prueba que decide si Purelymail se queda o se migra a Workspace.
+- [x] **Entregabilidad medida: `mail-tester` dio 10/10 (4-ago-2026)**, sin
+      listas negras pese al dueño anterior del dominio. **Purelymail se queda**;
+      la migración a Workspace queda descartada por ahora (~US$74/año ahorrados).
+      Ojo: 10/10 mide la *configuración*, no la reputación del dominio, que a los
+      dos días de nacido sigue siendo cero → las precauciones de envío de la
+      campaña (tandas de 5–8, texto plano, un solo enlace) siguen valiendo.
+- [ ] **Higiene del buzón, ahora que es público.** A las tres horas de existir ya
+      llegó phishing a `contacto@` (falsa factura "ServiPlus" con "visor" en
+      `.zip` y la excusa de "no disponible en móviles", el señuelo clásico de
+      troyano bancario en Chile). Regla simple para el futuro: **ese buzón no
+      tiene proveedores, así que ninguna factura que llegue ahí es legítima**.
       **Zoho quedó descartado (4-ago-2026)**: el dominio está reclamado por una
       organización Zoho del dueño anterior del `.cl` (el asistente rebota antes
       del checkout, se destraba solo con un ticket a soporte) y, además, el plan
