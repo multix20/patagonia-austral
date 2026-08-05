@@ -38,9 +38,10 @@ const DICCIONARIO = {
     // navegador" (visto en un Samsung de la ruta). En palabras se entiende en
     // cualquier teléfono y no depende de dónde ponga cada navegador ese botón.
     // El rótulo tampoco es uno solo: Chrome dice "Instalar aplicación" y Samsung
-    // Internet / Firefox hablan de la pantalla de inicio.
+    // Internet / Firefox hablan de la pantalla de inicio. Por eso "busca" y no
+    // "elige": lo que va entre comillas se parece a lo que verá, no es exacto.
     instalarTextoMenu:
-      'Abre el menú del navegador (los tres puntos) y elige «Instalar aplicación» o «Agregar a pantalla de inicio»',
+      'Abre el menú del navegador (los tres puntos) y busca «Instalar» o «Agregar a pantalla de inicio»',
     instalarEntendido: 'Entendido',
     pushTitulo: '¿Quieres recibir avisos?',
     pushTexto: 'Te avisamos de cortes de camino, clima y barcazas aunque tengas la app cerrada.',
@@ -156,7 +157,7 @@ const DICCIONARIO = {
     instalar: 'Install',
     instalarTextoIOS: 'Tap Share below and choose “Add to Home Screen”',
     instalarTextoMenu:
-      'Open the browser menu (the three dots) and choose “Install app” or “Add to Home screen”',
+      'Open the browser menu (the three dots) and look for “Install” or “Add to Home screen”',
     instalarEntendido: 'Got it',
     pushTitulo: 'Want to get alerts?',
     pushTexto: 'We\'ll warn you about road closures, weather and ferries even when the app is closed.',
