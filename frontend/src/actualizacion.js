@@ -11,13 +11,23 @@
 //
 //   1. Se busca versión nueva al abrir, al volver a primer plano y cada hora
 //      mientras la app esté abierta con señal.
-//   2. Si aparece recién abierta la app, se aplica al tiro con el cartel
-//      "Actualizando la app…": el reinicio ocurre antes de que el viajero se
-//      haya puesto a hacer algo, y el cartel explica por qué se reinicia.
+//   2. Si aparece SIN que el viajero haya tocado nada, se aplica al tiro con el
+//      cartel "Actualizando la app…": no hay nada que interrumpir, y el cartel
+//      explica por qué se reinicia.
 //   3. Si aparece con la app EN USO no se interrumpe nada ni se le avisa: se
 //      espera a que la app quede en segundo plano y se aplica ahí, callada.
 //      Cuando el viajero vuelve, ya está en la versión nueva.
 //   4. Si nunca queda en segundo plano, la aplica la próxima apertura (2).
+//
+// El punto 2 se decidía por reloj: "si llegó en los primeros 12 segundos". Era
+// la medida equivocada en las dos direcciones. Por un lado, la versión nueva hay
+// que DESCARGARLA (unos 600 KB de precache) y en la señal de la ruta eso pasa de
+// 12s con facilidad; pasado el plazo la app trataba como "en uso" a alguien que
+// solo estaba mirando el mapa sin tocarlo, y se guardaba el relevo para más
+// tarde. Por otro, dentro de esos 12s podía recargar encima de alguien que sí
+// había empezado a hacer algo. Lo que importa no es cuánto lleva abierta sino si
+// hay algo que interrumpir, así que ahora manda la interacción: mientras el
+// viajero no haya tocado la pantalla, la versión entra de inmediato.
 //
 // O sea que no hay ningún caso en que haya que tocar algo para actualizar. En
 // el menú queda igual "Buscar actualizaciones", para forzarla a mano si se
@@ -35,9 +45,8 @@ const CLAVE_APLICANDO = 'pa-actualizando'
 // recién abierta) y sin este freno quedaría recargándose en bucle.
 const CLAVE_INTENTOS = 'pa-act-intentos'
 const MAX_INTENTOS_AUTO = 2
-// Ventana de "recién abierta": si la versión nueva aparece dentro de este rato
-// desde que cargó la app, se aplica sola en vez de esperar un toque.
-const MS_VENTANA_APERTURA = 12000
+// Rato tras el cual se olvidan los intentos fallidos si no quedó nada esperando.
+const MS_OLVIDO_INTENTOS = 15000
 // Cada cuánto se pregunta por una versión nueva con la app abierta.
 const MS_ENTRE_CHEQUEOS = 60 * 60 * 1000
 // Piso entre chequeos: al alternar apps, `visibilitychange` se dispara seguido.
@@ -51,7 +60,12 @@ const MS_RESCATE = 8000
 // 'idle' (nada que hacer) · 'lista' (versión esperando) · 'aplicando' (cartel + recarga)
 let estado = 'idle'
 const oyentes = new Set()
-const abiertaEn = Date.now()
+// ¿El viajero llegó a tocar la pantalla en esta sesión? Es lo que distingue
+// "está usando la app" de "la abrió y está mirando": sin un toque no hay nada
+// que una recarga pueda interrumpir. Aceptar el permiso de ubicación no cuenta
+// —ese toque va sobre el diálogo del navegador, no sobre la página— y está bien
+// que no cuente: recargar ahí tampoco le quita nada a nadie.
+let huboInteraccion = false
 
 let aplicarSW = null // la entrega `registerSW`
 let registroSW = null
@@ -190,6 +204,16 @@ export function iniciarActualizaciones() {
   // El indicador del icono ya cumplió su función al traer al usuario hasta acá.
   marcarIcono(false)
 
+  // En captura y en `window`: el toque casi siempre cae sobre el mapa, que
+  // maneja sus propios eventos. `keydown` cubre el chat y el formulario de
+  // reportes, donde se escribe sin volver a tocar la pantalla.
+  const marcarInteraccion = () => {
+    huboInteraccion = true
+  }
+  const opciones = { once: true, capture: true, passive: true }
+  window.addEventListener('pointerdown', marcarInteraccion, opciones)
+  window.addEventListener('keydown', marcarInteraccion, opciones)
+
   aplicarSW = registerSW({
     immediate: true,
     onNeedRefresh() {
@@ -197,10 +221,11 @@ export function iniciarActualizaciones() {
       // para poner un aviso dejaría la app a medio relevo. Cualquier versión
       // posterior se detecta sola al volver a abrir.
       if (estado === 'aplicando') return
-      // Recién abierta: se aplica sola con el cartel, sin pasar por el icono
-      // (marcarlo para borrarlo en el mismo instante no le sirve a nadie). Si ya
-      // se intentó y no prendió, se deja de insistir sola y se ofrece el botón.
-      if (Date.now() - abiertaEn < MS_VENTANA_APERTURA && intentos() < MAX_INTENTOS_AUTO) {
+      // Nadie ha tocado nada: se aplica sola con el cartel, sin pasar por el
+      // icono (marcarlo para borrarlo en el mismo instante no le sirve a nadie).
+      // Si ya se intentó y no prendió, se deja de insistir sola y se ofrece el
+      // botón.
+      if (!huboInteraccion && intentos() < MAX_INTENTOS_AUTO) {
         aplicarActualizacion()
         return
       }
@@ -241,7 +266,7 @@ export function iniciarActualizaciones() {
   // olvidan los intentos para no arrastrarle el freno a la próxima versión.
   setTimeout(() => {
     if (estado === 'idle') escribirSesion(CLAVE_INTENTOS, null)
-  }, MS_VENTANA_APERTURA + 3000)
+  }, MS_OLVIDO_INTENTOS)
 }
 
 /** true una sola vez, en la carga que viene después de aplicar la actualización. */
