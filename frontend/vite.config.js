@@ -11,6 +11,30 @@ export default defineConfig({
   define: {
     __VERSION_APP__: JSON.stringify(new Date().toISOString().slice(0, 10)),
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        // React y Leaflet van en su propio archivo, aparte del código de la app.
+        //
+        // Esto no es por velocidad de carga sino por el PESO DE CADA
+        // ACTUALIZACIÓN, que es lo que decide si un arreglo llega o no a un
+        // teléfono con mala señal. Con todo en un solo bundle, cambiar dos
+        // palabras de un texto cambia el hash del archivo entero y obliga a
+        // bajar los 531 KB completos; el precache de Workbox solo se salta lo
+        // que NO cambió, así que separar las dependencias —que entre despliegue
+        // y despliegue no cambian nunca— deja fuera de la descarga la mayor
+        // parte del peso. La app se actualiza bajando solo su propia parte.
+        advancedChunks: {
+          groups: [
+            {
+              name: 'vendor',
+              test: /node_modules[\\/](react|react-dom|scheduler|leaflet|leaflet\.markercluster)[\\/]/,
+            },
+          ],
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({
