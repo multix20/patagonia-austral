@@ -32,7 +32,16 @@ const DICCIONARIO = {
     instalarTextoIOS: 'Toca Compartir abajo y elige «Añadir a pantalla de inicio»',
     // Android cuando el navegador no nos dio permiso de instalar de un toque:
     // el camino existe igual, pero hay que ir a buscarlo al menú.
-    instalarTextoMenu: 'Abre el menú ⋮ del navegador y elige «Instalar aplicación»',
+    // El icono del menú va NOMBRADO, no dibujado con «⋮» (U+22EE): ese carácter
+    // no está en la fuente de varios Android y el sistema lo reemplaza por algo
+    // parecido a dos puntos, con lo que la frase se leía "Abre el menú : del
+    // navegador" (visto en un Samsung de la ruta). En palabras se entiende en
+    // cualquier teléfono y no depende de dónde ponga cada navegador ese botón.
+    // El rótulo tampoco es uno solo: Chrome dice "Instalar aplicación" y Samsung
+    // Internet / Firefox hablan de la pantalla de inicio. Por eso "busca" y no
+    // "elige": lo que va entre comillas se parece a lo que verá, no es exacto.
+    instalarTextoMenu:
+      'Abre el menú del navegador (los tres puntos) y busca «Instalar» o «Agregar a pantalla de inicio»',
     instalarEntendido: 'Entendido',
     pushTitulo: '¿Quieres recibir avisos?',
     pushTexto: 'Te avisamos de cortes de camino, clima y barcazas aunque tengas la app cerrada.',
@@ -147,7 +156,8 @@ const DICCIONARIO = {
     instalarTexto: 'Add it to your home screen and use it without internet',
     instalar: 'Install',
     instalarTextoIOS: 'Tap Share below and choose “Add to Home Screen”',
-    instalarTextoMenu: 'Open the browser ⋮ menu and choose “Install app”',
+    instalarTextoMenu:
+      'Open the browser menu (the three dots) and look for “Install” or “Add to Home screen”',
     instalarEntendido: 'Got it',
     pushTitulo: 'Want to get alerts?',
     pushTexto: 'We\'ll warn you about road closures, weather and ferries even when the app is closed.',

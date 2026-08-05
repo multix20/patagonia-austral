@@ -26,6 +26,13 @@ import PlaceDetail from './components/PlaceDetail'
 import QuickCard from './components/QuickCard'
 import ChatBot from './components/ChatBot'
 
+// Cuánto se calla el banner de instalar cuando la persona toca "Entendido" en el
+// camino manual (el que solo explica el gesto, sin botón que instale). Un mes
+// cubre de sobra un viaje por la ruta: si para entonces sigue sin instalarla, se
+// le vuelve a ofrecer. Ver `instalar()`.
+const DIAS_SILENCIO_INSTALAR = 30
+const CLAVE_SILENCIO_INSTALAR = 'instalarManualEntendido'
+
 // Etiquetas de tipo de aviso (coinciden con el CMS Filament)
 const TIPOS_AVISO = {
   info: { es: 'Información', en: 'Info' },
@@ -140,6 +147,22 @@ function AppInterna() {
   // (`instaladaStandalone` / `instaladaSegunNavegador`), que es el único
   // silencio que corresponde.
   const [bannerCerrado, setBannerCerrado] = useState(false)
+  // Excepción a lo anterior: el "Entendido" del camino manual SÍ se guarda. En
+  // esa rama no hay prompt vivo, y sin prompt no tenemos forma de saber si la
+  // app ya está instalada — `getInstalledRelatedApps` solo existe en Chrome. Así
+  // que quien ya la instaló y entra por un enlace (WhatsApp, el QR) ve el banner
+  // igual, y las instrucciones no lo llevan a ninguna parte: en su menú ya no
+  // dice "Instalar aplicación" sino "Abrir en Patagonia Austral". Insistirle en
+  // cada apertura es ruido puro. Con prompt vivo no se guarda nada: ahí el
+  // navegador nos confirma que NO está instalada y se sigue ofreciendo siempre.
+  const [instalarSilenciado, setInstalarSilenciado] = useState(() => {
+    try {
+      const desde = Number(localStorage.getItem(CLAVE_SILENCIO_INSTALAR) || 0)
+      return desde > 0 && Date.now() - desde < DIAS_SILENCIO_INSTALAR * 86400000
+    } catch {
+      return false /* modo privado sin localStorage */
+    }
+  })
   // iOS no dispara `beforeinstallprompt` (no hay instalación programática), así
   // que allí el banner no puede depender de tener un prompt vivo.
   const esIOS = useMemo(
@@ -336,8 +359,16 @@ function AppInterna() {
       window.__instalarPrompt = null
       return
     }
-    // Sin prompt (iOS): no hay instalación que esperar, el único cierre posible
-    // es el del propio usuario.
+    // Sin prompt (iOS, Firefox, Samsung Internet, o la app ya instalada): no hay
+    // instalación que esperar ni evento que nos avise después. El "Entendido" es
+    // la única señal que vamos a recibir, así que se guarda y el banner se calla
+    // un mes.
+    try {
+      localStorage.setItem(CLAVE_SILENCIO_INSTALAR, String(Date.now()))
+    } catch {
+      /* modo privado sin localStorage: vale por esta sesión */
+    }
+    setInstalarSilenciado(true)
     cerrarBannerInstalar()
   }
 
@@ -1018,10 +1049,11 @@ function AppInterna() {
           `instaladaSegunNavegador` ya no puede tapar un prompt vivo: si el
           navegador nos mandó el evento es porque la app NO está instalada, y esa
           señal manda por sobre la consulta, que puede quedar desactualizada
-          después de desinstalar. */}
+          después de desinstalar — y por lo mismo tampoco la calla el "Entendido"
+          del camino manual (`instalarSilenciado`). */}
       {!bannerCerrado &&
         !instaladaStandalone &&
-        (promptInstalar || !instaladaSegunNavegador) && (
+        (promptInstalar || (!instaladaSegunNavegador && !instalarSilenciado)) && (
         <div className="instalar">
           <Icon nombre="smartphone" tam={24} />
           <div className="i-txt">
