@@ -1,7 +1,9 @@
 # CI de Patagonia Austral — corre en cada Pull Request hacia main y en push a main.
 # Frontend: instala, lint (oxlint) y build (vite) — la regla del proyecto es que
-# `npm run build` debe pasar antes de integrar. Backend: valida composer y hace
-# lint de sintaxis PHP (sin base de datos, para que sea rápido y sin secretos).
+# `npm run build` debe pasar antes de integrar. Backend: valida composer, lint de
+# sintaxis PHP, y corre la suite de PHPUnit contra sqlite en memoria (sin secretos,
+# sin base de datos externa) — esta es la "meta verificable" real de un /goal:
+# antes solo se chequeaba sintaxis, ahora los tests de Feature/Unit tienen que pasar.
 name: CI
 
 on:
@@ -29,16 +31,26 @@ jobs:
       - run: npm run build
 
   backend:
-    name: Backend (PHP lint)
+    name: Backend (lint + tests)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
+          extensions: sqlite3, pdo_sqlite
       - name: Validar composer.json
-        working-directory: backend
         run: composer validate --no-check-publish
       - name: Lint de sintaxis PHP
-        working-directory: backend
         run: find app database routes config -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+      - name: Instalar dependencias
+        run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Preparar entorno de testing
+        run: |
+          cp .env.example .env 2>/dev/null || true
+          php artisan key:generate --env=testing || true
+      - name: Correr PHPUnit
+        run: php artisan test
