@@ -3,13 +3,18 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Patagonia Austral — la guía offline de la Carretera Austral</title>
-<meta name="description" content="Una aplicación gratuita que funciona sin señal, con los servicios de las 26 localidades de la Carretera Austral. Invitación a encargados de turismo, municipios y servicios turísticos." />
-<meta property="og:title" content="Patagonia Austral — la guía offline de la Carretera Austral" />
-<meta property="og:description" content="26 localidades de Puerto Montt a Villa O'Higgins, en el teléfono del viajero, sin necesidad de señal. Gratis para el turista y para el servicio." />
+<title>Patagonia Austral — la guía de la Carretera Austral, con el dato correcto</title>
+<meta name="description" content="Una aplicación gratuita con los servicios de las 26 localidades de la Carretera Austral, corregidos por quienes viven en ellas. Invitación a encargados de turismo, municipios y servicios turísticos." />
+<meta property="og:title" content="Patagonia Austral — la guía de la Carretera Austral, con el dato correcto" />
+<meta property="og:description" content="26 localidades de Puerto Montt a Villa O'Higgins, con la información que hoy no está en ninguna plataforma, y disponible también en la ruta. Gratis para el turista y para el servicio." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://rutaaustral.cl/proyecto" />
 <link rel="canonical" href="https://rutaaustral.cl/proyecto" />
+<!-- Iconos locales, mismo origen (no son recurso externo). Sin esto el navegador
+     pide /favicon.ico, no existe, y la pestaña queda con el icono genérico —
+     se nota cuando la encargada de turismo tiene ocho pestañas abiertas. -->
+<link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
 
 <!--
   ══════════════════════════════════════════════════════════════════════
@@ -27,6 +32,17 @@
   Si más adelante se agrega un dato por rellenar, marcarlo [ASI] y envolverlo en
   <span class="pendiente">: la regla CSS sigue en el archivo y lo pinta en rojo
   para que no se escape a producción.
+
+  ──────────────────────────────────────────────────────────────────────
+  ANTES DE TOCAR EL TEXTO DE ESTA PÁGINA: leer `BRIEF_LANDING.md` (raíz del
+  repo). Manda sobre estructura, datos que se pueden afirmar y lo que está
+  prohibido decir.
+
+  La regla que más fácil se rompe sin querer (§2 del brief): en los pueblos de
+  la Austral SÍ hay señal. La cobertura falta ENTRE pueblos y en las afueras.
+  Ninguna frase de esta página puede decir ni insinuar que los pueblos estén
+  incomunicados — la va a leer gente que vive ahí. El copy se reescribió el
+  5-ago-2026 justamente para sacar esa afirmación; no reintroducirla.
   ══════════════════════════════════════════════════════════════════════
 -->
 
@@ -306,12 +322,13 @@
 <header class="portada">
   <div class="envoltura">
     <span class="rotulo">Carretera Austral · Puerto Montt a Villa O'Higgins</span>
-    <h1>La información de tu localidad,<br />en el teléfono del viajero<br />aunque no haya señal.</h1>
+    <h1>Su localidad ya está en la guía.<br />Los datos correctos<br />solo los tienen ustedes.</h1>
     <p class="tesis">
-      Patagonia Austral es una aplicación <b>gratuita</b> que el turista instala antes de
-      viajar y sigue funcionando <b>sin conexión</b> en toda la ruta. Ya tiene cargadas
-      las 26 localidades. Lo que falta es que los datos de cada una sean
-      <b>los correctos</b> — y eso solo lo saben ustedes.
+      Patagonia Austral es una aplicación <b>gratuita</b> que el viajero lleva en el
+      teléfono por la Ruta 7. Las <b>26 localidades</b> ya están cargadas, cada una con
+      seis categorías. Lo que se encuentra hoy sobre los servicios chicos de la Austral
+      —acá y en cualquier otra parte— está <b>incompleto o desactualizado</b>. Eso es lo
+      que venimos a corregir con ustedes.
     </p>
 
     <div class="riel">
@@ -362,21 +379,31 @@
     <div class="envoltura">
       <div class="seccion-cabecera">
         <span class="rotulo">El problema</span>
-        <h2>El viajero decide dónde parar justo donde no tiene cómo averiguarlo</h2>
+        <h2>El viajero busca su localidad y encuentra información que ya no es</h2>
       </div>
       <div class="prosa">
         <p>
-          En gran parte de la Carretera Austral no hay señal. El turista que va llegando a
-          un pueblo a las siete de la tarde no puede buscar en Google si hay hospedaje
-          disponible, si la bomba de bencina está abierta o a qué hora sale la barcaza.
-          Decide con lo que alcanzó a cargar antes, o pregunta al primero que ve.
+          El turista que llega a un pueblo de la Austral saca el teléfono y busca. El
+          problema no es que no pueda: es <strong>lo que encuentra</strong>. Los servicios
+          chicos de la ruta —la cabaña de seis camas, el comedor que abre en temporada, el
+          taller que arregla un neumático un domingo— aparecen incompletos, con un teléfono
+          que cambió hace dos años, o no aparecen. Las plataformas globales no mantienen
+          esa información y nadie tiene el encargo de hacerlo. La que sí la tiene al día es
+          la gente de cada pueblo.
         </p>
         <p>
-          Y no todas las localidades tienen una oficina de información turística con
-          horario extendido. Los números de la temporada 2026 lo muestran con crudeza:
-          <strong>Caleta Tortel registró 21 atenciones en OIT</strong> en toda la temporada,
-          siendo uno de los destinos más icónicos del país. No es que no lleguen turistas
-          — es que no hay dónde atenderlos.
+          Hay una segunda parte, y ocurre <strong>antes de llegar</strong>. La decisión de
+          dónde parar se toma manejando, entre un pueblo y otro, que es donde la cobertura
+          se corta: si sigo hasta el próximo o me quedo acá, si alcanza la bencina, si
+          conviene esperar la barcaza. En ese tramo no hay dónde consultar nada, y lo único
+          que sirve es lo que ya venía guardado en el equipo.
+        </p>
+        <p>
+          A eso se suma que no todas las localidades tienen una oficina de información
+          turística con horario extendido. Los números de la temporada 2026 lo muestran con
+          crudeza: <strong>Caleta Tortel registró 21 atenciones en OIT</strong> en toda la
+          temporada, siendo uno de los destinos más icónicos del país. No es que no lleguen
+          turistas — es que no hay dónde preguntar.
         </p>
       </div>
 
@@ -387,7 +414,7 @@
           <strong>6.357 atendidas en oficinas de información turística</strong> entre
           diciembre y marzo. <strong>Cochrane fue el destino número uno de la región</strong>
           por atenciones (1.312). La demanda de información existe y está medida; lo que
-          falta es una forma de responderla donde no hay oficina ni señal.
+          falta es que la respuesta sea la correcta y esté a mano donde se toma la decisión.
         </p>
         <p style="font-size:13.5px;color:var(--gris)">
           Fuente: Red de Informadores Turísticos, Patagonia Chilena, temporada dic-2025 a mar-2026.
@@ -409,21 +436,22 @@
 
       <div class="rejilla-3">
         <div class="ficha">
-          <span class="rotulo">01 · Sin conexión</span>
-          <h3>Funciona con el teléfono en modo avión</h3>
-          <p>
-            Los lugares, los teléfonos, las descripciones y los mapas quedan guardados en
-            el equipo al instalarla. Es la diferencia entre una guía que sirve en la ruta
-            y una que sirve solo en el hotel con wifi.
-          </p>
-        </div>
-        <div class="ficha">
-          <span class="rotulo">02 · Por localidad</span>
+          <span class="rotulo">01 · Por localidad</span>
           <h3>Cada pueblo tiene su propia ficha</h3>
           <p>
             El viajero elige la localidad —o la app la detecta por GPS— y ve qué visitar,
             dónde dormir, dónde comer, servicios, emergencias y eventos de ese lugar. En
-            español e inglés.
+            español e inglés. El listado es curado uno por uno, no una descarga automática
+            de otra plataforma.
+          </p>
+        </div>
+        <div class="ficha">
+          <span class="rotulo">02 · En la ruta</span>
+          <h3>Sigue sirviendo donde se corta la cobertura</h3>
+          <p>
+            Los lugares, los teléfonos, las descripciones y los mapas quedan guardados en
+            el equipo al instalarla. Eso importa entre un pueblo y otro, que es donde no
+            hay señal y donde el viajero está decidiendo dónde va a parar.
           </p>
         </div>
         <div class="ficha">
@@ -431,8 +459,9 @@
           <h3>Los viajeros avisan lo que está pasando hoy</h3>
           <p>
             Cortes de camino, derrumbes, si hay bencina, cómo está la barcaza, el clima.
-            Lo reporta quien va pasando y lo ve quien viene detrás. Cada aviso caduca solo
-            según su tipo, para que nadie confíe en un dato viejo.
+            El aviso se escribe donde ocurre, aunque no haya señal, y sale solo al llegar
+            al pueblo. Cada uno caduca según su tipo, para que nadie confíe en un dato
+            viejo.
           </p>
         </div>
       </div>
@@ -530,7 +559,7 @@
           <h3>Para el municipio</h3>
           <p>
             Presencia de la comuna frente a un turista que ya está en la ruta y decidiendo
-            dónde parar, sin depender de que tenga señal ni de que la oficina esté abierta.
+            dónde parar, tenga o no señal en ese momento y esté o no abierta la oficina.
             Los avisos oficiales —cortes, cambios de horario, emergencias— llegan al
             teléfono del viajero que tiene la app instalada.
           </p>

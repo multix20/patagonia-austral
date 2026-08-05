@@ -5,11 +5,18 @@
 > prompt: todo lo que necesita saber quien diseñe está acá adentro, incluidos
 > los datos verificados y lo que tiene prohibido inventar.
 >
-> **Estado (29-jul-2026):** hay una **primera versión provisoria** en
-> `frontend/public/proyecto.html`, hecha antes de esta corrección de rumbo.
-> **Su argumento de apertura es incorrecto** (ver §2) — sirve como referencia de
-> estructura y de restricciones técnicas, **no** de contenido. No mergear a
-> producción como está.
+> **Estado (5-ago-2026):** el copy de `frontend/public/proyecto.html` **ya fue
+> reescrito según este brief**. Lo de §2 está aplicado: la página abre por la
+> calidad del dato y el offline quedó en segundo lugar, ubicado entre pueblo y
+> pueblo. Ya no queda ninguna afirmación de que los pueblos estén sin señal.
+>
+> El brief **no caduca con eso**: sigue siendo la referencia obligatoria de
+> estructura (§5), datos verificados (§6), prohibiciones (§6 "Prohibido
+> afirmar") y restricciones técnicas (§7) para cualquier pasada futura sobre la
+> página. Antes de tocarla, leerlo.
+>
+> *(Estado anterior, 29-jul-2026: había una primera versión provisoria hecha
+> antes de la corrección de rumbo, con el argumento de apertura equivocado.)*
 
 ---
 
@@ -296,11 +303,15 @@ de frente es lo que hace que un municipio conteste en vez de desconfiar.
 Cerrar los tres deja la página **completa en lo operativo**, no lista para
 mandarla. Falta lo de §2, que es lo que este brief vino a encargar:
 
-1. **El copy sigue siendo el de la versión provisoria** y abre con el argumento
-   equivocado — *"En gran parte de la Carretera Austral no hay señal… no puede
-   buscar en Google"*. Está **en vivo** en `/proyecto`. Mientras no se reescriba,
-   el criterio 4 de §8 ("nadie que viva en la ruta puede señalar una sola
-   afirmación falsa") **no se cumple**, y es el lector exacto de la campaña.
+1. ~~**El copy sigue siendo el de la versión provisoria**~~ — **resuelto el
+   5-ago-2026.** Se reescribió: el `<h1>` ya no cuelga de la señal ("Su localidad
+   ya está en la guía. Los datos correctos solo los tienen ustedes."), "El
+   problema" abre con que el viajero **sí busca** y lo que encuentra está
+   incompleto, y las tres capacidades de §5.3 quedaron en el orden que pide el
+   brief (ficha por localidad → sirve donde se corta la cobertura → estado de la
+   ruta). Con esto **se cumple el criterio 4 de §8**: las menciones a la señal
+   que quedan se revisaron una por una y todas dicen que la cobertura falta
+   **entre** pueblos, no dentro.
 
 2. **La entregabilidad del buzón está sin medir.** Purelymail se eligió asumiendo
    el riesgo de IPs compartidas, con el compromiso de comprobarlo con mail-tester
