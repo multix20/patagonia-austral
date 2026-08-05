@@ -125,9 +125,15 @@ Elegido el 3-ago-2026. Registrado en **NIC Chile** (`nic.cl`). Orden de los paso
 
 ### 2.4.1) Buzón del dominio — `contacto@rutaaustral.cl`
 
-La landing `/proyecto` ya enlaza a esa casilla con un `mailto:`, así que hoy ese
-botón apunta a un buzón que **no existe**. Es además el remitente de la campaña a
-las 26 encargadas de turismo municipal: sin buzón no hay campaña.
+> **✅ Montado (5-ago-2026).** El buzón ya existe y el `mailto:` de la landing
+> `/proyecto` no rebota. Lo de abajo queda como la receta de cómo se hizo —
+> sirve para rehacerlo, para montar los buzones de los negocios del fundador
+> sobre la misma cuenta, o para migrar de proveedor. **Lo único que sigue
+> pendiente de esta sección es el paso 8: medir la entregabilidad con
+> mail-tester antes de mandar la campaña.**
+
+Esta casilla es el remitente de la campaña a las 26 encargadas de turismo
+municipal, y el destino del botón de correo de la landing.
 
 **Dónde van los registros: en Netlify DNS, no en NIC Chile.** El dominio usa los
 *nameservers* de Netlify (`dns*.p06.nsone.net`), así que NIC ya no resuelve nada.

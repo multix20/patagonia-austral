@@ -36,9 +36,9 @@ que desbloquea, no por dificultad. Cuando algo se haga, marcar la casilla acá.
 **Orden acordado (4-ago-2026)** — los puntos de abajo están ordenados por lo que
 desbloquean, no por el orden en que conviene hacerlos. El orden de ejecución es:
 
-1. **Buzón `contacto@rutaaustral.cl`** (punto 1) — hoy la landing enlaza a una
-   casilla que no existe. **Es el único bloqueante que queda antes de la
-   campaña**, y no depende de programar nada.
+1. ~~**Buzón `contacto@rutaaustral.cl`**~~ (punto 1) — ✅ **montado**
+   (5-ago-2026). Queda de él un solo paso, que **no** es montarlo: medir la
+   entregabilidad con mail-tester antes de mandar la campaña.
 2. ~~**Nombre y WhatsApp en la landing**~~ (punto 5) — ✅ hecho el 4-ago, y el
    **copy quedó corregido el 5-ago**. La landing ya no tiene deuda.
 3. **R2 (punto 2), *always-on* (punto 4) y Sentry (punto 9)** — infraestructura,
@@ -66,12 +66,18 @@ después de escribirlo todo.
       sirviendo a los `deploy-preview-*`).
 - [ ] Registrar las variantes que se confunden al dictarlo por teléfono
       (`ruta-austral.cl`, `rutasaustral.cl`) — solo redirigen a la principal.
-- [ ] Montar el **buzón `contacto@rutaaustral.cl`** — la landing ya enlaza a esa
-      casilla, así que hoy ese botón apunta a un buzón que no existe. Los MX van
-      en el panel de **Netlify DNS**, no en NIC.
+- [x] **Buzón `contacto@rutaaustral.cl` — MONTADO** (confirmado por el fundador
+      el 5-ago-2026). El `mailto:` de la landing ya no rebota. Los MX van en el
+      panel de **Netlify DNS**, no en NIC.
       **Paso a paso completo: `DEPLOY.md` §2.4.1** (4-ago-2026), incluida la
       verificación con `spf=pass`/`dkim=pass` y las precauciones de
       entregabilidad para que la campaña no caiga en spam.
+- [ ] **Medir la entregabilidad con mail-tester** (paso 8 de `DEPLOY.md` §2.4.1)
+      — es un paso **distinto** de montar el buzón y sigue pendiente. Purelymail
+      se eligió asumiendo el riesgo de IPs compartidas; un correo que sale pero
+      cae en la carpeta de spam de una cuenta municipal falla igual que uno que
+      rebota, solo que sin avisar. Si el puntaje sale bajo, se migra a Google
+      Workspace en una tarde y recién ahí se paga.
       **Zoho quedó descartado (4-ago-2026)**: el dominio está reclamado por una
       organización Zoho del dueño anterior del `.cl` (el asistente rebota antes
       del checkout, se destraba solo con un ticket a soporte) y, además, el plan
@@ -1030,9 +1036,10 @@ always-on, aunque técnicamente el always-on valga más.
      BD se guarda la ruta, no la URL completa (`DEPLOY.md` §2.5).
   6. **Key de Stadia** → restringirla al dominio nuevo (`DEPLOY.md`, paso del
      basemap de terreno), o el basemap deja de cargar.
-  7. **Correo del dominio** — que es el motivo de todo esto. **Purelymail**
-     (decidido 4-ago-2026, ~US$10/año); el buzón tiene que existir **antes** de
-     mandar la campaña. Paso a paso en `DEPLOY.md` §2.4.1.
+  7. ✅ **Correo del dominio** — que es el motivo de todo esto. **Purelymail**
+     (decidido 4-ago-2026, ~US$10/año); **buzón montado y confirmado el
+     5-ago-2026**. Paso a paso en `DEPLOY.md` §2.4.1. Queda solo medir la
+     entregabilidad (paso 8) antes de mandar la campaña.
 - **Ojo con la PWA:** cambiar de origen (`netlify.app` → `.cl`) es un origen
   nuevo para el navegador. Quien ya tenga la app instalada conserva la vieja con
   su IndexedDB y su suscripción de push apuntando al origen viejo; conviene dejar

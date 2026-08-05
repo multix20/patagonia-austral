@@ -291,7 +291,9 @@ de frente es lo que hace que un municipio conteste en vez de desconfiar.
 - **Correo** — `contacto@rutaaustral.cl`, con el buzón montado en **Purelymail**
   (el proveedor se decidió el 4-ago; Zoho quedó descartado). El `mailto:` ya no
   apunta a una casilla que rebota, que era el riesgo real de mandar la campaña
-  antes de tiempo.
+  antes de tiempo. **Buzón confirmado en funcionamiento el 5-ago-2026** — la
+  fecha va anotada porque `ESTADO_Y_PENDIENTES.md` lo tuvo por pendiente hasta
+  ese día y las dos versiones se contradecían.
 - **WhatsApp** — `56951569704`, en formato internacional dentro del `wa.me`. Dos
   decisiones sobre cómo va puesto: **solo como botón**, sin el número escrito en
   la página (no queda indexado en texto plano para spam), y con **mensaje
