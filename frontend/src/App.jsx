@@ -171,6 +171,45 @@ function AppInterna() {
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1),
     []
   )
+  // El camino manual ("abre el menú del navegador…") es el ÚLTIMO recurso, y
+  // hasta acá se mostraba de entrada. Probado en un Android: al abrir la app el
+  // banner traía las instrucciones a mano y, al aceptar el permiso de ubicación,
+  // se transformaba solo en el botón "Instalar". O sea el navegador sí iba a
+  // ofrecer la instalación de un toque, pero manda `beforeinstallprompt` cuando
+  // considera que hubo interacción con el sitio — nunca en el primer render, que
+  // es justo cuando nosotros elegíamos el texto. Resultado: a todo Android le
+  // mostrábamos primero la instrucción equivocada, la más confusa de las dos.
+  //
+  // Ahora se le da al navegador la oportunidad de hablar antes: mientras
+  // podamos estar esperando el evento, el banner no aparece. Se revela 3s
+  // después de la primera interacción (que es lo que destraba el evento) o a los
+  // 30s si la persona nunca toca la pantalla, para no perder la invitación. Si
+  // el evento llega en cualquier momento, el banner sale con el botón — eso ya
+  // funcionaba y no cambia.
+  const [manualRevelado, setManualRevelado] = useState(false)
+
+  useEffect(() => {
+    // En iOS no hay evento que esperar: la instalación programática no existe,
+    // así que el gesto a mano es la única verdad y se muestra de inmediato.
+    if (esIOS) {
+      setManualRevelado(true)
+      return
+    }
+    let graciaTrasToque
+    const alInteractuar = () => {
+      graciaTrasToque = setTimeout(() => setManualRevelado(true), 3000)
+    }
+    // En captura y en `window`: el toque casi siempre cae sobre el mapa, que
+    // maneja sus propios eventos.
+    const opciones = { once: true, capture: true }
+    window.addEventListener('pointerdown', alInteractuar, opciones)
+    const tope = setTimeout(() => setManualRevelado(true), 30000)
+    return () => {
+      window.removeEventListener('pointerdown', alInteractuar, opciones)
+      clearTimeout(graciaTrasToque)
+      clearTimeout(tope)
+    }
+  }, [esIOS])
 
   useEffect(() => {
     obtenerLugares().then(setLugares)
@@ -1050,10 +1089,12 @@ function AppInterna() {
           navegador nos mandó el evento es porque la app NO está instalada, y esa
           señal manda por sobre la consulta, que puede quedar desactualizada
           después de desinstalar — y por lo mismo tampoco la calla el "Entendido"
-          del camino manual (`instalarSilenciado`). */}
+          del camino manual (`instalarSilenciado`) ni la espera de `manualRevelado`:
+          con el evento en la mano no hay nada que esperar ni que dudar. */}
       {!bannerCerrado &&
         !instaladaStandalone &&
-        (promptInstalar || (!instaladaSegunNavegador && !instalarSilenciado)) && (
+        (promptInstalar ||
+          (!instaladaSegunNavegador && !instalarSilenciado && manualRevelado)) && (
         <div className="instalar">
           <Icon nombre="smartphone" tam={24} />
           <div className="i-txt">
