@@ -22,7 +22,7 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
-## Lo que depende de TI — acciones manuales (al 4-ago-2026)
+## Lo que depende de TI — acciones manuales (al 5-ago-2026)
 
 Todo lo de abajo está **fuera del alcance de una sesión de Claude**: pide tarjeta,
 dashboard, una decisión tuya o acceso a la BD de producción. Está ordenado por lo
@@ -37,12 +37,16 @@ que desbloquea, no por dificultad. Cuando algo se haga, marcar la casilla acá.
 desbloquean, no por el orden en que conviene hacerlos. El orden de ejecución es:
 
 1. **Buzón `contacto@rutaaustral.cl`** (punto 1) — hoy la landing enlaza a una
-   casilla que no existe.
-2. **Nombre y WhatsApp en la landing** (punto 5) — cierra los marcadores en rojo.
+   casilla que no existe. **Es el único bloqueante que queda antes de la
+   campaña**, y no depende de programar nada.
+2. ~~**Nombre y WhatsApp en la landing**~~ (punto 5) — ✅ hecho el 4-ago, y el
+   **copy quedó corregido el 5-ago**. La landing ya no tiene deuda.
 3. **R2 (punto 2), *always-on* (punto 4) y Sentry (punto 9)** — infraestructura,
    toda junta y **antes** de la pasada de contenido.
-4. **Curar el contenido** (las 156 fichas; acá caen los puntos 7 y 8).
-5. **Campaña de correos** (punto 6).
+4. **Curar el contenido** (las 156 fichas publicadas, de las cuales **75 son
+   `preliminar`**; acá caen los puntos 7 y 8).
+5. **Campaña de correos** (punto 6). Antes de mandarla, medir la entregabilidad
+   del buzón con mail-tester (`DEPLOY.md` §2.4.1, paso 8).
 
 El 3 va antes que el 4 por dos razones concretas, no por gusto: con R2 andando,
 cada ficha que abras para curar se puede cargar con su foto en la misma pasada
@@ -139,19 +143,46 @@ Los **tres marcadores en rojo** quedaron cerrados:
 
 Ver `BRIEF_LANDING.md` §9.
 
-> **⚠ La landing todavía NO está lista para mandarla.** Cerrar los marcadores la
-> deja completa en lo operativo, pero el cuerpo sigue siendo la **versión
-> provisoria** del 29-jul: la sección "El problema" abre con *"En gran parte de
-> la Carretera Austral no hay señal. El turista … no puede buscar en Google"*,
-> que es justo lo que la corrección de conectividad descarta (en el pueblo sí
-> hay señal). Está **en vivo** en `/proyecto` desde que se mergeó a `main`, pese
-> a la nota "NO MERGEAR COMO ESTÁ" del backlog. **Corregir ese copy es
-> requisito de la campaña** (punto 6): lo va a leer gente que vive en la ruta.
-> El encargo de la versión buena está en `BRIEF_LANDING.md`.
+- [x] **Copy corregido según el brief (5-ago-2026).** Se reescribió el cuerpo de
+      `frontend/public/proyecto.html` para que el argumento sea el que manda desde
+      la corrección de conectividad: **la calidad del dato primero**, el offline
+      segundo y ubicado donde de verdad ocurre (la decisión se toma en la ruta,
+      antes de llegar). Lo que cambió:
+      - **`<h1>`** — "…aunque no haya señal" → **"Su localidad ya está en la
+        guía. Los datos correctos solo los tienen ustedes."** El titular ahora
+        pide lo que la página vino a pedir.
+      - **"El problema"** — se eliminó *"En gran parte de la Carretera Austral no
+        hay señal … no puede buscar en Google"*. Abre con que el viajero **sí
+        busca** y lo que encuentra está incompleto o vencido; el tramo sin
+        cobertura queda como segundo párrafo, entre pueblo y pueblo.
+      - **"La propuesta"** — las tres capacidades se reordenaron: 01 ficha por
+        localidad (curada, no descargada de otra plataforma), 02 sirve donde se
+        corta la cobertura, 03 estado de la ruta. El reporte se describe como se
+        comporta de verdad: se escribe sin señal y **sale solo al llegar al
+        pueblo**, que es la cola offline ya implementada.
+      - **`<title>`, meta description y Open Graph** — decían "la guía offline";
+        ahora encabezan con el dato correcto.
+      - **"Lo que reciben"** — "sin depender de que tenga señal" → "tenga o no
+        señal en ese momento".
+      - **Verificado:** build + lint OK; `proyecto.html` **sigue fuera del
+        precache** del service worker (19 entradas / 624,22 KiB, sin él);
+        navegador (Playwright 390×844 y 1280×900): sin scroll horizontal, sin
+        elementos desbordados, sin errores JS, cero marcadores en rojo. Las
+        cuatro menciones a la señal que quedan se revisaron una por una y todas
+        dicen lo correcto (hay señal en el pueblo, falta entre pueblos).
+
+> **Lo que sigue pendiente de la landing, y no es copy:** la **entregabilidad**
+> del buzón está sin medir. Purelymail se eligió asumiendo el riesgo de IPs
+> compartidas, con el compromiso de comprobarlo con **mail-tester antes** de la
+> campaña (`DEPLOY.md` §2.4.1, paso 8). Un `mailto:` que existe pero cae en spam
+> falla igual que uno que rebota, solo que sin avisar.
 
 ### 6. Campaña de correos — depende de 1 y 5, y es la que decide el producto
 - [ ] Mandarla a las 26 encargadas de turismo municipal + dueños de alojamiento
-      y comida. Es lo que convierte las **76 fichas `preliminar`** en dato real.
+      y comida. Es lo que convierte las **75 fichas `preliminar`** en dato real.
+      (Cifra verificada el 5-ago-2026 contra los seeds: 231 lugares en total, 156
+      publicados —26 localidades × 6 categorías—, de los cuales 75 son
+      `preliminar`. Antes este documento decía 76 acá y 83 más abajo.)
 
   *Yo puedo redactar los dos correos y armar la lista de contactos —
   hoy no existe en el repo— para que salga el mismo día que llegue el dominio.*
@@ -170,6 +201,60 @@ Ver `BRIEF_LANDING.md` §9.
 - [ ] Crear la cuenta. Cuesta cero y conviene **antes** de tener usuarios reales,
       para que el primer bug en la ruta no llegue como "no me funcionó" por
       WhatsApp y sin forma de reproducirlo.
+
+---
+
+## Crowdsourcing (reportes de ruta) — pendientes (al 5-ago-2026)
+
+El **PMV está implementado y desplegado** desde el 27-jul-2026 (detalle técnico
+completo en Fase 3, más abajo): reportar, ver en el mapa, votar "¿sigue ahí?",
+caducidad por tipo evaluada al leer, cola offline en IndexedDB y moderación en el
+CMS. Lo que sigue está acá, junto, porque hasta ahora estaba repartido en tres
+lugares del documento y no se veía como una sola lista de trabajo.
+
+> **La pieza que falta no es una feature, es gente reportando.** El código ya
+> permite el ciclo completo; lo que no está probado es que alguien lo use. Por eso
+> los dos primeros puntos van antes que cualquier mejora de la vista.
+
+### A. Lo que decide si el sistema vive (arranque en frío)
+
+- [ ] **Sembrar los primeros reportes con el propio operador.** El furgón
+      Tortel↔Cochrane hace ese tramo cada semana: es el único reportero sistemático
+      disponible hoy y cubre justo el tramo con menos información. Sin una base de
+      reportes, el primer viajero abre el mapa, no ve nada y no vuelve.
+- [ ] **Medir la contribución.** Hoy no hay analítica: no sabemos cuántos reportes
+      se crean, cuántos se votan ni cuántos se leen. Sin esos tres números no se
+      puede decidir si el crowdsourcing se refuerza o se archiva — que es
+      exactamente lo que pide la disciplina PMF/APM del roadmap. Basta un contador
+      propio en el CMS (los datos ya están en `reportes` y `reporte_votos`); no
+      hace falta una herramienta externa.
+
+### B. Bloqueado por infraestructura (espera el always-on, punto 4 de arriba)
+
+- [ ] **Push "hay un reporte cerca".** Necesita el **worker de colas**. Es lo que
+      convierte los reportes de "algo que veo si abro la app" en "algo que me
+      entero". Cruza con los **avisos segmentados por zona** (diseño ya cerrado en
+      el backlog): conviene construir ese rail una sola vez y que lo usen los dos.
+- [ ] **Arranque en frío de ~50 s.** No es incomodidad: el reporte se hace
+      detenido en la ruta con una barra de señal, y con 50 s de espera no se hace.
+      Parche mientras tanto: keep-alive con ping a `/up` cada ~10 min
+      (cron-job.org). Solución real: always-on.
+- [ ] **Foto en el reporte** (un derrumbe se entiende en una foto). Depende del
+      bucket R2 (punto 2 de arriba) y reusa `ImagenServicio`/`GuardarFoto`, que ya
+      convierten a WebP en la petición.
+
+### C. No bloqueado — se puede construir cuando toque
+
+- [ ] **Filtrar los reportes por tramo/localidad** en la vista, como ya se filtran
+      los lugares. Hoy se ven todos.
+- [ ] **Agrupar pines de reportes** cuando hay varios en el mismo punto. Los
+      lugares ya usan `leaflet.markercluster`; los reportes van sueltos.
+- [ ] **Reportes de la temporada de obras.** El Plan Ruta Austral mete faenas y
+      desvíos en Aysén 2026–2030: vale revisar si los diez tipos actuales
+      (`Reporte::VIDA_HORAS`: `derrumbe`, `camino`, `hielo`, `combustible`,
+      `ferry`, `camping`, `tiempo`, `fauna`, `evento`, `comentario`) alcanzan, o
+      si falta uno de "faena/desvío" con su propia caducidad — una faena dura
+      semanas, no las 24 h de `camino`.
 
 ---
 
@@ -565,7 +650,8 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
     `places.json` / `places.js` con **`publicado: false`** (texto ya redactado,
     listos para volver cuando se abra la mano). `PlaceSeeder` ahora respeta ese
     flag en vez de forzar `publicado = true`.
-  - **Cupos vacíos → fichas `preliminar: true`** (ids **3001–3083**): nombre
+  - **Cupos vacíos → fichas `preliminar: true`** (**75 fichas**, en el rango de
+    ids **3001–3083** — el rango tiene huecos, no son 83): nombre
     verosímil **sin teléfono inventado**, con el texto diciendo que el dato está
     por confirmar. Cubren dormir/comer/eventos donde no había nada. El seeder las
     publica **solo si el cupo sigue vacío**, así un dato real (alojamiento
@@ -723,7 +809,7 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
   cargar recursos externos y un impreso necesita vectores). Bien hecho sirve para
   las tres cosas con el mismo archivo. Encaja con la referencia Chiletur de arriba.
 
-- **⚠ Landing de presentación — VERSIÓN PROVISORIA (29-jul-2026), a rehacer.** Página para
+- **✅ Landing de presentación — COPY CORREGIDO (5-ago-2026).** Página para
   mostrarle el proyecto a **encargadas de turismo municipal, alcaldes y dueños de
   servicios turísticos**: es el soporte de la campaña de correos, la mitad del
   cuello de botella que **no** depende de programar (que contesten). Vive en
@@ -746,22 +832,23 @@ Fichas destacadas, planes de negocio, analítica + crowdsourcing tipo Waze.
     proyecto privado independiente, que NO es de SERNATUR ni de un municipio, que
     las fotos se usan solo con autorización, y explica por qué hay fichas que
     dicen "por confirmar" en vez de esconderlo.
-  - **⚠ Falta rellenar antes de publicar:** los marcadores `[TU-NOMBRE]`,
-    `[TU-CORREO]` y `[TU-WHATSAPP]` (comentario con instrucciones al inicio del
-    archivo). Se pintan en rojo en la página a propósito, para que no se escape
-    uno sin reemplazar. El correo idealmente del **dominio propio**, que es el
-    punto 1 del plan de inversión justamente por esto.
-  - **Verificado:** build + lint OK, precache de vuelta en 10 entradas /
-    573,62 KiB, y navegador (Playwright 1280×900 y 390×844): sin desborde
-    horizontal ni errores JS.
-  - **⚠ NO MERGEAR COMO ESTÁ.** Se construyó antes de la corrección de
-    conectividad de arriba y **abre con el argumento equivocado** ("el turista no
-    puede buscar en Google al llegar al pueblo" — en el pueblo sí puede). Peor:
-    lo va a leer alguien que vive ahí y sabe que es falso, y la credibilidad se
-    pierde en el primer párrafo. Sirve como referencia de **estructura y de
-    restricciones técnicas**, no de contenido. El encargo de la versión buena
-    quedó escrito en **`BRIEF_LANDING.md`**, listo para pegarse como prompt a una
-    IA de diseño.
+  - **✅ Marcadores cerrados (4-ago-2026):** firma, correo y WhatsApp. Ya no
+    queda ningún `[TU-…]` en el archivo. La regla CSS `.pendiente` (que los
+    pintaba en rojo) **se dejó en el archivo a propósito**, por si más adelante
+    se agrega un dato por rellenar.
+  - **✅ Copy reescrito según el brief (5-ago-2026).** Lo que quedaba pendiente
+    era esto y ya está: la página abre por la **calidad del dato** y el offline
+    pasó a segundo lugar, ubicado entre pueblo y pueblo, que es donde de verdad
+    falta cobertura. Detalle de los cambios en el punto 5 de "Lo que depende de
+    TI", arriba. **El encargo de `BRIEF_LANDING.md` §2 quedó cumplido**; el brief
+    sigue siendo la referencia de estructura, datos verificados y prohibiciones
+    para cualquier pasada futura.
+  - **Verificado (5-ago-2026):** build + lint OK; `proyecto.html` **fuera del
+    precache** del service worker (19 entradas / 624,22 KiB — la cifra vieja de
+    "10 entradas / 573,62 KiB" ya no aplica: el precache creció con la app, y lo
+    que hay que revisar es que la landing no esté en la lista, no el total); y
+    navegador (Playwright 390×844 y 1280×900): sin desborde horizontal, sin
+    errores JS, cero recursos externos cargados.
 
 - **✅ Fotos de las fichas — (a) IMPLEMENTADO (29-jul-2026); (b) pendiente.**
   El CMS ya permite subir fotos y la PWA las muestra. Se adelantó la pieza de
@@ -913,7 +1000,7 @@ Base lista: `docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`.
 **Dominios `.cl` — PENDIENTE, y es el gasto #1 del plan de inversión
 (anotado 31-jul-2026).** Cuesta ~CLP 10.000/año y **no se compra para la app: se
 compra para el correo**. La campaña a encargadas de turismo municipal y a dueños
-de alojamiento —la que decide cuántas de las 83 fichas `preliminar: true` se
+de alojamiento —la que decide cuántas de las 75 fichas `preliminar: true` se
 vuelven reales— se responde si sale de `@<dominio>.cl` con un sitio detrás; desde
 Gmail apuntando a `netlify.app` parece spam. Por eso va **antes** que el
 always-on, aunque técnicamente el always-on valga más.
