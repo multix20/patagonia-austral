@@ -630,23 +630,33 @@ function AppInterna() {
   }
 
   /**
-   * Envía un reporte de ruta. La posición sale del GPS del viajero; si no lo
-   * tiene concedido pero está dentro de una localidad, se usa el centro de ese
-   * pueblo (mejor un reporte ubicado al pueblo que ningún reporte). Sin ninguna
-   * de las dos referencias no se envía: un reporte sin lugar no sirve a nadie.
+   * Envía un reporte de ruta. El pin queda en la posición del viajero — esa es
+   * la regla y no cambia. Lo que sí se comprueba es que esa posición sea
+   * CREÍBLE para esta app:
+   *
+   * - Sin GPS de verdad (un computador, o el permiso denegado) el navegador
+   *   ubica por IP, y eso puede dejar el punto a cientos de kilómetros: pasó
+   *   probando la app, con cuatro reportes que aterrizaron en Santiago.
+   * - Si el fix no está en la ruta pero hay una localidad abierta, se usa el
+   *   centro de ese pueblo. Es la misma regla que ya existía para cuando no hay
+   *   GPS ninguno (mejor un reporte ubicado al pueblo que ningún reporte), y es
+   *   lo que permite sembrar reportes desde un computador estando en el pueblo.
+   * - Sin ninguna referencia utilizable no se envía: un reporte mal ubicado es
+   *   peor que ningún reporte, porque manda a alguien a un lugar equivocado.
    */
   const reportar = async (tipo, k) => {
-    const punto = posMapa || (locActiva ? [locActiva.lat, locActiva.lng] : null)
+    const enRuta = (p) => !!p && kmALaRuta(p[0], p[1]) <= RADIO_RUTA_KM
+    const centroLoc = locActiva ? [locActiva.lat, locActiva.lng] : null
+    const punto = enRuta(posMapa) ? posMapa : (centroLoc ?? posMapa)
     if (!punto) {
       mostrarToast(t('reporteSinUbicacion'))
       return
     }
 
-    // Fuera de la Austral no se reporta. Pasó de verdad: probando la app lejos
-    // de la ruta, el navegador ubica por IP (en una ciudad, a cientos de km) y
-    // el reporte entraba igual — invisible en el mapa y ensuciando el conteo.
-    // Se avisa acá, en el cliente, para que el mensaje llegue también SIN SEÑAL.
-    if (kmALaRuta(punto[0], punto[1]) > RADIO_RUTA_KM) {
+    // Ni el GPS ni la localidad abierta dejan el punto en la Austral: no se
+    // manda ni se encola. Se avisa acá, en el cliente, para que el mensaje
+    // llegue también SIN SEÑAL — que es donde de verdad se reporta.
+    if (!enRuta(punto)) {
       mostrarToast(t('reporteFueraDeRuta'))
       return
     }

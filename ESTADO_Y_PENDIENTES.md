@@ -378,6 +378,24 @@ Ahora hay un radio de ruta (`RADIO_RUTA_KM = 150`, generoso a propósito) en los
 > (camino Cochrane→Tortel), porque con la regla nueva Santiago ya no es "lejos
 > del pueblo": es otra cosa. Suite completa: **31/31**.
 
+**Y una consecuencia del bloqueo que había que resolver: sembrar desde un
+computador.** El pin de un reporte queda —y sigue quedando— en la posición del
+viajero. Pero **un computador no tiene GPS**: el navegador ubica por IP, y eso
+deja el punto en la ciudad del proveedor aunque estés parado en Cochrane. Con el
+radio de ruta a secas, el fundador no podía crear ni un reporte desde el
+escritorio, justo cuando el punto A de esta lista (sembrar los primeros reportes)
+depende de que pueda hacerlo. Regla final en `reportar()`:
+
+1. GPS **en la ruta** → el pin va ahí (el caso normal, el del viajero).
+2. GPS fuera de la ruta **pero con una localidad abierta** → se usa el centro de
+   ese pueblo. Es la misma regla que ya existía para cuando no hay GPS ninguno.
+3. Sin GPS utilizable y sin localidad abierta → no se envía, con aviso.
+
+Verificado en navegador con GPS simulado, los tres casos: desde Santiago sin
+localidad salen **cero peticiones** y aparece el aviso; desde Cochrane entra
+normal; y desde Santiago **con Cochrane abierto** entra ubicado en el pueblo,
+que es el camino para sembrar.
+
 ---
 
 ## Entorno local (heredado de la base Cochrane)
