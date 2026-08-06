@@ -144,12 +144,18 @@ function pinCategoria(cat) {
 // Pin de reporte del crowdsourcing: rombo con el color/icono del tipo. Se
 // distingue a propósito de la gota de los lugares (un reporte es temporal y lo
 // puso otro viajero, no es contenido curado del directorio).
+//
+// Va anclado por ABAJO (como la gota de los lugares), no centrado. Centrado
+// tapaba por completo el punto de la localidad —que solo tiene 26×26 px
+// tocables— y dejaba el pueblo imposible de abrir: el reporte sembrado desde el
+// CMS o desde un computador cae justo en el centro del pueblo. Anclado abajo, el
+// rombo queda ENCIMA del punto señalándolo, y el punto sigue libre.
 function pinReporte(tipo) {
   const e = ESTILO_REPORTE[tipo] || { icon: 'alert', c: '#5b6b78' }
   return L.divIcon({
     className: '',
     iconSize: [32, 32],
-    iconAnchor: [16, 16],
+    iconAnchor: [16, 32],
     html: `<div class="pin-rep" style="--rc:${e.c}"><span class="rombo"></span><span class="ico">${iconoHTML(e.icon, 15, '#fff')}</span></div>`,
   })
 }
@@ -184,7 +190,7 @@ function iconoGrupoReportes(cluster) {
   return L.divIcon({
     className: '',
     iconSize: [36, 36],
-    iconAnchor: [18, 18],
+    iconAnchor: [18, 36], // anclado abajo, igual que el pin suelto
     html: `<div class="pin-rep grupo" style="--rc:${color}"><span class="rombo"></span><span class="n">${marcadores.length}</span></div>`,
   })
 }
@@ -445,6 +451,11 @@ const MapView = forwardRef(function MapView(
             : ''
       const m = L.marker([loc.lat, loc.lng], {
         icon: pinLocalidad(loc, tier, lang, etiquetas[loc.slug] || ''),
+        // Por encima de los reportes (que van en 500): entrar al pueblo es la
+        // navegación principal del mapa y no puede quedar bloqueada por un pin
+        // temporal que le cayó encima. Cinturón y tirantes con el anclaje del
+        // pin de reporte, que además ya lo corre hacia arriba.
+        zIndexOffset: 600,
       })
         .addTo(mapa)
         .on('click', () => cbEntrar.current?.(loc.slug))

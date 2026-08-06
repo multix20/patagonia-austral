@@ -396,6 +396,26 @@ localidad salen **cero peticiones** y aparece el aviso; desde Cochrane entra
 normal; y desde Santiago **con Cochrane abierto** entra ubicado en el pueblo,
 que es el camino para sembrar.
 
+**Y el efecto colateral de sembrar así: el reporte tapaba el pueblo.** Un reporte
+creado con la localidad abierta cae en el **centro exacto** del pueblo, y el
+rombo del reporte (32×32, centrado en su coordenada) quedaba justo encima del
+punto de la localidad — que es lo **único tocable** de un pueblo en la vista de
+ruta: mide 26×26 px y su etiqueta lleva `pointer-events: none`. Resultado: **no
+se podía entrar a la localidad**. Lo detectó el fundador probando la app.
+Arreglado con dos medidas que se refuerzan:
+
+- El pin de reporte va **anclado por abajo**, no centrado: queda ENCIMA del
+  punto, señalándolo, y deja el punto libre. Es lo que ya hacía la gota de los
+  lugares (`pinCategoria`, anclada en su punta) — el rombo centrado era la
+  excepción, no la regla.
+- Los marcadores de localidad suben a `zIndexOffset: 600`, por encima de los
+  reportes (500): entrar al pueblo es la **navegación principal** del mapa y no
+  puede bloquearla un pin temporal que le cayó encima.
+
+Verificado con un reporte clavado en la coordenada exacta de Cochrane:
+`elementFromPoint` sobre el punto devuelve el punto del pueblo (no el reporte) y
+el toque entra a Cochrane.
+
 ---
 
 ## Entorno local (heredado de la base Cochrane)
