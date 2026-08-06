@@ -251,16 +251,77 @@ lugares del documento y no se veía como una sola lista de trabajo.
 
 ### C. No bloqueado — se puede construir cuando toque
 
-- [ ] **Filtrar los reportes por tramo/localidad** en la vista, como ya se filtran
-      los lugares. Hoy se ven todos.
-- [ ] **Agrupar pines de reportes** cuando hay varios en el mismo punto. Los
-      lugares ya usan `leaflet.markercluster`; los reportes van sueltos.
-- [ ] **Reportes de la temporada de obras.** El Plan Ruta Austral mete faenas y
-      desvíos en Aysén 2026–2030: vale revisar si los diez tipos actuales
-      (`Reporte::VIDA_HORAS`: `derrumbe`, `camino`, `hielo`, `combustible`,
-      `ferry`, `camping`, `tiempo`, `fauna`, `evento`, `comentario`) alcanzan, o
-      si falta uno de "faena/desvío" con su propia caducidad — una faena dura
-      semanas, no las 24 h de `camino`.
+- [x] **Filtrar los reportes por tramo/localidad** en la vista, como ya se filtran
+      los lugares. **HECHO (6-ago-2026)** — ver el detalle abajo.
+- [x] **Agrupar pines de reportes** cuando hay varios en el mismo punto.
+      **HECHO (6-ago-2026)** — ver el detalle abajo.
+- [x] **Reportes de la temporada de obras.** Revisado: los diez tipos **no**
+      alcanzaban. Se sumó `faena` con 168 h. **HECHO (6-ago-2026)** — ver abajo.
+
+#### ✅ Los tres puntos del grupo C — HECHOS (6-ago-2026)
+
+**1. Filtro por tramo/localidad** (`App.jsx`, `styles.css`, `i18n.jsx`). Dos
+reglas, una por vista, porque el viajero pregunta cosas distintas en cada una:
+
+- **Dentro de un pueblo**: solo los reportes de ese pueblo (`r.localidad ===
+  localidad`), igual que los lugares. Sin control nuevo: lo decide la localidad
+  abierta.
+- **En la ruta completa**: fila de chips `Todos · Norte · Centro · Sur` con el
+  **número de reportes de cada tramo**, reusando las macrozonas del buscador
+  (`macrozonaDe`). Solo aparece si hay reportes, y va en una segunda fila a la
+  derecha (`.rep-tramos`, top +110px) para no pelearse el ancho con el selector
+  de capas ni con el chip de "sin conexión".
+- **Los reportes sin localidad no se pierden.** La API solo atribuye un pueblo si
+  hay uno a menos de 60 km, y en la Austral el reporte más valioso —el del camino
+  entre pueblos— es justo el que cae fuera de ese radio. El tramo de esos se
+  calcula en el cliente con haversine contra la localidad más cercana.
+- Todo el filtrado es en el cliente sobre lo que ya está en IndexedDB: **anda sin
+  señal**, que es cuando se decide dónde parar.
+- Detalle de UX: al enviar un reporte se sueltan los chips (`setTramo(null)`), o
+  el pin recién creado podía caer fuera del filtro puesto y el viajero leía
+  "enviado" sin ver nada aparecer.
+
+**2. Agrupación de pines de reportes** (`MapView.jsx`, `styles.css`). Los
+reportes se apilan en los mismos puntos (el muelle de la barcaza, la bomba de
+bencina, el tramo en obras) y sueltos **solo se podía tocar el de encima**. Ahora
+van en un `L.markerClusterGroup` (`leaflet.markercluster`, que ya estaba en
+`package.json` desde el clustering de lugares del 21-jul, pero **había quedado
+sin usar** tras el rediseño map-first: hoy los lugares no se agrupan, solo los
+reportes). Radio chico (36 px) para juntar lo que está en el mismo punto sin
+mezclar dos puntos distintos del pueblo; `spiderfyOnMaxZoom` para el caso de dos
+reportes con la MISMA coordenada. El icono del grupo es el mismo rombo con el
+número y **el color del tipo dominante** (empate resuelto por el orden de
+`data/reportes.js`, de lo más grave a lo más liviano), así el grupo dice de qué
+se trata antes de abrirlo.
+
+**3. Tipo `faena` para la temporada de obras** (backend + PWA + CMS). La revisión
+dio que **faltaba**: lo más cercano era `camino`, que caduca en 24 h, y una faena
+del Plan Ruta Austral dura **semanas** en el mismo punto — el dato se apagaba
+cada noche y el que venía detrás se encontraba la obra sin aviso. Se sumó
+`'faena' => 168` (7 días) a `Reporte::VIDA_HORAS`, con su etiqueta bilingüe
+(`repFaena`: "Faena / desvío" / "Roadworks / detour"), icono propio de cono
+(`cone` en `Icon.jsx`) en rojo para no confundirlo con el amarillo de "camino
+malo", y su entrada en el CMS (`ReporteResource::TIPOS`). No hizo falta
+migración: `tipo` es un `string(24)`, no un enum.
+
+> **Bug que destapó el tipo nuevo — el tope de extensión acortaba los reportes.**
+> Confirmar ("¿sigue ahí?") aplicaba `min(expira_en + 3 h, now + 24 h)`: para
+> cualquier tipo de vida mayor a 24 h eso **recortaba** la vigencia. Ya pasaba
+> con `camping` y `evento` (72 h → 24 h al primer voto): la comunidad enterraba
+> el reporte justo por darle la razón. Con `faena` (168 h) habría sido siete
+> veces peor. Ahora el tope depende del tipo
+> (`Reporte::topeExtensionHoras()` = "una vida entera por delante", con el mínimo
+> de 24 h de siempre) y además **una confirmación nunca puede acortar**. Cubierto
+> por `test_confirmar_no_acorta_un_reporte_de_vida_larga`.
+
+**Verificado**: `npm run lint` y `npm run build` limpios; `php artisan test` en
+verde; y en navegador (Playwright, 412×900) con 6 reportes de prueba repartidos
+en los tres tramos: los chips contaron `Todos 6 · Norte 1 · Centro 2 · Sur 3`
+(el 3 del sur incluye el reporte **sin localidad**, ubicado por cercanía), el
+filtro dejó en el mapa solo lo del tramo elegido, dos reportes en el mismo punto
+quedaron en un grupo con "2" que se abre al tocarlo, entrar a Cochrane escondió
+los chips y dejó únicamente sus dos reportes, y la hoja de reportar mostró los
+diez tipos con "Faena / desvío" entre ellos. Sin errores de JS.
 
 ---
 

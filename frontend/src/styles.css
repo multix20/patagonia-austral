@@ -1786,6 +1786,61 @@ h1 small {
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
 }
 
+/* Filtro de reportes por tramo (vista de ruta completa). Va a la derecha y por
+   DEBAJO del selector de capas y del chip de "sin conexión" (ambos a ~66px):
+   una segunda fila para no pelearse el ancho con ellos en un teléfono angosto. */
+.rep-tramos {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 110px);
+  right: 14px;
+  z-index: 35;
+  display: flex;
+  gap: 3px;
+  max-width: calc(100% - 28px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 12px;
+  padding: 3px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.rep-tramos::-webkit-scrollbar {
+  display: none;
+}
+.rt-chip {
+  flex: 0 0 auto;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gris);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.15s;
+}
+.rt-chip.on {
+  background: var(--acento);
+  color: #fff;
+}
+.rt-chip .rt-n {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: #f2f1ec;
+  color: var(--tinta);
+}
+.rt-chip.on .rt-n {
+  background: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
 /* Rail derecho */
 .rail {
   position: absolute;
@@ -2489,6 +2544,27 @@ h1 small {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+/* Grupo de reportes (leaflet.markercluster): el mismo rombo, un poco más grande
+   y con el número en vez del icono. El color lo pone el tipo que más se repite
+   adentro (--rc), así el grupo dice de qué se trata sin abrirlo. */
+.pin-rep.grupo {
+  width: 36px;
+  height: 36px;
+}
+.pin-rep.grupo .rombo {
+  border-width: 2.5px;
+  border-radius: 9px;
+}
+.pin-rep.grupo .n {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 /* Tarjeta de un reporte abierto desde el mapa, con los votos que sostienen la

@@ -1,5 +1,8 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import L from 'leaflet'
+// Extiende el `L` de arriba con L.markerClusterGroup (agrupación de reportes).
+// El CSS base del plugin se importa en main.jsx; el icono del grupo es nuestro.
+import 'leaflet.markercluster'
 import { CATEGORIAS } from '../data/places'
 import { ESTILO_REPORTE } from '../data/reportes'
 import { RUTA7 } from '../data/ruta7'
@@ -151,6 +154,38 @@ function pinReporte(tipo) {
   })
 }
 
+// Distancia (px) dentro de la cual dos reportes se agrupan. Chica a propósito:
+// varios reportes en el MISMO punto (el caso real —la barcaza, el derrumbe, la
+// bomba de bencina— donde se apilan y solo se puede tocar el de encima) se
+// juntan, pero dos puntos distintos del pueblo siguen separados.
+const RADIO_CLUSTER_REP = 36
+
+// Icono del grupo de reportes: el mismo rombo del pin suelto, con el número y
+// el color del tipo que más se repite adentro. Así el grupo dice de qué se
+// trata antes de abrirlo (tres rombos rojos = faena, no "3 cosas").
+function iconoGrupoReportes(cluster) {
+  const marcadores = cluster.getAllChildMarkers()
+  const cuenta = {}
+  marcadores.forEach((m) => {
+    const tp = m.options.tipoReporte
+    cuenta[tp] = (cuenta[tp] || 0) + 1
+  })
+  // Empate resuelto por el orden de data/reportes.js (de lo más grave a lo más
+  // liviano): sin este desempate el color del grupo dependía del orden interno
+  // del plugin y podía cambiar entre renders con los mismos reportes.
+  const prioridad = Object.keys(ESTILO_REPORTE)
+  const dominante = Object.entries(cuenta).sort(
+    (a, b) => b[1] - a[1] || prioridad.indexOf(a[0]) - prioridad.indexOf(b[0])
+  )[0]?.[0]
+  const color = ESTILO_REPORTE[dominante]?.c || '#5b6b78'
+  return L.divIcon({
+    className: '',
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
+    html: `<div class="pin-rep grupo" style="--rc:${color}"><span class="rombo"></span><span class="n">${marcadores.length}</span></div>`,
+  })
+}
+
 const MapView = forwardRef(function MapView(
   {
     vista,
@@ -178,7 +213,8 @@ const MapView = forwardRef(function MapView(
   const rutaRef = useRef(null)
   const locMarkersRef = useRef([])
   const catMarkersRef = useRef([])
-  const repMarkersRef = useRef([])
+  // Los reportes viven dentro de un markerClusterGroup, no sueltos en el mapa.
+  const repGrupoRef = useRef(null)
   const yoRef = useRef(null)
   const [pos, setPos] = useState(null)
   // Capa base elegida por el usuario y visibilidad de las etiquetas de localidad
@@ -245,6 +281,9 @@ const MapView = forwardRef(function MapView(
       mapa.remove()
       mapaRef.current = null
       tileLayersRef.current = []
+      // El grupo de reportes muere con el mapa: si se conservara, al remontar
+      // (StrictMode en dev) se reusaría un grupo atado a un mapa ya destruido.
+      repGrupoRef.current = null
     }
   }, [])
 
@@ -365,10 +404,6 @@ const MapView = forwardRef(function MapView(
     catMarkersRef.current.forEach((m) => mapaRef.current?.removeLayer(m))
     catMarkersRef.current = []
   }
-  function limpiarRep() {
-    repMarkersRef.current.forEach((m) => mapaRef.current?.removeLayer(m))
-    repMarkersRef.current = []
-  }
 
   // Pines de localidad (vista 'ruta').
   useEffect(() => {
@@ -415,16 +450,40 @@ const MapView = forwardRef(function MapView(
   // son el estado del camino de punta a punta, y dentro de un pueblo son lo que
   // está pasando ahí mismo. Van sobre los demás pines (zIndexOffset) porque son
   // información fresca y perecible.
+  //
+  // Van AGRUPADOS: los reportes se apilan en los mismos puntos (el muelle de la
+  // barcaza, la bomba de bencina, el tramo en obras), y sueltos solo se podía
+  // tocar el de encima — los de abajo eran invisibles. Agrupados se ve el número
+  // y al acercar se separan; en el zoom máximo se abren en abanico (spiderfy),
+  // que es lo que rescata dos reportes con la MISMA coordenada.
   useEffect(() => {
     const mapa = mapaRef.current
     if (!mapa) return
-    limpiarRep()
+    if (!repGrupoRef.current) {
+      repGrupoRef.current = L.markerClusterGroup({
+        maxClusterRadius: RADIO_CLUSTER_REP,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        iconCreateFunction: iconoGrupoReportes,
+      })
+    }
+    const grupo = repGrupoRef.current
+    grupo.clearLayers()
     reportes.forEach((r) => {
-      const m = L.marker([r.lat, r.lng], { icon: pinReporte(r.tipo), zIndexOffset: 500 })
-        .addTo(mapa)
-        .on('click', () => cbReporte.current?.(r))
-      repMarkersRef.current.push(m)
+      const m = L.marker([r.lat, r.lng], {
+        icon: pinReporte(r.tipo),
+        zIndexOffset: 500,
+        // Lo lee iconoGrupoReportes para pintar el grupo con el tipo dominante.
+        tipoReporte: r.tipo,
+      }).on('click', () => cbReporte.current?.(r))
+      grupo.addLayer(m)
     })
+    if (reportes.length) {
+      if (!mapa.hasLayer(grupo)) grupo.addTo(mapa)
+    } else if (mapa.hasLayer(grupo)) {
+      mapa.removeLayer(grupo)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reportes])
 

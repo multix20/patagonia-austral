@@ -51,9 +51,31 @@ const CAT_LABEL = {
   emergencia: 'catEmergencia',
 }
 
-// Macrozona por `orden` norte→sur (para el buscador). Norte (Los Lagos) hasta
-// Palena; Centro (Aysén norte) hasta Balmaceda; Sur (Aysén sur) el resto.
+// Macrozona por `orden` norte→sur (para el buscador y para el filtro de tramo de
+// los reportes). Norte (Los Lagos) hasta Palena; Centro (Aysén norte) hasta
+// Balmaceda; Sur (Aysén sur) el resto.
 const macrozonaDe = (orden = 0) => (orden < 65 ? 'norte' : orden < 128 ? 'centro' : 'sur')
+
+// Los tramos del filtro de reportes, en el orden en que se recorre la ruta.
+const TRAMOS = [
+  ['norte', 'zonaNorte'],
+  ['centro', 'zonaCentro'],
+  ['sur', 'zonaSur'],
+]
+
+// Distancia aproximada en km (haversine). Se usa para darle un tramo a un reporte
+// que quedó SIN localidad: la API solo se la atribuye si hay un pueblo a menos de
+// 60 km, y en la Austral el reporte más valioso —el del camino entre pueblos— es
+// justo el que cae fuera de ese radio. Sin esto, filtrar por tramo lo escondería.
+function kmEntre(lat1, lng1, lat2, lng2) {
+  const rad = Math.PI / 180
+  const dLat = (lat2 - lat1) * rad
+  const dLng = (lng2 - lng1) * rad
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) ** 2
+  return 12742 * Math.asin(Math.min(1, Math.sqrt(a)))
+}
 
 // Los tipos de reporte del crowdsourcing viven en data/reportes.js (los comparten
 // la hoja de reportar, el mapa y la API).
@@ -82,6 +104,9 @@ function AppInterna() {
   const [reporteSel, setReporteSel] = useState(null)
   const [comentario, setComentario] = useState('')
   const [enCola, setEnCola] = useState(0)
+  // Tramo elegido para ver reportes en la vista de ruta completa (null = todos).
+  // Dentro de un pueblo no se usa: ahí manda la localidad abierta.
+  const [tramo, setTramo] = useState(null)
 
   const [lugarRapido, setLugarRapido] = useState(null) // ficha rápida (pin)
   const [fichaLugar, setFichaLugar] = useState(null) // ficha completa (PlaceDetail)
@@ -453,6 +478,55 @@ function AppInterna() {
     localidades.some((l) => l.slug === slug)
   )
 
+  /**
+   * Tramo (norte/centro/sur) al que pertenece un reporte. Primero por la
+   * localidad que le puso la API; si no tiene (cayó a más de 60 km de todo
+   * pueblo), por el pueblo más cercano calculado acá. Así ningún reporte
+   * desaparece del mapa solo por estar en medio de la nada.
+   */
+  const tramoDeReporte = useMemo(() => {
+    const porSlug = new Map(localidades.map((l) => [l.slug, l]))
+    return (r) => {
+      let loc = r.localidad ? porSlug.get(r.localidad) : null
+      if (!loc) {
+        let mejorKm = Infinity
+        localidades.forEach((l) => {
+          const km = kmEntre(r.lat, r.lng, l.lat, l.lng)
+          if (km < mejorKm) {
+            mejorKm = km
+            loc = l
+          }
+        })
+      }
+      return loc ? macrozonaDe(loc.orden) : null
+    }
+  }, [localidades])
+
+  // Cuántos reportes vigentes hay por tramo (el número que llevan los chips):
+  // muestra dónde está pasando algo sin tener que probar tramo por tramo.
+  const conteoTramos = useMemo(() => {
+    const c = { norte: 0, centro: 0, sur: 0 }
+    reportes.forEach((r) => {
+      const tr = tramoDeReporte(r)
+      if (tr) c[tr] += 1
+    })
+    return c
+  }, [reportes, tramoDeReporte])
+
+  /**
+   * Reportes que se dibujan en el mapa. Se filtran como los lugares, con la
+   * regla propia de cada vista:
+   *  - dentro de un pueblo, solo lo que está pasando en ese pueblo;
+   *  - en la ruta completa, el tramo elegido (o todos, que es lo por defecto).
+   * Todo en el cliente sobre lo que ya está en IndexedDB: el filtro anda igual
+   * sin señal, que es cuando el viajero decide dónde parar.
+   */
+  const reportesVisibles = useMemo(() => {
+    if (vista === 'localidad') return reportes.filter((r) => r.localidad === localidad)
+    if (!tramo) return reportes
+    return reportes.filter((r) => tramoDeReporte(r) === tramo)
+  }, [reportes, vista, localidad, tramo, tramoDeReporte])
+
   const noLeidos = avisos.filter((a) => !avisosVistos.includes(a.id)).length
 
   // ----- Acciones de navegación -----
@@ -532,6 +606,9 @@ function AppInterna() {
     if (r.enviado) {
       // Optimista: el reporte que devolvió la API entra al mapa al instante.
       setReportes((prev) => [r.reporte, ...prev.filter((x) => x.id !== r.reporte.id)])
+      // Y se sueltan los chips de tramo: con un filtro puesto, el reporte recién
+      // hecho podía caer fuera y el viajero veía "enviado" sin ver su pin.
+      setTramo(null)
       mostrarToast(`${t(k)} · ${t('reporteEnviado')}`)
     } else if (r.encolado) {
       setEnCola(await contarCola())
@@ -593,7 +670,7 @@ function AppInterna() {
         etiquetas={ETIQUETAS_LOCALIDAD}
         filtro={filtro}
         localidadActiva={locActiva}
-        reportes={reportes}
+        reportes={reportesVisibles}
         onEntrarLocalidad={entrarLocalidad}
         onSeleccionarLugar={setLugarRapido}
         onSeleccionarReporte={setReporteSel}
@@ -645,6 +722,28 @@ function AppInterna() {
       {offline && (
         <div className="offline-chip">
           <Icon nombre="wifi-off" tam={13} /> {t('sinConexion')}
+        </div>
+      )}
+
+      {/* Filtro de reportes por tramo (crowdsourcing, Fase 3). Solo en la vista
+          de ruta completa: dentro de un pueblo los reportes ya vienen filtrados
+          a ese pueblo. Aparece únicamente si hay algo que filtrar, para no
+          sumarle un control al mapa cuando no hay reportes. */}
+      {vista === 'ruta' && reportes.length > 0 && (
+        <div className="rep-tramos" role="group" aria-label={t('filtrarReportesTramo')}>
+          {[{ id: null, lbl: t('tramoTodos'), n: reportes.length }].concat(
+            TRAMOS.map(([id, lbl]) => ({ id, lbl: t(lbl), n: conteoTramos[id] }))
+          ).map((c) => (
+            <button
+              key={c.id || 'todos'}
+              type="button"
+              className={`rt-chip ${tramo === c.id ? 'on' : ''}`}
+              aria-pressed={tramo === c.id}
+              onClick={() => setTramo(c.id)}
+            >
+              {c.lbl} <span className="rt-n">{c.n}</span>
+            </button>
+          ))}
         </div>
       )}
 
