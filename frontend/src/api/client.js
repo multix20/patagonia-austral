@@ -160,8 +160,16 @@ export async function enviarReporte({ tipo, lat, lng, comentario = null }) {
       })
       if (r.ok) return { enviado: true, reporte: await r.json() }
       // 422/429: el reintento no va a arreglarlo (dato inválido o límite de
-      // envíos), así que no se encola para no reintentar en vano.
-      if (r.status === 422 || r.status === 429) return { enviado: false, error: r.status }
+      // envíos), así que no se encola para no reintentar en vano. El `motivo`
+      // permite que la UI diga POR QUÉ se rechazó (p. ej. fuera de la ruta) en
+      // vez del "no se pudo enviar" genérico, que no ayuda a nadie.
+      if (r.status === 422 || r.status === 429) {
+        const motivo = await r
+          .json()
+          .then((d) => d?.error)
+          .catch(() => null)
+        return { enviado: false, error: r.status, motivo }
+      }
     } catch {
       // sin red: cae al buzón de salida
     }

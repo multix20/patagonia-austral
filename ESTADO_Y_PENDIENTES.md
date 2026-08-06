@@ -323,6 +323,99 @@ quedaron en un grupo con "2" que se abre al tocarlo, entrar a Cochrane escondió
 los chips y dejó únicamente sus dos reportes, y la hoja de reportar mostró los
 diez tipos con "Faena / desvío" entre ellos. Sin errores de JS.
 
+#### ⚠→✅ Corrección del filtro tras probarlo en producción (6-ago-2026)
+
+**El fundador lo probó apenas se desplegó y no se entendía nada.** Creó 4
+reportes desde la app y el chip decía `Norte 4`, pero el mapa **no mostraba
+nada**. Vale escribirlo completo porque el error es del tipo que no aparece en
+ningún test verde:
+
+- **Qué pasó.** Los reportes se crearon **fuera de la Carretera Austral**: sin
+  GPS en la ruta, el navegador ubica por IP y los mandó a ~1.000 km al norte. La
+  API los guardó **sin localidad** (su radio es de 60 km), y entonces entró el
+  fallback del cliente —"búscale la localidad más cercana"—, que **no tenía
+  límite de distancia**: un punto en Santiago igual "ganaba" Puerto Montt y se
+  contaba como Norte. Pines dibujados a mil kilómetros del encuadre = chip con
+  número y mapa vacío.
+- **La lección**: un conteo que no se corresponde con lo que se ve en pantalla es
+  peor que no mostrar el conteo. El fallback estaba pensado para rescatar el
+  reporte del camino entre pueblos, y terminó inventando pertenencia.
+- **Arreglado así**: (1) el fallback ahora tiene tope, `RADIO_TRAMO_KM = 200`, y
+  lo que cae más lejos **no pertenece a ningún tramo y no se dibuja ni se
+  cuenta** (`reportesEnRuta`); (2) el control lleva **título visible**
+  ("Reportes de la ruta" / "Road reports") — antes era una fila de números
+  sueltos sobre el mapa, imposible de interpretar sin que alguien la explicara;
+  (3) **elegir un tramo lleva el mapa hasta esos reportes**
+  (`encuadrarReportes()` en `MapView`), porque el chip era mudo: se tocaba y
+  nada se movía; (4) un tramo **en 0 queda apagado y no se puede tocar**, en vez
+  de dejar el mapa en blanco sin explicación.
+- **Verificado** reproduciendo el caso exacto: fixture con 6 reportes en la ruta
+  **+ 4 en Santiago**. Los chips cuentan `Todos 6` (no 10) y Norte no se infla;
+  con un tramo vacío, su chip sale deshabilitado. Lint y build limpios.
+
+**Y el arreglo de raíz: fuera de la Austral no se reporta.** Esconder los
+reportes de más era tratar el síntoma; el problema es que se pudieran crear.
+Ahora hay un radio de ruta (`RADIO_RUTA_KM = 150`, generoso a propósito) en los
+**dos lados**:
+
+- **En la app** (`reportar()`): si el punto está más lejos que eso, sale
+  "Estás fuera de la Carretera Austral: el reporte no se envía" y no se manda ni
+  se encola. Se comprueba en el cliente para que el aviso llegue **sin señal**,
+  que es justo donde se reporta.
+- **En la API** (`ReporteController::store`): 422 con `error: fuera_de_ruta`. La
+  API es pública y una PWA cacheada puede ser vieja, así que el servidor no
+  puede confiar en el cliente. La PWA ya no reintenta los 422, así que el
+  reporte rechazado no queda dando vueltas en la cola de salida; y el motivo
+  viaja hasta el toast para no decir "no se pudo enviar" (que invita a
+  reintentar algo que nunca va a entrar).
+
+> **La distinción que hay que no perder**: "fuera del radio de un pueblo" (60 km,
+> el reporte se guarda **sin localidad**) y "fuera de la Carretera Austral"
+> (150 km, se rechaza) son cosas distintas. El reporte del camino ENTRE pueblos
+> es la razón de ser del crowdsourcing y no puede rebotar jamás. El test
+> `test_reporte_fuera_de_radio_queda_sin_localidad` usaba coordenadas de
+> Santiago para probar el primer caso; se corrigieron a un punto real de la ruta
+> (camino Cochrane→Tortel), porque con la regla nueva Santiago ya no es "lejos
+> del pueblo": es otra cosa. Suite completa: **31/31**.
+
+**Y una consecuencia del bloqueo que había que resolver: sembrar desde un
+computador.** El pin de un reporte queda —y sigue quedando— en la posición del
+viajero. Pero **un computador no tiene GPS**: el navegador ubica por IP, y eso
+deja el punto en la ciudad del proveedor aunque estés parado en Cochrane. Con el
+radio de ruta a secas, el fundador no podía crear ni un reporte desde el
+escritorio, justo cuando el punto A de esta lista (sembrar los primeros reportes)
+depende de que pueda hacerlo. Regla final en `reportar()`:
+
+1. GPS **en la ruta** → el pin va ahí (el caso normal, el del viajero).
+2. GPS fuera de la ruta **pero con una localidad abierta** → se usa el centro de
+   ese pueblo. Es la misma regla que ya existía para cuando no hay GPS ninguno.
+3. Sin GPS utilizable y sin localidad abierta → no se envía, con aviso.
+
+Verificado en navegador con GPS simulado, los tres casos: desde Santiago sin
+localidad salen **cero peticiones** y aparece el aviso; desde Cochrane entra
+normal; y desde Santiago **con Cochrane abierto** entra ubicado en el pueblo,
+que es el camino para sembrar.
+
+**Y el efecto colateral de sembrar así: el reporte tapaba el pueblo.** Un reporte
+creado con la localidad abierta cae en el **centro exacto** del pueblo, y el
+rombo del reporte (32×32, centrado en su coordenada) quedaba justo encima del
+punto de la localidad — que es lo **único tocable** de un pueblo en la vista de
+ruta: mide 26×26 px y su etiqueta lleva `pointer-events: none`. Resultado: **no
+se podía entrar a la localidad**. Lo detectó el fundador probando la app.
+Arreglado con dos medidas que se refuerzan:
+
+- El pin de reporte va **anclado por abajo**, no centrado: queda ENCIMA del
+  punto, señalándolo, y deja el punto libre. Es lo que ya hacía la gota de los
+  lugares (`pinCategoria`, anclada en su punta) — el rombo centrado era la
+  excepción, no la regla.
+- Los marcadores de localidad suben a `zIndexOffset: 600`, por encima de los
+  reportes (500): entrar al pueblo es la **navegación principal** del mapa y no
+  puede bloquearla un pin temporal que le cayó encima.
+
+Verificado con un reporte clavado en la coordenada exacta de Cochrane:
+`elementFromPoint` sobre el punto devuelve el punto del pueblo (no el reporte) y
+el toque entra a Cochrane.
+
 ---
 
 ## Entorno local (heredado de la base Cochrane)

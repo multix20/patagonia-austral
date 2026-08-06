@@ -63,10 +63,25 @@ const TRAMOS = [
   ['sur', 'zonaSur'],
 ]
 
-// Distancia aproximada en km (haversine). Se usa para darle un tramo a un reporte
-// que quedó SIN localidad: la API solo se la atribuye si hay un pueblo a menos de
-// 60 km, y en la Austral el reporte más valioso —el del camino entre pueblos— es
-// justo el que cae fuera de ese radio. Sin esto, filtrar por tramo lo escondería.
+// Hasta dónde se estira la ruta para darle tramo a un reporte sin localidad. La
+// API atribuye pueblo solo a menos de 60 km; este radio mayor rescata el reporte
+// del camino ENTRE pueblos, que es el más valioso y justo el que queda fuera.
+//
+// El límite existe porque sin él pasaba esto: un reporte hecho lejos de la
+// Austral (probando la app desde una ciudad, o con el navegador ubicando por IP)
+// igual "ganaba" la localidad más cercana y se contaba como Norte. El chip decía
+// 4 y el mapa no mostraba nada, porque los pines estaban a mil kilómetros. Un
+// número que no se corresponde con lo que se ve es peor que no mostrar nada.
+const RADIO_TRAMO_KM = 200
+
+// Hasta dónde se considera que el viajero está EN la Carretera Austral para
+// dejarlo reportar. Mismo valor que RADIO_RUTA_KM en el backend (que es quien
+// manda: la API es pública). Se comprueba también acá para poder avisar SIN
+// SEÑAL — el reporte se hace en la ruta, y esperar el 422 del servidor
+// significaría no decirle nada al que está sin cobertura.
+const RADIO_RUTA_KM = 150
+
+// Distancia aproximada en km (haversine).
 function kmEntre(lat1, lng1, lat2, lng2) {
   const rad = Math.PI / 180
   const dLat = (lat2 - lat1) * rad
@@ -479,39 +494,55 @@ function AppInterna() {
   )
 
   /**
-   * Tramo (norte/centro/sur) al que pertenece un reporte. Primero por la
-   * localidad que le puso la API; si no tiene (cayó a más de 60 km de todo
-   * pueblo), por el pueblo más cercano calculado acá. Así ningún reporte
-   * desaparece del mapa solo por estar en medio de la nada.
+   * Tramo (norte/centro/sur) al que pertenece un reporte, o `null` si el punto
+   * no está en la Carretera Austral. Primero por la localidad que le puso la
+   * API; si no tiene (cayó a más de 60 km de todo pueblo), por el pueblo más
+   * cercano — pero solo dentro de RADIO_TRAMO_KM. Más lejos que eso el reporte
+   * no es de esta ruta y no pertenece a ningún tramo.
    */
   const tramoDeReporte = useMemo(() => {
     const porSlug = new Map(localidades.map((l) => [l.slug, l]))
     return (r) => {
-      let loc = r.localidad ? porSlug.get(r.localidad) : null
-      if (!loc) {
-        let mejorKm = Infinity
-        localidades.forEach((l) => {
-          const km = kmEntre(r.lat, r.lng, l.lat, l.lng)
-          if (km < mejorKm) {
-            mejorKm = km
-            loc = l
-          }
-        })
-      }
-      return loc ? macrozonaDe(loc.orden) : null
+      const propia = r.localidad ? porSlug.get(r.localidad) : null
+      if (propia) return macrozonaDe(propia.orden)
+      let cerca = null
+      let mejorKm = RADIO_TRAMO_KM
+      localidades.forEach((l) => {
+        const km = kmEntre(r.lat, r.lng, l.lat, l.lng)
+        if (km < mejorKm) {
+          mejorKm = km
+          cerca = l
+        }
+      })
+      return cerca ? macrozonaDe(cerca.orden) : null
     }
   }, [localidades])
+
+  /** Distancia en km al pueblo más cercano de la ruta (Infinity si no hay datos). */
+  const kmALaRuta = (lat, lng) =>
+    localidades.reduce((min, l) => Math.min(min, kmEntre(lat, lng, l.lat, l.lng)), Infinity)
+
+  /**
+   * Reportes que están EN la ruta (los únicos que el mapa puede mostrar). Los
+   * que caen fuera —pruebas hechas lejos, o el navegador ubicando por IP en otra
+   * ciudad— se descartan acá, una sola vez, para que el conteo de los chips y
+   * los pines del mapa cuenten siempre lo mismo. Que un chip diga 4 y no se vea
+   * nada es peor que no tener chip.
+   */
+  const reportesEnRuta = useMemo(
+    () => reportes.filter((r) => tramoDeReporte(r) !== null),
+    [reportes, tramoDeReporte]
+  )
 
   // Cuántos reportes vigentes hay por tramo (el número que llevan los chips):
   // muestra dónde está pasando algo sin tener que probar tramo por tramo.
   const conteoTramos = useMemo(() => {
     const c = { norte: 0, centro: 0, sur: 0 }
-    reportes.forEach((r) => {
-      const tr = tramoDeReporte(r)
-      if (tr) c[tr] += 1
+    reportesEnRuta.forEach((r) => {
+      c[tramoDeReporte(r)] += 1
     })
     return c
-  }, [reportes, tramoDeReporte])
+  }, [reportesEnRuta, tramoDeReporte])
 
   /**
    * Reportes que se dibujan en el mapa. Se filtran como los lugares, con la
@@ -530,9 +561,24 @@ function AppInterna() {
    */
   const reportesVisibles = useMemo(() => {
     if (vista === 'localidad') return reportes.filter((r) => r.localidad === localidad)
-    if (!tramo) return reportes
-    return reportes.filter((r) => tramoDeReporte(r) === tramo)
-  }, [reportes, vista, localidad, tramo, tramoDeReporte])
+    if (!tramo) return reportesEnRuta
+    return reportesEnRuta.filter((r) => tramoDeReporte(r) === tramo)
+  }, [reportes, reportesEnRuta, vista, localidad, tramo, tramoDeReporte])
+
+  /**
+   * Elegir un tramo LLEVA el mapa hasta esos reportes. Sin esto el chip era
+   * mudo: se tocaba "Norte 3", el mapa se quedaba donde estaba y no había forma
+   * de saber si el filtro había hecho algo. Volver a "Todos" reencuadra la ruta
+   * completa.
+   */
+  const elegirTramo = (id) => {
+    setTramo(id)
+    const puntos = (id ? reportesEnRuta.filter((r) => tramoDeReporte(r) === id) : []).map((r) => [
+      r.lat,
+      r.lng,
+    ])
+    mapaRef.current?.encuadrarReportes(puntos)
+  }
 
   const noLeidos = avisos.filter((a) => !avisosVistos.includes(a.id)).length
 
@@ -584,15 +630,34 @@ function AppInterna() {
   }
 
   /**
-   * Envía un reporte de ruta. La posición sale del GPS del viajero; si no lo
-   * tiene concedido pero está dentro de una localidad, se usa el centro de ese
-   * pueblo (mejor un reporte ubicado al pueblo que ningún reporte). Sin ninguna
-   * de las dos referencias no se envía: un reporte sin lugar no sirve a nadie.
+   * Envía un reporte de ruta. El pin queda en la posición del viajero — esa es
+   * la regla y no cambia. Lo que sí se comprueba es que esa posición sea
+   * CREÍBLE para esta app:
+   *
+   * - Sin GPS de verdad (un computador, o el permiso denegado) el navegador
+   *   ubica por IP, y eso puede dejar el punto a cientos de kilómetros: pasó
+   *   probando la app, con cuatro reportes que aterrizaron en Santiago.
+   * - Si el fix no está en la ruta pero hay una localidad abierta, se usa el
+   *   centro de ese pueblo. Es la misma regla que ya existía para cuando no hay
+   *   GPS ninguno (mejor un reporte ubicado al pueblo que ningún reporte), y es
+   *   lo que permite sembrar reportes desde un computador estando en el pueblo.
+   * - Sin ninguna referencia utilizable no se envía: un reporte mal ubicado es
+   *   peor que ningún reporte, porque manda a alguien a un lugar equivocado.
    */
   const reportar = async (tipo, k) => {
-    const punto = posMapa || (locActiva ? [locActiva.lat, locActiva.lng] : null)
+    const enRuta = (p) => !!p && kmALaRuta(p[0], p[1]) <= RADIO_RUTA_KM
+    const centroLoc = locActiva ? [locActiva.lat, locActiva.lng] : null
+    const punto = enRuta(posMapa) ? posMapa : (centroLoc ?? posMapa)
     if (!punto) {
       mostrarToast(t('reporteSinUbicacion'))
+      return
+    }
+
+    // Ni el GPS ni la localidad abierta dejan el punto en la Austral: no se
+    // manda ni se encola. Se avisa acá, en el cliente, para que el mensaje
+    // llegue también SIN SEÑAL — que es donde de verdad se reporta.
+    if (!enRuta(punto)) {
+      mostrarToast(t('reporteFueraDeRuta'))
       return
     }
     const texto = comentario.trim()
@@ -621,7 +686,10 @@ function AppInterna() {
       setEnCola(await contarCola())
       mostrarToast(t('reporteEncolado'))
     } else {
-      mostrarToast(t('reporteFalla'))
+      // El servidor manda: si rechazó por estar fuera de la ruta, se dice eso y
+      // no "no se pudo enviar" (que invita a reintentar algo que nunca va a
+      // entrar). Cubre a quien tenga una versión vieja de la app cacheada.
+      mostrarToast(t(r.motivo === 'fuera_de_ruta' ? 'reporteFueraDeRuta' : 'reporteFalla'))
     }
   }
 
@@ -735,22 +803,33 @@ function AppInterna() {
       {/* Filtro de reportes por tramo (crowdsourcing, Fase 3). Solo en la vista
           de ruta completa: dentro de un pueblo los reportes ya vienen filtrados
           a ese pueblo. Aparece únicamente si hay algo que filtrar, para no
-          sumarle un control al mapa cuando no hay reportes. */}
-      {vista === 'ruta' && reportes.length > 0 && (
+          sumarle un control al mapa cuando no hay reportes.
+          Lleva título: sin él es una fila de números sueltos sobre el mapa y no
+          hay forma de adivinar que cuentan reportes de viajeros. */}
+      {vista === 'ruta' && reportesEnRuta.length > 0 && (
         <div className="rep-tramos" role="group" aria-label={t('filtrarReportesTramo')}>
-          {[{ id: null, lbl: t('tramoTodos'), n: reportes.length }].concat(
-            TRAMOS.map(([id, lbl]) => ({ id, lbl: t(lbl), n: conteoTramos[id] }))
-          ).map((c) => (
-            <button
-              key={c.id || 'todos'}
-              type="button"
-              className={`rt-chip ${tramo === c.id ? 'on' : ''}`}
-              aria-pressed={tramo === c.id}
-              onClick={() => setTramo(c.id)}
-            >
-              {c.lbl} <span className="rt-n">{c.n}</span>
-            </button>
-          ))}
+          <div className="rt-titulo">
+            <Icon nombre="alert" tam={12} color="var(--acento)" />
+            <span>{t('reportesTitulo')}</span>
+          </div>
+          <div className="rt-chips">
+            {[{ id: null, lbl: t('tramoTodos'), n: reportesEnRuta.length }]
+              .concat(TRAMOS.map(([id, lbl]) => ({ id, lbl: t(lbl), n: conteoTramos[id] })))
+              .map((c) => (
+                <button
+                  key={c.id || 'todos'}
+                  type="button"
+                  // Un tramo sin reportes no se puede elegir: tocarlo solo dejaba
+                  // el mapa en blanco, sin decir por qué.
+                  className={`rt-chip ${tramo === c.id ? 'on' : ''} ${c.n === 0 ? 'vacio' : ''}`}
+                  aria-pressed={tramo === c.id}
+                  disabled={c.n === 0}
+                  onClick={() => elegirTramo(c.id)}
+                >
+                  {c.lbl} <span className="rt-n">{c.n}</span>
+                </button>
+              ))}
+          </div>
         </div>
       )}
 
