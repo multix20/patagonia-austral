@@ -253,6 +253,27 @@ const MapView = forwardRef(function MapView(
     centrarEnMi() {
       if (pos && mapaRef.current) mapaRef.current.setView(pos, 15, { animate: true })
     },
+    /**
+     * Lleva el mapa a los reportes del tramo elegido (lo llama el filtro de la
+     * app). Sin puntos vuelve a encuadrar la ruta completa, que es lo que
+     * corresponde al soltar el filtro. El `maxZoom` evita que un solo reporte
+     * deje al viajero mirando una esquina de calle sin contexto de ruta.
+     */
+    encuadrarReportes(puntos) {
+      const mapa = mapaRef.current
+      if (!mapa) return
+      if (!puntos?.length) {
+        if (rutaRef.current) {
+          mapa.flyToBounds(rutaRef.current.getBounds(), { padding: [54, 54], duration: 0.8 })
+        }
+        return
+      }
+      mapa.flyToBounds(L.latLngBounds(puntos), {
+        padding: [70, 70],
+        maxZoom: 11,
+        duration: 0.8,
+      })
+    },
     tienePos: !!pos,
   }))
 

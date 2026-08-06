@@ -323,6 +323,36 @@ quedaron en un grupo con "2" que se abre al tocarlo, entrar a Cochrane escondió
 los chips y dejó únicamente sus dos reportes, y la hoja de reportar mostró los
 diez tipos con "Faena / desvío" entre ellos. Sin errores de JS.
 
+#### ⚠→✅ Corrección del filtro tras probarlo en producción (6-ago-2026)
+
+**El fundador lo probó apenas se desplegó y no se entendía nada.** Creó 4
+reportes desde la app y el chip decía `Norte 4`, pero el mapa **no mostraba
+nada**. Vale escribirlo completo porque el error es del tipo que no aparece en
+ningún test verde:
+
+- **Qué pasó.** Los reportes se crearon **fuera de la Carretera Austral**: sin
+  GPS en la ruta, el navegador ubica por IP y los mandó a ~1.000 km al norte. La
+  API los guardó **sin localidad** (su radio es de 60 km), y entonces entró el
+  fallback del cliente —"búscale la localidad más cercana"—, que **no tenía
+  límite de distancia**: un punto en Santiago igual "ganaba" Puerto Montt y se
+  contaba como Norte. Pines dibujados a mil kilómetros del encuadre = chip con
+  número y mapa vacío.
+- **La lección**: un conteo que no se corresponde con lo que se ve en pantalla es
+  peor que no mostrar el conteo. El fallback estaba pensado para rescatar el
+  reporte del camino entre pueblos, y terminó inventando pertenencia.
+- **Arreglado así**: (1) el fallback ahora tiene tope, `RADIO_TRAMO_KM = 200`, y
+  lo que cae más lejos **no pertenece a ningún tramo y no se dibuja ni se
+  cuenta** (`reportesEnRuta`); (2) el control lleva **título visible**
+  ("Reportes de la ruta" / "Road reports") — antes era una fila de números
+  sueltos sobre el mapa, imposible de interpretar sin que alguien la explicara;
+  (3) **elegir un tramo lleva el mapa hasta esos reportes**
+  (`encuadrarReportes()` en `MapView`), porque el chip era mudo: se tocaba y
+  nada se movía; (4) un tramo **en 0 queda apagado y no se puede tocar**, en vez
+  de dejar el mapa en blanco sin explicación.
+- **Verificado** reproduciendo el caso exacto: fixture con 6 reportes en la ruta
+  **+ 4 en Santiago**. Los chips cuentan `Todos 6` (no 10) y Norte no se infla;
+  con un tramo vacío, su chip sale deshabilitado. Lint y build limpios.
+
 ---
 
 ## Entorno local (heredado de la base Cochrane)

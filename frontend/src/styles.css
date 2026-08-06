@@ -1795,18 +1795,35 @@ h1 small {
   right: 14px;
   z-index: 35;
   display: flex;
-  gap: 3px;
+  flex-direction: column;
+  gap: 2px;
   max-width: calc(100% - 28px);
-  overflow-x: auto;
-  scrollbar-width: none;
   background: rgba(255, 255, 255, 0.94);
   border-radius: 12px;
-  padding: 3px;
+  padding: 5px 5px 4px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
-.rep-tramos::-webkit-scrollbar {
+/* Título del control: sin él la fila es un montón de números sobre el mapa. */
+.rt-titulo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--gris);
+}
+.rt-chips {
+  display: flex;
+  gap: 3px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.rt-chips::-webkit-scrollbar {
   display: none;
 }
 .rt-chip {
@@ -1839,6 +1856,11 @@ h1 small {
 .rt-chip.on .rt-n {
   background: rgba(255, 255, 255, 0.28);
   color: #fff;
+}
+/* Tramo sin reportes: se ve, para saber que ahí no hay nada, pero no se toca. */
+.rt-chip.vacio {
+  opacity: 0.42;
+  cursor: default;
 }
 
 /* Rail derecho */
