@@ -74,6 +74,13 @@ const TRAMOS = [
 // número que no se corresponde con lo que se ve es peor que no mostrar nada.
 const RADIO_TRAMO_KM = 200
 
+// Hasta dónde se considera que el viajero está EN la Carretera Austral para
+// dejarlo reportar. Mismo valor que RADIO_RUTA_KM en el backend (que es quien
+// manda: la API es pública). Se comprueba también acá para poder avisar SIN
+// SEÑAL — el reporte se hace en la ruta, y esperar el 422 del servidor
+// significaría no decirle nada al que está sin cobertura.
+const RADIO_RUTA_KM = 150
+
 // Distancia aproximada en km (haversine).
 function kmEntre(lat1, lng1, lat2, lng2) {
   const rad = Math.PI / 180
@@ -511,6 +518,10 @@ function AppInterna() {
     }
   }, [localidades])
 
+  /** Distancia en km al pueblo más cercano de la ruta (Infinity si no hay datos). */
+  const kmALaRuta = (lat, lng) =>
+    localidades.reduce((min, l) => Math.min(min, kmEntre(lat, lng, l.lat, l.lng)), Infinity)
+
   /**
    * Reportes que están EN la ruta (los únicos que el mapa puede mostrar). Los
    * que caen fuera —pruebas hechas lejos, o el navegador ubicando por IP en otra
@@ -630,6 +641,15 @@ function AppInterna() {
       mostrarToast(t('reporteSinUbicacion'))
       return
     }
+
+    // Fuera de la Austral no se reporta. Pasó de verdad: probando la app lejos
+    // de la ruta, el navegador ubica por IP (en una ciudad, a cientos de km) y
+    // el reporte entraba igual — invisible en el mapa y ensuciando el conteo.
+    // Se avisa acá, en el cliente, para que el mensaje llegue también SIN SEÑAL.
+    if (kmALaRuta(punto[0], punto[1]) > RADIO_RUTA_KM) {
+      mostrarToast(t('reporteFueraDeRuta'))
+      return
+    }
     const texto = comentario.trim()
     if (tipo === 'comentario' && !texto) {
       mostrarToast(t('reporteFaltaTexto'))
@@ -656,7 +676,10 @@ function AppInterna() {
       setEnCola(await contarCola())
       mostrarToast(t('reporteEncolado'))
     } else {
-      mostrarToast(t('reporteFalla'))
+      // El servidor manda: si rechazó por estar fuera de la ruta, se dice eso y
+      // no "no se pudo enviar" (que invita a reintentar algo que nunca va a
+      // entrar). Cubre a quien tenga una versión vieja de la app cacheada.
+      mostrarToast(t(r.motivo === 'fuera_de_ruta' ? 'reporteFueraDeRuta' : 'reporteFalla'))
     }
   }
 

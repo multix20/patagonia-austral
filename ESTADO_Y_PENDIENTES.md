@@ -353,6 +353,31 @@ ningún test verde:
   **+ 4 en Santiago**. Los chips cuentan `Todos 6` (no 10) y Norte no se infla;
   con un tramo vacío, su chip sale deshabilitado. Lint y build limpios.
 
+**Y el arreglo de raíz: fuera de la Austral no se reporta.** Esconder los
+reportes de más era tratar el síntoma; el problema es que se pudieran crear.
+Ahora hay un radio de ruta (`RADIO_RUTA_KM = 150`, generoso a propósito) en los
+**dos lados**:
+
+- **En la app** (`reportar()`): si el punto está más lejos que eso, sale
+  "Estás fuera de la Carretera Austral: el reporte no se envía" y no se manda ni
+  se encola. Se comprueba en el cliente para que el aviso llegue **sin señal**,
+  que es justo donde se reporta.
+- **En la API** (`ReporteController::store`): 422 con `error: fuera_de_ruta`. La
+  API es pública y una PWA cacheada puede ser vieja, así que el servidor no
+  puede confiar en el cliente. La PWA ya no reintenta los 422, así que el
+  reporte rechazado no queda dando vueltas en la cola de salida; y el motivo
+  viaja hasta el toast para no decir "no se pudo enviar" (que invita a
+  reintentar algo que nunca va a entrar).
+
+> **La distinción que hay que no perder**: "fuera del radio de un pueblo" (60 km,
+> el reporte se guarda **sin localidad**) y "fuera de la Carretera Austral"
+> (150 km, se rechaza) son cosas distintas. El reporte del camino ENTRE pueblos
+> es la razón de ser del crowdsourcing y no puede rebotar jamás. El test
+> `test_reporte_fuera_de_radio_queda_sin_localidad` usaba coordenadas de
+> Santiago para probar el primer caso; se corrigieron a un punto real de la ruta
+> (camino Cochrane→Tortel), porque con la regla nueva Santiago ya no es "lejos
+> del pueblo": es otra cosa. Suite completa: **31/31**.
+
 ---
 
 ## Entorno local (heredado de la base Cochrane)

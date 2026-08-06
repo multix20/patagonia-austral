@@ -60,6 +60,26 @@ class ReporteApiTest extends TestCase
         $this->assertNotSame('dispositivo-de-prueba-1', $reporte->dispositivo);
     }
 
+    /**
+     * Un reporte hecho fuera de la Carretera Austral se rechaza. Es un caso
+     * real, no teórico: probando la app lejos de la ruta el navegador ubica por
+     * IP y entraron cuatro reportes desde Santiago, que ensuciaban el conteo del
+     * filtro por tramo y no se podían dibujar en ningún mapa de la ruta.
+     */
+    public function test_rechaza_un_reporte_fuera_de_la_carretera_austral(): void
+    {
+        $this->localidad();
+
+        $this->postJson('/api/reportes', [
+            'tipo' => 'camino',
+            'lat' => -33.4489,   // Santiago, ~1.000 km al norte de la ruta
+            'lng' => -70.6693,
+            'dispositivo' => 'dispositivo-lejano',
+        ])->assertStatus(422)->assertJsonPath('error', 'fuera_de_ruta');
+
+        $this->assertSame(0, Reporte::count());
+    }
+
     /** El tipo tiene que ser uno de los conocidos y el comentario tiene tope. */
     public function test_valida_la_entrada(): void
     {
@@ -248,15 +268,22 @@ class ReporteApiTest extends TestCase
         $this->assertCount(0, $this->getJson('/api/reportes')->json());
     }
 
-    /** Un punto lejos de todo pueblo queda sin localidad, pero se guarda igual. */
+    /**
+     * Un punto lejos de todo PUEBLO queda sin localidad, pero se guarda igual:
+     * es el reporte del camino entre pueblos, la razón de ser de esta función.
+     * Ojo con las coordenadas: tienen que estar en el corredor de la ruta. Antes
+     * este test usaba Santiago, que ahora rebota por `fuera_de_ruta` — "fuera
+     * del radio de un pueblo" y "fuera de la Carretera Austral" son dos cosas
+     * distintas, y esa distinción es justo lo que sostiene el filtro por tramo.
+     */
     public function test_reporte_fuera_de_radio_queda_sin_localidad(): void
     {
         $this->localidad();
 
         $this->postJson('/api/reportes', [
             'tipo' => 'tiempo',
-            'lat' => -33.45,   // Santiago: a más de 1.000 km de la ruta
-            'lng' => -70.66,
+            'lat' => -47.85,   // ~70 km al sur de Cochrane, camino a Tortel
+            'lng' => -73.0,
             'dispositivo' => 'dispositivo-de-prueba-1',
         ])->assertCreated()->assertJsonPath('localidad', null);
     }

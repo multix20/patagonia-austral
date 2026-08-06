@@ -17,6 +17,21 @@ class ReporteController extends Controller
     /** Radio máximo para atribuir un reporte a una localidad (km). */
     private const RADIO_LOCALIDAD_KM = 60;
 
+    /**
+     * Hasta dónde se considera que un punto está EN la Carretera Austral, medido
+     * al pueblo más cercano. Más lejos que esto el reporte se rechaza.
+     *
+     * Por qué existe: al estrenar el filtro por tramo, cuatro reportes hechos
+     * probando la app desde Santiago (el navegador ubica por IP cuando no hay
+     * GPS de ruta) entraron a la base como reportes válidos "fuera de radio".
+     * No le sirven a nadie, ensucian el conteo y no se pueden dibujar.
+     *
+     * Es MUY generoso a propósito (los pueblos están a ~44 km unos de otros):
+     * el reporte del camino ENTRE pueblos es la razón de ser de esta función y
+     * jamás debe rebotar. Esto solo ataja lo que está a cientos de kilómetros.
+     */
+    private const RADIO_RUTA_KM = 150;
+
     /** Ventana y radio para considerar que un reporte es repetido (anti-duplicado). */
     private const DUP_HORAS = 2;
 
@@ -48,6 +63,17 @@ class ReporteController extends Controller
             'dispositivo' => ['required', 'string', 'min:8', 'max:100'],
         ]);
 
+        // ¿Está en la ruta? Un punto a cientos de km no es un reporte de la
+        // Austral: se rechaza con 422 (la PWA no reintenta los 422, así que no
+        // queda dando vueltas en la cola de salida).
+        [$localidadId, $km] = $this->localidadCercana((float) $datos['lat'], (float) $datos['lng']);
+        if ($km > self::RADIO_RUTA_KM) {
+            return response()->json([
+                'error' => 'fuera_de_ruta',
+                'message' => 'El punto está fuera de la Carretera Austral.',
+            ], 422);
+        }
+
         $dispositivo = $this->hash($datos['dispositivo']);
 
         // Anti-duplicado: mismo dispositivo, mismo tipo, casi el mismo punto y hace
@@ -64,7 +90,7 @@ class ReporteController extends Controller
             'lng' => $datos['lng'],
             'comentario' => $datos['comentario'] ?? null,
             'dispositivo' => $dispositivo,
-            'localidad_id' => $this->localidadCercana($datos['lat'], $datos['lng']),
+            'localidad_id' => $localidadId,
             'expira_en' => now()->addHours(Reporte::VIDA_HORAS[$datos['tipo']]),
         ]);
 
@@ -127,8 +153,16 @@ class ReporteController extends Controller
             ->first(fn (Reporte $r) => $this->metros($r->lat, $r->lng, (float) $datos['lat'], (float) $datos['lng']) <= self::DUP_METROS);
     }
 
-    /** Localidad más cercana al punto, si cae dentro del radio razonable. */
-    private function localidadCercana(float $lat, float $lng): ?int
+    /**
+     * Localidad más cercana al punto y a qué distancia quedó.
+     *
+     * Devuelve `[id|null, km]`: el id solo si cae dentro de RADIO_LOCALIDAD_KM
+     * (a más de eso el reporte es "de la ruta", no "del pueblo"), y SIEMPRE los
+     * km, que es lo que permite decidir si el punto está en la Austral.
+     *
+     * @return array{0: ?int, 1: float}
+     */
+    private function localidadCercana(float $lat, float $lng): array
     {
         $mejor = null;
         $mejorKm = PHP_FLOAT_MAX;
@@ -140,7 +174,7 @@ class ReporteController extends Controller
             }
         }
 
-        return $mejorKm <= self::RADIO_LOCALIDAD_KM ? $mejor : null;
+        return [$mejorKm <= self::RADIO_LOCALIDAD_KM ? $mejor : null, $mejorKm];
     }
 
     /** Distancia haversine en metros. */
