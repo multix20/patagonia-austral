@@ -93,9 +93,11 @@ class ReporteController extends Controller
                 $reporte->increment('confirmaciones');
                 // Cada confirmación estira la vigencia, con tope: un reporte vivo
                 // sigue vivo mientras la gente lo confirme, pero no para siempre.
-                $tope = now()->addHours(Reporte::EXTENSION_MAXIMA_HORAS);
+                // El tope depende del tipo (ver Reporte::topeExtensionHoras): con
+                // 24 h fijas, confirmar un reporte de vida larga lo acortaba.
+                $tope = now()->addHours(Reporte::topeExtensionHoras($reporte->tipo));
                 $nueva = $reporte->expira_en->copy()->addHours(Reporte::EXTENSION_HORAS);
-                $reporte->update(['expira_en' => $nueva->min($tope)]);
+                $reporte->update(['expira_en' => $nueva->min($tope)->max($reporte->expira_en)]);
             } else {
                 $reporte->increment('descartes');
                 $reporte->refresh();

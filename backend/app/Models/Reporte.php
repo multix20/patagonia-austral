@@ -37,6 +37,13 @@ class Reporte extends Model
     public const VIDA_HORAS = [
         'derrumbe' => 48,
         'camino' => 24,
+        // Faena/desvío del Plan Ruta Austral (MOP, 2026-2030): una obra no es un
+        // corte de un día, dura SEMANAS en el mismo punto. Con las 24 h de
+        // `camino` el dato se apagaba cada noche y el viajero volvía a
+        // encontrarse la faena sin aviso. Se le dan 7 días: suficiente para que
+        // cubra el viaje de quien viene detrás, y corto para que una faena
+        // terminada no quede colgada en el mapa por meses.
+        'faena' => 168,
         'hielo' => 12,
         'combustible' => 24,
         'ferry' => 12,
@@ -50,7 +57,26 @@ class Reporte extends Model
     /** Cuánto extiende la vigencia cada confirmación (horas), con tope. */
     public const EXTENSION_HORAS = 3;
 
-    public const EXTENSION_MAXIMA_HORAS = 24;
+    /**
+     * Piso del tope de extensión (horas). Ojo con el nombre: NO es un máximo.
+     * Es el valor mínimo que puede tomar el tope de `topeExtensionHoras()`, y
+     * manda solo para los tipos de vida corta (≤ 24 h), que son la mayoría.
+     */
+    public const EXTENSION_TOPE_MINIMO_HORAS = 24;
+
+    /**
+     * Hasta cuándo pueden estirar las confirmaciones un reporte de este tipo,
+     * contado desde ahora. El tope acota la EXTENSIÓN, no la vigencia natural:
+     * antes era 24 h fijas y eso ACORTABA los reportes de vida larga —
+     * confirmar un `camping` (72 h) lo dejaba en 24 h, o sea que la comunidad
+     * lo mataba justo por darle la razón. Con `faena` (168 h) el efecto habría
+     * sido siete veces peor. Ahora el tope es "una vida entera por delante",
+     * con el mínimo de 24 h de siempre para los tipos cortos.
+     */
+    public static function topeExtensionHoras(string $tipo): int
+    {
+        return max(self::EXTENSION_TOPE_MINIMO_HORAS, self::VIDA_HORAS[$tipo] ?? 0);
+    }
 
     /** Descartes necesarios para ocultar un reporte que la comunidad desmiente. */
     public const DESCARTES_PARA_OCULTAR = 3;

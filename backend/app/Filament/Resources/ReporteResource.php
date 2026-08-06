@@ -31,6 +31,7 @@ class ReporteResource extends Resource
     public const TIPOS = [
         'derrumbe' => 'Derrumbe',
         'camino' => 'Estado del camino',
+        'faena' => 'Faena / desvío',
         'hielo' => 'Hielo / escarcha',
         'combustible' => 'Combustible',
         'ferry' => 'Barcaza',
@@ -58,7 +59,7 @@ class ReporteResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => self::TIPOS[$state] ?? $state)
                     ->color(fn (string $state): string => match ($state) {
-                        'derrumbe', 'camino' => 'danger',
+                        'derrumbe', 'camino', 'faena' => 'danger',
                         'hielo', 'tiempo' => 'info',
                         'combustible', 'ferry' => 'warning',
                         default => 'gray',

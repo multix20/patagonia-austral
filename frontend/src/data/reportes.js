@@ -8,6 +8,11 @@ export const REPORTES = [
   { k: 'repDerrumbe', tipo: 'derrumbe', icon: 'mountain', c: '#8a5a2b' },
   { k: 'repHielo', tipo: 'hielo', icon: 'snow', c: '#2b6cb0' },
   { k: 'repCamino', tipo: 'camino', icon: 'alert', c: 'var(--amarillo)' },
+  // Faena/desvío: el tipo de la temporada de obras del Plan Ruta Austral (MOP,
+  // 2026-2030, justo en Aysén). Rojo y no amarillo para no confundirlo con
+  // "camino malo", que es el vecino más parecido y dura mucho menos (24 h
+  // contra 168 h en Reporte::VIDA_HORAS).
+  { k: 'repFaena', tipo: 'faena', icon: 'cone', c: '#C0392B' },
   { k: 'repCombustible', tipo: 'combustible', icon: 'fuel', c: '#185FA5' },
   { k: 'repFerry', tipo: 'ferry', icon: 'anchor', c: '#0e7c86' },
   { k: 'repCamping', tipo: 'camping', icon: 'tent', c: '#534AB7' },

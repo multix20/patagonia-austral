@@ -53,6 +53,9 @@ const RUTAS = {
   tent: 'M3.5 21 14 3M20.5 21 10 3M15.5 12 18 21M8.5 12 6 21M2 21h20',
   cloud: 'M17.5 19a4.5 4.5 0 1 0 0-9h-1.8A7 7 0 1 0 4 15.7M8 19v2M12 19v3M16 19v2',
   paw: 'M11 14c-2.5 0-4 1.6-4 3.5S8.5 21 11 21s4-1.6 4-3.5S13.5 14 11 14z',
+  // Cono de faena (reporte "faena / desvío" — obras del Plan Ruta Austral):
+  // triángulo con dos franjas y la base apoyada en el suelo.
+  cone: 'm12 3-6 15h12L12 3zM3 21h18M9.6 10.5h4.8M8 15h8',
 }
 
 // Formas adicionales (círculos/rects) por icono

@@ -156,6 +156,76 @@ class ReporteApiTest extends TestCase
         ])->assertOk()->assertJsonPath('confirmaciones', 1);
     }
 
+    /**
+     * Confirmar NUNCA acorta un reporte de vida larga. El tope de extensión era
+     * de 24 h fijas y se aplicaba con un `min()`, así que confirmar una faena
+     * (168 h) la dejaba en 24 h: la comunidad enterraba el reporte justo por
+     * darle la razón. Es el caso que hace utilizable la temporada de obras del
+     * Plan Ruta Austral, por eso tiene test propio.
+     */
+    public function test_confirmar_no_acorta_un_reporte_de_vida_larga(): void
+    {
+        // Reloj congelado a propósito. Sin esto el test es INESTABLE (~1 de cada
+        // 65 corridas): el reporte nace con `now()+168 h` y el controlador
+        // recalcula el tope con SU propio `now()`, así que si el POST cae en el
+        // segundo siguiente al `create` el resultado queda un segundo más allá y
+        // la igualdad exacta falla. Es ruido de reloj, no un cambio de conducta
+        // — pero rompía CI en `main` cada tanto, que es peor que un test lento.
+        $this->freezeTime();
+
+        $loc = $this->localidad();
+        $reporte = Reporte::create([
+            'tipo' => 'faena', 'lat' => -47.25, 'lng' => -72.57, 'localidad_id' => $loc->id,
+            'dispositivo' => 'autor', 'expira_en' => now()->addHours(Reporte::VIDA_HORAS['faena']),
+        ]);
+        $antes = $reporte->expira_en->timestamp;
+
+        $this->postJson("/api/reportes/{$reporte->id}/voto", [
+            'confirma' => true,
+            'dispositivo' => 'votante-faena',
+        ])->assertOk()->assertJsonPath('confirmaciones', 1);
+
+        // Recién creado ya está en el tope (una vida entera por delante): la
+        // confirmación no puede estirarlo más, pero tampoco recortarlo.
+        $this->assertSame($antes, $reporte->refresh()->expira_en->timestamp);
+
+        // Cuando ya le queda poco, la confirmación sí estira.
+        $reporte->update(['expira_en' => now()->addHours(5)]);
+        $quedaba = $reporte->expira_en->timestamp;
+        $this->postJson("/api/reportes/{$reporte->id}/voto", [
+            'confirma' => true,
+            'dispositivo' => 'votante-faena-2',
+        ])->assertOk();
+
+        $this->assertSame(
+            $quedaba + Reporte::EXTENSION_HORAS * 3600,
+            $reporte->refresh()->expira_en->timestamp
+        );
+    }
+
+    /** La faena del Plan Ruta Austral es un tipo válido y dura una semana. */
+    public function test_faena_es_un_tipo_valido_con_vigencia_de_semana(): void
+    {
+        $this->localidad();
+
+        $this->postJson('/api/reportes', [
+            'tipo' => 'faena',
+            'lat' => -47.2545,
+            'lng' => -72.5738,
+            'comentario' => 'Pare y siga por faena, esperas de 20 min',
+            'dispositivo' => 'dispositivo-de-prueba-faena',
+        ])->assertCreated()->assertJsonPath('tipo', 'faena');
+
+        $this->assertEqualsWithDelta(
+            now()->addHours(168)->timestamp,
+            Reporte::first()->expira_en->timestamp,
+            5
+        );
+        // Una faena tiene que durar más que un corte de camino común: si alguien
+        // iguala los plazos, este test lo caza.
+        $this->assertGreaterThan(Reporte::VIDA_HORAS['camino'], Reporte::VIDA_HORAS['faena']);
+    }
+
     /** Tres descartes sin confirmaciones esconden el reporte (y sale del index). */
     public function test_descartes_ocultan_el_reporte(): void
     {
