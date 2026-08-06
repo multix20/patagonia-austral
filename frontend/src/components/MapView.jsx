@@ -174,8 +174,11 @@ function iconoGrupoReportes(cluster) {
   // liviano): sin este desempate el color del grupo dependía del orden interno
   // del plugin y podía cambiar entre renders con los mismos reportes.
   const prioridad = Object.keys(ESTILO_REPORTE)
+  // Un tipo desconocido (reporte viejo en IndexedDB tras cambiar la lista de
+  // tipos) daría indexOf = -1 y ganaría el desempate: va al final, no al frente.
+  const rango = (tp) => (prioridad.indexOf(tp) + 1 || prioridad.length + 1)
   const dominante = Object.entries(cuenta).sort(
-    (a, b) => b[1] - a[1] || prioridad.indexOf(a[0]) - prioridad.indexOf(b[0])
+    (a, b) => b[1] - a[1] || rango(a[0]) - rango(b[0])
   )[0]?.[0]
   const color = ESTILO_REPORTE[dominante]?.c || '#5b6b78'
   return L.divIcon({

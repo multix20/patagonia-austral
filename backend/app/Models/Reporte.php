@@ -57,7 +57,12 @@ class Reporte extends Model
     /** Cuánto extiende la vigencia cada confirmación (horas), con tope. */
     public const EXTENSION_HORAS = 3;
 
-    public const EXTENSION_MAXIMA_HORAS = 24;
+    /**
+     * Piso del tope de extensión (horas). Ojo con el nombre: NO es un máximo.
+     * Es el valor mínimo que puede tomar el tope de `topeExtensionHoras()`, y
+     * manda solo para los tipos de vida corta (≤ 24 h), que son la mayoría.
+     */
+    public const EXTENSION_TOPE_MINIMO_HORAS = 24;
 
     /**
      * Hasta cuándo pueden estirar las confirmaciones un reporte de este tipo,
@@ -70,7 +75,7 @@ class Reporte extends Model
      */
     public static function topeExtensionHoras(string $tipo): int
     {
-        return max(self::EXTENSION_MAXIMA_HORAS, self::VIDA_HORAS[$tipo] ?? 0);
+        return max(self::EXTENSION_TOPE_MINIMO_HORAS, self::VIDA_HORAS[$tipo] ?? 0);
     }
 
     /** Descartes necesarios para ocultar un reporte que la comunidad desmiente. */

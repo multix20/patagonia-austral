@@ -520,6 +520,13 @@ function AppInterna() {
    *  - en la ruta completa, el tramo elegido (o todos, que es lo por defecto).
    * Todo en el cliente sobre lo que ya está en IndexedDB: el filtro anda igual
    * sin señal, que es cuando el viajero decide dónde parar.
+   *
+   * Asimetría a propósito entre las dos vistas: dentro de un pueblo, un reporte
+   * SIN localidad no se muestra (aunque el filtro por tramo sí lo rescate por
+   * cercanía). No es un olvido — la API solo deja `localidad` en null cuando el
+   * punto está a más de 60 km de TODO pueblo, y la vista de localidad vuela al
+   * pueblo: ese reporte quedaría fuera de pantalla igual. Mostrarlo solo
+   * ensuciaría el conteo del pueblo con algo que pasa a una hora de camino.
    */
   const reportesVisibles = useMemo(() => {
     if (vista === 'localidad') return reportes.filter((r) => r.localidad === localidad)

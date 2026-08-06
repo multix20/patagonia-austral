@@ -165,6 +165,14 @@ class ReporteApiTest extends TestCase
      */
     public function test_confirmar_no_acorta_un_reporte_de_vida_larga(): void
     {
+        // Reloj congelado a propósito. Sin esto el test es INESTABLE (~1 de cada
+        // 65 corridas): el reporte nace con `now()+168 h` y el controlador
+        // recalcula el tope con SU propio `now()`, así que si el POST cae en el
+        // segundo siguiente al `create` el resultado queda un segundo más allá y
+        // la igualdad exacta falla. Es ruido de reloj, no un cambio de conducta
+        // — pero rompía CI en `main` cada tanto, que es peor que un test lento.
+        $this->freezeTime();
+
         $loc = $this->localidad();
         $reporte = Reporte::create([
             'tipo' => 'faena', 'lat' => -47.25, 'lng' => -72.57, 'localidad_id' => $loc->id,
