@@ -27,6 +27,33 @@
       content="Guía turística de la Carretera Austral, de Puerto Montt a Villa O'Higgins. Atractivos, alojamiento, gastronomía, servicios y emergencias de cada localidad. Funciona sin conexión."
     />
     <title>Patagonia Austral — Guía de la Carretera Austral</title>
+    <!-- Vista previa al compartir el enlace (Open Graph / Twitter Card).
+         Esto NO es SEO: es lo que se ve cuando alguien manda rutaaustral.cl por
+         WhatsApp, lo pega en un grupo de la Austral o lo pone en la bio de
+         Instagram. Sin estas etiquetas la app se comparte como una línea de
+         texto azul sin imagen ni explicación, que es el peor primer contacto
+         posible para algo que hay que instalar. La imagen se genera con
+         scripts/generar-og.py y va con URL ABSOLUTA: los rastreadores no
+         resuelven rutas relativas. -->
+    <link rel="canonical" href="https://rutaaustral.cl/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Patagonia Austral" />
+    <meta property="og:locale" content="es_CL" />
+    <meta property="og:url" content="https://rutaaustral.cl/" />
+    <meta property="og:title" content="Patagonia Austral — la guía de la Carretera Austral" />
+    <meta
+      property="og:description"
+      content="Las 26 localidades de Puerto Montt a Villa O'Higgins: qué visitar, dónde dormir, dónde comer, bencina, salud y emergencias. Gratis, se instala en el teléfono y sigue sirviendo en los tramos de ruta sin señal."
+    />
+    <meta property="og:image" content="https://rutaaustral.cl/og-rutaaustral.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Patagonia Austral — la guía de la Carretera Austral, 26 localidades de Puerto Montt a Villa O'Higgins"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
     <!-- `beforeinstallprompt` se dispara UNA sola vez y no se repite: si en ese
          instante nadie lo está escuchando, el evento se pierde y el banner de
          instalar ya no puede aparecer en toda la visita. Chrome lo lanza apenas

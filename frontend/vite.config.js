@@ -101,7 +101,11 @@ export default defineConfig({
         // El QR se suma por lo mismo: vive en la landing, para imprimirlo desde
         // un computador de oficina. Al viajero no le sirve de nada llevarlo
         // guardado en el telefono.
-        globIgnores: ['proyecto.html', 'qr-rutaaustral.*'],
+        // La imagen de vista previa (og-rutaaustral.png, 1200x630) tampoco entra:
+        // la piden los rastreadores de WhatsApp/Facebook cuando alguien comparte
+        // el enlace, y el viajero NUNCA la ve. Precargarla seria hacer que cada
+        // telefono baje ~90 KB para nada.
+        globIgnores: ['proyecto.html', 'qr-rutaaustral.*', 'og-rutaaustral.png'],
         // ...pero sacarla del precache NO basta para que /proyecto se vea. El SW
         // registra una NavigationRoute que responde index.html a CUALQUIER
         // navegacion (es lo que hace funcionar la SPA sin conexion), asi que a

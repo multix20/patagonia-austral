@@ -60,6 +60,10 @@ Guía completa: `DEPLOY.md`. Push a `main` = redeploy automático de Render y Ne
   scheduler (avisos programados a futuro no se despachan solos).
 - Antes de commitear frontend: `npm run build --prefix frontend` debe pasar.
 - No tocar `frontend/dev-dist/` (artefacto regenerado; revertir si aparece en el diff).
+- **Vista previa al compartir**: `og-rutaaustral.png` (1200×630) la genera
+  `frontend/scripts/generar-og.py` reusando el dibujo del icono. Si cambia la
+  marca, se regenera con ese script — no se reemplaza el PNG a mano. Va **fuera
+  del precache** (la piden los rastreadores, el viajero no la ve).
 
 ## Estado y objetivos
 
@@ -81,6 +85,10 @@ Historial y decisiones: `ESTADO_Y_PENDIENTES.md`. Roadmap (README):
   data oficial (correo a encargadas de turismo / dueños, o fuentes públicas).
   Luego: capa comercial (fichas destacadas, planes, analítica) + crowdsourcing
   tipo Waze. Primeras fichas reales: los negocios del fundador.
+  **Frente nuevo (10-ago-2026): difusión al viajero.** Va **después** de la
+  campaña de correos (anunciar sobre 75 fichas `preliminar` gasta la primera
+  impresión), y la **analítica va antes que el primer volante**. Plan, canales y
+  calendario en `ESTADO_Y_PENDIENTES.md` → "Publicitar la app".
 - Fase 4 — Producción definitiva (dominio propio, respaldos, monitoreo).
   ✅ **Almacenamiento de imágenes adelantado (29-jul-2026)**: fotos de las fichas
   en **Cloudflare R2** (disco `r2`, `FOTOS_DISK`), conversión a WebP al subir,
