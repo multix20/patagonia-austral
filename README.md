@@ -83,7 +83,17 @@ Ver `backend/SETUP.md` para el detalle de configuración.
   (15 localidades nuevas y 125 lugares del tramo norte — 24 localidades y 192
   lugares en total; identidad actualizada a "Puerto Montt a Villa O'Higgins")
 - **Fase 3 — Capa comercial:** fichas destacadas, planes de negocio, analítica.
+  🔄 **En curso.** Hecho: base de destacados, un servicio publicado por localidad
+  y categoría (156 fichas), fotos de fichas y **crowdsourcing tipo Waze
+  desplegado** (reportes de ruta con votos, caducidad y cola offline).
+  Pendiente: dato real en las 75 fichas `preliminar`, analítica y planes de pago.
 - **Fase 4 — Publicación:** producción, dominio propio, PWA instalable, difusión.
+  🔄 **Parcial.** Hecho: **dominio propio `rutaaustral.cl`** con SSL y correo,
+  PWA instalable con iconos por plataforma y aviso de versión nueva, la vista
+  previa al compartir el enlace, y el **almacenamiento de imágenes en Cloudflare
+  R2** (operativo desde el 10-ago-2026: las fichas ya admiten fotos).
+  Pendiente: **backend *always-on*** para que el servicio no se duerma
+  (`DEPLOY.md` §2.9). Después: respaldos, monitoreo y difusión.
 
 ## Conexión con backend
 

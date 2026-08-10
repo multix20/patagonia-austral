@@ -57,7 +57,7 @@ próximo pueblo (cola offline). Sigue siendo innegociable — deja de ser el tit
 
 ---
 
-## 2. Estado actual (jul-2026)
+## 2. Estado actual (revisado 10-ago-2026)
 
 **Hecho:** Fases 0 → 2.5 completas y Fase 3 arrancada.
 - **Cobertura**: 26 localidades, toda la Carretera Austral. Multi-localidad, i18n
@@ -66,21 +66,47 @@ próximo pueblo (cola offline). Sigue siendo innegociable — deja de ser el tit
   publicado** (11 localidades, selección exacta del pipeline), mapa (sincronizado
   con la lista, clustering, pin activo, "estás aquí" por radio, pines outdoor),
   ChatBot (Markdown + historial), pulido UX (análisis Figma **completo**).
+- **Crowdsourcing: el PMV está DESPLEGADO** (27-jul, ampliado el 6-ago). Reportar,
+  ver en el mapa, votar "¿sigue ahí?", caducidad por tipo, cola offline y
+  moderación en el CMS, más filtro por tramo, agrupación de pines y tipo `faena`.
+  Corre **en Render free** porque la caducidad se evalúa al leer: no hace falta
+  worker ni scheduler. Ver el matiz en "Gaps".
+- **Adelantado de la Fase 4**: fotos de fichas con conversión a WebP y
+  almacenamiento en **Cloudflare R2** (código listo y probado; falta crear el
+  bucket), **dominio propio `rutaaustral.cl`** con SSL y correo, landing
+  `/proyecto` y **tarjeta de vista previa al compartir** (10-ago).
 
 **Fortalezas reales.** React + Vite + PWA offline sólida · Leaflet · scraper
 SERNATUR funcional · flujo PR + CI en verde · deploy **gratis** (Netlify + Render
 + Neon).
 
 **Gaps honestos (dónde duele de verdad):**
-- **Sin infra always-on** → el crowdsourcing en tiempo real está **bloqueado** (Render
-  free no corre worker/scheduler y se duerme). Es el cuello de botella #1 (ver §10).
+- **Sin infra always-on.** Corregido el 10-ago-2026: este punto decía que el
+  crowdsourcing estaba **bloqueado**, y ya no lo está — el PMV se construyó
+  esquivando worker y scheduler, y anda en free. Lo que el always-on sigue
+  bloqueando es concreto y acotado: el **push de "hay un reporte cerca"**
+  (worker), los **avisos programados a futuro** (scheduler), el **419 al guardar**
+  en el CMS y el **arranque en frío de ~50 s**. Sigue siendo el cuello de botella
+  #1 para lo que viene, pero no para lo que ya existe. Paso a paso:
+  **`DEPLOY.md` §2.9**.
 - **Datos**: solo alojamiento; **comida pendiente**; localidades nuevas (Balmaceda,
-  Raúl Marín) y varias del norte aún **sin servicios**.
+  Raúl Marín) y varias del norte aún **sin servicios**. Y el número que manda:
+  de las **156 fichas publicadas, 75 son `preliminar`** (48%, sin teléfono).
 - **Analítica: 0** — no medimos uso real, así que decidimos el PMF **a ciegas**.
+  Subió de prioridad el 10-ago: es también lo que separa "difundir" de "difundir
+  a ciegas" (ver `ESTADO_Y_PENDIENTES.md` → "Publicitar la app").
 - **Monetización: 0** — aún no cobramos nada.
-- **Frontend**: `App.jsx` ya en **607 líneas** con lógica y UI mezcladas (deuda
-  incipiente, no urgente). No hay `hooks/` ni `pages/`; `api/`, `db.js` y `push.js`
-  ya son "servicios" de facto pero sin carpeta.
+- **Fotos: el almacenamiento ya está operativo** (bucket R2 conectado el
+  10-ago-2026, probado de punta a punta), pero el contenido sigue en **0 fichas
+  con foto** y **0 destacadas**. Deja de ser un gap de infraestructura y pasa a
+  ser trabajo de contenido: cargarlas en la misma pasada en que se corrijan las
+  75 fichas `preliminar`.
+- **Frontend**: `App.jsx` **pasó de 607 a 1.322 líneas** (medido el 10-ago-2026)
+  con lógica y UI mezcladas. El veredicto de §4 —incremental, que lo empuje una
+  feature— sigue en pie, pero el número que lo sostenía se duplicó: conviene
+  revisarlo la próxima vez que haya que tocar ese archivo a fondo. No hay
+  `hooks/` ni `pages/`; `api/`, `db.js` y `push.js` ya son "servicios" de facto
+  pero sin carpeta.
 - **ETL**: herramienta de un solo uso, corre en local, sin logging/validación formales.
 
 ---
@@ -216,13 +242,26 @@ Prioridad: 🟡 Media — es lo que convierte tráfico en ingreso.
 ## 10. Plataforma de datos / Infraestructura (Fase 4)
 
 **El gran desbloqueador.** Sacar el backend del plan **free de Render** a un host
-**always-on**:
-- [ ] VPS ~5–6 USD/mes (Hetzner/DigitalOcean) con el `docker-compose.prod.yml` ya
-      existente (Caddy + SSL) → **backend + Postgres + worker de colas + scheduler**,
-      sin dormirse.
-- [ ] Habilita **avisos programados** (scheduler) y el **crowdsourcing en tiempo
-      real** (worker de colas), hoy imposibles en free.
-- [ ] Imágenes de fichas/reportes en **S3-compatible** (Cloudflare R2, egress gratis).
+**always-on**. **Paso a paso concreto (10-ago-2026): `DEPLOY.md` §2.9**, con las
+tres opciones y cómo se comprueba cada una.
+
+- [ ] **Activarlo.** Recomendación revisada el 10-ago: **Render Starter (US$7)**
+      antes que el VPS, no porque sea mejor sino porque **no migra nada** (misma
+      imagen, misma base, mismo dominio: es un desplegable). El VPS ~5–6 USD/mes
+      con el `docker-compose.prod.yml` ya existente (Caddy + SSL → backend +
+      Postgres + worker + scheduler) sigue siendo la opción de más valor por el
+      dinero, y cuesta un fin de semana más administrarlo. Se puede migrar
+      después sin perder nada.
+- [ ] Habilita **avisos programados** (scheduler — con Render Starter es agregar
+      `php artisan schedule:work &` a `docker/start.sh`) y el **push de "hay un
+      reporte cerca"** (worker de colas). Ojo: el crowdsourcing **no** está
+      esperando esto para existir, ya está desplegado; lo que espera es el aviso.
+- [x] ~~Imágenes de fichas en **S3-compatible**~~ — **HECHO Y OPERATIVO**
+      (código el 29-jul; bucket conectado y verificado en producción el
+      10-ago-2026). Cloudflare R2 con egress gratis, conversión a WebP y
+      `FileUpload` en el CMS. Queda para más adelante sacar las fotos del
+      `r2.dev` con rate limit a un subdominio propio: cambiar `R2_URL`, sin
+      migrar datos.
 - [ ] **Sentry** (free) para errores antes de tener usuarios masivos.
 - [ ] **Respaldos** del Postgres (dump + retención).
 
@@ -253,10 +292,21 @@ de invertir en infra**.
 - [ ] **Avisos segmentados por zona** (diseño ya listo en el backlog).
 
 ### Sprint 3 — Infra + crowdsourcing PMV
-- [ ] **Fase 4**: backend always-on + scheduler + worker (§10).
-- [ ] **PMV de crowdsourcing**: 1–2 tipos de reporte (**bencina** + **estado de
-      camino**), **offline-first** (encolar sin señal y enviar al recuperar red).
-- [ ] Medir **tasa de contribución** → decidir si se escala (más tipos de reporte).
+
+> **Reordenado por la realidad (10-ago-2026).** El PMV no esperó a la infra: se
+> construyó esquivándola y ya está desplegado, con **diez tipos** de reporte en
+> vez de los 1–2 previstos. Lo que queda de este sprint es la infra y la medición.
+
+- [x] ~~**PMV de crowdsourcing**~~ — **HECHO** (27-jul, ampliado el 6-ago):
+      reportar, mapa, votos, caducidad al leer, cola offline en IndexedDB y
+      moderación en el CMS. Corre en Render free.
+- [ ] **Fase 4**: backend always-on + scheduler + worker (§10) — paso a paso en
+      **`DEPLOY.md` §2.9**. Desbloquea el push de "reporte cerca" y los avisos
+      programados.
+- [x] ~~**Bucket R2**~~ — **HECHO el 10-ago-2026**, verificado en producción.
+      Las fotos de las fichas ya se pueden cargar desde el CMS.
+- [ ] Medir **tasa de contribución** → decidir si se escala. **Sigue siendo el
+      punto que decide todo**: hoy no hay ni un número de uso real.
 
 ---
 

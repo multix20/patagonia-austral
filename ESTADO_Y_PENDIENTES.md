@@ -44,7 +44,7 @@ rama están a la par, sin cambios sueltos, y la última suite corrida quedó en
 | Fichas publicadas | **156** (26 localidades × 6 categorías, una por cupo) |
 | De esas, `preliminar: true` | **75** — el **48%** de lo publicado, sin teléfono |
 | Fichas destacadas | **0** |
-| Fichas con foto | **0** |
+| Fichas con foto | **0** — pero el almacenamiento quedó **operativo el 10-ago** |
 
 Esa tabla es el estado real y explica sola cuál es el trabajo que viene: **no
 falta software, falta dato**. La app hace lo que promete; casi la mitad de lo que
@@ -85,8 +85,9 @@ desbloquean, no por el orden en que conviene hacerlos. El orden de ejecución es
    entregabilidad con mail-tester antes de mandar la campaña.
 2. ~~**Nombre y WhatsApp en la landing**~~ (punto 5) — ✅ hecho el 4-ago, y el
    **copy quedó corregido el 5-ago**. La landing ya no tiene deuda.
-3. **R2 (punto 2), *always-on* (punto 4) y Sentry (punto 9)** — infraestructura,
-   toda junta y **antes** de la pasada de contenido.
+3. **Infraestructura, toda junta y antes de la pasada de contenido**: ~~R2
+   (punto 2)~~ ✅ **hecho el 10-ago**, ***always-on*** (punto 4) y Sentry
+   (punto 9).
 4. **Curar el contenido** (las 156 fichas publicadas, de las cuales **75 son
    `preliminar`**; acá caen los puntos 7 y 8).
 5. **Campaña de correos** (punto 6). Antes de mandarla, medir la entregabilidad
@@ -153,20 +154,48 @@ después de escribirlo todo.
   (ver "Fotos" en el punto 2), pero vale la advertencia: **tocar `render.yaml`
   aplica TODO el blueprint**, no solo la línea que cambiaste.
 
-### 2. Bucket R2 + 6 variables en Render — ~20 min — desbloquea las fotos
-> **Ya no es bloqueante para la app** (3-ago-2026): sin R2 funciona completa,
-> solo que las fichas van sin foto. Antes no era así — con `FOTOS_DISK=r2` y las
-> variables vacías, `/api/places` devolvía 500 entero. **Pero sí va antes de
-> curar el contenido** (4-ago-2026): con R2 arriba, cada ficha se abre una sola
-> vez — datos y foto en la misma pasada.
-- [ ] Registrar **tarjeta en Cloudflare** (la exige aunque el uso sea gratis).
-- [ ] Crear el bucket, habilitar el acceso público `r2.dev` y crear el token
-      *Object Read & Write*.
-- [ ] Cargar en Render: `FOTOS_DISK=r2`, `R2_ACCESS_KEY_ID`,
-      `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_ENDPOINT`, `R2_URL`.
-- [ ] Verificar subiendo una foto a un lugar en `/admin`.
+### ✅ 2. Bucket R2 + variables en Render — **HECHO (10-ago-2026)**
+- [x] Registrar **tarjeta en Cloudflare** (la exige aunque el uso sea gratis).
+- [x] Crear el bucket `patagonia-austral`, habilitar el **Public Development URL**
+      (`r2.dev`) y crear el **Account API token** con *Object Read & Write*
+      acotado a ese bucket y **sin expiración**.
+- [x] Cargar en Render: `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`,
+      `R2_ENDPOINT`, `R2_URL`.
+- [x] **Verificado en producción por el fundador**: se subió una foto a un lugar
+      en `/admin`, salió la miniatura en el listado y la foto **llegó hasta la
+      ficha en la PWA** (Cochrane → "Confluencia ríos Baker y Neff"). O sea el
+      ciclo completo: subida → conversión a WebP → R2 → API → app.
 
-  Paso a paso: **`DEPLOY.md` §2.5**.
+  Paso a paso (por si hay que rehacerlo o migrar de cuenta): **`DEPLOY.md` §2.5**.
+
+  **Tres cosas que aparecieron al hacerlo y quedan anotadas para la próxima:**
+  - **Son CINCO variables nuevas, no seis.** `FOTOS_DISK=r2` ya venía declarada
+    en `render.yaml`, así que Render rechaza agregarla otra vez con un
+    *"Duplicate key is not allowed"* que parece un error y no lo es.
+  - **`R2_ENDPOINT` no lleva el nombre del bucket.** El campo "S3 API" que
+    muestra Cloudflare termina en `/patagonia-austral`; esa parte se corta. Con
+    el bucket pegado, las subidas fallan.
+  - **"Manage API tokens" no está dentro del bucket**, sino un nivel más arriba
+    (`/r2/api-tokens`). Y hay que elegir **Account API token**, no *User API
+    token*: el de usuario se desactiva si se sale de la organización, y con él
+    las fotos se caerían sin aviso.
+
+  **Lo que esto desbloquea, y es el punto:** ahora la segunda pasada sobre las
+  156 fichas se hace **una sola vez por ficha** — dato y foto juntos. Y el filtro
+  **"Con foto / Solo SIN foto"** del CMS, cruzado con el de localidad, es la
+  lista de trabajo para pedir fotos.
+
+  > **Cuidado mientras el backend siga en el plan free** (punto 4): la foto que
+  > arrastras queda primero en una carpeta temporal del contenedor y **se evapora
+  > si el servicio se duerme entre subir y guardar**. Subir y guardar de
+  > inmediato, una ficha a la vez (`DEPLOY.md` §2.7). Es otro argumento para el
+  > always-on justo ahora que empieza la carga de fotos.
+
+  **Pendiente menor, para cuando haya tráfico de temporada:** el dominio público
+  `r2.dev` tiene *rate limit* y no pasa por la CDN completa — Cloudflare lo dice
+  en la misma pantalla. Se resuelve con un subdominio propio apuntando al bucket
+  (`fotos.rutaaustral.cl`), y es **cambiar `R2_URL` y nada más**: en la BD se
+  guardan rutas relativas, no URLs.
 
 ### 3. `DEPLOY_PUSH_TOKEN` + webhook de Netlify — ~10 min — cierra lo del 31-jul
 - [ ] Generar el token (`openssl rand -hex 24`) y cargarlo en Render.
@@ -178,15 +207,46 @@ después de escribirlo todo.
 
 ### 4. Backend *always-on* — ~US$7/mes (Render pago) o ~US$6 (VPS)
 - [ ] Decidir Render pago vs. VPS y activarlo.
+- [ ] (Opcional, gratis y para hoy) Keep-alive a `/up` cada 10 min mientras tanto.
 
-  **Recomendación: hacerlo ANTES de la campaña, no después.** El plan de
-  inversión lo pone en segundo lugar pensando en el crowdsourcing, pero vas a
+  **Paso a paso nuevo: `DEPLOY.md` §2.9** (escrito el 10-ago-2026). Hasta ahora
+  este punto era **la única acción manual del proyecto sin guía**: aparecía como
+  pendiente en seis lugares distintos y en ninguno decía cómo se hace. Ahí quedan
+  las tres opciones (keep-alive gratis / Render Starter / VPS), los pasos de cada
+  una y cómo se comprueba que quedó.
+
+  **Recomendación (10-ago-2026): Render Starter, US$7.** No por ser la mejor
+  técnicamente —el VPS da más por el mismo dinero— sino porque **no migra nada**:
+  misma imagen, misma base en Neon, mismas variables, mismo dominio. Es un
+  desplegable en el dashboard. El VPS cuesta un fin de semana y después hay que
+  administrarlo, y el proyecto lo lleva una persona sola. La base autoalojada ya
+  existe (`docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`) y no se va a
+  ninguna parte: se puede migrar más adelante sin perder nada.
+
+  **Detalle que conviene no pasar por alto:** con el plan pagado, encender el
+  scheduler es **gratis y son dos palabras** — agregar `php artisan schedule:work &`
+  a `backend/docker/start.sh` (ver §2.9, opción A paso 3). Ahí los **avisos
+  programados a futuro empiezan a despacharse solos**, que es un pendiente
+  arrastrado desde el principio del proyecto. En el plan free esa línea no sirve
+  de nada, porque el contenedor duerme; por eso no está puesta.
+
+  **Recomendación de momento: hacerlo ANTES de la campaña, no después.** El plan
+  de inversión lo pone en segundo lugar pensando en el crowdsourcing, pero vas a
   mandar 26 correos con un link: si el primer clic de una encargada de turismo se
   come **50 s de arranque en frío**, perdiste esa respuesta y era el único tiro.
 
   **Y antes de curar** (4-ago-2026): con el plan gratis el servicio se duerme a
   los 15 min y la sesión del CMS se cae con un **419 al guardar**, justo cuando
-  ya escribiste la ficha entera.
+  ya escribiste la ficha entera. Peor todavía con fotos: lo que arrastras queda
+  en una carpeta temporal del contenedor y **se evapora** si el servicio se
+  duerme entre la subida y el guardado (`DEPLOY.md` §2.7).
+
+  > **Matiz que ya se anotó el 10-ago y vale repetir acá para no sobredimensionar
+  > el problema:** el arranque en frío **no** deja la app en blanco al viajero. La
+  > PWA trae la semilla empaquetada y `client.js` cae en ella cuando la API no
+  > responde, así que quien llega por un enlace ve las 156 fichas igual. Lo que sí
+  > se cae son **los reportes de ruta**, el CMS y la campaña. Esto no es motivo
+  > para no hacerlo — es para saber qué se puede prometer mientras tanto.
 
 ### 5. Landing `/proyecto` — depende del punto 1
 Los **tres marcadores en rojo** quedaron cerrados:
@@ -348,9 +408,10 @@ probar en WhatsApp basta mandarse el enlace con un parámetro cualquiera
    **Es lo único de esta lista que conviene hacer ya.**
 2. **Las 75 fichas `preliminar`** (48% de lo publicado). Es el motivo por el que
    la difusión masiva va **después** de la campaña de correos, no antes.
-3. **Fotos** (bloqueadas por el bucket R2, punto 2 de "Lo que depende de TI"). Un
+3. **Fotos.** Ya **no están bloqueadas**: el bucket R2 quedó operativo el
+   10-ago-2026 y las fichas admiten fotos. Lo que falta es cargarlas — un
    directorio donde ninguna ficha tiene foto se comparte mal: en redes, la foto
-   *es* el anuncio.
+   *es* el anuncio. Va en la misma pasada que las fichas `preliminar`.
 4. **Always-on — con un matiz honesto que corrige el susto anterior.** Este
    documento venía diciendo que el arranque en frío de ~50 s se comería el primer
    clic. Para la **campaña de correos** es cierto. Para la **app** no tanto: la
@@ -443,9 +504,12 @@ lugares del documento y no se veía como una sola lista de trabajo.
       detenido en la ruta con una barra de señal, y con 50 s de espera no se hace.
       Parche mientras tanto: keep-alive con ping a `/up` cada ~10 min
       (cron-job.org). Solución real: always-on.
-- [ ] **Foto en el reporte** (un derrumbe se entiende en una foto). Depende del
-      bucket R2 (punto 2 de arriba) y reusa `ImagenServicio`/`GuardarFoto`, que ya
-      convierten a WebP en la petición.
+- [ ] **Foto en el reporte** (un derrumbe se entiende en una foto). **Se
+      desbloqueó el 10-ago-2026** con el bucket R2 operativo: ya no espera
+      infraestructura, es trabajo de código y reusa `ImagenServicio`/`GuardarFoto`,
+      que ya convierten a WebP en la petición. Ojo: esta sección lo tenía en el
+      grupo B ("bloqueado por infraestructura") y **pasa al grupo C**, se puede
+      construir cuando toque.
 
 ### C. No bloqueado — se puede construir cuando toque
 

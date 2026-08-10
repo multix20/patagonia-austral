@@ -45,7 +45,14 @@ alcance**. No acumules deuda de UX detrás de más contenido.
 - **Documenta el avance**: al completar un hito, actualiza
   `ESTADO_Y_PENDIENTES.md` (entrada fechada) y marca la fase en el README.
 
-## Estado actual y prioridades (jul-2026)
+## Estado actual y prioridades (revisado 10-ago-2026)
+
+> **Números al día (10-ago-2026), que mandan sobre los de más abajo:** la Fase 2.5
+> cerró con 24 localidades y 192 lugares, pero después se sumaron **Raúl Marín
+> Balmaceda y Balmaceda** → hoy son **26 localidades** y **231 fichas** en el seed,
+> de las cuales **156 están publicadas** (26 × 6, una por localidad y categoría) y
+> **75 de esas son `preliminar`** (sin teléfono, a la espera del dato oficial).
+> **0 fichas con foto y 0 destacadas.**
 
 Hecho: ✅ Fase 0 · ✅ deploy Netlify+Render+Neon · ✅ Fase 1 (multi-localidad) ·
 ✅ Fase 2 (contenido Coyhaique→Villa O'Higgins) + su UX · ✅ **Fase 2.5** (tramo
@@ -71,11 +78,22 @@ reporte `seleccion_gratis.csv`. Detalle: `ESTADO_Y_PENDIENTES.md` y `scripts/ser
 Idea central de Fase 3 — **crowdsourcing tipo Waze** (Uri Levine): que los viajeros
 en ruta aporten reportes que cambian a diario y nadie puede mantener a mano —
 **bencina disponible, cortes/derrumbes de camino, estado del ripio, clima en un
-punto, barcazas** (Chile Chico–Ibáñez, etc.). Extiende el sistema de avisos (hoy
-solo el admin publica) con reportes de usuarios + moderación. Requiere backend
-(los reportes se comparten) y trae temas nuevos: moderación, spam/abuso, identidad
-ligera, y **envío offline-first** (encolar el reporte sin señal y mandarlo al
-recuperar red).
+punto, barcazas** (Chile Chico–Ibáñez, etc.).
+
+> **✅ YA NO ES UNA IDEA: el PMV está construido y desplegado** (27-jul-2026,
+> ampliado el 6-ago). No lo vuelvas a proponer como trabajo nuevo. Están hechos:
+> los diez tipos de reporte, el pin en el mapa, los votos "¿sigue ahí?", la
+> caducidad por tipo **evaluada al leer** (el truco que lo hace andar en Render
+> free, sin worker ni scheduler), la **cola offline** en IndexedDB, la moderación
+> en el CMS, el filtro por tramo, la agrupación de pines y el radio de ruta que
+> impide reportar fuera de la Austral. Tests: `backend/tests/Feature/ReporteApiTest.php`.
+>
+> **Lo que SÍ queda pendiente del crowdsourcing** — y es lo que hay que atacar si
+> el trabajo va por acá: (a) **sembrar los primeros reportes** con el furgón
+> Tortel↔Cochrane, porque sin reportes el primer viajero abre el mapa y no ve
+> nada; (b) **medir** creación/votos/lecturas, hoy en cero; (c) el **push de
+> "reporte cerca"**, que sí necesita el worker del always-on (`DEPLOY.md` §2.9);
+> (d) **foto en el reporte**, que depende del bucket R2 (`DEPLOY.md` §2.5).
 
 **Aplicar el APM/PMF con disciplina (no enamorarse de la solución):**
 1. **Segmento**: definir el cliente exacto — probablemente el viajero independiente

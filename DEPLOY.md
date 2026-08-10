@@ -522,6 +522,101 @@ siempre lo fue.
 
 ---
 
+## 2.9) Backend *always-on* — que el servicio no se duerma
+
+Hasta acá esta guía tenía el paso a paso de todo **menos de esto**, que sin
+embargo aparece como pendiente en media docena de lugares del proyecto. Queda
+escrito acá (anotado 10-ago-2026).
+
+**Qué se arregla exactamente.** El plan free de Render duerme el servicio a los
+~15 min sin tráfico. No es una molestia abstracta: son cuatro síntomas concretos
+que ya están documentados por separado en este repo.
+
+| Síntoma | Dónde está descrito |
+|---|---|
+| ~50 s en el primer request del día | acá abajo |
+| **419 al guardar** una ficha en el CMS, perdiendo lo escrito | §2.7 |
+| La foto arrastrada se evapora si el servicio duerme entre subir y guardar | §2.7 |
+| **Avisos programados** que nunca salen (no corre el scheduler) | "Advertencias de los planes gratuitos" |
+
+Y una quinta que no es un síntoma sino una feature que no se puede construir: el
+**push de "hay un reporte cerca"**, que necesita worker de colas.
+
+### Opción 0 — el parche gratis, para hoy mismo
+
+Un *keep-alive*: un servicio externo (cron-job.org, gratis) que pida
+`https://patagonia-austral-api.onrender.com/up` cada ~10 min. `/up` es la ruta de
+salud de Laravel, ya declarada en `bootstrap/app.php` y usada por Render como
+`healthCheckPath`, así que no hay nada que programar.
+
+Sirve, pero hay que decir sus tres límites o el parche se confunde con la
+solución:
+
+- **No habilita scheduler ni worker.** Sigue sin haber avisos programados ni push
+  de reportes. Solo evita el arranque en frío.
+- **Se come el plan free.** Render da **750 horas-instancia al mes** y un mes son
+  ~730 horas: mantenerlo despierto 24/7 consume casi todo el cupo. Con un solo
+  servicio alcanza; con dos, no.
+- Es ir contra el diseño del plan gratis, no un uso previsto.
+
+### Opción A — Render Starter, ~US$7/mes (**recomendada**)
+
+Es la recomendada por una razón poco épica pero decisiva para alguien que trabaja
+solo: **no migra nada**. Misma imagen, misma base en Neon, mismas variables, mismo
+dominio. Es un cambio de plan en un desplegable.
+
+1. Dashboard de Render → servicio `patagonia-austral-api` → *Settings* →
+   **Instance Type** → `Starter`.
+2. Alternativa por blueprint: cambiar `plan: free` → `plan: starter` en
+   `render.yaml`. **Ojo con la trampa ya conocida**: tocar `render.yaml` re-aplica
+   **todo** el blueprint, no solo esa línea (es lo que una vez activó
+   `FOTOS_DISK=r2` con las `R2_*` vacías). Si ya cargaste las variables de R2, no
+   pasa nada; si no, hacerlo por el dashboard y dejar el `render.yaml` para
+   después.
+3. **Recién ahí encender el scheduler**, y es gratis porque va en el mismo
+   contenedor (un *background worker* aparte en Render se cobra por separado).
+   El código ya está en `backend/docker/start.sh` desde el 10-ago-2026, detrás de
+   un interruptor apagado. Para encenderlo, una variable más en *Environment*:
+
+   | Variable | Valor |
+   |---|---|
+   | `SCHEDULER_EN_CONTENEDOR` | `true` |
+
+   Con eso corre `avisos:despachar` cada minuto (`routes/console.php`) y los
+   **avisos programados a futuro empiezan a despacharse solos** — un pendiente
+   que el proyecto arrastra desde el principio.
+
+   > **No lo enciendas en el plan free.** El contenedor duerme y el scheduler
+   > duerme con él; peor, al despertar despacharía **de golpe** todo lo vencido
+   > mientras dormía, y eso **manda push a teléfonos reales**. Por eso el
+   > interruptor: encenderlo va después de estar en Starter, y apagarlo son 30
+   > segundos en el dashboard, sin redesplegar ni tocar el repo.
+
+   Se confirma en los logs del deploy: tiene que aparecer
+   `==> Scheduler activado (avisos programados)`.
+
+### Opción B — VPS propio, ~US$5–6/mes
+
+Más barato por lo que da y con control total, pero cuesta un fin de semana y
+después hay que mantenerlo. **La base ya está construida**: `docker-compose.prod.yml`
+levanta db + app + **scheduler** + frontend + Caddy con SSL automático, y el paso
+a paso está en `docker/README-DESPLIEGUE.md`.
+
+Elegirla si: se quiere worker de colas de verdad, sacar la base de Neon, o el
+gasto de Render empieza a sumar con más servicios. **No** elegirla solo para
+ahorrar US$1: la diferencia real es quién administra el servidor.
+
+### Cómo se comprueba que quedó
+
+1. No tocar nada durante 30 min y luego abrir `/admin`: tiene que responder de
+   inmediato, no después de ~50 s.
+2. Publicar un **aviso programado** a 3 minutos en el futuro (solo con el
+   scheduler encendido, opción A paso 3 o el contenedor `scheduler` de la B): la
+   notificación tiene que llegar sola, sin abrir nada.
+3. Editar una ficha, dejarla abierta 20 min y guardar: **sin 419**.
+
+---
+
 ## 3) Prueba de fuego en producción
 
 1. Abre la PWA (URL de Netlify) → cargan los lugares desde la API.
