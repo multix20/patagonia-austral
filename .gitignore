@@ -16,3 +16,4 @@ __pycache__/
 # Archivos crudos del mapa de Tortel (terceros; se bajan a mano, ver scripts/tortel/README.md)
 scripts/tortel/crudos/
 scripts/tortel/informe.txt
+scripts/tortel/tortel_places.json

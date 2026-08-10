@@ -75,6 +75,33 @@ comuna con holgura** (lon −74,5…−72,3 / lat −48,6…−47,0). Un punto f
 no es un lugar lejano: es un dato malo o un `lon/lat` invertido, y sale listado
 en el informe.
 
+## Paso 2 — llevarlo a `places` (solo los POIs puntuales)
+
+```bash
+python3 scripts/tortel/2_a_places.py
+```
+
+Escribe `tortel_places.json` con la misma forma que `places.json`. Después:
+
+```bash
+cp scripts/tortel/tortel_places.json backend/database/seeders/data/
+cd backend && php artisan db:seed --class=Database\\Seeders\\TortelPlaceSeeder
+```
+
+**Todo entra en borrador** (`publicado: false`), con ids desde **4000** (libres:
+1–192 y 3001–3083 son el seed a mano, 2000–2181 el lote SERNATUR). El seeder no
+se registra en `DatabaseSeeder`, así que **no corre en el deploy**, y deduplica
+por nombre + localidad contra lo que ya esté cargado a mano — Caleta Tortel tiene
+fichas propias desde el principio. Se revisa y publica desde `/admin` (filtro:
+localidad Caleta Tortel + no publicados).
+
+El JSON generado va gitignoreado, igual que el de SERNATUR.
+
+**El mapeo de categorías vive arriba de `2_a_places.py` y es explícito.** Una capa
+que no esté en la tabla **detiene el script**: es preferible revisar tres nombres
+a descubrir después que media docena de fichas quedaron mal categorizadas entre
+las ~100. Cuando aparezcan las capas que todavía no vimos, se agregan ahí.
+
 ## Lo que este script NO hace
 
 No toca la base de datos ni decide categorías del proyecto. El mapeo a la tabla
