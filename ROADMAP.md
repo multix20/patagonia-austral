@@ -81,14 +81,13 @@ SERNATUR funcional · flujo PR + CI en verde · deploy **gratis** (Netlify + Ren
 + Neon).
 
 **Gaps honestos (dónde duele de verdad):**
-- **Sin infra always-on.** Corregido el 10-ago-2026: este punto decía que el
-  crowdsourcing estaba **bloqueado**, y ya no lo está — el PMV se construyó
-  esquivando worker y scheduler, y anda en free. Lo que el always-on sigue
-  bloqueando es concreto y acotado: el **push de "hay un reporte cerca"**
-  (worker), los **avisos programados a futuro** (scheduler), el **419 al guardar**
-  en el CMS y el **arranque en frío de ~50 s**. Sigue siendo el cuello de botella
-  #1 para lo que viene, pero no para lo que ya existe. Paso a paso:
-  **`DEPLOY.md` §2.9**.
+- ~~**Sin infra always-on**~~ — **RESUELTO el 10-ago-2026.** Era el cuello de
+  botella #1 de este documento y dejó de serlo: el backend pasó a **Render
+  Starter** y el **scheduler corre dentro del contenedor**. Se cerraron el
+  arranque en frío de ~50 s, el 419 al guardar en el CMS y los avisos programados
+  que nunca salían. Queda como trabajo —no como bloqueo— el **push de "hay un
+  reporte cerca"**, que necesita una **cola** (`queue:work`) y ahora se puede
+  agregar igual que el scheduler.
 - **Datos**: solo alojamiento; **comida pendiente**; localidades nuevas (Balmaceda,
   Raúl Marín) y varias del norte aún **sin servicios**. Y el número que manda:
   de las **156 fichas publicadas, 75 son `preliminar`** (48%, sin teléfono).
@@ -119,8 +118,9 @@ En orden de importancia estratégica:
    del viajero "en ruta ahora".
 2. **Encender la capa comercial** — primeras fichas reales de pago (negocios del
    fundador + locales), no solo el directorio gratis.
-3. **Lanzar el PMV de crowdsourcing** (bencina + estado de camino) — requiere la
-   Fase 4 (infra always-on).
+3. ~~**Lanzar el PMV de crowdsourcing**~~ ✅ **hecho** (27-jul, ampliado el
+   6-ago) y la infra que se creía necesaria llegó después (10-ago). Lo que sigue
+   no es lanzarlo sino **que se use**: sembrar reportes y medir la contribución.
 4. **Cobertura _útil_, no exhaustiva** — top 10 dormir + top 10 comer + servicios
    clave (bencina/salud/barcazas) por localidad ≈ **700–1.000 servicios curados**.
    **NO** cargar los ~4.000 de SERNATUR.
@@ -241,21 +241,22 @@ Prioridad: 🟡 Media — es lo que convierte tráfico en ingreso.
 
 ## 10. Plataforma de datos / Infraestructura (Fase 4)
 
-**El gran desbloqueador.** Sacar el backend del plan **free de Render** a un host
-**always-on**. **Paso a paso concreto (10-ago-2026): `DEPLOY.md` §2.9**, con las
-tres opciones y cómo se comprueba cada una.
+**Era el gran desbloqueador — y se desbloqueó el 10-ago-2026.** El backend salió
+del plan free de Render. Paso a paso y opciones comparadas: **`DEPLOY.md` §2.9**.
 
-- [ ] **Activarlo.** Recomendación revisada el 10-ago: **Render Starter (US$7)**
-      antes que el VPS, no porque sea mejor sino porque **no migra nada** (misma
-      imagen, misma base, mismo dominio: es un desplegable). El VPS ~5–6 USD/mes
-      con el `docker-compose.prod.yml` ya existente (Caddy + SSL → backend +
-      Postgres + worker + scheduler) sigue siendo la opción de más valor por el
-      dinero, y cuesta un fin de semana más administrarlo. Se puede migrar
-      después sin perder nada.
-- [ ] Habilita **avisos programados** (scheduler — con Render Starter es agregar
-      `php artisan schedule:work &` a `docker/start.sh`) y el **push de "hay un
-      reporte cerca"** (worker de colas). Ojo: el crowdsourcing **no** está
-      esperando esto para existir, ya está desplegado; lo que espera es el aviso.
+- [x] ~~**Activarlo**~~ — **HECHO: Render Starter (US$7/mes)**. Se eligió sobre el
+      VPS porque **no migra nada** (misma imagen, misma base, mismo dominio: un
+      desplegable). El VPS ~5–6 USD/mes con el `docker-compose.prod.yml` ya
+      existente sigue siendo más valor por el dinero y la puerta queda abierta,
+      pero cuesta un fin de semana y después hay que administrarlo.
+- [x] ~~**Avisos programados**~~ — **HECHO**: el scheduler corre dentro del
+      contenedor (`SCHEDULER_EN_CONTENEDOR=true`), no como worker aparte, porque
+      Render cobra cada worker por separado y el trabajo es un comando por minuto.
+- [ ] **Push de "hay un reporte cerca"** — necesita una **cola** (`queue:work`),
+      que es una pieza distinta del scheduler. Ya no está bloqueado: se agrega
+      con el mismo patrón, otra línea en `start.sh` tras su propio interruptor.
+      Conviene construirlo junto con los **avisos segmentados por zona**: es el
+      mismo rail.
 - [x] ~~Imágenes de fichas en **S3-compatible**~~ — **HECHO Y OPERATIVO**
       (código el 29-jul; bucket conectado y verificado en producción el
       10-ago-2026). Cloudflare R2 con egress gratis, conversión a WebP y
@@ -268,8 +269,11 @@ tres opciones y cómo se comprueba cada una.
 **NO hacer:** reescribir el stack (React/Laravel/Filament es el adecuado); ni
 adelantar infra que aún no se usa.
 
-Prioridad: 🔴 **Alta en cuanto se encienda el crowdsourcing en serio.** Es el
-cuello de botella #1 de la Fase 3 "real".
+Prioridad: ✅ **cumplida en lo esencial (10-ago-2026).** Dejó de ser el cuello de
+botella de la Fase 3. Lo que queda de esta sección —cola para el push de
+reportes, Sentry, respaldos— es trabajo normal, no bloqueo. **El cuello de
+botella pasa a ser el DATO** (75 fichas `preliminar`) **y la ANALÍTICA** (sigue
+en cero).
 
 ---
 
@@ -300,9 +304,9 @@ de invertir en infra**.
 - [x] ~~**PMV de crowdsourcing**~~ — **HECHO** (27-jul, ampliado el 6-ago):
       reportar, mapa, votos, caducidad al leer, cola offline en IndexedDB y
       moderación en el CMS. Corre en Render free.
-- [ ] **Fase 4**: backend always-on + scheduler + worker (§10) — paso a paso en
-      **`DEPLOY.md` §2.9**. Desbloquea el push de "reporte cerca" y los avisos
-      programados.
+- [x] ~~**Fase 4**: backend always-on + scheduler~~ — **HECHO el 10-ago-2026**
+      (Render Starter; `DEPLOY.md` §2.9). Falta solo la **cola** (`queue:work`)
+      para el push de "reporte cerca", que ya no está bloqueada.
 - [x] ~~**Bucket R2**~~ — **HECHO el 10-ago-2026**, verificado en producción.
       Las fotos de las fichas ya se pueden cargar desde el CMS.
 - [ ] Medir **tasa de contribución** → decidir si se escala. **Sigue siendo el
@@ -314,8 +318,14 @@ de invertir en infra**.
 
 **🔴 Alta — mueven la aguja:**
 - Fichas reales del fundador + capa comercial mínima (**primer ingreso**).
-- Infra always-on / Fase 4 (**desbloquea todo lo de tiempo real**).
-- Analítica mínima (**dejar de decidir a ciegas**).
+- ~~Infra always-on / Fase 4~~ ✅ **hecha el 10-ago-2026**. Con ella salieron de
+  la lista el arranque en frío, el 419 del CMS y los avisos programados.
+- Analítica mínima (**dejar de decidir a ciegas**) — **ahora es la #1**: quedó
+  sola como el "no sabemos" del proyecto, y la difusión la necesita antes del
+  primer volante.
+- **Dato real en las 75 fichas `preliminar`** (campaña de correos). Sube acá
+  porque, resuelta la infraestructura, es lo único que separa el directorio de
+  estar listo para que lo vea gente.
 
 **🟡 Media:**
 - Comida curada + validadores del ETL.
@@ -339,7 +349,8 @@ de invertir en infra**.
   semestral — **no** 4.000 fichas imposibles de mantener siendo uno solo.
 - **Fundador en solitario → dispersión.** _Mitigante:_ este documento existe para
   **decir que no** a lo que no mueve la aguja (empezando por los 4.000 servicios).
-- **Infra free se cae/duerme.** _Mitigante:_ Fase 4 antes de prometer tiempo real.
+- ~~**Infra free se cae/duerme.**~~ **Riesgo cerrado el 10-ago-2026**: el backend
+  está en plan pago y no se duerme. Ya se puede prometer tiempo real.
 - **Dependencia de scraping de SERNATUR** (su maquetación puede cambiar). _Mitigante:_
   extracción en capas + cache HTML + validadores.
 

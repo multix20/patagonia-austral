@@ -460,6 +460,10 @@ con el punto → al tocarlo, la PWA aplica la versión y cierra la notificación
 
 ## 2.7) "This page has expired" (error 419) al guardar en el CMS
 
+> **Muy improbable desde el 10-ago-2026**, porque su causa principal desapareció:
+> el backend dejó de dormirse (§2.9). Lo de abajo se conserva porque la sesión
+> igual caduca a las 8 h y porque explica la trampa de la foto en `livewire-tmp`.
+
 Pasa al apretar **Save changes**, típicamente después de tener la ficha abierta
 un rato. Es **expiración de sesión** (Laravel responde 419 cuando el token CSRF
 del formulario ya no calza con la sesión), no un problema de la foto ni de R2.
@@ -524,8 +528,22 @@ siempre lo fue.
 
 ## 2.9) Backend *always-on* — que el servicio no se duerma
 
+> ## ✅ HECHO EL 10-AGO-2026
+> El backend corre en **Render Starter (US$7/mes)** con el **scheduler dentro del
+> contenedor** (`SCHEDULER_EN_CONTENEDOR=true`). Verificado en producción:
+> `php artisan schedule:work` en la lista de procesos, `/admin` respondiendo en
+> **500 ms** tras inactividad (antes ~50 s) y la tanda de avisos pendientes
+> despachada sola. Lo de abajo queda como referencia para rehacerlo o para
+> evaluar la migración a VPS.
+>
+> **La trampa de secuencia, que costó una vuelta:** se cargó la variable en
+> Render **antes** de que el `start.sh` con el bloque del scheduler estuviera en
+> `main`. Render despliega desde `main`, así que la variable estaba y no pasaba
+> nada — sin error de ninguna clase. **Primero mergear el código, después
+> encender la variable.**
+
 Hasta acá esta guía tenía el paso a paso de todo **menos de esto**, que sin
-embargo aparece como pendiente en media docena de lugares del proyecto. Queda
+embargo aparecía como pendiente en media docena de lugares del proyecto. Queda
 escrito acá (anotado 10-ago-2026).
 
 **Qué se arregla exactamente.** El plan free de Render duerme el servicio a los
@@ -629,9 +647,12 @@ ahorrar US$1: la diferencia real es quién administra el servidor.
 
 ## Advertencias de los planes gratuitos
 
-- **Render (backend)**: se duerme tras 15 min sin tráfico; el primer request lo
-  despierta en ~1 minuto. **No corre el scheduler**: los avisos programados a
-  futuro no se despachan solos (los inmediatos sí, van por el observer).
+- ~~**Render (backend)**~~ — **ya no aplica desde el 10-ago-2026**: el backend
+  está en **Starter (US$7/mes)**, no se duerme, y el **scheduler corre** dentro
+  del contenedor, así que los avisos programados a futuro sí se despachan solos
+  (ver §2.9). *Lo que decía antes, por si alguna vez se vuelve al plan free: se
+  dormía tras 15 min sin tráfico, el primer request tardaba ~1 minuto y los
+  avisos programados no salían nunca.*
 - **Neon (base)**: 0.5 GB de almacenamiento y *autosuspend* del compute tras
   inactividad (~5 min); despierta solo en el primer query (sub-segundo a pocos
   segundos). Sin expiración a 30 días.

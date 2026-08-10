@@ -62,7 +62,29 @@ está por confirmar, y esa primera impresión se gasta una sola vez.
 > **Nota sobre lo que esta sesión NO pudo comprobar:** el entorno de trabajo tiene
 > bloqueada la salida a `rutaaustral.cl` y a `patagonia-austral-api.onrender.com`,
 > así que **el estado en vivo de producción no está verificado acá**. Todo lo
-> técnico de abajo se verificó contra el repo y el build local.
+> técnico de abajo se verificó contra el repo y el build local. Lo de producción
+> (fotos, always-on, scheduler) lo comprobó el fundador desde su lado ese mismo
+> día, con las salidas pegadas en la sesión.
+
+### ⚡ Cierre del día: la infraestructura quedó sin pendientes (10-ago-2026)
+
+Los **dos pendientes de infraestructura que el proyecto arrastraba se activaron
+el mismo día**, los dos en el dashboard y sin deuda de código detrás:
+
+| | Estado | Qué cambia |
+|---|---|---|
+| **Bucket Cloudflare R2** | ✅ operativo | las fichas ya admiten fotos (probado CMS → R2 → API → PWA) |
+| **Backend *always-on*** | ✅ Render Starter US$7 | se acabó el arranque en frío de ~50 s y el 419 al guardar |
+| **Scheduler** | ✅ encendido | los avisos programados a futuro por fin se despachan solos |
+
+**Con eso el cuello de botella del proyecto deja de ser técnico.** Lo que queda
+antes de mostrarle la app a gente es **dato** (75 fichas `preliminar`) y
+**medición** (analítica en cero). Ninguno de los dos se resuelve con código.
+
+**Una regla que salió de activarlo, y que vale para cualquier variable futura:**
+una variable de entorno que enciende código nuevo **solo sirve después de que ese
+código está en `main`** — Render despliega desde ahí. Al revés no da error: la
+variable queda puesta y no ocurre nada. Primero el merge, después el interruptor.
 
 ---
 
@@ -85,9 +107,10 @@ desbloquean, no por el orden en que conviene hacerlos. El orden de ejecución es
    entregabilidad con mail-tester antes de mandar la campaña.
 2. ~~**Nombre y WhatsApp en la landing**~~ (punto 5) — ✅ hecho el 4-ago, y el
    **copy quedó corregido el 5-ago**. La landing ya no tiene deuda.
-3. **Infraestructura, toda junta y antes de la pasada de contenido**: ~~R2
-   (punto 2)~~ ✅ **hecho el 10-ago**, ***always-on*** (punto 4) y Sentry
-   (punto 9).
+3. ~~**Infraestructura, toda junta y antes de la pasada de contenido**~~ — ✅
+   **R2 (punto 2) y *always-on* (punto 4) hechos el 10-ago-2026**. Queda solo
+   **Sentry** (punto 9), que no bloquea nada: es para enterarse de los errores
+   cuando haya usuarios de verdad.
 4. **Curar el contenido** (las 156 fichas publicadas, de las cuales **75 son
    `preliminar`**; acá caen los puntos 7 y 8).
 5. **Campaña de correos** (punto 6). Antes de mandarla, medir la entregabilidad
@@ -205,48 +228,55 @@ después de escribirlo todo.
   Paso a paso: **`DEPLOY.md` §2.6**. Sin esto el aviso de versión funciona con la
   app abierta, pero **no** con la app cerrada — que era el punto.
 
-### 4. Backend *always-on* — ~US$7/mes (Render pago) o ~US$6 (VPS)
-- [ ] Decidir Render pago vs. VPS y activarlo.
-- [ ] (Opcional, gratis y para hoy) Keep-alive a `/up` cada 10 min mientras tanto.
+### ✅ 4. Backend *always-on* — **HECHO (10-ago-2026)**
+- [x] **Render Starter (US$7/mes)** activado. Se eligió por sobre el VPS no por
+      ser mejor técnicamente —el VPS da más por el mismo dinero— sino porque **no
+      migra nada**: misma imagen, misma base en Neon, mismas variables, mismo
+      dominio; es un desplegable en el dashboard. La base autoalojada
+      (`docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`) sigue ahí para
+      migrar más adelante sin perder nada.
+- [x] **Scheduler encendido** con `SCHEDULER_EN_CONTENEDOR=true`, dentro del
+      mismo contenedor (un *background worker* aparte en Render se cobra por
+      separado). Los **avisos programados a futuro ya se despachan solos** —
+      pendiente arrastrado desde el principio del proyecto.
+- [x] **Verificado en producción**, las tres cosas:
+      - `php artisan schedule:work` aparece en la lista de procesos del contenedor.
+      - `/admin` respondió en **500 ms** tras un rato de inactividad (con el plan
+        free eran ~50 s). **Se acabó el arranque en frío.**
+      - La tanda de avisos pendientes se despachó sola y **los avisos eran los
+        esperados** (confirmado por el fundador).
+- [x] Keep-alive externo: **no hace falta** y se descarta. Era el parche para el
+      plan free.
 
-  **Paso a paso nuevo: `DEPLOY.md` §2.9** (escrito el 10-ago-2026). Hasta ahora
-  este punto era **la única acción manual del proyecto sin guía**: aparecía como
-  pendiente en seis lugares distintos y en ninguno decía cómo se hace. Ahí quedan
-  las tres opciones (keep-alive gratis / Render Starter / VPS), los pasos de cada
-  una y cómo se comprueba que quedó.
+  Paso a paso (y las tres opciones comparadas): **`DEPLOY.md` §2.9**.
 
-  **Recomendación (10-ago-2026): Render Starter, US$7.** No por ser la mejor
-  técnicamente —el VPS da más por el mismo dinero— sino porque **no migra nada**:
-  misma imagen, misma base en Neon, mismas variables, mismo dominio. Es un
-  desplegable en el dashboard. El VPS cuesta un fin de semana y después hay que
-  administrarlo, y el proyecto lo lleva una persona sola. La base autoalojada ya
-  existe (`docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`) y no se va a
-  ninguna parte: se puede migrar más adelante sin perder nada.
+  **La trampa de secuencia que costó una vuelta, para no repetirla:** se cargó
+  `SCHEDULER_EN_CONTENEDOR=true` en Render **antes** de que el `start.sh` con el
+  bloque del scheduler estuviera en `main`. Render despliega desde `main`, así que
+  la variable estaba puesta y **no pasaba nada**: el contenedor corría el arranque
+  viejo, que ni la miraba. No da error de ninguna clase — simplemente no ocurre.
+  **Regla: primero mergear el código, después encender la variable.**
 
-  **Detalle que conviene no pasar por alto:** con el plan pagado, encender el
-  scheduler es **gratis y son dos palabras** — agregar `php artisan schedule:work &`
-  a `backend/docker/start.sh` (ver §2.9, opción A paso 3). Ahí los **avisos
-  programados a futuro empiezan a despacharse solos**, que es un pendiente
-  arrastrado desde el principio del proyecto. En el plan free esa línea no sirve
-  de nada, porque el contenedor duerme; por eso no está puesta.
+  **Lo que esto cierra:**
+  - **419 al guardar** en el CMS y fotos que se evaporaban entre subir y guardar
+    (`DEPLOY.md` §2.7): las dos eran consecuencia de que el servicio durmiera.
+    Ahora se puede curar contenido sin miedo a perder lo escrito.
+  - **Arranque en frío de ~50 s** en el primer clic — el que se iba a comer la
+    respuesta de una encargada de turismo en la campaña de correos.
+  - **Avisos programados**, que nunca habían funcionado en producción.
 
-  **Recomendación de momento: hacerlo ANTES de la campaña, no después.** El plan
-  de inversión lo pone en segundo lugar pensando en el crowdsourcing, pero vas a
-  mandar 26 correos con un link: si el primer clic de una encargada de turismo se
-  come **50 s de arranque en frío**, perdiste esa respuesta y era el único tiro.
+  **Lo que habilita para construir después:** el **push de "hay un reporte
+  cerca"** necesita una **cola** (`queue:work`), no el scheduler. Ahora es
+  posible: se agrega igual que el scheduler —otra línea en `start.sh` detrás de
+  su propio interruptor— porque el contenedor ya no duerme. Cruza con los avisos
+  segmentados por zona: conviene construir ese rail una sola vez para los dos.
 
-  **Y antes de curar** (4-ago-2026): con el plan gratis el servicio se duerme a
-  los 15 min y la sesión del CMS se cae con un **419 al guardar**, justo cuando
-  ya escribiste la ficha entera. Peor todavía con fotos: lo que arrastras queda
-  en una carpeta temporal del contenedor y **se evapora** si el servicio se
-  duerme entre la subida y el guardado (`DEPLOY.md` §2.7).
-
-  > **Matiz que ya se anotó el 10-ago y vale repetir acá para no sobredimensionar
-  > el problema:** el arranque en frío **no** deja la app en blanco al viajero. La
-  > PWA trae la semilla empaquetada y `client.js` cae en ella cuando la API no
-  > responde, así que quien llega por un enlace ve las 156 fichas igual. Lo que sí
-  > se cae son **los reportes de ruta**, el CMS y la campaña. Esto no es motivo
-  > para no hacerlo — es para saber qué se puede prometer mientras tanto.
+  > **Matiz que conviene conservar:** el arranque en frío nunca dejó la app en
+  > blanco al viajero. La PWA trae la semilla empaquetada y `client.js` cae en
+  > ella cuando la API no responde. Lo que se caía eran los **reportes de ruta**,
+  > el CMS y la campaña. Queda anotado porque explica por qué se podía difundir
+  > "la guía" pero no "el estado de la ruta en vivo" — y ahora ya se puede
+  > prometer lo segundo.
 
 ### 5. Landing `/proyecto` — depende del punto 1
 Los **tres marcadores en rojo** quedaron cerrados:
@@ -412,15 +442,18 @@ probar en WhatsApp basta mandarse el enlace con un parámetro cualquiera
    10-ago-2026 y las fichas admiten fotos. Lo que falta es cargarlas — un
    directorio donde ninguna ficha tiene foto se comparte mal: en redes, la foto
    *es* el anuncio. Va en la misma pasada que las fichas `preliminar`.
-4. **Always-on — con un matiz honesto que corrige el susto anterior.** Este
-   documento venía diciendo que el arranque en frío de ~50 s se comería el primer
-   clic. Para la **campaña de correos** es cierto. Para la **app** no tanto: la
-   PWA trae la semilla empaquetada (`data/places.js`) y `client.js` cae en ella
-   cuando la API no responde, así que quien llega por un anuncio **ve las 156
-   fichas igual**, con backend dormido. Lo que sí se cae con el arranque en frío
-   son **los reportes de ruta** (tardan ~50 s en aparecer) y el primer envío del
-   día. Traducción para la publicidad: se puede anunciar **la guía** hoy; **no**
-   se puede anunciar todavía "el estado de la ruta en vivo".
+4. ~~**Always-on**~~ — ✅ **hecho el 10-ago-2026**, así que este punto sale de la
+   lista de bloqueos de la difusión: ya se puede anunciar también **el estado de
+   la ruta en vivo**, no solo la guía. Se conserva el razonamiento porque explica
+   qué se podía prometer antes y por qué:
+   > Este documento venía diciendo que el arranque en frío de ~50 s se comería el
+   > primer clic. Para la **campaña de correos** era cierto. Para la **app** no
+   > tanto: la PWA trae la semilla empaquetada (`data/places.js`) y `client.js`
+   > cae en ella cuando la API no responde, así que quien llegaba por un anuncio
+   > **veía las 156 fichas igual**, con backend dormido. Lo que sí se caía eran
+   > **los reportes de ruta** (tardaban ~50 s en aparecer) y el primer envío del
+   > día. Traducción de entonces: se podía anunciar **la guía**, pero no "el
+   > estado de la ruta en vivo".
 
 ### Canales, del que más rinde al que menos (todos gratis)
 
@@ -494,22 +527,27 @@ lugares del documento y no se veía como una sola lista de trabajo.
       punto 1). Conviene construirla una sola vez, sirviendo a los dos: cuánta
       gente entra e instala (difusión) y cuántos reportan y votan (crowdsourcing).
 
-### B. Bloqueado por infraestructura (espera el always-on, punto 4 de arriba)
+### ✅ B. Lo que estaba bloqueado por infraestructura — DESBLOQUEADO (10-ago-2026)
 
-- [ ] **Push "hay un reporte cerca".** Necesita el **worker de colas**. Es lo que
-      convierte los reportes de "algo que veo si abro la app" en "algo que me
-      entero". Cruza con los **avisos segmentados por zona** (diseño ya cerrado en
-      el backlog): conviene construir ese rail una sola vez y que lo usen los dos.
-- [ ] **Arranque en frío de ~50 s.** No es incomodidad: el reporte se hace
-      detenido en la ruta con una barra de señal, y con 50 s de espera no se hace.
-      Parche mientras tanto: keep-alive con ping a `/up` cada ~10 min
-      (cron-job.org). Solución real: always-on.
-- [ ] **Foto en el reporte** (un derrumbe se entiende en una foto). **Se
-      desbloqueó el 10-ago-2026** con el bucket R2 operativo: ya no espera
-      infraestructura, es trabajo de código y reusa `ImagenServicio`/`GuardarFoto`,
-      que ya convierten a WebP en la petición. Ojo: esta sección lo tenía en el
-      grupo B ("bloqueado por infraestructura") y **pasa al grupo C**, se puede
-      construir cuando toque.
+**Este grupo se vació el 10-ago**: el bucket R2 y el backend *always-on* se
+activaron el mismo día (puntos 2 y 4 de "Lo que depende de TI"). Nada de acá
+espera ya a la infraestructura; lo que queda es trabajo de código, y por eso
+todo pasa al grupo C.
+
+- [x] ~~**Arranque en frío de ~50 s.**~~ **Resuelto.** Era lo más grave de este
+      grupo y no por comodidad: el reporte se hace detenido en la ruta con una
+      barra de señal, y con 50 s de espera **no se hace**. El keep-alive que
+      figuraba como parche ya no hace falta.
+- [ ] **Push "hay un reporte cerca"** → **pasa al grupo C**. Sigue necesitando una
+      **cola** (`queue:work`), que es una pieza distinta del scheduler ya
+      encendido, pero ya no es un bloqueo: se agrega igual que el scheduler, otra
+      línea en `backend/docker/start.sh` tras su propio interruptor, porque el
+      contenedor no duerme. Es lo que convierte los reportes de "algo que veo si
+      abro la app" en "algo que me entero". Cruza con los **avisos segmentados
+      por zona**: conviene construir ese rail una sola vez para los dos.
+- [ ] **Foto en el reporte** (un derrumbe se entiende en una foto) → **pasa al
+      grupo C**. Desbloqueado por R2; reusa `ImagenServicio`/`GuardarFoto`, que
+      ya convierten a WebP en la petición.
 
 ### C. No bloqueado — se puede construir cuando toque
 
