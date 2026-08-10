@@ -89,10 +89,11 @@ Ver `backend/SETUP.md` para el detalle de configuración.
   Pendiente: dato real en las 75 fichas `preliminar`, analítica y planes de pago.
 - **Fase 4 — Publicación:** producción, dominio propio, PWA instalable, difusión.
   🔄 **Parcial.** Hecho: **dominio propio `rutaaustral.cl`** con SSL y correo,
-  PWA instalable con iconos por plataforma y aviso de versión nueva, y la vista
-  previa al compartir el enlace. Pendiente: **bucket de imágenes (Cloudflare R2)**
-  y **backend *always-on*** — los dos son pasos de dashboard, con el paso a paso
-  en `DEPLOY.md` §2.5 y §2.9. Después: respaldos, monitoreo y difusión.
+  PWA instalable con iconos por plataforma y aviso de versión nueva, la vista
+  previa al compartir el enlace, y el **almacenamiento de imágenes en Cloudflare
+  R2** (operativo desde el 10-ago-2026: las fichas ya admiten fotos).
+  Pendiente: **backend *always-on*** para que el servicio no se duerma
+  (`DEPLOY.md` §2.9). Después: respaldos, monitoreo y difusión.
 
 ## Conexión con backend
 

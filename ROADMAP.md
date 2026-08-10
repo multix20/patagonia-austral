@@ -96,8 +96,11 @@ SERNATUR funcional · flujo PR + CI en verde · deploy **gratis** (Netlify + Ren
   Subió de prioridad el 10-ago: es también lo que separa "difundir" de "difundir
   a ciegas" (ver `ESTADO_Y_PENDIENTES.md` → "Publicitar la app").
 - **Monetización: 0** — aún no cobramos nada.
-- **Fotos: 0 fichas con foto**, y **0 destacadas**. El código está listo desde el
-  29-jul; falta crear el bucket R2 (20 min de dashboard, `DEPLOY.md` §2.5).
+- **Fotos: el almacenamiento ya está operativo** (bucket R2 conectado el
+  10-ago-2026, probado de punta a punta), pero el contenido sigue en **0 fichas
+  con foto** y **0 destacadas**. Deja de ser un gap de infraestructura y pasa a
+  ser trabajo de contenido: cargarlas en la misma pasada en que se corrijan las
+  75 fichas `preliminar`.
 - **Frontend**: `App.jsx` **pasó de 607 a 1.322 líneas** (medido el 10-ago-2026)
   con lógica y UI mezcladas. El veredicto de §4 —incremental, que lo empuje una
   feature— sigue en pie, pero el número que lo sostenía se duplicó: conviene
@@ -253,9 +256,12 @@ tres opciones y cómo se comprueba cada una.
       `php artisan schedule:work &` a `docker/start.sh`) y el **push de "hay un
       reporte cerca"** (worker de colas). Ojo: el crowdsourcing **no** está
       esperando esto para existir, ya está desplegado; lo que espera es el aviso.
-- [x] ~~Imágenes de fichas en **S3-compatible**~~ — **código HECHO** (29-jul,
-      Cloudflare R2 con egress gratis, conversión a WebP, `FileUpload` en el CMS).
-      Falta solo el paso manual: crear el bucket (`DEPLOY.md` §2.5).
+- [x] ~~Imágenes de fichas en **S3-compatible**~~ — **HECHO Y OPERATIVO**
+      (código el 29-jul; bucket conectado y verificado en producción el
+      10-ago-2026). Cloudflare R2 con egress gratis, conversión a WebP y
+      `FileUpload` en el CMS. Queda para más adelante sacar las fotos del
+      `r2.dev` con rate limit a un subdominio propio: cambiar `R2_URL`, sin
+      migrar datos.
 - [ ] **Sentry** (free) para errores antes de tener usuarios masivos.
 - [ ] **Respaldos** del Postgres (dump + retención).
 
@@ -297,8 +303,8 @@ de invertir en infra**.
 - [ ] **Fase 4**: backend always-on + scheduler + worker (§10) — paso a paso en
       **`DEPLOY.md` §2.9**. Desbloquea el push de "reporte cerca" y los avisos
       programados.
-- [ ] **Bucket R2** (`DEPLOY.md` §2.5): el código de fotos está listo desde el
-      29-jul; falta el paso manual de dashboard.
+- [x] ~~**Bucket R2**~~ — **HECHO el 10-ago-2026**, verificado en producción.
+      Las fotos de las fichas ya se pueden cargar desde el CMS.
 - [ ] Medir **tasa de contribución** → decidir si se escala. **Sigue siendo el
       punto que decide todo**: hoy no hay ni un número de uso real.
 

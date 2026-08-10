@@ -140,8 +140,9 @@ localidades y 231 fichas** (Raúl Marín Balmaceda y Balmaceda se sumaron el
 22-jul), de las cuales **156 están publicadas y 75 de esas son `preliminar`**.
 Detalle en `ESTADO_Y_PENDIENTES.md`.
 
-**Los dos pendientes de infraestructura, ambos de dashboard y sin código detrás**
-(al 10-ago-2026): **bucket Cloudflare R2** para las fotos (`DEPLOY.md` §2.5) y
-**backend *always-on*** para que el servicio no se duerma (`DEPLOY.md` §2.9).
+**Pendiente de infraestructura — queda UNO** (al 10-ago-2026): **backend
+*always-on*** para que el servicio no se duerma (`DEPLOY.md` §2.9). El **bucket
+Cloudflare R2** ya está **operativo** desde el 10-ago: se subió una foto de punta
+a punta (CMS → R2 → API → PWA). Las fotos de las fichas ya se pueden cargar.
 
 Para trabajo de roadmap, usar el agente `roadmap` (`.claude/agents/roadmap.md`).
