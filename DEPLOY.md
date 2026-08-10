@@ -573,16 +573,27 @@ dominio. Es un cambio de plan en un desplegable.
    `FOTOS_DISK=r2` con las `R2_*` vacías). Si ya cargaste las variables de R2, no
    pasa nada; si no, hacerlo por el dashboard y dejar el `render.yaml` para
    después.
-3. **Recién ahí conviene encender el scheduler**, y es gratis porque va en el
-   mismo contenedor: agregar a `backend/docker/start.sh`, antes del `exec` final:
+3. **Recién ahí encender el scheduler**, y es gratis porque va en el mismo
+   contenedor (un *background worker* aparte en Render se cobra por separado).
+   El código ya está en `backend/docker/start.sh` desde el 10-ago-2026, detrás de
+   un interruptor apagado. Para encenderlo, una variable más en *Environment*:
 
-   ```sh
-   php artisan schedule:work &
-   ```
+   | Variable | Valor |
+   |---|---|
+   | `SCHEDULER_EN_CONTENEDOR` | `true` |
 
    Con eso corre `avisos:despachar` cada minuto (`routes/console.php`) y los
-   **avisos programados a futuro empiezan a despacharse solos**. En el plan free
-   esta línea no sirve de nada —el contenedor duerme—, por eso no está puesta.
+   **avisos programados a futuro empiezan a despacharse solos** — un pendiente
+   que el proyecto arrastra desde el principio.
+
+   > **No lo enciendas en el plan free.** El contenedor duerme y el scheduler
+   > duerme con él; peor, al despertar despacharía **de golpe** todo lo vencido
+   > mientras dormía, y eso **manda push a teléfonos reales**. Por eso el
+   > interruptor: encenderlo va después de estar en Starter, y apagarlo son 30
+   > segundos en el dashboard, sin redesplegar ni tocar el repo.
+
+   Se confirma en los logs del deploy: tiene que aparecer
+   `==> Scheduler activado (avisos programados)`.
 
 ### Opción B — VPS propio, ~US$5–6/mes
 
