@@ -12,3 +12,7 @@ graphify-out/
 
 # Bytecode de Python (lo deja generar-og.py al importar generar-iconos.py)
 __pycache__/
+
+# Archivos crudos del mapa de Tortel (terceros; se bajan a mano, ver scripts/tortel/README.md)
+scripts/tortel/crudos/
+scripts/tortel/informe.txt
