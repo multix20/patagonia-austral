@@ -9,3 +9,6 @@ dist/
 
 # Grafo de conocimiento de graphify (artefacto local; se regenera con /graphify .)
 graphify-out/
+
+# Bytecode de Python (lo deja generar-og.py al importar generar-iconos.py)
+__pycache__/

@@ -22,7 +22,51 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
-## Lo que depende de TI — acciones manuales (al 5-ago-2026)
+## Dónde quedamos — para retomar (10-ago-2026)
+
+**Lo último que se hizo** fue el **6-ago-2026** (PR #66, mergeado a `main` y
+desplegado): el bloque de crowdsourcing quedó cerrado en su parte de vista —
+filtro de reportes por tramo, agrupación de pines, tipo `faena` para la temporada
+de obras— **más las tres correcciones que salieron de probarlo en producción** (el
+chip que contaba reportes que el mapa no mostraba, el reporte que se podía crear
+fuera de la Austral, y el pin que tapaba el punto del pueblo). Detalle completo en
+"Crowdsourcing", más abajo. **Desde entonces no se tocó el repo**: `main` y esta
+rama están a la par, sin cambios sueltos, y la última suite corrida quedó en
+**31/31**.
+
+**Dónde está parado el producto, en números verificables** (contados el
+10-ago-2026 sobre `backend/database/seeders/data/places.json`):
+
+| | |
+|---|---|
+| Localidades | **26**, Puerto Montt → Villa O'Higgins |
+| Fichas en el seed | **231** |
+| Fichas publicadas | **156** (26 localidades × 6 categorías, una por cupo) |
+| De esas, `preliminar: true` | **75** — el **48%** de lo publicado, sin teléfono |
+| Fichas destacadas | **0** |
+| Fichas con foto | **0** |
+
+Esa tabla es el estado real y explica sola cuál es el trabajo que viene: **no
+falta software, falta dato**. La app hace lo que promete; casi la mitad de lo que
+muestra todavía dice "por confirmar".
+
+**Lo que cambió de foco (10-ago-2026): empieza el frente de difusión.** Hasta
+ahora todo el plan apuntaba a un solo destinatario —municipios y dueños de
+servicios, para conseguir el dato— y el viajero quedaba para después. Se suma
+ahora el segundo frente: **publicitar la app**. No reemplaza al primero, y el
+orden entre los dos importa (está discutido en la sección nueva "Publicitar la
+app", más abajo): **la campaña de correos va antes que la difusión masiva**,
+porque un anuncio lleva gente a un directorio donde la mitad de "dónde dormir"
+está por confirmar, y esa primera impresión se gasta una sola vez.
+
+> **Nota sobre lo que esta sesión NO pudo comprobar:** el entorno de trabajo tiene
+> bloqueada la salida a `rutaaustral.cl` y a `patagonia-austral-api.onrender.com`,
+> así que **el estado en vivo de producción no está verificado acá**. Todo lo
+> técnico de abajo se verificó contra el repo y el build local.
+
+---
+
+## Lo que depende de TI — acciones manuales (al 10-ago-2026)
 
 Todo lo de abajo está **fuera del alcance de una sesión de Claude**: pide tarjeta,
 dashboard, una decisión tuya o acceso a la BD de producción. Está ordenado por lo
@@ -47,6 +91,12 @@ desbloquean, no por el orden en que conviene hacerlos. El orden de ejecución es
    `preliminar`**; acá caen los puntos 7 y 8).
 5. **Campaña de correos** (punto 6). Antes de mandarla, medir la entregabilidad
    del buzón con mail-tester (`DEPLOY.md` §2.4.1, paso 8).
+6. **Difusión al viajero** (10-ago-2026, frente nuevo) — va **después** de la
+   campaña de correos, no en paralelo: el correo es lo que convierte las 75
+   fichas `preliminar` en dato real, y anunciar antes gasta la primera impresión
+   sobre un directorio a medio confirmar. Lo único que sí conviene adelantar es
+   **medir** (sin analítica no se sabe qué canal sirvió). Plan completo, canales
+   y calendario: **"Publicitar la app"**, la sección siguiente.
 
 El 3 va antes que el 4 por dos razones concretas, no por gusto: con R2 andando,
 cada ficha que abras para curar se puede cargar con su foto en la misma pasada
@@ -210,6 +260,150 @@ Ver `BRIEF_LANDING.md` §9.
 
 ---
 
+## Publicitar la app — qué está listo y qué falta (10-ago-2026)
+
+Frente nuevo. Hasta acá el proyecto le habló a **quien tiene el dato** (municipios
+y dueños de servicios); esta sección es sobre hablarle a **quien lo usa**: el
+viajero. Se escribe entera porque el error caro en difusión no es elegir mal el
+canal, es **anunciar antes de tiempo**: la atención de un grupo de Facebook de la
+Carretera Austral se pide una vez, y si el que entra encuentra medio directorio
+"por confirmar", no vuelve ni cuando esté bueno.
+
+### Lo que ya está listo (no hay que construir nada)
+
+- **Dominio propio con SSL** (`rutaaustral.cl`), que es lo que hace que el enlace
+  se pueda dictar por teléfono y no parezca spam.
+- **PWA instalable de verdad**: manifest correcto, iconos por plataforma
+  (incluido `apple-touch-icon`, sin el cual iOS guardaba una captura),
+  `beforeinstallprompt` atrapado en el `<head>` y aviso de versión nueva.
+- **Contenido publicado**: 26 localidades, 156 fichas, mapa offline, chatbot,
+  reportes de ruta.
+- **Landing `/proyecto`** con el copy corregido, correo y botón de WhatsApp — es
+  para municipios y dueños, pero sirve de respaldo cuando alguien pregunta "¿y
+  quién está detrás de esto?".
+- **QR imprimible** (`/qr-rutaaustral.svg` y `.png`, descargables desde la
+  landing), listo para pegar en un mesón.
+- ✅ **Tarjeta de vista previa al compartir — HECHO HOY (10-ago-2026).** Ver
+  abajo; era el único bloqueo de código real que quedaba para poder difundir.
+
+### ✅ Lo hecho hoy: que el enlace se pueda compartir (10-ago-2026)
+
+**El problema.** `index.html` —o sea, lo que sirve `rutaaustral.cl`, la app misma—
+**no tenía ninguna etiqueta Open Graph**. Curiosamente la landing `/proyecto` sí
+las tenía (título, bajada, `canonical`), pero **sin imagen**. Consecuencia
+concreta: mandar el enlace de la app por WhatsApp, pegarlo en un grupo de
+Facebook o ponerlo en la bio de Instagram producía **una línea de texto azul**,
+sin imagen, sin nombre y sin explicación. En un grupo donde compiten veinte
+mensajes al día, ese enlace no lo abre nadie. No es cosmética: es el primer
+contacto de todo canal de difusión que existe.
+
+**Qué se hizo:**
+
+- **`frontend/scripts/generar-og.py`** — genera `public/og-rutaaustral.png`
+  (1200×630, el formato 1.91:1 que piden Open Graph y Twitter; 91 KB). Es un
+  **PNG y no el SVG que ya existía** porque WhatsApp, Facebook e Instagram no
+  renderizan SVG en la vista previa. El script **importa `generar-iconos.py`** y
+  reusa su dibujo: el badge de la tarjeta es **exactamente** el icono de la PWA,
+  así que la imagen que alguien ve en WhatsApp es la misma marca que después le
+  queda en el lanzador del teléfono. Lo único propio es la composición
+  horizontal (el icono es cuadrado, la tarjeta es panorámica, así que la
+  cordillera se dibuja con otras proporciones). Las fuentes se buscan en una
+  lista de candidatas por sistema (DejaVu en el contenedor de CI, Segoe/Arial en
+  el Windows del fundador, Helvetica en Mac) para que el generador corra igual en
+  los tres lados.
+- **Etiquetas en `index.html`**: `og:type/site_name/locale/url/title/description`,
+  `og:image` con **URL absoluta** (los rastreadores no resuelven rutas relativas),
+  `og:image:width/height/alt`, `twitter:card = summary_large_image` y `canonical`.
+  La bajada le habla al **viajero**, no al municipio, y respeta la corrección de
+  conectividad: dice que sirve "en los tramos de ruta sin señal", no que los
+  pueblos estén incomunicados.
+- **Etiquetas en `proyecto.html`**: se le sumó la **imagen** que le faltaba (la
+  misma), porque ese enlace se pega en correos y WhatsApp municipales.
+- **Fuera del precache** (`globIgnores` en `vite.config.js`, junto a
+  `proyecto.html` y el QR): la imagen la piden los **rastreadores**, el viajero no
+  la ve nunca. Precargarla sería hacer que cada teléfono baje 91 KB para nada.
+
+**Verificado:** `npm run lint` y `npm run build` limpios; el build deja
+`og-rutaaustral.png` en `dist/` pero el precache **sigue en 19 entradas** y no la
+incluye (revisadas una por una en `dist/sw.js`); las etiquetas llegan al
+`dist/index.html` final. La imagen se revisó a ojo: badge sin las escuadras
+negras del primer intento (las esquinas redondeadas son transparentes y hay que
+pegarlas con su alfa como máscara, si no Pillow las rellena de negro).
+
+**Acción manual al desplegar** (no se puede hacer desde acá): WhatsApp y Facebook
+**cachean la vista previa por URL**, así que si alguien ya compartió el enlace
+antes de este cambio le va a seguir saliendo pelado. Se fuerza el re-escaneo con
+el *Sharing Debugger* de Facebook (`developers.facebook.com/tools/debug`), y para
+probar en WhatsApp basta mandarse el enlace con un parámetro cualquiera
+(`rutaaustral.cl/?v=2`), que para su caché es otra URL.
+
+### Lo que falta antes de gastar la primera impresión, en orden
+
+1. **Medir — y esto va PRIMERO, antes del primer volante.** Hoy la analítica es
+   **cero**: no sabemos cuánta gente entra, desde dónde, si instala la app ni si
+   vuelve. Difundir sin eso es gastar el mes de trabajo sin saber qué canal
+   funcionó, que es exactamente el "volar a ciegas" que el `ROADMAP.md` pone
+   como objetivo n.º 1. No hace falta nada grande: sirve un contador propio
+   (mismo criterio que ya se acordó para medir la contribución al crowdsourcing).
+   **Es lo único de esta lista que conviene hacer ya.**
+2. **Las 75 fichas `preliminar`** (48% de lo publicado). Es el motivo por el que
+   la difusión masiva va **después** de la campaña de correos, no antes.
+3. **Fotos** (bloqueadas por el bucket R2, punto 2 de "Lo que depende de TI"). Un
+   directorio donde ninguna ficha tiene foto se comparte mal: en redes, la foto
+   *es* el anuncio.
+4. **Always-on — con un matiz honesto que corrige el susto anterior.** Este
+   documento venía diciendo que el arranque en frío de ~50 s se comería el primer
+   clic. Para la **campaña de correos** es cierto. Para la **app** no tanto: la
+   PWA trae la semilla empaquetada (`data/places.js`) y `client.js` cae en ella
+   cuando la API no responde, así que quien llega por un anuncio **ve las 156
+   fichas igual**, con backend dormido. Lo que sí se cae con el arranque en frío
+   son **los reportes de ruta** (tardan ~50 s en aparecer) y el primer envío del
+   día. Traducción para la publicidad: se puede anunciar **la guía** hoy; **no**
+   se puede anunciar todavía "el estado de la ruta en vivo".
+
+### Canales, del que más rinde al que menos (todos gratis)
+
+- **El QR impreso donde ya hay gente cautiva y en tema**: la hamburguesería del
+  km 1020 y el furgón Tortel↔Cochrane. Es el mejor canal que tiene el proyecto y
+  no depende de ningún algoritmo — el viajero está detenido, con el tema en la
+  cabeza, y el QR ya existe. Suma las OIT y los mesones de los alojamientos (eso
+  se pide en el mismo correo de la campaña).
+- **Grupos de Facebook de la Carretera Austral / Aysén / camperos y
+  overlanders.** Alta intención, cero costo. Regla: entrar aportando (responder
+  preguntas de ruta con el dato) y no como aviso — un enlace suelto en un grupo
+  se borra o se ignora.
+- **Instagram de los negocios del fundador**, que ya tienen público de la zona.
+- **Las encargadas de turismo municipal**: son las que recomiendan en persona.
+  Es la misma campaña B2B, y por eso conviene que el correo pida las dos cosas —
+  el dato y que difundan.
+- **Google: no contar con esto por ahora, y conviene decirlo claro.** La app es
+  una SPA con **una sola URL indexable**, sin `sitemap.xml` ni `robots.txt`, y el
+  contenido lo pinta JavaScript. Sumar esos dos archivos es media hora y está
+  bien hacerlo, pero **no va a traer tráfico**: para aparecer en búsquedas de
+  "dónde dormir en Cochrane" haría falta una página por ficha renderizada en el
+  servidor, que es un proyecto entero y hoy no toca.
+
+### El reloj (temporada alta = diciembre–marzo)
+
+- **Agosto**: analítica + campaña de correos + sembrar los primeros reportes con
+  el furgón.
+- **Septiembre**: cerrar las fichas con lo que llegue por correo; fotos.
+- **Octubre–noviembre**: difusión, que es **cuando el viajero planifica** el
+  viaje de temporada. Llegar en diciembre es llegar tarde: en diciembre ya
+  decidió dónde para.
+- **Diciembre–marzo**: temporada, medir, y recién ahí decidir si el crowdsourcing
+  se refuerza o se archiva.
+
+### La regla que no hay que romper al escribir un anuncio
+
+Vale para todo lo que salga a la calle, y ya está en `CLAUDE.md`: **no escribir
+copy que insinúe que los pueblos están incomunicados.** En los pueblos hay señal,
+y buena. Lo que falta es cobertura **entre** pueblo y pueblo, y lo que falta de
+verdad es **el dato correcto de los servicios chicos**. Lo va a leer gente que
+vive ahí.
+
+---
+
 ## Crowdsourcing (reportes de ruta) — pendientes (al 5-ago-2026)
 
 El **PMV está implementado y desplegado** desde el 27-jul-2026 (detalle técnico
@@ -234,6 +428,10 @@ lugares del documento y no se veía como una sola lista de trabajo.
       exactamente lo que pide la disciplina PMF/APM del roadmap. Basta un contador
       propio en el CMS (los datos ya están en `reportes` y `reporte_votos`); no
       hace falta una herramienta externa.
+      **Subió de prioridad el 10-ago-2026**: es la **misma pieza** que necesita el
+      frente de difusión para no anunciar a ciegas (ver "Publicitar la app",
+      punto 1). Conviene construirla una sola vez, sirviendo a los dos: cuánta
+      gente entra e instala (difusión) y cuántos reportan y votan (crowdsourcing).
 
 ### B. Bloqueado por infraestructura (espera el always-on, punto 4 de arriba)
 
