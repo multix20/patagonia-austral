@@ -114,7 +114,8 @@ python 2_generar_textos.py
 - **Distancia** calculada con haversine desde el centro de la localidad usando
   **tus coordenadas** (sin Google Maps ni Nominatim).
 - **Cómo llegar** a partir de la dirección + la localidad.
-- **Mapeo a las 24 localidades de la app**: por nombre de ciudad cuando coincide;
+- **Mapeo a las localidades de la app** (24 cuando se escribió esto; **26 desde
+  el 22-jul-2026**, con Raúl Marín Balmaceda y Balmaceda): por nombre cuando coincide;
   para comunas que abarcan varios pueblos (Río Ibáñez, Cisnes) se asigna por
   **cercanía de coordenadas**; Lago Verde (sin localidad propia) va a La Junta.
   Al final el script imprime cuántos se asignaron por cada método para que los

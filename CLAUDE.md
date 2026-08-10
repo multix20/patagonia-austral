@@ -133,8 +133,15 @@ resuelve. (Ojo: es un plan regional de Aysén, NO pavimentar todo Puerto Montt�
 para 2030.)
 
 **Alcance norte — COMPLETADO (Fase 2.5, jul-2026)**: la app cubre **toda la
-Carretera Austral, de Puerto Montt a Villa O'Higgins** (24 localidades, 192
-lugares, barcazas incluidas). La identidad ya dice "Puerto Montt a Villa
-O'Higgins" en i18n, manifest e index.html. Detalle en `ESTADO_Y_PENDIENTES.md`.
+Carretera Austral, de Puerto Montt a Villa O'Higgins**, barcazas incluidas. La
+identidad ya dice "Puerto Montt a Villa O'Higgins" en i18n, manifest e
+index.html. La fase cerró con 24 localidades y 192 lugares; **hoy son 26
+localidades y 231 fichas** (Raúl Marín Balmaceda y Balmaceda se sumaron el
+22-jul), de las cuales **156 están publicadas y 75 de esas son `preliminar`**.
+Detalle en `ESTADO_Y_PENDIENTES.md`.
+
+**Los dos pendientes de infraestructura, ambos de dashboard y sin código detrás**
+(al 10-ago-2026): **bucket Cloudflare R2** para las fotos (`DEPLOY.md` §2.5) y
+**backend *always-on*** para que el servicio no se duerma (`DEPLOY.md` §2.9).
 
 Para trabajo de roadmap, usar el agente `roadmap` (`.claude/agents/roadmap.md`).

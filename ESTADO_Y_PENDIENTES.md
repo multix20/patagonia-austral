@@ -168,6 +168,26 @@ después de escribirlo todo.
 
   Paso a paso: **`DEPLOY.md` §2.5**.
 
+  **Revisado el 10-ago-2026: del lado del código no falta nada.** Se comprobó
+  archivo por archivo, porque un pendiente que lleva semanas anotado da para
+  dudar si además quedó trabajo a medias. No quedó nada:
+  - `render.yaml` ya trae las seis variables declaradas (`FOTOS_DISK=r2` y las
+    cinco `R2_*` con `sync: false`, o sea que se ingresan en el dashboard).
+  - La conversión a WebP, el `FileUpload` del CMS y la foto en la PWA están
+    implementados desde el 29-jul.
+  - **La trampa del 500 está cerrada de verdad**, no solo anotada:
+    `AlmacenamientoFotos::listo()` comprueba las cinco claves y `Place::toApi()`
+    devuelve la ficha **sin fotos** si falta alguna, en vez de tumbar
+    `/api/places` entero. Además el campo de subida del CMS aparece
+    **deshabilitado con su explicación** mientras el bucket no esté configurado,
+    así que no se puede "subir" una foto que se iba a perder. Cubierto por
+    `backend/tests/Feature/AlmacenamientoFotosTest.php`.
+
+  Traducción: esto es **20 minutos de dashboard**, sin riesgo de romper nada y
+  sin ningún cambio de código detrás. Lo único que lo traba de verdad es que
+  Cloudflare **pide una tarjeta** para habilitar R2, aunque el uso quepa entero
+  en el plan gratis.
+
 ### 3. `DEPLOY_PUSH_TOKEN` + webhook de Netlify — ~10 min — cierra lo del 31-jul
 - [ ] Generar el token (`openssl rand -hex 24`) y cargarlo en Render.
 - [ ] Crear el *outgoing webhook* en Netlify (evento **Deploy succeeded**).
@@ -178,15 +198,46 @@ después de escribirlo todo.
 
 ### 4. Backend *always-on* — ~US$7/mes (Render pago) o ~US$6 (VPS)
 - [ ] Decidir Render pago vs. VPS y activarlo.
+- [ ] (Opcional, gratis y para hoy) Keep-alive a `/up` cada 10 min mientras tanto.
 
-  **Recomendación: hacerlo ANTES de la campaña, no después.** El plan de
-  inversión lo pone en segundo lugar pensando en el crowdsourcing, pero vas a
+  **Paso a paso nuevo: `DEPLOY.md` §2.9** (escrito el 10-ago-2026). Hasta ahora
+  este punto era **la única acción manual del proyecto sin guía**: aparecía como
+  pendiente en seis lugares distintos y en ninguno decía cómo se hace. Ahí quedan
+  las tres opciones (keep-alive gratis / Render Starter / VPS), los pasos de cada
+  una y cómo se comprueba que quedó.
+
+  **Recomendación (10-ago-2026): Render Starter, US$7.** No por ser la mejor
+  técnicamente —el VPS da más por el mismo dinero— sino porque **no migra nada**:
+  misma imagen, misma base en Neon, mismas variables, mismo dominio. Es un
+  desplegable en el dashboard. El VPS cuesta un fin de semana y después hay que
+  administrarlo, y el proyecto lo lleva una persona sola. La base autoalojada ya
+  existe (`docker-compose.prod.yml` + `docker/README-DESPLIEGUE.md`) y no se va a
+  ninguna parte: se puede migrar más adelante sin perder nada.
+
+  **Detalle que conviene no pasar por alto:** con el plan pagado, encender el
+  scheduler es **gratis y son dos palabras** — agregar `php artisan schedule:work &`
+  a `backend/docker/start.sh` (ver §2.9, opción A paso 3). Ahí los **avisos
+  programados a futuro empiezan a despacharse solos**, que es un pendiente
+  arrastrado desde el principio del proyecto. En el plan free esa línea no sirve
+  de nada, porque el contenedor duerme; por eso no está puesta.
+
+  **Recomendación de momento: hacerlo ANTES de la campaña, no después.** El plan
+  de inversión lo pone en segundo lugar pensando en el crowdsourcing, pero vas a
   mandar 26 correos con un link: si el primer clic de una encargada de turismo se
   come **50 s de arranque en frío**, perdiste esa respuesta y era el único tiro.
 
   **Y antes de curar** (4-ago-2026): con el plan gratis el servicio se duerme a
   los 15 min y la sesión del CMS se cae con un **419 al guardar**, justo cuando
-  ya escribiste la ficha entera.
+  ya escribiste la ficha entera. Peor todavía con fotos: lo que arrastras queda
+  en una carpeta temporal del contenedor y **se evapora** si el servicio se
+  duerme entre la subida y el guardado (`DEPLOY.md` §2.7).
+
+  > **Matiz que ya se anotó el 10-ago y vale repetir acá para no sobredimensionar
+  > el problema:** el arranque en frío **no** deja la app en blanco al viajero. La
+  > PWA trae la semilla empaquetada y `client.js` cae en ella cuando la API no
+  > responde, así que quien llega por un enlace ve las 156 fichas igual. Lo que sí
+  > se cae son **los reportes de ruta**, el CMS y la campaña. Esto no es motivo
+  > para no hacerlo — es para saber qué se puede prometer mientras tanto.
 
 ### 5. Landing `/proyecto` — depende del punto 1
 Los **tres marcadores en rojo** quedaron cerrados:
