@@ -49,8 +49,9 @@ alcance**. No acumules deuda de UX detrás de más contenido.
 
 > **Números al día (10-ago-2026), que mandan sobre los de más abajo:** la Fase 2.5
 > cerró con 24 localidades y 192 lugares, pero después se sumaron **Raúl Marín
-> Balmaceda y Balmaceda** → hoy son **26 localidades** y **231 fichas** en el seed,
-> de las cuales **156 están publicadas** (26 × 6, una por localidad y categoría) y
+> Balmaceda y Balmaceda**, y **Puerto Yungay** el 11-ago → hoy son **27
+> localidades** y **234 fichas** en el seed, de las cuales **159 están
+> publicadas** (una por localidad y categoría) y
 > **75 de esas son `preliminar`** (sin teléfono, a la espera del dato oficial).
 > **0 fichas con foto y 0 destacadas.**
 

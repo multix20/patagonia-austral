@@ -139,6 +139,18 @@ export const LOCALIDADES_SEED = [
     nombre: { es: 'Caleta Tortel', en: 'Caleta Tortel' },
     lat: -47.7967, lng: -73.536, zoom: 15, orden: 180,
   },
+  // Puerto Yungay (11-ago-2026). No es un pueblo: es la RAMPA del cruce
+  // obligatorio hacia el tramo final de la Carretera Austral. Entra igual porque
+  // para el viajero es un hito de decisión —ahí se espera la barcaza y ahí se
+  // come antes de seguir— y hasta ahora no existía en la app. Coordenadas
+  // ancladas en los dos únicos puntos conocidos del sector (la cafetería y las
+  // cabañas El Peregrino, del mapa municipal de Tortel); afinar si aparece una
+  // fuente mejor para la rampa misma.
+  {
+    slug: 'puerto-yungay',
+    nombre: { es: 'Puerto Yungay', en: 'Puerto Yungay' },
+    lat: -47.9343, lng: -73.3241, zoom: 14, orden: 185,
+  },
   {
     slug: 'villa-ohiggins',
     nombre: { es: "Villa O'Higgins", en: "Villa O'Higgins" },
@@ -181,6 +193,14 @@ export const LOCALIDADES_ROTULADAS = [
   // mucho. Sin etiqueta eran dos puntos verdes mudos al este de Chaitén.
   'futaleufu', // río Futaleufú (rafting) y paso Futaleufú → Trevelin/Esquel
   'palena', // valle del río Palena y paso Río Encuentro
+  // Puerto Yungay rotula fijo por la misma razón que Futaleufú y Palena: no es
+  // un pueblo, es un CRUCE que en la ruta se pregunta mucho ("¿a qué hora sale
+  // la barcaza?"). Sin etiqueta sería un punto verde mudo entre Tortel y Villa
+  // O'Higgins, justo donde el viajero necesita entender que hay que embarcar.
+  // Rotula a la DERECHA (por defecto, sin entrada en ETIQUETAS_LOCALIDAD): a su
+  // izquierda ya rotula Caleta Tortel hacia los canales y los dos nombres se
+  // encimarían; a la derecha el mapa está limpio hasta la frontera.
+  'puerto-yungay',
 ]
 
 // Ajustes finos del rótulo del pin de localidad (slug → clases extra). Por
@@ -1917,6 +1937,50 @@ export const LUGARES_SEED = [
       en: 'Full police coverage for the city and the start of Route 7. Dial 133.',
     },
     como: { es: 'Unidades en toda la ciudad.', en: 'Stations citywide.' },
+  },
+  // ---- Puerto Yungay (11-ago-2026) ----
+  // Localidad nueva. Los dos servicios son REALES, del mapa turístico oficial de
+  // la Municipalidad de Tortel (tortel.cl/mapa-turismo-tortel-2024), con su
+  // teléfono verificado en la fuente. La barcaza se redacta con el criterio
+  // conservador del proyecto: sin horarios inventados, porque cambian por
+  // temporada y un horario equivocado en la ruta es peor que ninguno.
+  {
+    id: 193, cat: 'servicio', localidad: 'puerto-yungay', lat: -47.9343, lng: -73.3241,
+    nombre: {
+      es: 'Barcaza Puerto Yungay — Río Bravo',
+      en: 'Puerto Yungay — Río Bravo ferry',
+    },
+    dist: { es: 'En la rampa', en: 'At the ramp' },
+    desc: {
+      es: 'El cruce obligatorio para seguir al sur: la barcaza atraviesa el fiordo Mitchell y conecta con Río Bravo, desde donde continúa el camino a Villa O\'Higgins. Lleva vehículos y pasajeros, y el zarpe depende del clima. Confirma el horario del día antes de bajar a Tortel: perder el último cruce significa esperar hasta el día siguiente.',
+      en: 'The mandatory crossing to continue south: the ferry crosses Mitchell Fjord to Río Bravo, where the road to Villa O\'Higgins continues. Carries vehicles and passengers; departures depend on the weather. Check the day\'s timetable before heading down to Tortel — missing the last crossing means waiting until the next day.',
+    },
+    como: {
+      es: 'Rampa al final del camino desde el cruce con la Ruta 7. Llega con holgura: la fila se arma antes del zarpe y los cupos de vehículo son limitados.',
+      en: 'Ramp at the end of the road from the Route 7 junction. Arrive early: the queue forms before departure and vehicle space is limited.',
+    },
+  },
+  {
+    id: 194, cat: 'comida', localidad: 'puerto-yungay', lat: -47.9354, lng: -73.3241,
+    tel: '+56 9 5020 6647',
+    nombre: { es: 'Cafetería El Peregrino', en: 'El Peregrino Café' },
+    dist: { es: 'En Puerto Yungay', en: 'In Puerto Yungay' },
+    desc: {
+      es: 'Comida al paso junto a la rampa: el único servicio de alimentación del cruce, y la parada natural mientras se espera la barcaza.',
+      en: 'Quick food next to the ramp: the only place to eat at the crossing, and the natural stop while waiting for the ferry.',
+    },
+    como: { es: 'Junto a la rampa de Puerto Yungay.', en: 'Next to the Puerto Yungay ramp.' },
+  },
+  {
+    id: 195, cat: 'alojamiento', localidad: 'puerto-yungay', lat: -47.9332, lng: -73.3241,
+    tel: '+56 9 5020 6647',
+    nombre: { es: 'Cabañas El Peregrino', en: 'El Peregrino Cabins' },
+    dist: { es: 'En Puerto Yungay', en: 'In Puerto Yungay' },
+    desc: {
+      es: 'Cabañas en el sector de la rampa, a unos 200 m de la cafetería del mismo nombre (mismo teléfono). Capacidad para 10 personas. Es la única opción para dormir en el cruce, útil si se pierde el último zarpe del día.',
+      en: 'Cabins by the ferry ramp, about 200 m from the café of the same name (same phone). Capacity for 10 people. The only place to sleep at the crossing — useful if you miss the day\'s last departure.',
+    },
+    como: { es: 'Sector de la rampa, Puerto Yungay.', en: 'Ramp area, Puerto Yungay.' },
   },
   // ---- Siembra "un servicio por localidad" (jul-2026) ----
   // Un lugar publicado por localidad y categoría. Las fichas comerciales

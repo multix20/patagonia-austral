@@ -226,6 +226,17 @@ class LocalidadSeeder extends Seeder
                 'orden' => 180,
             ],
             [
+                // Puerto Yungay (11-ago-2026): no es un pueblo sino la RAMPA del
+                // cruce obligatorio hacia el tramo final de la Carretera Austral.
+                // Espejo de LOCALIDADES_SEED en frontend/src/data/places.js.
+                'slug' => 'puerto-yungay',
+                'nombre' => ['es' => 'Puerto Yungay', 'en' => 'Puerto Yungay'],
+                'lat' => -47.9343,
+                'lng' => -73.3241,
+                'zoom' => 14,
+                'orden' => 185,
+            ],
+            [
                 'slug' => 'villa-ohiggins',
                 'nombre' => ['es' => "Villa O'Higgins", 'en' => "Villa O'Higgins"],
                 'lat' => -48.4686,

@@ -60,8 +60,9 @@ próximo pueblo (cola offline). Sigue siendo innegociable — deja de ser el tit
 ## 2. Estado actual (revisado 10-ago-2026)
 
 **Hecho:** Fases 0 → 2.5 completas y Fase 3 arrancada.
-- **Cobertura**: 26 localidades, toda la Carretera Austral. Multi-localidad, i18n
-  ES/EN, PWA offline (IndexedDB + Workbox), Web Push, mapa Leaflet.
+- **Cobertura**: **27 localidades** (Puerto Yungay se sumó el 11-ago-2026), toda
+  la Carretera Austral. Multi-localidad, i18n ES/EN, PWA offline (IndexedDB +
+  Workbox), Web Push, mapa Leaflet.
 - **Fase 3 en curso**: destacados (capa comercial base), **top 10 de alojamiento
   publicado** (11 localidades, selección exacta del pipeline), mapa (sincronizado
   con la lista, clustering, pin activo, "estás aquí" por radio, pines outdoor),
@@ -90,7 +91,7 @@ SERNATUR funcional · flujo PR + CI en verde · deploy **gratis** (Netlify + Ren
   agregar igual que el scheduler.
 - **Datos**: solo alojamiento; **comida pendiente**; localidades nuevas (Balmaceda,
   Raúl Marín) y varias del norte aún **sin servicios**. Y el número que manda:
-  de las **156 fichas publicadas, 75 son `preliminar`** (48%, sin teléfono).
+  de las **159 fichas publicadas, 75 son `preliminar`** (47%, sin teléfono).
 - **Analítica: 0** — no medimos uso real, así que decidimos el PMF **a ciegas**.
   Subió de prioridad el 10-ago: es también lo que separa "difundir" de "difundir
   a ciegas" (ver `ESTADO_Y_PENDIENTES.md` → "Publicitar la app").

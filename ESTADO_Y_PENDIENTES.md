@@ -39,9 +39,9 @@ rama están a la par, sin cambios sueltos, y la última suite corrida quedó en
 
 | | |
 |---|---|
-| Localidades | **26**, Puerto Montt → Villa O'Higgins |
-| Fichas en el seed | **231** |
-| Fichas publicadas | **156** (26 localidades × 6 categorías, una por cupo) |
+| Localidades | **27**, Puerto Montt → Villa O'Higgins |
+| Fichas en el seed | **234** |
+| Fichas publicadas | **159** (una por localidad y categoría; 27 localidades) |
 | De esas, `preliminar: true` | **75** — el **48%** de lo publicado, sin teléfono |
 | Fichas destacadas | **0** |
 | Fichas con foto | **0** — pero el almacenamiento quedó **operativo el 10-ago** |
@@ -366,7 +366,7 @@ Carretera Austral se pide una vez, y si el que entra encuentra medio directorio
 - **PWA instalable de verdad**: manifest correcto, iconos por plataforma
   (incluido `apple-touch-icon`, sin el cual iOS guardaba una captura),
   `beforeinstallprompt` atrapado en el `<head>` y aviso de versión nueva.
-- **Contenido publicado**: 26 localidades, 156 fichas, mapa offline, chatbot,
+- **Contenido publicado**: 27 localidades, 159 fichas, mapa offline, chatbot,
   reportes de ruta.
 - **Landing `/proyecto`** con el copy corregido, correo y botón de WhatsApp — es
   para municipios y dueños, pero sirve de respaldo cuando alguien pregunta "¿y
