@@ -42,6 +42,9 @@ ID_INICIAL = 4000  # 1–192 seed · 2000–2181 SERNATUR · 3001–3083 prelimi
 
 # capa del mapa → categoría de `places`. Sin entrada acá, el script se detiene.
 # `None` = la capa no va a `places` (son trazados: su lugar es la capa de rutas).
+# Centinela para las capas que se resuelven por subtipo y no por capa.
+POR_SUBTIPO = '_por_subtipo'
+
 CATEGORIAS = {
     # Ojo: los nombres reales de las capas NO son los de la lista de archivos.
     # El mapa llama `cama` a los alojamientos y `rural` al turismo rural; por eso
@@ -55,10 +58,19 @@ CATEGORIAS = {
     'artesanias': 'servicio',
     'expediciones': 'servicio',
     'mirador': 'atractivo',
-    'parque_latapera': 'atractivo',
-    'glaciarCHN': 'atractivo',
-    'glaciarCHS': 'atractivo',
-    'puntos_fijos': 'servicio',
+    'miradores': 'atractivo',
+    # `puntos_fijos` es la EXCEPCIÓN: no se mapea por capa sino por subtipo (ver
+    # SUBTIPO_A_CATEGORIA). Adentro conviven la posta, Carabineros y Bomberos con
+    # la bomba de bencina, la oficina de turismo y las plazas del pueblo — tres
+    # categorías distintas en una sola capa. Mandarla entera a `servicio` habría
+    # enterrado las TRES emergencias de Tortel, que es justo el dato que se busca
+    # con urgencia y el único que no puede estar mal clasificado.
+    'puntos_fijos': POR_SUBTIPO,
+    # Trazados y áreas: no van a `places` (un punto), van a la tabla `rutas`.
+    # Los procesa 3_a_rutas.py.
+    'parque_latapera': None,
+    'glaciarCHN': None,
+    'glaciarCHS': None,
     'pasarelas': None,
     'Sendero_vigia': None,
     'Sendero_latapera': None,
@@ -79,6 +91,44 @@ PLANTILLAS = {
                  'Service in {sector}, Caleta Tortel.'),
     'atractivo': ('Atractivo turístico de Caleta Tortel, sector {sector}.',
                   'Tourist attraction in Caleta Tortel, {sector} area.'),
+    # La emergencia se redacta distinto a propósito: se lee cuando algo ya pasó,
+    # así que abre con dónde está y no con adjetivos.
+    'emergencia': ('Servicio de emergencia en Caleta Tortel, sector {sector}.',
+                   'Emergency service in Caleta Tortel, {sector} area.'),
+}
+
+# Subtipo → categoría, para las capas marcadas POR_SUBTIPO. El criterio es qué
+# busca el viajero, no cómo lo clasifica la municipalidad:
+#   · emergencia = lo que se busca cuando algo salió mal;
+#   · servicio   = lo que resuelve un trámite o una necesidad del viaje;
+#   · atractivo  = lo que se visita.
+# Por eso el gimnasio, la pérgola y las plazas quedan en `atractivo` (son el
+# espacio público del pueblo) y el paradero o la ferretería en `servicio`.
+SUBTIPO_A_CATEGORIA = {
+    'health service': 'emergencia',
+    'police': 'emergencia',
+    'firemen': 'emergencia',
+
+    'fuel station': 'servicio',
+    'ferry tickets': 'servicio',
+    'tourism information office': 'servicio',
+    'city hall': 'servicio',
+    'civil registry': 'servicio',
+    'public library': 'servicio',
+    'hardware store': 'servicio',
+    'custodia/luggage storage': 'servicio',
+
+    'plaza/square': 'atractivo',
+    'espacio multiuso/public facilities': 'atractivo',
+    'espacio recreacional/playground': 'atractivo',
+    'trail shelter': 'atractivo',
+}
+
+# El único punto SIN subtipo en el origen es la oficina de CONAF. Se resuelve por
+# nombre en vez de dejar un `None` mudo en la tabla de arriba, que el día que
+# aparezca otro punto sin subtipo lo mandaría al cajón equivocado en silencio.
+SIN_SUBTIPO_POR_NOMBRE = {
+    'conaf': 'servicio',
 }
 
 # El `Subtipo` del origen a veces trae las dos lenguas ("Hospedaje/accommodation")
@@ -96,6 +146,33 @@ SUBTIPOS = {
     'cabaña': ('Cabaña', 'Cabin'),
     'restaurante': ('Restaurante', 'Restaurant'),
     'comida al paso/fast food': ('Comida al paso', 'Fast food'),
+    'cabañas/cabins': ('Cabañas', 'Cabins'),
+    'hostal': ('Hostal', 'Guesthouse'),
+    'hostel': ('Hostel', 'Hostel'),
+    'lodge': ('Lodge', 'Lodge'),
+    'artesanías/crafts': ('Artesanías', 'Crafts'),
+    'venta abarrotes/grocery store': ('Venta de abarrotes', 'Grocery store'),
+    'expediciones fluviales/boat trip': ('Expediciones fluviales', 'Boat trips'),
+    'senderismo/hiking': ('Senderismo', 'Hiking'),
+    'mirador/viewpoint': ('Mirador', 'Viewpoint'),
+    # Los de `puntos_fijos` vienen solo en inglés en el origen: acá se les pone
+    # el nombre en español, que es como los busca quien está en el pueblo.
+    'health service': ('Servicio de salud', 'Health service'),
+    'police': ('Carabineros', 'Police'),
+    'firemen': ('Bomberos', 'Fire station'),
+    'fuel station': ('Estación de combustible', 'Fuel station'),
+    'ferry tickets': ('Venta de pasajes de barcaza', 'Ferry tickets'),
+    'tourism information office': ('Oficina de información turística',
+                                   'Tourist information office'),
+    'city hall': ('Municipalidad', 'City hall'),
+    'civil registry': ('Registro Civil', 'Civil registry'),
+    'public library': ('Biblioteca pública', 'Public library'),
+    'hardware store': ('Ferretería', 'Hardware store'),
+    'custodia/luggage storage': ('Custodia de equipaje', 'Luggage storage'),
+    'plaza/square': ('Plaza', 'Square'),
+    'espacio multiuso/public facilities': ('Espacio público', 'Public facility'),
+    'espacio recreacional/playground': ('Espacio recreacional', 'Playground'),
+    'trail shelter': ('Refugio de sendero', 'Trail shelter'),
 }
 
 
@@ -152,6 +229,8 @@ def main():
 
     lugares, saltados_linea, sin_nombre = [], 0, 0
     subtipos_sin_traducir = set()
+    subtipos_sin_categoria = set()
+    sin_categoria = []
     lejos = []
     siguiente_id = ID_INICIAL
 
@@ -160,6 +239,22 @@ def main():
         geo = rasgo.get('geometry') or {}
         capa = props.get('capa')
         categoria = CATEGORIAS.get(capa)
+
+        if categoria == POR_SUBTIPO:
+            sub = (props.get('subtipo') or '').strip().lower()
+            if sub:
+                categoria = SUBTIPO_A_CATEGORIA.get(sub)
+                if categoria is None:
+                    subtipos_sin_categoria.add(props.get('subtipo'))
+                    continue
+            else:
+                # Sin subtipo: se resuelve por nombre, y si tampoco está, se
+                # reporta en vez de adivinar.
+                clave = (props.get('nombre') or '').strip().lower()
+                categoria = SIN_SUBTIPO_POR_NOMBRE.get(clave)
+                if categoria is None:
+                    sin_categoria.append(props.get('nombre') or '(sin nombre)')
+                    continue
 
         if categoria is None or geo.get('type') != 'Point':
             saltados_linea += 1
@@ -253,6 +348,14 @@ def main():
         print(f'\nFUERA DEL PUEBLO ({len(lejos)}) — revisar si cuelgan de Caleta Tortel:')
         for nombre, sector, km in sorted(lejos, key=lambda x: -x[2]):
             print(f'  {km:6.1f} km  {nombre}  ({sector})')
+
+    if subtipos_sin_categoria or sin_categoria:
+        print(f'\nPUNTOS OMITIDOS POR NO SABER SU CATEGORÍA '
+              f'({len(subtipos_sin_categoria) + len(sin_categoria)}):')
+        for x in sorted(subtipos_sin_categoria):
+            print(f'  subtipo desconocido: "{x}" → agrégalo a SUBTIPO_A_CATEGORIA')
+        for x in sin_categoria:
+            print(f'  sin subtipo: "{x}" → agrégalo a SIN_SUBTIPO_POR_NOMBRE')
 
     if subtipos_sin_traducir:
         print(f'\nSUBTIPOS SIN TRADUCCIÓN ({len(subtipos_sin_traducir)}) — '

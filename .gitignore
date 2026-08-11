@@ -17,3 +17,6 @@ __pycache__/
 scripts/tortel/crudos/
 scripts/tortel/informe.txt
 scripts/tortel/tortel_places.json
+
+scripts/tortel/tortel_rutas.json
+scripts/tortel/tortel-pois.geojson

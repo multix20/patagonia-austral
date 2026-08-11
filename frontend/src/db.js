@@ -3,7 +3,7 @@ import { openDB } from 'idb'
 // Almacenamiento local estructurado (IndexedDB) según plan de contingencia
 // offline: los contenidos quedan disponibles sin conexión tras la primera visita.
 const DB_NOMBRE = 'cochrane-turismo'
-const DB_VERSION = 4
+const DB_VERSION = 5
 
 function db() {
   return openDB(DB_NOMBRE, DB_VERSION, {
@@ -26,6 +26,10 @@ function db() {
         d.createObjectStore('reportes', { keyPath: 'id' })
       if (!d.objectStoreNames.contains('salientes'))
         d.createObjectStore('salientes', { keyPath: 'clave', autoIncrement: true })
+      // v5 — Trazados y áreas del mapa: la red de pasarelas de Tortel, senderos,
+      // rutas y glaciares. Van en su propio store y no en `lugares` porque no
+      // son un punto: cada fila trae una geometría GeoJSON que Leaflet dibuja.
+      if (!d.objectStoreNames.contains('rutas')) d.createObjectStore('rutas', { keyPath: 'id' })
     },
   })
 }
@@ -73,6 +77,19 @@ export async function guardarLocalidades(lista) {
 export async function leerLocalidades() {
   const d = await db()
   return d.getAll('localidades')
+}
+
+export async function guardarRutas(lista) {
+  const d = await db()
+  const tx = d.transaction('rutas', 'readwrite')
+  await tx.store.clear() // lista canónica: despublicar una ruta tiene que borrarla
+  await Promise.all(lista.map((r) => tx.store.put(r)))
+  await tx.done
+}
+
+export async function leerRutas() {
+  const d = await db()
+  return d.getAll('rutas')
 }
 
 // ---- Crowdsourcing (Fase 3) ----

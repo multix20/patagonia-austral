@@ -140,6 +140,38 @@ que no esté en la tabla **detiene el script**: es preferible revisar tres nombr
 a descubrir después que media docena de fichas quedaron mal categorizadas entre
 las ~100. Cuando aparezcan las capas que todavía no vimos, se agregan ahí.
 
+## Paso 3 — los trazados y áreas, a la tabla `rutas`
+
+```bash
+python3 scripts/tortel/3_a_rutas.py
+cp scripts/tortel/tortel_rutas.json backend/database/seeders/data/
+cd backend && php artisan db:seed --class=Database\\Seeders\\RutaSeeder
+```
+
+Lo que **no cabe en un punto** va a su propia tabla (ver la migración
+`create_rutas_table`): la red de pasarelas, los senderos, las rutas y las áreas
+protegidas. También entra todo en borrador, y se revisa en `/admin → Rutas y
+áreas`.
+
+**Dos cosas que hace este paso y conviene saber:**
+
+- **Funde las 214 pasarelas en una sola ruta.** Vienen como tramos del inventario
+  municipal ("LONGITUDINAL 10", con su estado de conservación): dato de mantención,
+  no de viaje. Al turista le sirve la red dibujada, no 214 filas en el CMS.
+- **Simplifica las geometrías, y es lo que hace viable la capa.** El origen trae
+  15 decimales y el glaciar Steffen tiene **17.115 vértices — 669 KB en un solo
+  polígono**, cuando el precache entero de la PWA son ~666 KB. Con
+  Douglas-Peucker por tipo (tolerancia 0 en las pasarelas, que se miran de cerca;
+  60 m en los glaciares, que se miran de lejos) más redondeo a 5 decimales:
+
+  | | antes | después |
+  |---|---|---|
+  | Vértices del glaciar Steffen | 17.115 | 351 |
+  | Peso de todas las geometrías | 812 KB | **41 KB** |
+
+  La respuesta completa de `/api/rutas` pesa **47 KB**, y no entra al bundle: se
+  descarga la primera vez que hay señal (`obtenerRutas` en `api/client.js`).
+
 ## Lo que este script NO hace
 
 No toca la base de datos ni decide categorías del proyecto. El mapeo a la tabla

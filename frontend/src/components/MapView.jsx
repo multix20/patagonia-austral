@@ -101,6 +101,22 @@ const CENTRO_RUTA = [-45.5, -72.6]
 
 // Pane propio de la Ruta 7 y duración del fundido al entrar/salir de un pueblo.
 const PANE_RUTA = 'ruta7'
+// Pane propio para los trazados y áreas importados (pasarelas, senderos,
+// glaciares). Va DEBAJO del de la Ruta 7 (400) y muy por debajo del markerPane
+// (600): son contexto del territorio, no navegación — no pueden taparle a nadie
+// el pin que necesita tocar.
+const PANE_TRAZADOS = 'trazados'
+
+// Estilo por tipo de trazado. El coral está reservado para la Ruta 7: si las
+// pasarelas usaran el mismo color, el viajero leería "por acá se maneja" sobre
+// un pueblo donde no entran autos.
+const ESTILO_TRAZADO = {
+  // Madera: las pasarelas de Tortel son de ciprés y son las "calles" del pueblo.
+  pasarela: { color: '#8b5e34', weight: 3, opacity: 0.95 },
+  sendero: { color: '#0f6e56', weight: 3, opacity: 0.9, dashArray: '6 6' },
+  ruta: { color: '#2f6f9f', weight: 3, opacity: 0.85 },
+  area: { color: '#4a90c0', weight: 1.5, opacity: 0.8, fillColor: '#7fb3d5', fillOpacity: 0.22 },
+}
 const MS_FADE_RUTA = 350
 
 // A partir de este zoom se muestran los nombres de TODAS las localidades (como
@@ -207,6 +223,7 @@ const MapView = forwardRef(function MapView(
     filtro,
     localidadActiva,
     reportes = [],
+    rutas = [],
     onEntrarLocalidad,
     onSeleccionarLugar,
     onSeleccionarReporte,
@@ -224,6 +241,7 @@ const MapView = forwardRef(function MapView(
   const catMarkersRef = useRef([])
   // Los reportes viven dentro de un markerClusterGroup, no sueltos en el mapa.
   const repGrupoRef = useRef(null)
+  const trazadosRef = useRef(null)
   const yoRef = useRef(null)
   const [pos, setPos] = useState(null)
   // Capa base elegida por el usuario y visibilidad de las etiquetas de localidad
@@ -301,6 +319,8 @@ const MapView = forwardRef(function MapView(
     paneRuta.style.zIndex = '400'
     paneRuta.style.opacity = '1'
     paneRuta.style.transition = `opacity ${MS_FADE_RUTA}ms ease`
+    const paneTrazados = mapa.createPane(PANE_TRAZADOS)
+    paneTrazados.style.zIndex = '390'
     // Muestra/oculta los nombres de todas las localidades según el zoom.
     const sincronizarEtiquetas = () => setEtiquetasVisibles(mapa.getZoom() >= ZOOM_ETIQUETAS)
     mapa.on('zoomend', sincronizarEtiquetas)
@@ -314,6 +334,7 @@ const MapView = forwardRef(function MapView(
       // El grupo de reportes muere con el mapa: si se conservara, al remontar
       // (StrictMode en dev) se reusaría un grupo atado a un mapa ya destruido.
       repGrupoRef.current = null
+      trazadosRef.current = null
     }
   }, [])
 
@@ -347,6 +368,57 @@ const MapView = forwardRef(function MapView(
   // Traza la Ruta 7 destacada (dato estático, una sola vez): línea naranja con
   // contorno blanco sobre el mapa base; los tramos en barcaza van punteados. Ya
   // no se unen los pueblos con líneas rectas.
+  // Trazados y áreas importados (pasarelas de Tortel, senderos, glaciares).
+  //
+  // Solo se dibujan DENTRO de una localidad, igual que se filtran los lugares:
+  // las pasarelas de Tortel sobre el mapa de toda la Carretera Austral serían una
+  // mancha ilegible de 1.000 km de largo, y el viajero que mira la ruta completa
+  // está decidiendo a qué pueblo entrar, no por qué pasarela caminar.
+  //
+  // Se usa L.geoJSON y no L.polyline a propósito: consume la geometría tal cual
+  // viene de la API —incluidos Polygon y MultiLineString— y se encarga del orden
+  // [lon, lat] del estándar, que es justo donde uno invierte las coordenadas sin
+  // darse cuenta y termina dibujando en China.
+  useEffect(() => {
+    const mapa = mapaRef.current
+    if (!mapa) return
+
+    if (trazadosRef.current) {
+      trazadosRef.current.remove()
+      trazadosRef.current = null
+    }
+    if (vista !== 'localidad' || !localidadActiva) return
+
+    // `localidadActiva` es el OBJETO de la localidad, no su slug: comparar
+    // contra él directamente no calza nunca y la capa no se dibujaría jamás.
+    const visibles = rutas.filter((r) => r.localidad === localidadActiva.slug)
+    if (visibles.length === 0) return
+
+    const grupo = L.featureGroup()
+    visibles.forEach((r) => {
+      const estilo = ESTILO_TRAZADO[r.tipo] || ESTILO_TRAZADO.ruta
+      const capa = L.geoJSON(
+        { type: 'Feature', geometry: r.geometria, properties: {} },
+        { pane: PANE_TRAZADOS, style: estilo }
+      )
+      const nombre = r.nombre?.[lang] || r.nombre?.es
+      if (nombre) {
+        const km = r.largo_km ? ` · ${r.largo_km} km` : ''
+        capa.bindTooltip(`${nombre}${km}`, { sticky: true })
+      }
+      capa.addTo(grupo)
+    })
+    grupo.addTo(mapa)
+    trazadosRef.current = grupo
+
+    return () => {
+      grupo.remove()
+      if (trazadosRef.current === grupo) trazadosRef.current = null
+    }
+    // Depende del SLUG y no del objeto: el objeto cambia de identidad en cada
+    // render de App y volvería a dibujar la capa entera sin necesidad.
+  }, [rutas, vista, localidadActiva?.slug, lang])
+
   useEffect(() => {
     const mapa = mapaRef.current
     if (!mapa || rutaRef.current) return

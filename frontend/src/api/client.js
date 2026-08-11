@@ -6,6 +6,8 @@ import {
   leerAvisos,
   guardarLocalidades,
   leerLocalidades,
+  guardarRutas,
+  leerRutas,
   guardarReportes,
   leerReportes,
   encolarReporte,
@@ -102,6 +104,30 @@ export async function obtenerLocalidades() {
   // Primera visita sin API: sembrar con las localidades empaquetadas
   await guardarLocalidades(LOCALIDADES_SEED)
   return ordenar(LOCALIDADES_SEED)
+}
+
+// Trazados y áreas del mapa (pasarelas, senderos, glaciares). Misma estrategia
+// offline-first que el resto, con UNA diferencia: no hay semilla empaquetada.
+//
+// Es deliberado. La red de pasarelas y los glaciares pesan ~40 KB ya
+// simplificados, y son útiles en UNA localidad de las 27: meterlos en el bundle
+// haría que los 27 pueblos paguen el peso para que lo aproveche quien va a
+// Tortel. Se descargan la primera vez que hay señal y de ahí quedan en
+// IndexedDB, que es exactamente cuando el viajero prepara el tramo.
+export async function obtenerRutas() {
+  if (API_URL && navigator.onLine) {
+    try {
+      const r = await fetch(`${API_URL}/api/rutas`, { headers: { Accept: 'application/json' } })
+      if (r.ok) {
+        const datos = await r.json()
+        await guardarRutas(datos)
+        return datos
+      }
+    } catch {
+      // sin red, o backend viejo sin /api/rutas: seguir con lo cacheado
+    }
+  }
+  return leerRutas()
 }
 
 export async function fechaActualizacion() {

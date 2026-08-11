@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\LocalidadController;
 use App\Http\Controllers\Api\NoticeController;
 use App\Http\Controllers\Api\PlaceController;
 use App\Http\Controllers\Api\PushController;
+use App\Http\Controllers\Api\RutaController;
 use App\Http\Controllers\Api\ReporteController;
 use App\Http\Controllers\Api\VersionController;
 use Illuminate\Support\Facades\Route;
@@ -12,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/places', [PlaceController::class, 'index']);
 Route::get('/localidades', [LocalidadController::class, 'index']);
 Route::get('/notices', [NoticeController::class, 'index']);
+// Trazados y áreas del mapa (pasarelas de Tortel, senderos, glaciares): lo que
+// no cabe en un punto de /places. Ver la migración create_rutas_table.
+Route::get('/rutas', [RutaController::class, 'index']);
 
 // Web Push: clave pública VAPID y registro de suscripciones desde la PWA.
 Route::get('/push/public-key', [PushController::class, 'publicKey']);
