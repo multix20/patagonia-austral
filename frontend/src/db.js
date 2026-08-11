@@ -3,7 +3,7 @@ import { openDB } from 'idb'
 // Almacenamiento local estructurado (IndexedDB) según plan de contingencia
 // offline: los contenidos quedan disponibles sin conexión tras la primera visita.
 const DB_NOMBRE = 'cochrane-turismo'
-const DB_VERSION = 4
+const DB_VERSION = 5
 
 function db() {
   return openDB(DB_NOMBRE, DB_VERSION, {
@@ -26,6 +26,19 @@ function db() {
         d.createObjectStore('reportes', { keyPath: 'id' })
       if (!d.objectStoreNames.contains('salientes'))
         d.createObjectStore('salientes', { keyPath: 'clave', autoIncrement: true })
+      // v5 — Calificaciones y analítica (Fase 3). Otras dos stores:
+      //  - `calificacionesSalientes`: buzón de salida de las estrellas, igual
+      //    que `salientes` para los reportes. La ficha se lee en la ruta y se
+      //    califica ahí mismo; la señal llega después.
+      //  - `metricas`: contadores de uso acumulados EN EL DISPOSITIVO. No se
+      //    guarda un evento por toque sino la misma forma que la tabla del
+      //    servidor (tipo, referencia, día → cantidad), así que veinte fichas
+      //    vistas sin señal son una fila, no veinte, y reenviar un lote perdido
+      //    no puede duplicar nada.
+      if (!d.objectStoreNames.contains('calificacionesSalientes'))
+        d.createObjectStore('calificacionesSalientes', { keyPath: 'clave', autoIncrement: true })
+      if (!d.objectStoreNames.contains('metricas'))
+        d.createObjectStore('metricas', { keyPath: 'clave' })
     },
   })
 }
@@ -104,6 +117,66 @@ export async function leerCola() {
 export async function borrarDeCola(clave) {
   const d = await db()
   return d.delete('salientes', clave)
+}
+
+// ---- Calificaciones (Fase 3) ----
+
+/** Encola una calificación hecha sin señal. */
+export async function encolarCalificacion(calificacion) {
+  const d = await db()
+  return d.add('calificacionesSalientes', calificacion)
+}
+
+export async function leerColaCalificaciones() {
+  const d = await db()
+  return d.getAll('calificacionesSalientes')
+}
+
+export async function borrarDeColaCalificaciones(clave) {
+  const d = await db()
+  return d.delete('calificacionesSalientes', clave)
+}
+
+// ---- Analítica de uso (Fase 3) ----
+
+/**
+ * Suma 1 al contador local de (tipo, referencia, día).
+ *
+ * Todo en una transacción `readwrite`: dos toques seguidos (el pulgar rebotando
+ * en el botón de llamar) entrarían a la vez, leerían el mismo valor y uno
+ * pisaría al otro. Con la transacción, IndexedDB los serializa.
+ */
+export async function sumarMetrica(tipo, ref, dia) {
+  const d = await db()
+  const clave = `${tipo}|${ref ?? ''}|${dia}`
+  const tx = d.transaction('metricas', 'readwrite')
+  const actual = await tx.store.get(clave)
+  await tx.store.put({ clave, tipo, ref: ref ?? '', dia, n: (actual?.n || 0) + 1 })
+  await tx.done
+}
+
+export async function leerMetricas() {
+  const d = await db()
+  return d.getAll('metricas')
+}
+
+/**
+ * Borra los contadores YA ENVIADOS, restando lo que se mandó en vez de vaciar la
+ * store. Entre el envío y la confirmación el viajero puede haber tocado otra
+ * ficha, y ese toque nuevo vive en la misma fila: un `clear()` se lo llevaría
+ * por delante. Si no quedó nada pendiente, la fila se borra.
+ */
+export async function descontarMetricas(enviadas) {
+  const d = await db()
+  const tx = d.transaction('metricas', 'readwrite')
+  for (const e of enviadas) {
+    const actual = await tx.store.get(e.clave)
+    if (!actual) continue
+    const resto = actual.n - e.n
+    if (resto > 0) await tx.store.put({ ...actual, n: resto })
+    else await tx.store.delete(e.clave)
+  }
+  await tx.done
 }
 
 export async function guardarMeta(clave, valor) {

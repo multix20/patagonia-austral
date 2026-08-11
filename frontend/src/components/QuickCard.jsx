@@ -1,5 +1,6 @@
 import Icon from './Icon'
 import { CATEGORIAS, urlComoLlegar } from '../data/places'
+import { contar } from '../analitica'
 import { useI18n } from '../i18n'
 
 // Ficha rápida (Sprint UX/UI): tarjeta compacta que sube al tocar un pin en el
@@ -21,6 +22,7 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
 
   const compartir = async () => {
     const nombre = lugar.nombre[lang]
+    contar('compartir', lugar.id)
     try {
       if (navigator.share) {
         await navigator.share({ title: nombre, text: nombre, url: mapsUrl })
@@ -34,6 +36,10 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
   }
 
   // Acciones: hasta 4, priorizando WhatsApp/llamar en fichas comerciales.
+  // `al` cuenta la interacción (analítica): llamar y "cómo llegar" son lo más
+  // parecido a una venta que puede medir un directorio, así que se miden acá y
+  // no solo en la ficha completa — mucha gente actúa desde esta tarjeta sin
+  // llegar a abrirla.
   const acciones = []
   if (lugar.destacado && waNum) {
     acciones.push({
@@ -41,12 +47,26 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
       icon: 'message-circle',
       lbl: t('whatsapp'),
       href: `https://wa.me/${waNum}`,
+      al: () => contar('llamar', lugar.id),
     })
   }
   if (telLimpio) {
-    acciones.push({ cls: '', icon: 'phone', lbl: t('llamar'), href: `tel:${telLimpio}` })
+    acciones.push({
+      cls: '',
+      icon: 'phone',
+      lbl: t('llamar'),
+      href: `tel:${telLimpio}`,
+      al: () => contar('llamar', lugar.id),
+    })
   }
-  acciones.push({ cls: 'pr', icon: 'locate', lbl: t('comoLlegar'), href: mapsUrl, ext: true })
+  acciones.push({
+    cls: 'pr',
+    icon: 'locate',
+    lbl: t('comoLlegar'),
+    href: mapsUrl,
+    ext: true,
+    al: () => contar('como_llegar', lugar.id),
+  })
   acciones.push({ cls: '', icon: 'share', lbl: t('compartir'), onClick: compartir })
   const visibles = acciones.slice(0, 4)
 
@@ -88,13 +108,19 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
           {lugar.nombre[lang]}
         </button>
         <div className="qc-meta">
-          {typeof lugar.rating === 'number' && (
+          {/* Nota media de los viajeros. Viaja con el directorio (/api/places),
+              así que se ve SIN SEÑAL — que es donde se decide dónde parar. El
+              número de opiniones va al lado: un 5,0 con una no es un 4,3 con
+              treinta. Antes esta línea leía `lugar.rating`, un campo que la API
+              nunca envió; con las calificaciones reales ya tiene de dónde salir. */}
+          {typeof lugar.estrellas === 'number' && (
             <>
               <span className="qc-chip">
                 <span className="qc-star">
-                  <Icon nombre="star" tam={13} color="var(--amarillo)" />
+                  <Icon nombre="star" tam={13} color="#E8A33D" fill="#E8A33D" />
                 </span>
-                {lugar.rating.toFixed(1)}
+                {lugar.estrellas.toFixed(1)}
+                {lugar.calificaciones > 0 && ` (${lugar.calificaciones})`}
               </span>
               <span className="qc-dot" />
             </>
@@ -126,6 +152,7 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
                 key={i}
                 className={`qc-btn ${b.cls}`}
                 href={b.href}
+                onClick={b.al}
                 {...(b.ext ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               >
                 <Icon nombre={b.icon} tam={18} />

@@ -22,9 +22,80 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
-## Dónde quedamos — para retomar (10-ago-2026)
+## Dónde quedamos — para retomar (11-ago-2026)
 
-**Lo último que se hizo** fue el **6-ago-2026** (PR #66, mergeado a `main` y
+### Sesión del 11-ago-2026 — recorte del crowdsourcing, calificaciones y analítica
+
+Sesión grande, pedida de una vez. Ocho cambios, todos en la misma rama
+(`claude/crowdsourcing-module-9bnkf8`) porque tocan frontend y backend juntos:
+
+1. **Reportes: de once tipos a TRES.** Quedan `peligro`, `accidente` y
+   `faena` ("trabajos en la vía"), los tres con **24 h** de vigencia. Once
+   botones eran un formulario, no algo que se conteste de un toque con el auto
+   detenido en la berma. Los tipos retirados **no se borran**: los reportes
+   vivos se siguen dibujando hasta caducar (`TIPOS_HISTORICOS` en
+   `data/reportes.js`, etiquetas "(retirado)" en el CMS) y el histórico de la
+   tabla se conserva.
+2. **El pin va donde está el viajero, punto.** Se quitó el respaldo que corría
+   el reporte al centro de la localidad abierta cuando el GPS no era creíble. Un
+   derrumbe a 40 km del pueblo dibujado EN el pueblo no es un dato aproximado,
+   es un dato falso. Sin ubicación no se reporta y se dice por qué.
+3. **Calificaciones (nuevo).** Estrellas 1–5 + comentario sobre las fichas, sin
+   login, con cola offline y moderación en el CMS. El promedio va
+   **desnormalizado** en `places` y viaja con `/api/places`, así que las
+   estrellas se ven **sin señal**. Una calificación por dispositivo y ficha;
+   volver a calificar **edita** la anterior. Las fichas de `emergencia` no se
+   califican.
+4. **Analítica de interacciones (nuevo).** Rollup diario
+   `(tipo, referencia, día) → cantidad`: 10.000 aperturas de ficha en un día son
+   UNA fila. Sin usuario, sin sesión, sin dispositivo, sin IP y sin orden de los
+   eventos — no se puede reconstruir el recorrido de nadie porque el dato no se
+   genera. Se acumula en IndexedDB y se manda por lotes. Panel nuevo en el CMS
+   (grupo "Analítica"). **Esto es el prerrequisito que la sección "Publicitar la
+   app" ya pedía: la analítica va antes del primer volante.**
+5. **El asistente reemplaza al botón de GPS** en el rail del mapa, y **el
+   idioma reemplaza a la lupa** en la barra superior (el buscador sigue en la
+   píldora central y ahora también en el menú).
+6. **Etiqueta de Puerto Cisnes** al fiordo: chocaba con Villa Amengual justo
+   encima del tronco de la Carretera.
+7. **Trazado Puerto Yungay ↔ Río Bravo corregido.** Era el peor error del mapa:
+   las rampas estaban **34 km y 28 km** fuera de lugar, o sea que la barcaza se
+   dibujaba tierra adentro. Ahora van con coordenada real —Yungay
+   `-47.9351,-73.3238` (publicada en UTM 18S: 625183 E, 4689555 N) y Río Bravo
+   `-47.9682,-73.2236`—, y la comprobación es que la travesía da **8,3 km = 4,5
+   millas náuticas** contra las 4,7 que publica el servicio.
+8. **POIs ajenos en el mapa cercano** (ver el punto propio más abajo).
+
+Suite backend: **42/42** (10 de reportes, 7 de calificaciones, 4 de analítica).
+`npm run build` y `npm run lint` en verde.
+
+### El mapa de cerca mostraba datos ajenos y viejos — qué se evaluó
+
+**El síntoma:** en Cochrane el mapa dibujaba "Buses Cordillera", un negocio que
+ya no está donde dice. **El problema de fondo no es el estilo, es de quién es el
+dato:** el basemap callejero venía renderizando los POI de OpenStreetMap, y los
+datos de los servicios chicos de la Austral están incompletos o equivocados en
+las plataformas globales — que es, literalmente, la tesis que vende este
+producto. Peor: esos POI ajenos salían con el mismo peso visual que nuestras
+fichas curadas, así que el viajero no tenía cómo saber cuál de los dos rótulos
+creer.
+
+**Opciones evaluadas:**
+
+| Opción | Costo | Veredicto |
+|---|---|---|
+| **A. Corregir los POI en OpenStreetMap** | $0, trabajo manual | **Sí, como tarea continua.** Es lo único que arregla el dato de verdad, y sirve para TODOS los proveedores a la vez porque todos leen la misma base. El fundador vive en la ruta: sabe cuál es la verdad. |
+| **B. Basemap pensado como fondo, no como directorio** | $0 | **Hecho.** Se cambió el estilo de cercanía de `osm_bright` a `alidade_smooth` (mismo proveedor, misma key, cero integración nueva). Conserva calles y nombres, baja mucho el ruido de POIs ajenos. El mapa pasa a ser escenario y nuestros pines protagonistas. |
+| **C. MapTiler / Mapbox con estilo propio** | ~25 €/mes (MapTiler) | **No por ahora.** Permite apagar la capa de POI del todo, pero **siguen siendo datos de OSM**: pagar no corrige "Buses Cordillera", solo lo esconde — y eso ya lo consigue la opción B gratis. Si algún día se quiere control fino del estilo, **MapTiler antes que Mapbox**, porque los términos de Mapbox para teselas ráster restringen el cacheo offline y esta PWA precachea teselas. |
+| **D. Google Maps Platform** | por uso, escala con el tráfico | **Descartada, y no por precio.** Es el POI más fresco de Chile, pero sus términos **prohíben cachear teselas para uso sin conexión**: choca de frente con lo innegociable de este producto. Un mapa que no funciona sin señal no sirve en la Austral. |
+
+> **Ojo, decisión visual:** `alidade_smooth` es más apagado que `osm_bright`. La
+> vuelta atrás es **una sola cadena** (`ESTILO_CERCA` en `MapView.jsx`). Conviene
+> mirarlo en el preview de Netlify antes de dar el cambio por bueno.
+
+### Antes de esta sesión
+
+**Lo anterior** fue el **6-ago-2026** (PR #66, mergeado a `main` y
 desplegado): el bloque de crowdsourcing quedó cerrado en su parte de vista —
 filtro de reportes por tramo, agrupación de pines, tipo `faena` para la temporada
 de obras— **más las tres correcciones que salieron de probarlo en producción** (el

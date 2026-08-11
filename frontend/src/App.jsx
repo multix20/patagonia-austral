@@ -17,7 +17,9 @@ import {
   sincronizarCola,
   contarCola,
   votarReporte,
+  sincronizarColaCalificaciones,
 } from './api/client'
+import { contar, conectarAnalitica } from './analitica'
 import { activarPush, pushSoportado } from './push'
 import { useActualizacion, seRecienActualizo } from './actualizacion'
 import Icon from './components/Icon'
@@ -259,6 +261,14 @@ function AppInterna() {
     contarCola().then(setEnCola)
   }, [])
 
+  // Analítica de uso: engancha los disparadores de envío y cuenta la apertura.
+  // Todo lo que sale de aquí es anónimo y agregado por día — ver analitica.js.
+  useEffect(() => {
+    const desconectar = conectarAnalitica()
+    contar('app_abierta')
+    return desconectar
+  }, [])
+
   // Recarga de avisos al recibir un push (postMessage del service worker).
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return
@@ -303,6 +313,12 @@ function AppInterna() {
       setReportes(await obtenerReportes())
       mostrarToast(t('colaEnviada'))
     }
+    // Las calificaciones tienen su propia cola y se vacían en el mismo momento:
+    // la ficha se lee y se califica en la ruta, y la señal llega toda junta al
+    // entrar al pueblo. No avisan con toast — el viajero ya recibió su acuse en
+    // la ficha ("guardada sin señal"), y un segundo cartel a los tres días,
+    // fuera de contexto, no le dice nada.
+    await sincronizarColaCalificaciones()
   }
 
   useEffect(() => {
@@ -584,11 +600,47 @@ function AppInterna() {
 
   // ----- Acciones de navegación -----
   const entrarLocalidad = (slug) => {
+    contar('localidad', slug)
     setLocalidad(slug)
     setVista('localidad')
     setFiltro(null)
     setLugarRapido(null)
     setHoja(null)
+  }
+
+  /** Abre el buscador (píldora del centro y entrada del menú). */
+  const abrirBuscador = () => {
+    contar('busqueda')
+    setHoja('buscar')
+  }
+
+  /** Abre el asistente (rail y entrada del menú). */
+  const abrirChat = () => {
+    contar('chat')
+    setHoja(null)
+    setChatAbierto(true)
+  }
+
+  /** Abre la ficha completa de un lugar. */
+  const abrirFicha = (lugar) => {
+    contar('ficha', lugar.id)
+    setFichaLugar(lugar)
+    setLugarRapido(null)
+  }
+
+  const cambiarIdioma = () => {
+    const nuevo = lang === 'es' ? 'en' : 'es'
+    contar('idioma', nuevo)
+    setLang(nuevo)
+  }
+
+  /**
+   * Refresca una ficha en memoria tras calificarla, para que el promedio nuevo
+   * se vea también en la tarjeta rápida y al volver a abrirla sin recargar.
+   */
+  const actualizarLugar = (id, cambios) => {
+    setLugares((prev) => prev.map((l) => (l.id === id ? { ...l, ...cambios } : l)))
+    setFichaLugar((f) => (f && f.id === id ? { ...f, ...cambios } : f))
   }
   const volverRuta = () => {
     setVista('ruta')
@@ -615,67 +667,51 @@ function AppInterna() {
   }
 
   /**
-   * Centra el mapa en el viajero. Si todavía no hay fix del GPS el botón NO se
-   * deshabilita: en el celular un botón gris y mudo no explica nada (el `title`
-   * no existe al tocar), así que se deja tocable y responde con un toast que
-   * dice si está buscando o si no hay permiso/soporte.
-   */
-  const centrarEnMi = () => {
-    if (posMapa && mapaRef.current?.centrarEnMi) {
-      mapaRef.current.centrarEnMi()
-      mostrarToast(t('centrando'))
-      return
-    }
-    mostrarToast(estadoGeo === 'buscando' ? t('buscandoUbicacion') : t('sinUbicacion'))
-  }
-
-  /**
-   * Envía un reporte de ruta. El pin queda en la posición del viajero — esa es
-   * la regla y no cambia. Lo que sí se comprueba es que esa posición sea
-   * CREÍBLE para esta app:
+   * Envía un reporte de ruta. El pin va EXACTAMENTE donde está el viajero: si
+   * frena en medio de la ruta, entre dos pueblos, el reporte queda ahí. Esa es
+   * la regla y no admite sustitutos.
    *
-   * - Sin GPS de verdad (un computador, o el permiso denegado) el navegador
-   *   ubica por IP, y eso puede dejar el punto a cientos de kilómetros: pasó
-   *   probando la app, con cuatro reportes que aterrizaron en Santiago.
-   * - Si el fix no está en la ruta pero hay una localidad abierta, se usa el
-   *   centro de ese pueblo. Es la misma regla que ya existía para cuando no hay
-   *   GPS ninguno (mejor un reporte ubicado al pueblo que ningún reporte), y es
-   *   lo que permite sembrar reportes desde un computador estando en el pueblo.
-   * - Sin ninguna referencia utilizable no se envía: un reporte mal ubicado es
-   *   peor que ningún reporte, porque manda a alguien a un lugar equivocado.
+   * Hasta ago-2026 había un respaldo que, cuando el fix no era creíble, corría
+   * el punto al centro de la localidad abierta. Se quitó: un derrumbe a 40 km
+   * del pueblo dibujado EN el pueblo no es un dato aproximado, es un dato falso
+   * — manda a frenar donde no hay nada y deja sin marcar el lugar donde sí lo
+   * hay. Justo el tramo entre pueblos es el que importa.
+   *
+   * Lo único que se sigue comprobando es que la posición sea creíble para esta
+   * app: sin GPS de verdad (un computador, o el permiso denegado) el navegador
+   * ubica por IP y el punto puede caer a cientos de kilómetros — pasó probando
+   * la app, con cuatro reportes que aterrizaron en Santiago.
    */
   const reportar = async (tipo, k) => {
-    const enRuta = (p) => !!p && kmALaRuta(p[0], p[1]) <= RADIO_RUTA_KM
-    const centroLoc = locActiva ? [locActiva.lat, locActiva.lng] : null
-    const punto = enRuta(posMapa) ? posMapa : (centroLoc ?? posMapa)
-    if (!punto) {
-      mostrarToast(t('reporteSinUbicacion'))
+    if (!posMapa) {
+      // El GPS ya no tiene botón propio en el rail, así que este toast es el
+      // ÚNICO lugar donde el viajero se entera de que la app no lo está
+      // ubicando. Por eso distingue "todavía buscando" (espera y reintenta) de
+      // "no hay permiso" (hay que ir a arreglarlo), en vez de un mensaje único.
+      mostrarToast(estadoGeo === 'buscando' ? t('buscandoUbicacion') : t('reporteSinUbicacion'))
       return
     }
 
-    // Ni el GPS ni la localidad abierta dejan el punto en la Austral: no se
-    // manda ni se encola. Se avisa acá, en el cliente, para que el mensaje
-    // llegue también SIN SEÑAL — que es donde de verdad se reporta.
-    if (!enRuta(punto)) {
+    // El GPS deja el punto fuera de la Austral: no se manda ni se encola. Se
+    // avisa acá, en el cliente, para que el mensaje llegue también SIN SEÑAL —
+    // que es donde de verdad se reporta.
+    if (kmALaRuta(posMapa[0], posMapa[1]) > RADIO_RUTA_KM) {
       mostrarToast(t('reporteFueraDeRuta'))
       return
     }
     const texto = comentario.trim()
-    if (tipo === 'comentario' && !texto) {
-      mostrarToast(t('reporteFaltaTexto'))
-      return
-    }
 
     setHoja(null)
     setComentario('')
     const r = await enviarReporte({
       tipo,
-      lat: punto[0],
-      lng: punto[1],
+      lat: posMapa[0],
+      lng: posMapa[1],
       comentario: texto || null,
     })
 
     if (r.enviado) {
+      contar('reporte', tipo)
       // Optimista: el reporte que devolvió la API entra al mapa al instante.
       setReportes((prev) => [r.reporte, ...prev.filter((x) => x.id !== r.reporte.id)])
       // Y se sueltan los chips de tramo: con un filtro puesto, el reporte recién
@@ -683,6 +719,9 @@ function AppInterna() {
       setTramo(null)
       mostrarToast(`${t(k)} · ${t('reporteEnviado')}`)
     } else if (r.encolado) {
+      // Se cuenta igual que uno enviado: el viajero hizo el reporte, y que la
+      // señal llegue tres horas después no cambia que la app se usó ahí.
+      contar('reporte', tipo)
       setEnCola(await contarCola())
       mostrarToast(t('reporteEncolado'))
     } else {
@@ -699,7 +738,10 @@ function AppInterna() {
     setReporteSel(null)
     const actualizado = await votarReporte(actual.id, confirma)
     mostrarToast(actualizado ? t('graciasVoto') : t('reporteFalla'))
-    if (actualizado) setReportes(await obtenerReportes())
+    if (actualizado) {
+      contar('voto', confirma ? 'confirma' : 'descarta')
+      setReportes(await obtenerReportes())
+    }
   }
 
   /** Antigüedad del reporte en texto corto ("recién", "hace 20 min", "hace 3 h"). */
@@ -771,7 +813,7 @@ function AppInterna() {
 
         <button
           className="loc-pill"
-          onClick={() => (vista === 'localidad' ? volverRuta() : setHoja('buscar'))}
+          onClick={() => (vista === 'localidad' ? volverRuta() : abrirBuscador())}
         >
           <span
             className="zn"
@@ -785,12 +827,18 @@ function AppInterna() {
           </span>
         </button>
 
+        {/* Idioma en el lugar de la lupa. La búsqueda no se pierde: la píldora
+            del centro ya abre el buscador en la vista de ruta, y el menú tiene
+            su propia entrada. El idioma, en cambio, estaba al fondo del menú —
+            el último sitio donde lo va a buscar alguien que abrió la app en
+            español sin hablarlo. Cambiarlo tiene que costar un toque. */}
         <button
-          className="fab-sq"
-          onClick={() => setHoja('buscar')}
-          aria-label={lang === 'es' ? 'Buscar' : 'Search'}
+          className="fab-sq fab-lang"
+          onClick={cambiarIdioma}
+          aria-label={lang === 'es' ? 'Switch to English' : 'Cambiar a español'}
         >
-          <Icon nombre="search" tam={22} color="var(--tinta)" />
+          <Icon nombre="globe" tam={19} color="var(--tinta)" />
+          <span className="fab-lang-tx">{lang === 'es' ? 'EN' : 'ES'}</span>
         </button>
       </div>
 
@@ -833,27 +881,19 @@ function AppInterna() {
         </div>
       )}
 
-      {/* Rail derecho */}
+      {/* Rail derecho. Aquí vivía el botón de "centrar en mi ubicación"; lo
+          reemplaza el asistente. El botón de GPS resolvía un problema que el
+          mapa ya no tiene (el punto "estás aquí" sigue dibujándose y la vista
+          arranca encuadrada en la ruta), mientras que el asistente estaba
+          enterrado en el menú — dos toques para lo único que responde preguntas
+          sin señal. Ahora es el vecino permanente del botón de reportar. */}
       <div className="rail">
         <button
-          className={`fab-round fab-geo geo-${estadoGeo}`}
-          onClick={centrarEnMi}
-          aria-busy={!posMapa && estadoGeo === 'buscando'}
-          aria-label={
-            posMapa
-              ? lang === 'es'
-                ? 'Mi ubicación'
-                : 'My location'
-              : estadoGeo === 'buscando'
-                ? t('buscandoUbicacion')
-                : t('sinUbicacion')
-          }
+          className="fab-round fab-asistente"
+          onClick={abrirChat}
+          aria-label={t('menuAsistente')}
         >
-          {!posMapa && estadoGeo === 'buscando' ? (
-            <span className="geo-spinner" aria-hidden="true" />
-          ) : (
-            <Icon nombre="locate" tam={22} color="var(--tinta)" />
-          )}
+          <Icon nombre="message-circle" tam={23} color="var(--verde-osc)" />
         </button>
         <button
           className="fab-round fab-report"
@@ -893,10 +933,7 @@ function AppInterna() {
         <QuickCard
           lugar={lugarRapido}
           onCerrar={() => setLugarRapido(null)}
-          onVerFicha={() => {
-            setFichaLugar(lugarRapido)
-            setLugarRapido(null)
-          }}
+          onVerFicha={() => abrirFicha(lugarRapido)}
           onToast={mostrarToast}
         />
       )}
@@ -1002,13 +1039,19 @@ function AppInterna() {
               <div className="m-sub">{t('menuVerRutaSub')}</div>
             </div>
           </div>
-          <div
-            className="menu-row"
-            onClick={() => {
-              setHoja(null)
-              setChatAbierto(true)
-            }}
-          >
+          {/* La lupa de la barra superior la ocupa ahora el idioma, así que el
+              buscador necesita una puerta que funcione también dentro de un
+              pueblo (allí la píldora del centro vuelve a la ruta, no busca). */}
+          <div className="menu-row" onClick={abrirBuscador}>
+            <span className="m-ico">
+              <Icon nombre="search" tam={20} color="var(--verde)" />
+            </span>
+            <div>
+              <b>{t('menuBuscar')}</b>
+              <div className="m-sub">{t('menuBuscarSub')}</div>
+            </div>
+          </div>
+          <div className="menu-row" onClick={abrirChat}>
             <span className="m-ico">
               <Icon nombre="message-circle" tam={20} color="var(--verde)" />
             </span>
@@ -1069,7 +1112,7 @@ function AppInterna() {
               className="menu-lang"
               onClick={(e) => {
                 e.stopPropagation()
-                setLang(lang === 'es' ? 'en' : 'es')
+                cambiarIdioma()
               }}
             >
               <Icon nombre="globe" tam={12} /> {lang === 'es' ? 'EN' : 'ES'}
@@ -1092,8 +1135,9 @@ function AppInterna() {
             <Icon nombre="clock" tam={15} color="var(--verde-osc)" />
             <span>{t('reportesNota')}</span>
           </div>
-          {/* Detalle opcional: viaja con el tipo que se toque, y es obligatorio
-              cuando el reporte ES el comentario. */}
+          {/* Detalle opcional: viaja con el tipo que se toque. Ya no hay un
+              "dejar comentario" como tipo aparte — con tres tipos, un cuarto
+              botón que en realidad era texto libre solo competía con ellos. */}
           <textarea
             className="rep-texto"
             rows={2}
@@ -1102,16 +1146,9 @@ function AppInterna() {
             onChange={(e) => setComentario(e.target.value)}
             placeholder={t('comentarioPh')}
           />
-          <div className="rep-comment" onClick={() => reportar('comentario', 'dejarComentario')}>
-            <span className="rc-ico">
-              <Icon nombre="message-circle" tam={20} color="var(--claude)" />
-            </span>
-            <div>
-              <b>{t('dejarComentario')}</b>
-              <small>{t('comentarioSub')}</small>
-            </div>
-          </div>
-          <div className="rep-grid">
+          {/* Tres tipos, tres botones grandes: se contesta de un toque con el
+              auto detenido en la berma, que es la situación real. */}
+          <div className="rep-grid rep-grid-3">
             {REPORTES.map((r) => (
               <button key={r.k} className="rep-item" onClick={() => reportar(r.tipo, r.k)}>
                 <span className="r-badge" style={{ background: r.c }}>
@@ -1179,7 +1216,13 @@ function AppInterna() {
       )}
 
       {/* Ficha completa */}
-      {fichaLugar && <PlaceDetail lugar={fichaLugar} onCerrar={() => setFichaLugar(null)} />}
+      {fichaLugar && (
+        <PlaceDetail
+          lugar={fichaLugar}
+          onCerrar={() => setFichaLugar(null)}
+          onActualizar={actualizarLugar}
+        />
+      )}
 
       {/* Panel de avisos municipales */}
       {panelAvisos && (
