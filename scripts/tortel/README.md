@@ -16,16 +16,54 @@ var alojamientos =
 
 No hay un endpoint único que los devuelva todos, y **desde una sesión web de
 Claude Code no hay salida de red hacia `tortel.cl`** (la bloquea el proxy del
-entorno). Así que el paso 1 es manual:
+entorno). Pero **no hace falta bajarlos uno por uno.**
 
-1. Abrir el mapa en Chrome → **DevTools → Network → filtro JS**.
-2. Recargar y bajar cada archivo (`Save as…` o copiar la respuesta).
-3. Dejarlos en `scripts/tortel/crudos/`, con su nombre original (`alojamientos.js`,
-   `pasarelas.js`, …). El nombre del archivo se usa como nombre de la **capa**.
+### La forma corta: un volcado desde la consola del navegador
 
-> **Ojo con la lista completa:** el panel de Network tiene scroll. Confirmar que
-> se bajaron **todos** los `.js` de datos antes de dar la recolección por cerrada;
-> la primera pasada dejó fuera 2–5 archivos que no se veían en la captura.
+El mapa deja cada capa como una **variable global** de la página, así que se
+pueden capturar todas juntas. Abrir el mapa, **encender todas las capas** del
+control (una capa que nunca se muestra puede no haberse cargado), y en
+**DevTools → Console** pegar:
+
+```js
+(() => {
+  const capas = {}
+  for (const k of Object.keys(window)) {
+    try {
+      const v = window[k]
+      if (v && v.type === 'FeatureCollection' && Array.isArray(v.features)) capas[k] = v
+    } catch (e) { /* algunas propiedades de window explotan al leerlas */ }
+  }
+  console.log(`${Object.keys(capas).length} capas: ${Object.keys(capas).join(', ')}`)
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(capas)], { type: 'application/json' }))
+  a.download = 'tortel-capas.json'
+  a.click()
+})()
+```
+
+Descarga **un solo archivo** con todas las capas y de paso imprime sus nombres.
+Ese archivo se deja en `crudos/` (con extensión `.js` o `.json`, da igual) y el
+paso 1 lo entiende: detecta si el archivo trae una capa o muchas.
+
+Tiene tres ventajas sobre bajar archivo por archivo, y no son menores:
+
+1. **No se escapa ninguna capa.** La lista del panel Network tiene scroll y la
+   primera pasada dejó fuera varias.
+2. **Los nombres son los de verdad.** Los nombres de archivo no coinciden con los
+   de las capas: lo que la lista llamaba `alojamientos.js` en el mapa es la capa
+   **`cama`**, y apareció una **`rural`** que no estaba en ninguna lista. Por eso
+   el script toma el nombre del propio GeoJSON y no del archivo.
+3. **Se acabó el problema de codificación.** Los `.js` servidos vienen con el
+   UTF-8 roto (`RÃ­o Bravo`, `TelÃ©fono`); el navegador ya los decodificó bien, así
+   que el volcado sale limpio. El script repara igual por si acaso, pero es una
+   fuente de errores menos.
+
+### La forma larga (si la consola no es opción)
+
+**DevTools → Network → filtro JS**, bajar cada archivo y dejarlos en
+`scripts/tortel/crudos/`. Funciona igual; solo hay que revisar la lista con
+scroll para no dejar capas afuera.
 
 `crudos/` está en `.gitignore`: son archivos de terceros y no tienen por qué
 vivir en el repo. Lo que se versiona es el resultado consolidado.

@@ -43,6 +43,11 @@ ID_INICIAL = 4000  # 1–192 seed · 2000–2181 SERNATUR · 3001–3083 prelimi
 # capa del mapa → categoría de `places`. Sin entrada acá, el script se detiene.
 # `None` = la capa no va a `places` (son trazados: su lugar es la capa de rutas).
 CATEGORIAS = {
+    # Ojo: los nombres reales de las capas NO son los de la lista de archivos.
+    # El mapa llama `cama` a los alojamientos y `rural` al turismo rural; por eso
+    # la capa se toma del propio GeoJSON y no del nombre del archivo.
+    'cama': 'alojamiento',
+    'rural': 'alojamiento',
     'alojamientos': 'alojamiento',
     'cabana': 'alojamiento',
     'alimentacion': 'comida',
@@ -74,6 +79,23 @@ PLANTILLAS = {
                  'Service in {sector}, Caleta Tortel.'),
     'atractivo': ('Atractivo turístico de Caleta Tortel, sector {sector}.',
                   'Tourist attraction in Caleta Tortel, {sector} area.'),
+}
+
+# El `Subtipo` del origen a veces trae las dos lenguas ("Hospedaje/accommodation")
+# y a veces no ("Restaurante"), y cuando trae dos partes no siempre la segunda es
+# inglés ("Turismo rural/Alojamiento" son las dos en español). Por eso la
+# traducción va en una tabla explícita en vez de partir por "/" y confiar: es la
+# diferencia entre una ficha en inglés que se entiende y una que dice
+# "Alojamiento". Un subtipo no listado cae al texto original en ambos idiomas y
+# sale avisado al final, para agregarlo acá.
+SUBTIPOS = {
+    'hospedaje/accommodation': ('Hospedaje', 'Guesthouse'),
+    'residencial/accommodation': ('Residencial', 'Guesthouse'),
+    'turismo rural/alojamiento': ('Turismo rural', 'Rural lodging'),
+    'camping': ('Camping', 'Campsite'),
+    'cabaña': ('Cabaña', 'Cabin'),
+    'restaurante': ('Restaurante', 'Restaurant'),
+    'comida al paso/fast food': ('Comida al paso', 'Fast food'),
 }
 
 
@@ -129,6 +151,8 @@ def main():
                  + '\nAgrégalas a CATEGORIAS en este archivo (None si son trazados).')
 
     lugares, saltados_linea, sin_nombre = [], 0, 0
+    subtipos_sin_traducir = set()
+    lejos = []
     siguiente_id = ID_INICIAL
 
     for rasgo in coleccion.get('features', []):
@@ -154,15 +178,30 @@ def main():
 
         # El subtipo y la capacidad son dato real del municipio: se suman al texto
         # en vez de quedar enterrados en el JSON.
-        if props.get('subtipo'):
-            desc_es = f"{props['subtipo']}. {desc_es}"
-            desc_en = f"{props['subtipo']}. {desc_en}"
+        subtipo = (props.get('subtipo') or '').strip()
+        if subtipo:
+            clave = subtipo.lower()
+            if clave in SUBTIPOS:
+                sub_es, sub_en = SUBTIPOS[clave]
+            else:
+                sub_es = sub_en = subtipo.split('/')[0].strip()
+                subtipos_sin_traducir.add(subtipo)
+            desc_es = f'{sub_es}. {desc_es}'
+            desc_en = f'{sub_en}. {desc_en}'
         if props.get('capacidad'):
             desc_es += f" Capacidad: {props['capacidad']} personas."
             desc_en += f" Capacity: {props['capacidad']} people."
 
         telefonos = props.get('telefonos') or []
         km = distancia_km(lat, lng)
+
+        # Hay lugares de la COMUNA que no están en el pueblo (Puerto Yungay, El
+        # Quetru, Lago Leal: decenas de km por camino o por agua). Entran igual
+        # —son servicios reales de la zona— pero se listan aparte: hay que
+        # decidir a mano si su ficha cuelga de Caleta Tortel o confunde al
+        # viajero que busca dónde dormir esta noche en el pueblo.
+        if km > 5:
+            lejos.append((nombre, sector, km))
 
         lugares.append({
             'id': siguiente_id,
@@ -207,6 +246,20 @@ def main():
     print(f'Saltados por ser trazados o no-punto: {saltados_linea}')
     print(f'Saltados por no tener nombre: {sin_nombre}')
     print(f'Con teléfono: {sum(1 for l in lugares if l["tel"])} de {len(lugares)}')
+    print(f'Con correo (va en _origen, `places` no tiene columna): '
+          f'{sum(1 for l in lugares if l["_origen"]["email"])}')
+
+    if lejos:
+        print(f'\nFUERA DEL PUEBLO ({len(lejos)}) — revisar si cuelgan de Caleta Tortel:')
+        for nombre, sector, km in sorted(lejos, key=lambda x: -x[2]):
+            print(f'  {km:6.1f} km  {nombre}  ({sector})')
+
+    if subtipos_sin_traducir:
+        print(f'\nSUBTIPOS SIN TRADUCCIÓN ({len(subtipos_sin_traducir)}) — '
+              f'agrégalos a SUBTIPOS en este archivo:')
+        for s in sorted(subtipos_sin_traducir):
+            print(f'  "{s}"')
+
     print(f'\n→ {SALIDA}')
     print('Todas quedan con publicado=false. Se revisan y publican desde /admin.')
 

@@ -69,6 +69,29 @@ CAMPOS = {
 IGNORAR = {'coordx', 'coordy', 'x', 'y', 'fid', 'id', 'objectid'}
 
 
+def reparar_mojibake(texto):
+    """Arregla el UTF-8 leído como Latin-1 ("RÃ­o Bravo" → "Río Bravo").
+
+    El origen viene así de fábrica: los .js del mapa traen los bytes UTF-8
+    interpretados como Latin-1/Windows-1252, y se nota en cada tilde y cada eñe
+    ("TelÃ©fono", "cabaÃ±a", "ToÃ±ita"). Sin esto las fichas quedarían con la
+    basura visible en la app, y además **el campo `Teléfono` no se detectaría**:
+    su clave llega rota y no calza con ningún sinónimo.
+
+    Se repara solo si el resultado es plausible: se exige que el texto tenga
+    alguna de las secuencias delatoras (Ã, Â, â€) y que la reconversión no
+    reviente. Un texto sano nunca las tiene, así que no hay riesgo de romper lo
+    que ya está bien — importante porque este script va a correr sobre archivos
+    que quizá vengan bien codificados.
+    """
+    if not any(marca in texto for marca in ('Ã', 'Â', 'â€')):
+        return texto
+    try:
+        return texto.encode('latin-1').decode('utf-8')
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        return texto
+
+
 def _clave(texto):
     """Normaliza un nombre de campo para comparar: sin tildes, solo letras y números."""
     s = unicodedata.normalize('NFKD', str(texto))
@@ -87,37 +110,68 @@ def _limpiar(valor):
 
 
 def _telefonos(props):
-    """Junta fono1, fono2, telefono… en una lista, sin repetir y sin vacíos.
+    """Junta fono1, fono2, Teléfono… en una lista, sin repetir y sin vacíos.
 
     El proyecto guarda UN teléfono por ficha (`places.tel`), pero acá se
     conservan todos: elegir cuál va es una decisión editorial del paso 2, no del
     extractor. Perder el segundo teléfono en la extracción sería irreversible.
+
+    **Un mismo número viene hasta tres veces.** El origen trae `fono1` y `fono2`
+    sueltos y además un campo `Teléfono` con LOS DOS en una sola cadena
+    (`"56962117430 / 56987604120"`). Si no se parte por el separador, esa cadena
+    entera se cuela como si fuera un número y termina en la ficha —pasó: una
+    quedó con `tel: "56962117430/56987604120"`—. Así que cada valor se divide por
+    `/`, `,` o `;` y recién ahí se deduplica.
     """
     encontrados = []
     for clave_original, valor in props.items():
         k = _clave(clave_original)
-        if k.startswith('fono') or k.startswith('telefono') or k in {'tel', 'celular'}:
-            v = _limpiar(valor)
-            if v is not None:
-                v = re.sub(r'\s+', '', str(v))
-                if v not in encontrados:
-                    encontrados.append(v)
+        if not (k.startswith('fono') or k.startswith('telefono') or k in {'tel', 'celular'}):
+            continue
+        v = _limpiar(valor)
+        if v is None:
+            continue
+        for parte in re.split(r'[/,;]+', str(v)):
+            numero = re.sub(r'\s+', '', parte)
+            if numero and numero not in encontrados:
+                encontrados.append(numero)
     return encontrados
 
 
 def _extraer_geojson(texto):
-    """Saca el objeto GeoJSON del archivo .js.
+    """Saca el/los objetos GeoJSON de un archivo, con su nombre de capa.
 
-    Tolera las variantes que aparecen en la práctica: `var x = {...}`,
-    `var x =\n{...};`, `const x = {...}` y el archivo que ya viene como JSON
-    pelado. Se corta desde la primera llave hasta la última, que es más robusto
-    que una expresión regular sobre todo el contenido.
+    Devuelve una lista de `(nombre_capa, coleccion)`. Son varios y no uno porque
+    el archivo puede ser de dos formas:
+
+      - **Una capa** — el `.js` tal cual lo sirve el mapa:
+        `var cama = { "type": "FeatureCollection", … }`
+      - **Todas juntas** — el volcado de la consola del navegador (ver README):
+        `{ "cama": {…}, "alimentacion": {…}, … }`. Esta es la forma cómoda: se
+        bajan las ~17 capas de una sola vez, sin ir archivo por archivo.
+
+    El nombre de la capa sale del propio GeoJSON (`"name"`) o de la clave del
+    volcado — **nunca del nombre del archivo**, que es lo que uno haya escrito al
+    guardarlo y ya demostró no coincidir (el mapa llama `cama` a lo que la lista
+    original daba por `alojamientos.js`).
     """
-    inicio = texto.find('{')
-    fin = texto.rfind('}')
+    inicio, fin = texto.find('{'), texto.rfind('}')
     if inicio == -1 or fin == -1 or fin < inicio:
         raise ValueError('no encontré un objeto JSON en el archivo')
-    return json.loads(texto[inicio:fin + 1])
+
+    datos = json.loads(texto[inicio:fin + 1])
+
+    if datos.get('type') == 'FeatureCollection':
+        return [(datos.get('name') or '', datos)]
+
+    # Volcado de varias capas: {"cama": {...}, "alimentacion": {...}}
+    capas = [
+        (v.get('name') or k, v) for k, v in datos.items()
+        if isinstance(v, dict) and v.get('type') == 'FeatureCollection'
+    ]
+    if not capas:
+        raise ValueError('no hay ningún FeatureCollection adentro')
+    return capas
 
 
 def _puntos(geometria):
@@ -191,43 +245,56 @@ def main():
     geometrias, claves_por_capa = Counter(), defaultdict(set)
     sin_nombre, fuera_caja, sin_geometria = [], [], []
 
+    reparados = 0
     for archivo in archivos:
-        capa = archivo[:-3]
         with open(os.path.join(CRUDOS, archivo), encoding='utf-8') as f:
-            contenido = f.read()
+            crudo = f.read()
+
+        # La reparación va sobre el TEXTO COMPLETO, antes de parsear: así arregla
+        # de una vez los valores ("RÃ­o Bravo") y las CLAVES ("TelÃ©fono"), que
+        # si no llegan rotas al normalizador y no calzan con ningún sinónimo.
+        contenido = reparar_mojibake(crudo)
+        if contenido != crudo:
+            reparados += 1
 
         try:
-            datos = _extraer_geojson(contenido)
+            capas_del_archivo = _extraer_geojson(contenido)
         except (ValueError, json.JSONDecodeError) as e:
             lineas_informe.append(f'  ✗ {archivo}: NO SE PUDO LEER — {e}')
             continue
 
-        propios = datos.get('features') or []
-        tipos_capa = Counter()
+        for capa, datos in capas_del_archivo:
+            capa = capa or archivo[:-3]  # último recurso: el nombre del archivo
+            propios = datos.get('features') or []
+            tipos_capa = Counter()
 
-        for feature in propios:
-            claves_por_capa[capa].update((feature.get('properties') or {}).keys())
-            normalizado = _normalizar_feature(feature, capa)
-            geo = normalizado['geometry']
-            tipo_geo = (geo or {}).get('type', 'SIN GEOMETRÍA')
-            tipos_capa[tipo_geo] += 1
-            geometrias[tipo_geo] += 1
+            for feature in propios:
+                claves_por_capa[capa].update((feature.get('properties') or {}).keys())
+                normalizado = _normalizar_feature(feature, capa)
+                geo = normalizado['geometry']
+                tipo_geo = (geo or {}).get('type', 'SIN GEOMETRÍA')
+                tipos_capa[tipo_geo] += 1
+                geometrias[tipo_geo] += 1
 
-            etiqueta = normalizado['properties']['nombre'] or '(sin nombre)'
-            if not normalizado['properties']['nombre']:
-                sin_nombre.append(f'{capa}: feature sin campo de nombre')
-            if not geo:
-                sin_geometria.append(f'{capa}: {etiqueta}')
-            for lon, lat, *_ in _puntos(geo):
-                if not (BBOX['lon_min'] <= lon <= BBOX['lon_max']
-                        and BBOX['lat_min'] <= lat <= BBOX['lat_max']):
-                    fuera_caja.append(f'{capa}: {etiqueta} → ({lon}, {lat})')
-                    break
+                etiqueta = normalizado['properties']['nombre'] or '(sin nombre)'
+                if not normalizado['properties']['nombre']:
+                    sin_nombre.append(f'{capa}: feature sin campo de nombre')
+                if not geo:
+                    sin_geometria.append(f'{capa}: {etiqueta}')
+                for lon, lat, *_ in _puntos(geo):
+                    if not (BBOX['lon_min'] <= lon <= BBOX['lon_max']
+                            and BBOX['lat_min'] <= lat <= BBOX['lat_max']):
+                        fuera_caja.append(f'{capa}: {etiqueta} → ({lon}, {lat})')
+                        break
 
-            features.append(normalizado)
+                features.append(normalizado)
 
-        detalle = ', '.join(f'{n}×{t}' for t, n in tipos_capa.items())
-        lineas_informe.append(f'  ✓ {archivo}: {len(propios):3d} features  [{detalle}]')
+            detalle = ', '.join(f'{n}×{t}' for t, n in tipos_capa.items())
+            origen = archivo if len(capas_del_archivo) == 1 else f'{archivo} → {capa}'
+            lineas_informe.append(f'  ✓ {origen}: {len(propios):3d} features  [{detalle}]')
+
+    if reparados:
+        lineas_informe.append(f'  (codificación reparada en {reparados} archivo(s): UTF-8 leído como Latin-1)')
 
     coleccion = {
         'type': 'FeatureCollection',
