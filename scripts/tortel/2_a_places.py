@@ -124,6 +124,17 @@ SUBTIPO_A_CATEGORIA = {
     'trail shelter': 'atractivo',
 }
 
+# Sectores que NO entran en el lote de Caleta Tortel porque ya están cargados
+# como fichas CURADAS en su propia localidad (11-ago-2026).
+#
+# El deduplicador del seeder no los caza y por eso hace falta esta lista: compara
+# nombre + localidad, y estas fichas viven en `puerto-yungay`, no en
+# `caleta-tortel`. Sin excluirlas, la cafetería y las cabañas El Peregrino
+# aparecerían DOS veces en la app —una bien puesta en Puerto Yungay y otra
+# colgando de Tortel a 22 km— que es justo el tipo de dato descuidado que el
+# proyecto le está pidiendo corregir a las plataformas grandes.
+SECTORES_EXCLUIDOS = {'puerto yungay'}
+
 # El único punto SIN subtipo en el origen es la oficina de CONAF. Se resuelve por
 # nombre en vez de dejar un `None` mudo en la tabla de arriba, que el día que
 # aparezca otro punto sin subtipo lo mandaría al cajón equivocado en silencio.
@@ -231,6 +242,7 @@ def main():
     subtipos_sin_traducir = set()
     subtipos_sin_categoria = set()
     sin_categoria = []
+    excluidos = []
     lejos = []
     siguiente_id = ID_INICIAL
 
@@ -263,6 +275,10 @@ def main():
         nombre = props.get('nombre')
         if not nombre:
             sin_nombre += 1
+            continue
+
+        if (props.get('sector') or '').strip().lower() in SECTORES_EXCLUIDOS:
+            excluidos.append(f"{nombre} ({props.get('sector')})")
             continue
 
         lng, lat = geo['coordinates'][0], geo['coordinates'][1]
@@ -340,6 +356,10 @@ def main():
         print(f'  {cat}: {n}')
     print(f'Saltados por ser trazados o no-punto: {saltados_linea}')
     print(f'Saltados por no tener nombre: {sin_nombre}')
+    if excluidos:
+        print(f'Excluidos por tener ficha propia en otra localidad: {len(excluidos)}')
+        for x in excluidos:
+            print(f'  {x}')
     print(f'Con teléfono: {sum(1 for l in lugares if l["tel"])} de {len(lugares)}')
     print(f'Con correo (va en _origen, `places` no tiene columna): '
           f'{sum(1 for l in lugares if l["_origen"]["email"])}')

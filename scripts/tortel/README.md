@@ -172,6 +172,33 @@ protegidas. También entra todo en borrador, y se revisa en `/admin → Rutas y
   La respuesta completa de `/api/rutas` pesa **47 KB**, y no entra al bundle: se
   descarga la primera vez que hay señal (`obtenerRutas` en `api/client.js`).
 
+## Cómo llega esto a PRODUCCIÓN (y por qué no lo puede hacer una sesión web)
+
+Los seeders escriben en **la base a la que apunte tu `.env`**. Desde una sesión
+web de Claude Code no hay acceso a Neon —ni red ni credenciales, que viven solo
+en el dashboard de Render—, así que la importación a producción se corre **en
+local**, igual que el lote SERNATUR:
+
+```bash
+# En backend/.env, DB_URL apuntando a Neon (?sslmode=require)
+php artisan db:seed --class=Database\\Seeders\\TortelPlaceSeeder
+php artisan db:seed --class=Database\\Seeders\\RutaSeeder
+```
+
+Después, **publicar es cosa del CMS**, no de los scripts:
+
+- **Lugares** → `/admin` → Lugares → filtro *Localidad: Caleta Tortel* +
+  *Publicado: No* → seleccionar todo → acción en lote **Publicar**.
+- **Rutas** → `/admin` → Rutas y áreas → seleccionar → **Publicar**.
+
+> **Antes de publicar los 116 de una sola vez, ojo con la regla editorial.**
+> Desde el 27-jul rige *un servicio publicado por localidad y categoría*: si
+> Tortel pasa a tener 116 fichas publicadas mientras las otras 26 localidades
+> tienen 6, el directorio queda disparejo — y estas fichas todavía tienen la
+> descripción de plantilla, no texto curado. Publicar por tandas (primero
+> emergencias y servicios, que son dato duro y no necesitan redacción) deja el
+> beneficio sin la deuda.
+
 ## Lo que este script NO hace
 
 No toca la base de datos ni decide categorías del proyecto. El mapeo a la tabla
