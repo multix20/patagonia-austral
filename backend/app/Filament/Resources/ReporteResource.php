@@ -27,19 +27,28 @@ class ReporteResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
-    /** Etiquetas de tipo (coinciden con la PWA). */
+    /**
+     * Etiquetas de tipo (coinciden con la PWA).
+     *
+     * Los tres primeros son los que se pueden reportar hoy. El resto son tipos
+     * RETIRADOS en ago-2026: no se crean más, pero siguen apareciendo mientras
+     * los reportes que los usan no caduquen, y el histórico de la tabla los
+     * conserva para siempre. Sin su etiqueta, la columna mostraría el slug crudo.
+     */
     public const TIPOS = [
-        'derrumbe' => 'Derrumbe',
-        'camino' => 'Estado del camino',
-        'faena' => 'Faena / desvío',
-        'hielo' => 'Hielo / escarcha',
-        'combustible' => 'Combustible',
-        'ferry' => 'Barcaza',
-        'camping' => 'Camping',
-        'tiempo' => 'Clima',
-        'fauna' => 'Animales en la ruta',
-        'evento' => 'Evento',
-        'comentario' => 'Comentario',
+        'peligro' => 'Peligro',
+        'accidente' => 'Accidente',
+        'faena' => 'Trabajos en la vía',
+        'derrumbe' => 'Derrumbe (retirado)',
+        'camino' => 'Estado del camino (retirado)',
+        'hielo' => 'Hielo / escarcha (retirado)',
+        'combustible' => 'Combustible (retirado)',
+        'ferry' => 'Barcaza (retirado)',
+        'camping' => 'Camping (retirado)',
+        'tiempo' => 'Clima (retirado)',
+        'fauna' => 'Animales en la ruta (retirado)',
+        'evento' => 'Evento (retirado)',
+        'comentario' => 'Comentario (retirado)',
     ];
 
     /** Badge con el número de reportes vigentes, para verlos sin entrar. */
@@ -59,9 +68,9 @@ class ReporteResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => self::TIPOS[$state] ?? $state)
                     ->color(fn (string $state): string => match ($state) {
-                        'derrumbe', 'camino', 'faena' => 'danger',
+                        'peligro', 'accidente', 'derrumbe' => 'danger',
+                        'faena' => 'warning',
                         'hielo', 'tiempo' => 'info',
-                        'combustible', 'ferry' => 'warning',
                         default => 'gray',
                     })
                     ->sortable(),

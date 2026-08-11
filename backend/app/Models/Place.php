@@ -5,13 +5,14 @@ namespace App\Models;
 use App\Services\AlmacenamientoFotos;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class Place extends Model
 {
     protected $fillable = [
         'cat', 'lat', 'lng', 'tel', 'nombre', 'descripcion', 'como', 'dist', 'publicado',
-        'destacado', 'localidad_id', 'imagenes',
+        'destacado', 'localidad_id', 'imagenes', 'calificacion_promedio', 'calificaciones_total',
     ];
 
     protected $casts = [
@@ -24,11 +25,50 @@ class Place extends Model
         'lng' => 'float',
         'publicado' => 'boolean',
         'destacado' => 'boolean',
+        'calificacion_promedio' => 'float',
+        'calificaciones_total' => 'integer',
     ];
 
     public function localidad(): BelongsTo
     {
         return $this->belongsTo(Localidad::class);
+    }
+
+    public function calificaciones(): HasMany
+    {
+        return $this->hasMany(Calificacion::class);
+    }
+
+    /** ¿Esta ficha admite estrellas? (ver Calificacion::CATEGORIAS_SIN_CALIFICACION) */
+    public function admiteCalificacion(): bool
+    {
+        return ! in_array($this->cat, Calificacion::CATEGORIAS_SIN_CALIFICACION, true);
+    }
+
+    /**
+     * Recalcula promedio y total desde las calificaciones VISIBLES y los guarda
+     * en la propia ficha.
+     *
+     * Se llama al crear/editar una calificación y al ocultarla desde el CMS. Es
+     * el precio de tener el dato desnormalizado, y se paga al escribir —que pasa
+     * de a una— en vez de en cada lectura de /api/places, que sirve las 231
+     * fichas de una y la PWA pide en cada sincronización.
+     *
+     * Ocultar una opinión tiene que MOVER el promedio: si no, moderar spam
+     * dejaría la nota envenenada y el número visible no correspondería a ninguna
+     * opinión que se pueda leer.
+     */
+    public function recalcularCalificacion(): void
+    {
+        $visibles = $this->calificaciones()->visibles();
+        $total = (clone $visibles)->count();
+
+        $this->update([
+            'calificaciones_total' => $total,
+            'calificacion_promedio' => $total > 0
+                ? round((clone $visibles)->avg('estrellas'), 2)
+                : null,
+        ]);
     }
 
     /**
@@ -96,6 +136,15 @@ class Place extends Model
             'destacado' => $this->destacado,
             'localidad' => $this->localidad?->slug,
             'imagenes' => $this->imagenesUrl(),
+            // Nota y cuántas opiniones la sostienen. Viajan con el directorio (y
+            // no en un endpoint aparte) para que las estrellas se vean SIN SEÑAL:
+            // la decisión de dónde parar se toma en la ruta, que es justo donde
+            // no hay cobertura para ir a buscarlas. Los comentarios sí van
+            // aparte (/api/calificaciones): son muchos y solo se leen al abrir
+            // la ficha, ya en el pueblo.
+            'estrellas' => $this->calificacion_promedio,
+            'calificaciones' => $this->calificaciones_total,
+            'calificable' => $this->admiteCalificacion(),
         ];
     }
 }
