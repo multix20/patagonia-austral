@@ -92,8 +92,10 @@ Ver `backend/SETUP.md` para el detalle de configuración.
   PWA instalable con iconos por plataforma y aviso de versión nueva, la vista
   previa al compartir el enlace, y el **almacenamiento de imágenes en Cloudflare
   R2** (operativo desde el 10-ago-2026: las fichas ya admiten fotos).
-  Pendiente: **backend *always-on*** para que el servicio no se duerma
-  (`DEPLOY.md` §2.9). Después: respaldos, monitoreo y difusión.
+  y el **backend *always-on*** (Render Starter + scheduler en el contenedor: se
+  acabó el arranque en frío y los avisos programados ya se despachan solos).
+  **Sin pendientes de infraestructura** desde el 10-ago-2026. Queda: respaldos,
+  monitoreo (Sentry) y difusión.
 
 ## Conexión con backend
 

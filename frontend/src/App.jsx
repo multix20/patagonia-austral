@@ -13,6 +13,7 @@ import {
   obtenerAvisos,
   obtenerLocalidades,
   obtenerReportes,
+  obtenerRutas,
   enviarReporte,
   sincronizarCola,
   contarCola,
@@ -118,6 +119,9 @@ function AppInterna() {
   // Crowdsourcing (Fase 3): reportes vigentes, el que el usuario tiene abierto,
   // el texto del comentario opcional y cuántos quedaron en cola sin señal.
   const [reportes, setReportes] = useState([])
+  // Trazados y áreas (pasarelas, senderos, glaciares). Sin semilla
+  // empaquetada: se bajan la primera vez que hay señal (ver client.js).
+  const [rutas, setRutas] = useState([])
   const [reporteSel, setReporteSel] = useState(null)
   const [comentario, setComentario] = useState('')
   const [enCola, setEnCola] = useState(0)
@@ -258,6 +262,7 @@ function AppInterna() {
     obtenerAvisos().then(setAvisos)
     obtenerLocalidades().then(setLocalidades)
     obtenerReportes().then(setReportes)
+    obtenerRutas().then(setRutas)
     contarCola().then(setEnCola)
   }, [])
 
@@ -788,6 +793,7 @@ function AppInterna() {
         filtro={filtro}
         localidadActiva={locActiva}
         reportes={reportesVisibles}
+        rutas={rutas}
         onEntrarLocalidad={entrarLocalidad}
         onSeleccionarLugar={setLugarRapido}
         onSeleccionarReporte={setReporteSel}

@@ -58,8 +58,10 @@ Guía completa: `DEPLOY.md`. Push a `main` = redeploy automático de Render y Ne
   seeder lo elimina en producción y crea el admin desde `ADMIN_EMAIL`/`ADMIN_PASSWORD`.
 - Push: el permiso se pide al instalar la PWA (`appinstalled`) + red de
   seguridad al abrir instalada. No reintroducir botones de activación visibles.
-- Los avisos se envían UNA vez (`notificado_en`); en Render free no corre el
-  scheduler (avisos programados a futuro no se despachan solos).
+- Los avisos se envían UNA vez (`notificado_en`). Los **programados a futuro sí
+  se despachan solos** desde el 10-ago-2026: el scheduler corre dentro del
+  contenedor (`SCHEDULER_EN_CONTENEDOR=true` + plan Starter). Antes, con Render
+  free, no corría — de ahí las notas viejas que dicen lo contrario.
 - Antes de commitear frontend: `npm run build --prefix frontend` debe pasar.
 - No tocar `frontend/dev-dist/` (artefacto regenerado; revertir si aparece en el diff).
 - **Vista previa al compartir**: `og-rutaaustral.png` (1200×630) la genera
@@ -155,13 +157,22 @@ para 2030.)
 Carretera Austral, de Puerto Montt a Villa O'Higgins**, barcazas incluidas. La
 identidad ya dice "Puerto Montt a Villa O'Higgins" en i18n, manifest e
 index.html. La fase cerró con 24 localidades y 192 lugares; **hoy son 26
-localidades y 231 fichas** (Raúl Marín Balmaceda y Balmaceda se sumaron el
-22-jul), de las cuales **156 están publicadas y 75 de esas son `preliminar`**.
+localidades y 234 fichas** (Raúl Marín Balmaceda y Balmaceda el 22-jul; **Puerto
+Yungay el 11-ago**), de las cuales **159 están publicadas y 75 de esas son
+`preliminar`**.
 Detalle en `ESTADO_Y_PENDIENTES.md`.
 
-**Pendiente de infraestructura — queda UNO** (al 10-ago-2026): **backend
-*always-on*** para que el servicio no se duerma (`DEPLOY.md` §2.9). El **bucket
-Cloudflare R2** ya está **operativo** desde el 10-ago: se subió una foto de punta
-a punta (CMS → R2 → API → PWA). Las fotos de las fichas ya se pueden cargar.
+**Infraestructura — SIN PENDIENTES desde el 10-ago-2026.** Los dos que quedaban
+se cerraron ese día:
+- **Bucket Cloudflare R2** operativo — foto probada de punta a punta
+  (CMS → R2 → API → PWA). Las fichas ya admiten fotos.
+- **Backend *always-on*** — Render **Starter** (US$7/mes), con el **scheduler
+  dentro del contenedor** (`SCHEDULER_EN_CONTENEDOR=true`). Se acabaron el
+  arranque en frío de ~50 s y el 419 al guardar, y los avisos programados por
+  fin se despachan solos. Detalle en `DEPLOY.md` §2.9.
+
+**Regla que salió de activarlo:** una variable de entorno que enciende código
+nuevo solo sirve **después** de que ese código está en `main` — Render despliega
+desde ahí. Al revés no da error: simplemente no ocurre nada.
 
 Para trabajo de roadmap, usar el agente `roadmap` (`.claude/agents/roadmap.md`).

@@ -2,6 +2,8 @@
 .DS_Store
 # Dato fuente SERNATUR: se genera con scripts/sernatur y no se versiona
 /database/seeders/data/sernatur_places.json
+# Idem POIs del mapa municipal de Tortel: lo genera scripts/tortel/2_a_places.py
+/database/seeders/data/tortel_places.json
 .env
 .env.backup
 .env.production
@@ -27,3 +29,4 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+/database/seeders/data/tortel_rutas.json

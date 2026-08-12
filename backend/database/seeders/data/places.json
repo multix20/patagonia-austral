@@ -29,6 +29,7 @@
     "lat": -47.225,
     "lng": -72.522,
     "tel": "+56 67 252 2164",
+    "publicado": false,
     "nombre": {
       "es": "Reserva Nacional Lago Cochrane (Tamango)",
       "en": "Lago Cochrane National Reserve (Tamango)"
@@ -44,8 +45,7 @@
     "como": {
       "es": "Camino a Tamango desde el centro, entrada CONAF. Lleva efectivo para la entrada.",
       "en": "Tamango road from downtown, CONAF entrance. Bring cash for the entry fee."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 3,
@@ -53,6 +53,7 @@
     "localidad": "cochrane",
     "lat": -47.11,
     "lng": -72.48,
+    "publicado": false,
     "nombre": {
       "es": "Parque Nacional Patagonia — Valle Chacabuco",
       "en": "Patagonia National Park — Chacabuco Valley"
@@ -68,8 +69,7 @@
     "como": {
       "es": "Ruta X-83 norte hasta el cruce Valle Chacabuco, luego camino interior del parque.",
       "en": "Route X-83 north to the Chacabuco Valley junction, then the park’s inner road."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 4,
@@ -77,6 +77,7 @@
     "localidad": "cochrane",
     "lat": -47.2544,
     "lng": -72.5741,
+    "publicado": false,
     "nombre": {
       "es": "Plaza de Armas de Cochrane",
       "en": "Cochrane Main Square"
@@ -92,8 +93,7 @@
     "como": {
       "es": "Entre las calles Esmeralda, Dr. Steffens, Tehuelches y Las Golondrinas.",
       "en": "Between Esmeralda, Dr. Steffens, Tehuelches and Las Golondrinas streets."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 9,
@@ -125,6 +125,7 @@
     "lat": -47.2542,
     "lng": -72.5735,
     "tel": "+56 67 252 2115",
+    "publicado": false,
     "nombre": {
       "es": "Oficina de Información Turística",
       "en": "Tourist Information Office"
@@ -140,8 +141,7 @@
     "como": {
       "es": "Costado de la Plaza de Armas.",
       "en": "Beside the main square."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 11,
@@ -174,6 +174,7 @@
     "lat": -47.2547,
     "lng": -72.5729,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Tenencia Cochrane",
       "en": "Police — Cochrane Station"
@@ -189,8 +190,7 @@
     "como": {
       "es": "Calle Esmeralda 398.",
       "en": "Esmeralda St. 398."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 13,
@@ -199,6 +199,7 @@
     "lat": -47.2552,
     "lng": -72.5745,
     "tel": "132",
+    "publicado": false,
     "nombre": {
       "es": "Bomberos de Cochrane",
       "en": "Cochrane Fire Department"
@@ -214,8 +215,7 @@
     "como": {
       "es": "Calle Las Golondrinas s/n.",
       "en": "Las Golondrinas St."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 14,
@@ -246,6 +246,7 @@
     "localidad": "cochrane",
     "lat": -47.2542,
     "lng": -72.5738,
+    "publicado": false,
     "nombre": {
       "es": "Feria de artesanía local",
       "en": "Local crafts fair"
@@ -261,8 +262,7 @@
     "como": {
       "es": "Costado norte de la Plaza de Armas.",
       "en": "North side of the main square."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 16,
@@ -293,6 +293,7 @@
     "localidad": "puerto-rio-tranquilo",
     "lat": -46.509,
     "lng": -73.174,
+    "publicado": false,
     "nombre": {
       "es": "Glaciar Exploradores (Valle Exploradores)",
       "en": "Exploradores Glacier (Exploradores Valley)"
@@ -308,8 +309,7 @@
     "como": {
       "es": "Ruta X-728 hacia el oeste desde Puerto Río Tranquilo. Camino de ripio: manejar con precaución y consultar su estado antes de salir.",
       "en": "Route X-728 west from Puerto Río Tranquilo. Gravel road: drive carefully and check conditions before leaving."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 18,
@@ -364,6 +364,7 @@
     "localidad": "caleta-tortel",
     "lat": -47.783,
     "lng": -73.599,
+    "publicado": false,
     "nombre": {
       "es": "Isla de los Muertos",
       "en": "Isla de los Muertos (Island of the Dead)"
@@ -379,8 +380,7 @@
     "como": {
       "es": "Excursión en lancha contratada en Tortel; consulta salidas y mareas en la oficina de información turística.",
       "en": "Boat excursion hired in Tortel; check departures and tides at the tourist information office."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 21,
@@ -435,6 +435,7 @@
     "localidad": "coyhaique",
     "lat": -45.5719,
     "lng": -72.0683,
+    "publicado": false,
     "nombre": {
       "es": "Plaza de Armas pentagonal",
       "en": "Pentagonal Main Square"
@@ -450,8 +451,7 @@
     "como": {
       "es": "Centro de Coyhaique, entre las calles Horn, Bilbao, Prat, 21 de Mayo y Condell.",
       "en": "Central Coyhaique, between Horn, Bilbao, Prat, 21 de Mayo and Condell streets."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 24,
@@ -459,6 +459,7 @@
     "localidad": "coyhaique",
     "lat": -45.582,
     "lng": -72.078,
+    "publicado": false,
     "nombre": {
       "es": "Piedra del Indio (mirador del río Simpson)",
       "en": "Piedra del Indio (Simpson River viewpoint)"
@@ -474,8 +475,7 @@
     "como": {
       "es": "Salida suroeste de la ciudad, por el puente sobre el río Simpson (camino a Puerto Aysén).",
       "en": "Southwest exit of the city, by the bridge over the Simpson River (road to Puerto Aysén)."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 27,
@@ -531,6 +531,7 @@
     "lat": -45.5708,
     "lng": -72.0662,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Comisaría Coyhaique",
       "en": "Police — Coyhaique Station"
@@ -546,8 +547,7 @@
     "como": {
       "es": "Sector céntrico, a cuadras de la Plaza de Armas.",
       "en": "Central area, blocks from the main square."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 30,
@@ -578,6 +578,7 @@
     "localidad": "villa-cerro-castillo",
     "lat": -46.1295,
     "lng": -72.152,
+    "publicado": false,
     "nombre": {
       "es": "Paredón de las Manos",
       "en": "Paredón de las Manos (Wall of Hands)"
@@ -593,8 +594,7 @@
     "como": {
       "es": "Desvío señalizado desde el pueblo, camino al sector sur.",
       "en": "Signposted turnoff from the village, on the road to the southern sector."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 32,
@@ -602,6 +602,7 @@
     "localidad": "villa-cerro-castillo",
     "lat": -46.1223,
     "lng": -72.1638,
+    "publicado": false,
     "nombre": {
       "es": "Museo Escuela (antigua escuela rural)",
       "en": "School Museum (old rural school)"
@@ -617,8 +618,7 @@
     "como": {
       "es": "Calle principal del pueblo (avenida O’Higgins).",
       "en": "Main street of the village (O’Higgins Avenue)."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 35,
@@ -674,6 +674,7 @@
     "lat": -46.1207,
     "lng": -72.1642,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Retén Cerro Castillo",
       "en": "Police — Cerro Castillo Outpost"
@@ -689,8 +690,7 @@
     "como": {
       "es": "Junto a la calle principal.",
       "en": "By the main street."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 38,
@@ -721,6 +721,7 @@
     "localidad": "chile-chico",
     "lat": -46.82,
     "lng": -72,
+    "publicado": false,
     "nombre": {
       "es": "Reserva Nacional Lago Jeinimeni",
       "en": "Lago Jeinimeni National Reserve"
@@ -736,8 +737,7 @@
     "como": {
       "es": "Camino de ripio hacia el sur desde Chile Chico. Sin combustible ni señal en la ruta: sal preparado.",
       "en": "Gravel road south from Chile Chico. No fuel or phone signal on the way: leave prepared."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 42,
@@ -745,6 +745,7 @@
     "localidad": "chile-chico",
     "lat": -46.5405,
     "lng": -71.729,
+    "publicado": false,
     "nombre": {
       "es": "Combustible y banco (BancoEstado)",
       "en": "Fuel and bank (BancoEstado)"
@@ -760,8 +761,7 @@
     "como": {
       "es": "Calle principal (avenida O’Higgins).",
       "en": "Main street (O’Higgins Avenue)."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 43,
@@ -817,6 +817,7 @@
     "lat": -46.541,
     "lng": -71.727,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Comisaría Chile Chico",
       "en": "Police — Chile Chico Station"
@@ -832,8 +833,7 @@
     "como": {
       "es": "Sector céntrico.",
       "en": "Central area."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 46,
@@ -864,6 +864,7 @@
     "localidad": "puerto-guadal",
     "lat": -46.822,
     "lng": -72.622,
+    "publicado": false,
     "nombre": {
       "es": "Cascada Los Maquis",
       "en": "Los Maquis Waterfall"
@@ -879,8 +880,7 @@
     "como": {
       "es": "Camino a Chile Chico (ribera sur del lago), desvío señalizado.",
       "en": "Road to Chile Chico (southern lakeshore), signposted turnoff."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 50,
@@ -936,6 +936,7 @@
     "lat": -46.8442,
     "lng": -72.702,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Retén Puerto Guadal",
       "en": "Police — Puerto Guadal Outpost"
@@ -951,8 +952,7 @@
     "como": {
       "es": "Casco del pueblo.",
       "en": "Village centre."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 53,
@@ -983,6 +983,7 @@
     "localidad": "puerto-bertrand",
     "lat": -47.022,
     "lng": -72.824,
+    "publicado": false,
     "nombre": {
       "es": "Rafting y pesca en el río Baker",
       "en": "Rafting and fishing on the Baker River"
@@ -998,8 +999,7 @@
     "como": {
       "es": "Operadores en el pueblo; salidas sujetas al caudal y al clima.",
       "en": "Operators in the village; departures depend on river flow and weather."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 57,
@@ -1055,6 +1055,7 @@
     "lat": -47.0224,
     "lng": -72.8244,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Retén Puerto Bertrand",
       "en": "Police — Puerto Bertrand Outpost"
@@ -1070,8 +1071,7 @@
     "como": {
       "es": "Junto a la calle principal.",
       "en": "By the main street."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 60,
@@ -1102,6 +1102,7 @@
     "localidad": "villa-ohiggins",
     "lat": -48.517,
     "lng": -72.586,
+    "publicado": false,
     "nombre": {
       "es": "Fin de la Carretera Austral (Bahía Bahamóndez)",
       "en": "End of the Carretera Austral (Bahía Bahamóndez)"
@@ -1117,8 +1118,7 @@
     "como": {
       "es": "Último tramo de la Carretera Austral al sur del pueblo, hasta la rampa de Bahía Bahamóndez.",
       "en": "Last stretch of the Carretera Austral south of the village, down to the Bahía Bahamóndez ramp."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 62,
@@ -1126,6 +1126,7 @@
     "localidad": "villa-ohiggins",
     "lat": -48.463,
     "lng": -72.556,
+    "publicado": false,
     "nombre": {
       "es": "Mirador Cerro Santiago",
       "en": "Cerro Santiago Viewpoint"
@@ -1141,8 +1142,7 @@
     "como": {
       "es": "Inicio señalizado en el borde oriente del pueblo.",
       "en": "Signposted trailhead on the eastern edge of the village."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 65,
@@ -1198,6 +1198,7 @@
     "lat": -48.4681,
     "lng": -72.5594,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Retén Villa O’Higgins",
       "en": "Police — Villa O’Higgins Outpost"
@@ -1213,8 +1214,7 @@
     "como": {
       "es": "Casco del pueblo.",
       "en": "Village centre."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 68,
@@ -1245,6 +1245,7 @@
     "localidad": "puerto-aysen",
     "lat": -45.49,
     "lng": -72.36,
+    "publicado": false,
     "nombre": {
       "es": "Reserva Nacional Río Simpson",
       "en": "Río Simpson National Reserve"
@@ -1260,8 +1261,7 @@
     "como": {
       "es": "Ruta 240 hacia Coyhaique; los saltos están señalizados al costado del camino, con centro de visitantes CONAF.",
       "en": "Route 240 toward Coyhaique; the falls are signposted along the road, with a CONAF visitor centre."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 70,
@@ -1269,6 +1269,7 @@
     "localidad": "puerto-aysen",
     "lat": -45.46,
     "lng": -72.63,
+    "publicado": false,
     "nombre": {
       "es": "Laguna Los Palos",
       "en": "Los Palos Lagoon"
@@ -1284,8 +1285,7 @@
     "como": {
       "es": "Camino secundario al noreste de Puerto Aysén; consulta el estado del ripio en época de lluvias.",
       "en": "Secondary road northeast of Puerto Aysén; check the gravel condition in the rainy season."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 71,
@@ -1293,6 +1293,7 @@
     "localidad": "puerto-aysen",
     "lat": -45.4033,
     "lng": -72.6947,
+    "publicado": false,
     "nombre": {
       "es": "Costanera y Plaza de Puerto Aysén",
       "en": "Puerto Aysén Riverfront & Main Square"
@@ -1308,8 +1309,7 @@
     "como": {
       "es": "En el centro, en torno a la plaza.",
       "en": "Downtown, around the main square."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 74,
@@ -1365,6 +1365,7 @@
     "lat": -45.4038,
     "lng": -72.6952,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Puerto Aysén",
       "en": "Police — Puerto Aysén"
@@ -1380,8 +1381,7 @@
     "como": {
       "es": "En el centro.",
       "en": "Downtown."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 77,
@@ -1389,6 +1389,7 @@
     "localidad": "puerto-chacabuco",
     "lat": -45.4667,
     "lng": -72.8167,
+    "publicado": false,
     "nombre": {
       "es": "Puerto Chacabuco",
       "en": "Puerto Chacabuco"
@@ -1404,8 +1405,7 @@
     "como": {
       "es": "A 15 km al oeste de Puerto Aysén por la Ruta 240.",
       "en": "15 km west of Puerto Aysén on Route 240."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 78,
@@ -1506,6 +1506,7 @@
     "localidad": "villa-manihuales",
     "lat": -45.212,
     "lng": -72.156,
+    "publicado": false,
     "nombre": {
       "es": "Río Mañihuales",
       "en": "Mañihuales River"
@@ -1521,8 +1522,7 @@
     "como": {
       "es": "Cruza junto al pueblo por el puente de la Ruta 7; consulta vedas y permisos de pesca.",
       "en": "Crosses beside the village on the Route 7 bridge; check fishing closed seasons and permits."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 85,
@@ -1530,6 +1530,7 @@
     "localidad": "villa-manihuales",
     "lat": -45.2103,
     "lng": -72.1547,
+    "publicado": false,
     "nombre": {
       "es": "Plaza e iglesia de Villa Mañihuales",
       "en": "Villa Mañihuales Square & Church"
@@ -1545,8 +1546,7 @@
     "como": {
       "es": "En el centro, junto a la Ruta 7.",
       "en": "Downtown, along Route 7."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 86,
@@ -1602,6 +1602,7 @@
     "lat": -45.21,
     "lng": -72.1549,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Villa Mañihuales",
       "en": "Police — Villa Mañihuales"
@@ -1617,8 +1618,7 @@
     "como": {
       "es": "En el pueblo.",
       "en": "In the village."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 91,
@@ -1649,6 +1649,7 @@
     "localidad": "villa-amengual",
     "lat": -44.95,
     "lng": -72.05,
+    "publicado": false,
     "nombre": {
       "es": "Reserva Nacional Lago Las Torres",
       "en": "Lago Las Torres National Reserve"
@@ -1664,8 +1665,7 @@
     "como": {
       "es": "Sobre la Ruta 7 al sur de Villa Amengual, acceso señalizado con entrada CONAF.",
       "en": "On Route 7 south of Villa Amengual, signposted access with a CONAF entrance."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 93,
@@ -1673,6 +1673,7 @@
     "localidad": "villa-amengual",
     "lat": -44.71,
     "lng": -72.17,
+    "publicado": false,
     "nombre": {
       "es": "Mirador Cerro Pirámide",
       "en": "Cerro Pirámide Viewpoint"
@@ -1688,8 +1689,7 @@
     "como": {
       "es": "Inicio señalizado en el pueblo; consulta el estado del sendero con lluvia.",
       "en": "Signposted trailhead in the village; check the trail condition in wet weather."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 94,
@@ -1767,6 +1767,7 @@
     "localidad": "puerto-cisnes",
     "lat": -44.72,
     "lng": -72.4,
+    "publicado": false,
     "nombre": {
       "es": "Piedra del Gato",
       "en": "Piedra del Gato"
@@ -1782,8 +1783,7 @@
     "como": {
       "es": "Sobre el camino que une la Ruta 7 con Puerto Cisnes, siguiendo el río Cisnes.",
       "en": "On the road linking Route 7 with Puerto Cisnes, following the Cisnes River."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 100,
@@ -1791,6 +1791,7 @@
     "localidad": "puerto-cisnes",
     "lat": -44.74,
     "lng": -72.55,
+    "publicado": false,
     "nombre": {
       "es": "Río Cisnes",
       "en": "Cisnes River"
@@ -1806,8 +1807,7 @@
     "como": {
       "es": "Acompaña el camino de acceso desde la Ruta 7; consulta vedas y permisos de pesca.",
       "en": "Follows the access road from Route 7; check fishing closed seasons and permits."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 101,
@@ -1815,6 +1815,7 @@
     "localidad": "puerto-cisnes",
     "lat": -44.7,
     "lng": -72.9,
+    "publicado": false,
     "nombre": {
       "es": "Parque Nacional Isla Magdalena",
       "en": "Isla Magdalena National Park"
@@ -1830,8 +1831,7 @@
     "como": {
       "es": "Cruce en embarcación desde el puerto; coordina con operadores del pueblo.",
       "en": "Boat crossing from the harbour; arrange with village operators."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 102,
@@ -1887,6 +1887,7 @@
     "lat": -44.7422,
     "lng": -72.6888,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Puerto Cisnes",
       "en": "Police — Puerto Cisnes"
@@ -1902,8 +1903,7 @@
     "como": {
       "es": "En el centro.",
       "en": "Downtown."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 107,
@@ -1934,6 +1934,7 @@
     "localidad": "puyuhuapi",
     "lat": -44.39,
     "lng": -72.55,
+    "publicado": false,
     "nombre": {
       "es": "Termas del Ventisquero",
       "en": "Ventisquero Hot Springs"
@@ -1949,8 +1950,7 @@
     "como": {
       "es": "Sobre la Ruta 7, poco al sur del pueblo. Cobro de entrada; lleva efectivo.",
       "en": "On Route 7, just south of the village. Entry fee; bring cash."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 109,
@@ -1958,6 +1958,7 @@
     "localidad": "puyuhuapi",
     "lat": -44.3286,
     "lng": -72.5567,
+    "publicado": false,
     "nombre": {
       "es": "Fiordo y pueblo de Puyuhuapi",
       "en": "Puyuhuapi Fjord & Village"
@@ -1973,8 +1974,7 @@
     "como": {
       "es": "En el pueblo, sobre la Ruta 7.",
       "en": "In the village, on Route 7."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 110,
@@ -1982,6 +1982,7 @@
     "localidad": "puyuhuapi",
     "lat": -44.328,
     "lng": -72.557,
+    "publicado": false,
     "nombre": {
       "es": "Fábrica de Alfombras Puyuhuapi",
       "en": "Puyuhuapi Carpet Factory"
@@ -1997,8 +1998,7 @@
     "como": {
       "es": "En el pueblo; consulta horarios de visita.",
       "en": "In the village; check visiting hours."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 111,
@@ -2054,6 +2054,7 @@
     "lat": -44.3284,
     "lng": -72.5564,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Puyuhuapi",
       "en": "Police — Puyuhuapi"
@@ -2069,8 +2070,7 @@
     "como": {
       "es": "En el pueblo.",
       "en": "In the village."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 116,
@@ -2101,6 +2101,7 @@
     "localidad": "la-junta",
     "lat": -43.982,
     "lng": -72.41,
+    "publicado": false,
     "nombre": {
       "es": "Confluencia de los ríos Rosselot y Palena",
       "en": "Rosselot & Palena Rivers Confluence"
@@ -2116,8 +2117,7 @@
     "como": {
       "es": "A pasos del pueblo, señalizado.",
       "en": "Just outside town, signposted."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 118,
@@ -2125,6 +2125,7 @@
     "localidad": "la-junta",
     "lat": -43.99,
     "lng": -72.42,
+    "publicado": false,
     "nombre": {
       "es": "Río Palena",
       "en": "Palena River"
@@ -2140,8 +2141,7 @@
     "como": {
       "es": "Bordea el pueblo; consulta operadores, vedas y permisos.",
       "en": "Runs alongside town; ask operators about closed seasons and permits."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 119,
@@ -2149,6 +2149,7 @@
     "localidad": "la-junta",
     "lat": -43.78,
     "lng": -72.96,
+    "publicado": false,
     "nombre": {
       "es": "Desvío a Raúl Marín Balmaceda",
       "en": "Detour to Raúl Marín Balmaceda"
@@ -2164,8 +2165,7 @@
     "como": {
       "es": "Camino de ripio al oeste desde La Junta; incluye un cruce en barcaza por el río. Consulta horarios.",
       "en": "Gravel road west from La Junta; includes a river ferry crossing. Check schedules."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 120,
@@ -2221,6 +2221,7 @@
     "lat": -43.9754,
     "lng": -72.406,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — La Junta",
       "en": "Police — La Junta"
@@ -2236,8 +2237,7 @@
     "como": {
       "es": "En el centro.",
       "en": "Downtown."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 125,
@@ -2245,6 +2245,7 @@
     "localidad": "villa-santa-lucia",
     "lat": -43.4167,
     "lng": -72.3667,
+    "publicado": false,
     "nombre": {
       "es": "Villa Santa Lucía — el cruce",
       "en": "Villa Santa Lucía — the junction"
@@ -2260,8 +2261,7 @@
     "como": {
       "es": "Sobre la Ruta 7, en el cruce.",
       "en": "On Route 7, at the junction."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 126,
@@ -2292,6 +2292,7 @@
     "localidad": "villa-santa-lucia",
     "lat": -43.36,
     "lng": -72.42,
+    "publicado": false,
     "nombre": {
       "es": "Sendero Ventisquero Yelcho",
       "en": "Yelcho Glacier Trail"
@@ -2307,8 +2308,7 @@
     "como": {
       "es": "Inicio señalizado sobre la Ruta 7, cerca del puente Yelcho.",
       "en": "Signposted trailhead on Route 7, near the Yelcho bridge."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 128,
@@ -2364,6 +2364,7 @@
     "lat": -43.4164,
     "lng": -72.3664,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Villa Santa Lucía",
       "en": "Police — Villa Santa Lucía"
@@ -2379,8 +2380,7 @@
     "como": {
       "es": "En el pueblo.",
       "en": "In the village."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 133,
@@ -2411,6 +2411,7 @@
     "localidad": "futaleufu",
     "lat": -43.2,
     "lng": -71.95,
+    "publicado": false,
     "nombre": {
       "es": "Lago Espolón",
       "en": "Espolón Lake"
@@ -2426,8 +2427,7 @@
     "como": {
       "es": "Camino señalizado desde el acceso al pueblo.",
       "en": "Signposted road from the town access."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 135,
@@ -2435,6 +2435,7 @@
     "localidad": "futaleufu",
     "lat": -43.25,
     "lng": -71.85,
+    "publicado": false,
     "nombre": {
       "es": "Reserva Nacional Futaleufú",
       "en": "Futaleufú National Reserve"
@@ -2450,8 +2451,7 @@
     "como": {
       "es": "Acceso señalizado al sur del pueblo; entrada CONAF.",
       "en": "Signposted access south of town; CONAF entrance."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 136,
@@ -2459,6 +2459,7 @@
     "localidad": "futaleufu",
     "lat": -43.18,
     "lng": -71.8,
+    "publicado": false,
     "nombre": {
       "es": "Paso fronterizo Futaleufú (Argentina)",
       "en": "Futaleufú border crossing (Argentina)"
@@ -2474,8 +2475,7 @@
     "como": {
       "es": "Camino al este desde el pueblo hasta el complejo fronterizo.",
       "en": "Road east from town to the border complex."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 137,
@@ -2531,6 +2531,7 @@
     "lat": -43.1846,
     "lng": -71.8694,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Futaleufú",
       "en": "Police — Futaleufú"
@@ -2546,8 +2547,7 @@
     "como": {
       "es": "En el pueblo.",
       "en": "In town."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 142,
@@ -2578,6 +2578,7 @@
     "localidad": "palena",
     "lat": -43.6,
     "lng": -71.85,
+    "publicado": false,
     "nombre": {
       "es": "Alto río Palena — valle y cabalgatas",
       "en": "Upper Palena River — valley & horse rides"
@@ -2593,8 +2594,7 @@
     "como": {
       "es": "Excursiones coordinadas con guías y arrieros del pueblo.",
       "en": "Trips arranged with village guides and herdsmen."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 144,
@@ -2602,6 +2602,7 @@
     "localidad": "palena",
     "lat": -43.63,
     "lng": -71.73,
+    "publicado": false,
     "nombre": {
       "es": "Paso fronterizo Río Encuentro (Argentina)",
       "en": "Río Encuentro border crossing (Argentina)"
@@ -2617,8 +2618,7 @@
     "como": {
       "es": "Camino al este del pueblo hasta el límite.",
       "en": "Road east of the village to the border."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 145,
@@ -2674,6 +2674,7 @@
     "lat": -43.6164,
     "lng": -71.7998,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Palena",
       "en": "Police — Palena"
@@ -2689,8 +2690,7 @@
     "como": {
       "es": "En el pueblo.",
       "en": "In the village."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 150,
@@ -2721,6 +2721,7 @@
     "localidad": "chaiten",
     "lat": -42.9169,
     "lng": -72.7086,
+    "publicado": false,
     "nombre": {
       "es": "Costanera de Chaitén",
       "en": "Chaitén Waterfront"
@@ -2736,8 +2737,7 @@
     "como": {
       "es": "Frente al pueblo.",
       "en": "Along the town shore."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 152,
@@ -2745,6 +2745,7 @@
     "localidad": "chaiten",
     "lat": -42.87,
     "lng": -72.78,
+    "publicado": false,
     "nombre": {
       "es": "Playa Santa Bárbara",
       "en": "Santa Bárbara Beach"
@@ -2760,8 +2761,7 @@
     "como": {
       "es": "Desvío señalizado desde el camino a Caleta Gonzalo.",
       "en": "Signposted turnoff from the Caleta Gonzalo road."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 153,
@@ -2792,6 +2792,7 @@
     "localidad": "chaiten",
     "lat": -42.9165,
     "lng": -72.708,
+    "publicado": false,
     "nombre": {
       "es": "Combustible y servicios",
       "en": "Fuel and services"
@@ -2807,8 +2808,7 @@
     "como": {
       "es": "En el pueblo.",
       "en": "In town."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 157,
@@ -2841,6 +2841,7 @@
     "lat": -42.9171,
     "lng": -72.7088,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Chaitén",
       "en": "Police — Chaitén"
@@ -2856,8 +2857,7 @@
     "como": {
       "es": "En el centro.",
       "en": "Downtown."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 159,
@@ -2888,6 +2888,7 @@
     "localidad": "el-amarillo",
     "lat": -42.9,
     "lng": -72.46,
+    "publicado": false,
     "nombre": {
       "es": "Termas El Amarillo",
       "en": "El Amarillo Hot Springs"
@@ -2903,8 +2904,7 @@
     "como": {
       "es": "Camino señalizado desde la aldea; cobro de entrada, lleva efectivo.",
       "en": "Signposted road from the hamlet; entry fee, bring cash."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 161,
@@ -2912,6 +2912,7 @@
     "localidad": "el-amarillo",
     "lat": -42.89,
     "lng": -72.43,
+    "publicado": false,
     "nombre": {
       "es": "Volcán Michinmahuida y su ventisquero",
       "en": "Michinmahuida Volcano & Glacier"
@@ -2927,8 +2928,7 @@
     "como": {
       "es": "Desde el portal El Amarillo del P.N. Pumalín; consulta condiciones en portería.",
       "en": "From Pumalín’s El Amarillo gateway; check conditions at the gatehouse."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 162,
@@ -3006,6 +3006,7 @@
     "localidad": "caleta-gonzalo",
     "lat": -42.58,
     "lng": -72.6,
+    "publicado": false,
     "nombre": {
       "es": "Sendero Cascadas",
       "en": "Cascadas Trail"
@@ -3021,8 +3022,7 @@
     "como": {
       "es": "Inicio junto a la caleta.",
       "en": "Trailhead by the cove."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 168,
@@ -3030,6 +3030,7 @@
     "localidad": "caleta-gonzalo",
     "lat": -42.63,
     "lng": -72.6,
+    "publicado": false,
     "nombre": {
       "es": "Sendero Alerces",
       "en": "Alerces Trail"
@@ -3045,8 +3046,7 @@
     "como": {
       "es": "Sobre la Ruta 7 al sur de la caleta, señalizado.",
       "en": "On Route 7 south of the cove, signposted."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 169,
@@ -3169,6 +3169,7 @@
     "localidad": "hornopiren",
     "lat": -42,
     "lng": -72.5,
+    "publicado": false,
     "nombre": {
       "es": "Termas de Llancahué",
       "en": "Llancahué Hot Springs"
@@ -3184,8 +3185,7 @@
     "como": {
       "es": "Lanchas desde la costanera; coordina con operadores locales.",
       "en": "Boats from the waterfront; arrange with local operators."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 175,
@@ -3193,6 +3193,7 @@
     "localidad": "hornopiren",
     "lat": -41.9578,
     "lng": -72.4372,
+    "publicado": false,
     "nombre": {
       "es": "Costanera y fiordos de Hornopirén",
       "en": "Hornopirén Waterfront & Fjords"
@@ -3208,8 +3209,7 @@
     "como": {
       "es": "Frente al pueblo.",
       "en": "Along the town shore."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 176,
@@ -3240,6 +3240,7 @@
     "localidad": "hornopiren",
     "lat": -41.9575,
     "lng": -72.4368,
+    "publicado": false,
     "nombre": {
       "es": "Combustible y servicios",
       "en": "Fuel and services"
@@ -3255,8 +3256,7 @@
     "como": {
       "es": "En el pueblo.",
       "en": "In town."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 180,
@@ -3289,6 +3289,7 @@
     "lat": -41.9579,
     "lng": -72.4374,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Hornopirén",
       "en": "Police — Hornopirén"
@@ -3304,8 +3305,7 @@
     "como": {
       "es": "En el centro.",
       "en": "Downtown."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 182,
@@ -3336,6 +3336,7 @@
     "localidad": "puerto-montt",
     "lat": -41.4857,
     "lng": -72.9614,
+    "publicado": false,
     "nombre": {
       "es": "Caleta y mercado de Angelmó",
       "en": "Angelmó Cove & Market"
@@ -3351,8 +3352,7 @@
     "como": {
       "es": "Costanera al oeste del centro.",
       "en": "Waterfront west of downtown."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 184,
@@ -3360,6 +3360,7 @@
     "localidad": "puerto-montt",
     "lat": -41.4693,
     "lng": -72.9424,
+    "publicado": false,
     "nombre": {
       "es": "Centro y costanera de Puerto Montt",
       "en": "Puerto Montt Downtown & Waterfront"
@@ -3375,8 +3376,7 @@
     "como": {
       "es": "Centro de la ciudad.",
       "en": "City centre."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 185,
@@ -3384,6 +3384,7 @@
     "localidad": "puerto-montt",
     "lat": -41.5,
     "lng": -72.6,
+    "publicado": false,
     "nombre": {
       "es": "Parque Nacional Alerce Andino",
       "en": "Alerce Andino National Park"
@@ -3399,8 +3400,7 @@
     "como": {
       "es": "Accesos por Correntoso y Chamiza, señalizados desde la Ruta 7; entrada CONAF.",
       "en": "Correntoso and Chamiza accesses, signposted from Route 7; CONAF entrance."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 186,
@@ -3431,6 +3431,7 @@
     "localidad": "puerto-montt",
     "lat": -41.4865,
     "lng": -72.9655,
+    "publicado": false,
     "nombre": {
       "es": "Terminales de ferries de Puerto Montt",
       "en": "Puerto Montt Ferry Terminals"
@@ -3446,8 +3447,7 @@
     "como": {
       "es": "Terminal de transbordadores, sector Angelmó.",
       "en": "Ferry terminal, Angelmó area."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 188,
@@ -3455,6 +3455,7 @@
     "localidad": "puerto-montt",
     "lat": -41.47,
     "lng": -72.9415,
+    "publicado": false,
     "nombre": {
       "es": "Últimas compras — servicios de ciudad",
       "en": "Last shopping — full city services"
@@ -3470,8 +3471,7 @@
     "como": {
       "es": "Por toda la ciudad.",
       "en": "Throughout the city."
-    },
-    "publicado": false
+    }
   },
   {
     "id": 191,
@@ -3504,6 +3504,7 @@
     "lat": -41.4696,
     "lng": -72.9426,
     "tel": "133",
+    "publicado": false,
     "nombre": {
       "es": "Carabineros de Chile — Puerto Montt",
       "en": "Police — Puerto Montt"
@@ -3519,8 +3520,78 @@
     "como": {
       "es": "Unidades en toda la ciudad.",
       "en": "Stations citywide."
+    }
+  },
+  {
+    "id": 193,
+    "cat": "servicio",
+    "localidad": "puerto-yungay",
+    "lat": -47.9343,
+    "lng": -73.3241,
+    "nombre": {
+      "es": "Barcaza Puerto Yungay — Río Bravo",
+      "en": "Puerto Yungay — Río Bravo ferry"
     },
-    "publicado": false
+    "dist": {
+      "es": "En la rampa",
+      "en": "At the ramp"
+    },
+    "desc": {
+      "es": "El cruce obligatorio para seguir al sur: la barcaza atraviesa el fiordo Mitchell y conecta con Río Bravo, desde donde continúa el camino a Villa O'Higgins. Lleva vehículos y pasajeros, y el zarpe depende del clima. Confirma el horario del día antes de bajar a Tortel: perder el último cruce significa esperar hasta el día siguiente.",
+      "en": "The mandatory crossing to continue south: the ferry crosses Mitchell Fjord to Río Bravo, where the road to Villa O'Higgins continues. Carries vehicles and passengers; departures depend on the weather. Check the day's timetable before heading down to Tortel — missing the last crossing means waiting until the next day."
+    },
+    "como": {
+      "es": "Rampa al final del camino desde el cruce con la Ruta 7. Llega con holgura: la fila se arma antes del zarpe y los cupos de vehículo son limitados.",
+      "en": "Ramp at the end of the road from the Route 7 junction. Arrive early: the queue forms before departure and vehicle space is limited."
+    }
+  },
+  {
+    "id": 194,
+    "cat": "comida",
+    "localidad": "puerto-yungay",
+    "lat": -47.9354,
+    "lng": -73.3241,
+    "tel": "+56 9 5020 6647",
+    "nombre": {
+      "es": "Cafetería El Peregrino",
+      "en": "El Peregrino Café"
+    },
+    "dist": {
+      "es": "En Puerto Yungay",
+      "en": "In Puerto Yungay"
+    },
+    "desc": {
+      "es": "Comida al paso junto a la rampa: el único servicio de alimentación del cruce, y la parada natural mientras se espera la barcaza.",
+      "en": "Quick food next to the ramp: the only place to eat at the crossing, and the natural stop while waiting for the ferry."
+    },
+    "como": {
+      "es": "Junto a la rampa de Puerto Yungay.",
+      "en": "Next to the Puerto Yungay ramp."
+    }
+  },
+  {
+    "id": 195,
+    "cat": "alojamiento",
+    "localidad": "puerto-yungay",
+    "lat": -47.9332,
+    "lng": -73.3241,
+    "tel": "+56 9 5020 6647",
+    "nombre": {
+      "es": "Cabañas El Peregrino",
+      "en": "El Peregrino Cabins"
+    },
+    "dist": {
+      "es": "En Puerto Yungay",
+      "en": "In Puerto Yungay"
+    },
+    "desc": {
+      "es": "Cabañas en el sector de la rampa, a unos 200 m de la cafetería del mismo nombre (mismo teléfono). Capacidad para 10 personas. Es la única opción para dormir en el cruce, útil si se pierde el último zarpe del día.",
+      "en": "Cabins by the ferry ramp, about 200 m from the café of the same name (same phone). Capacity for 10 people. The only place to sleep at the crossing — useful if you miss the day's last departure."
+    },
+    "como": {
+      "es": "Sector de la rampa, Puerto Yungay.",
+      "en": "Ramp area, Puerto Yungay."
+    }
   },
   {
     "id": 3001,
@@ -3528,6 +3599,7 @@
     "localidad": "puerto-montt",
     "lat": -41.4656,
     "lng": -72.9373,
+    "preliminar": true,
     "nombre": {
       "es": "Hostal Costanera Angelmó",
       "en": "Costanera Angelmó Hostel"
@@ -3543,8 +3615,7 @@
     "como": {
       "es": "En el casco de Puerto Montt; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Montt; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3002,
@@ -3552,6 +3623,7 @@
     "localidad": "puerto-montt",
     "lat": -41.4737,
     "lng": -72.9387,
+    "preliminar": true,
     "nombre": {
       "es": "Cocinería del Mercado de Angelmó",
       "en": "Angelmó Market Eatery"
@@ -3567,8 +3639,7 @@
     "como": {
       "es": "En el casco de Puerto Montt; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Montt; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3003,
@@ -3576,6 +3647,7 @@
     "localidad": "puerto-montt",
     "lat": -41.4669,
     "lng": -72.9478,
+    "preliminar": true,
     "nombre": {
       "es": "Semana costumbrista de Angelmó",
       "en": "Angelmó Folk Week"
@@ -3591,8 +3663,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Puerto Montt.",
       "en": "Puerto Montt main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3004,
@@ -3600,6 +3671,7 @@
     "localidad": "hornopiren",
     "lat": -41.9556,
     "lng": -72.4342,
+    "preliminar": true,
     "nombre": {
       "es": "Cabañas Fiordo Comau",
       "en": "Fiordo Comau Cabins"
@@ -3615,8 +3687,7 @@
     "como": {
       "es": "En el casco de Hornopirén; dirección exacta por confirmar.",
       "en": "In the centre of Hornopirén; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3005,
@@ -3624,6 +3695,7 @@
     "localidad": "hornopiren",
     "lat": -41.9604,
     "lng": -72.435,
+    "preliminar": true,
     "nombre": {
       "es": "Restaurante El Muelle",
       "en": "El Muelle Restaurant"
@@ -3639,8 +3711,7 @@
     "como": {
       "es": "En el casco de Hornopirén; dirección exacta por confirmar.",
       "en": "In the centre of Hornopirén; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3006,
@@ -3648,6 +3719,7 @@
     "localidad": "hornopiren",
     "lat": -41.9564,
     "lng": -72.4404,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta del Pescador de Hornopirén",
       "en": "Hornopirén Fisherman's Festival"
@@ -3663,8 +3735,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Hornopirén.",
       "en": "Hornopirén main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3007,
@@ -3672,6 +3743,7 @@
     "localidad": "caleta-gonzalo",
     "lat": -42.5619,
     "lng": -72.6021,
+    "preliminar": true,
     "nombre": {
       "es": "Jornada de senderos del Parque Pumalín",
       "en": "Pumalín Park Trails Day"
@@ -3687,8 +3759,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Caleta Gonzalo (Pumalín).",
       "en": "Caleta Gonzalo (Pumalín) main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3008,
@@ -3696,6 +3767,7 @@
     "localidad": "chaiten",
     "lat": -42.9147,
     "lng": -72.7056,
+    "preliminar": true,
     "nombre": {
       "es": "Hospedaje Santa Bárbara",
       "en": "Santa Bárbara Guesthouse"
@@ -3711,8 +3783,7 @@
     "como": {
       "es": "En el casco de Chaitén; dirección exacta por confirmar.",
       "en": "In the centre of Chaitén; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3009,
@@ -3720,6 +3791,7 @@
     "localidad": "chaiten",
     "lat": -42.9195,
     "lng": -72.7064,
+    "preliminar": true,
     "nombre": {
       "es": "Cocinería Volcán Chaitén",
       "en": "Volcán Chaitén Eatery"
@@ -3735,8 +3807,7 @@
     "como": {
       "es": "En el casco de Chaitén; dirección exacta por confirmar.",
       "en": "In the centre of Chaitén; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3010,
@@ -3744,6 +3815,7 @@
     "localidad": "chaiten",
     "lat": -42.9155,
     "lng": -72.7118,
+    "preliminar": true,
     "nombre": {
       "es": "Aniversario de Chaitén",
       "en": "Chaitén Anniversary Celebration"
@@ -3759,8 +3831,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Chaitén.",
       "en": "Chaitén main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3011,
@@ -3768,6 +3839,7 @@
     "localidad": "el-amarillo",
     "lat": -42.9311,
     "lng": -72.5303,
+    "preliminar": true,
     "nombre": {
       "es": "Cabañas El Amarillo",
       "en": "El Amarillo Cabins"
@@ -3783,8 +3855,7 @@
     "como": {
       "es": "En el casco de El Amarillo; dirección exacta por confirmar.",
       "en": "In the centre of El Amarillo; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3012,
@@ -3792,6 +3863,7 @@
     "localidad": "el-amarillo",
     "lat": -42.9359,
     "lng": -72.5311,
+    "preliminar": true,
     "nombre": {
       "es": "Comedor Michinmahuida",
       "en": "Michinmahuida Diner"
@@ -3807,8 +3879,7 @@
     "como": {
       "es": "En el casco de El Amarillo; dirección exacta por confirmar.",
       "en": "In the centre of El Amarillo; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3013,
@@ -3816,6 +3887,7 @@
     "localidad": "el-amarillo",
     "lat": -42.9319,
     "lng": -72.5365,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta campesina de El Amarillo",
       "en": "El Amarillo Country Fair"
@@ -3831,8 +3903,7 @@
     "como": {
       "es": "Plaza y sede vecinal de El Amarillo.",
       "en": "El Amarillo main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3014,
@@ -3840,6 +3911,7 @@
     "localidad": "villa-santa-lucia",
     "lat": -43.4145,
     "lng": -72.3637,
+    "preliminar": true,
     "nombre": {
       "es": "Hospedaje El Cruce",
       "en": "El Cruce Guesthouse"
@@ -3855,8 +3927,7 @@
     "como": {
       "es": "En el casco de Villa Santa Lucía; dirección exacta por confirmar.",
       "en": "In the centre of Villa Santa Lucía; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3015,
@@ -3864,6 +3935,7 @@
     "localidad": "villa-santa-lucia",
     "lat": -43.4193,
     "lng": -72.3645,
+    "preliminar": true,
     "nombre": {
       "es": "Comedor Lago Yelcho",
       "en": "Lago Yelcho Diner"
@@ -3879,8 +3951,7 @@
     "como": {
       "es": "En el casco de Villa Santa Lucía; dirección exacta por confirmar.",
       "en": "In the centre of Villa Santa Lucía; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3016,
@@ -3888,6 +3959,7 @@
     "localidad": "villa-santa-lucia",
     "lat": -43.4153,
     "lng": -72.3699,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta costumbrista de Villa Santa Lucía",
       "en": "Villa Santa Lucía Folk Festival"
@@ -3903,8 +3975,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Villa Santa Lucía.",
       "en": "Villa Santa Lucía main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3017,
@@ -3912,6 +3983,7 @@
     "localidad": "futaleufu",
     "lat": -43.1825,
     "lng": -71.8667,
+    "preliminar": true,
     "nombre": {
       "es": "Hostal Río Azul",
       "en": "Río Azul Hostel"
@@ -3927,8 +3999,7 @@
     "como": {
       "es": "En el casco de Futaleufú; dirección exacta por confirmar.",
       "en": "In the centre of Futaleufú; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3018,
@@ -3936,6 +4007,7 @@
     "localidad": "futaleufu",
     "lat": -43.1873,
     "lng": -71.8675,
+    "preliminar": true,
     "nombre": {
       "es": "Restaurante Espolón",
       "en": "Espolón Restaurant"
@@ -3951,8 +4023,7 @@
     "como": {
       "es": "En el casco de Futaleufú; dirección exacta por confirmar.",
       "en": "In the centre of Futaleufú; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3019,
@@ -3960,6 +4031,7 @@
     "localidad": "futaleufu",
     "lat": -43.1833,
     "lng": -71.8729,
+    "preliminar": true,
     "nombre": {
       "es": "Semana futaleufuana",
       "en": "Futaleufú Town Week"
@@ -3975,8 +4047,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Futaleufú.",
       "en": "Futaleufú main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3020,
@@ -3984,6 +4055,7 @@
     "localidad": "palena",
     "lat": -43.6145,
     "lng": -71.797,
+    "preliminar": true,
     "nombre": {
       "es": "Hospedaje Casa Huasa",
       "en": "Casa Huasa Guesthouse"
@@ -3999,8 +4071,7 @@
     "como": {
       "es": "En el casco de Palena; dirección exacta por confirmar.",
       "en": "In the centre of Palena; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3021,
@@ -4008,6 +4079,7 @@
     "localidad": "palena",
     "lat": -43.6193,
     "lng": -71.7978,
+    "preliminar": true,
     "nombre": {
       "es": "Comedor La Trilla",
       "en": "La Trilla Diner"
@@ -4023,8 +4095,7 @@
     "como": {
       "es": "En el casco de Palena; dirección exacta por confirmar.",
       "en": "In the centre of Palena; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3022,
@@ -4032,6 +4103,7 @@
     "localidad": "palena",
     "lat": -43.6153,
     "lng": -71.8032,
+    "preliminar": true,
     "nombre": {
       "es": "Rodeo y fiesta huasa de Palena",
       "en": "Palena Rodeo and Huaso Festival"
@@ -4047,8 +4119,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Palena.",
       "en": "Palena main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3023,
@@ -4056,6 +4127,7 @@
     "localidad": "la-junta",
     "lat": -43.9734,
     "lng": -72.4028,
+    "preliminar": true,
     "nombre": {
       "es": "Cabañas Lago Rosselot",
       "en": "Lago Rosselot Cabins"
@@ -4071,8 +4143,7 @@
     "como": {
       "es": "En el casco de La Junta; dirección exacta por confirmar.",
       "en": "In the centre of La Junta; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3024,
@@ -4080,6 +4151,7 @@
     "localidad": "la-junta",
     "lat": -43.9782,
     "lng": -72.4036,
+    "preliminar": true,
     "nombre": {
       "es": "Restaurante El Nudo",
       "en": "El Nudo Restaurant"
@@ -4095,8 +4167,7 @@
     "como": {
       "es": "En el casco de La Junta; dirección exacta por confirmar.",
       "en": "In the centre of La Junta; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3025,
@@ -4104,6 +4175,7 @@
     "localidad": "la-junta",
     "lat": -43.9742,
     "lng": -72.409,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta costumbrista de La Junta",
       "en": "La Junta Folk Festival"
@@ -4119,8 +4191,7 @@
     "como": {
       "es": "Plaza y sede vecinal de La Junta.",
       "en": "La Junta main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3026,
@@ -4128,6 +4199,7 @@
     "localidad": "raul-marin-balmaceda",
     "lat": -43.7761,
     "lng": -72.9573,
+    "preliminar": true,
     "nombre": {
       "es": "Hospedaje Boca del Palena",
       "en": "Boca del Palena Guesthouse"
@@ -4143,8 +4215,7 @@
     "como": {
       "es": "En el casco de Raúl Marín Balmaceda; dirección exacta por confirmar.",
       "en": "In the centre of Raúl Marín Balmaceda; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3027,
@@ -4152,6 +4223,7 @@
     "localidad": "raul-marin-balmaceda",
     "lat": -43.7809,
     "lng": -72.9581,
+    "preliminar": true,
     "nombre": {
       "es": "Cocinería del Muelle",
       "en": "Del Muelle Eatery"
@@ -4167,8 +4239,7 @@
     "como": {
       "es": "En el casco de Raúl Marín Balmaceda; dirección exacta por confirmar.",
       "en": "In the centre of Raúl Marín Balmaceda; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3028,
@@ -4222,6 +4293,7 @@
     "localidad": "raul-marin-balmaceda",
     "lat": -43.7769,
     "lng": -72.9635,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta del Mar de Raúl Marín Balmaceda",
       "en": "Raúl Marín Balmaceda Sea Festival"
@@ -4237,8 +4309,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Raúl Marín Balmaceda.",
       "en": "Raúl Marín Balmaceda main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3031,
@@ -4270,6 +4341,7 @@
     "localidad": "puyuhuapi",
     "lat": -44.3264,
     "lng": -72.5537,
+    "preliminar": true,
     "nombre": {
       "es": "Cabañas Fiordo Puyuhuapi",
       "en": "Fiordo Puyuhuapi Cabins"
@@ -4285,8 +4357,7 @@
     "como": {
       "es": "En el casco de Puyuhuapi; dirección exacta por confirmar.",
       "en": "In the centre of Puyuhuapi; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3033,
@@ -4294,6 +4365,7 @@
     "localidad": "puyuhuapi",
     "lat": -44.3312,
     "lng": -72.5545,
+    "preliminar": true,
     "nombre": {
       "es": "Cocinería Ventisquero",
       "en": "Ventisquero Eatery"
@@ -4309,8 +4381,7 @@
     "como": {
       "es": "En el casco de Puyuhuapi; dirección exacta por confirmar.",
       "en": "In the centre of Puyuhuapi; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3034,
@@ -4318,6 +4389,7 @@
     "localidad": "puyuhuapi",
     "lat": -44.3272,
     "lng": -72.5599,
+    "preliminar": true,
     "nombre": {
       "es": "Aniversario de Puyuhuapi",
       "en": "Puyuhuapi Anniversary Celebration"
@@ -4333,8 +4405,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Puyuhuapi.",
       "en": "Puyuhuapi main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3035,
@@ -4342,6 +4413,7 @@
     "localidad": "villa-amengual",
     "lat": -44.7145,
     "lng": -72.1637,
+    "preliminar": true,
     "nombre": {
       "es": "Hospedaje Cerro Pirámide",
       "en": "Cerro Pirámide Guesthouse"
@@ -4357,8 +4429,7 @@
     "como": {
       "es": "En el casco de Villa Amengual; dirección exacta por confirmar.",
       "en": "In the centre of Villa Amengual; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3036,
@@ -4366,6 +4437,7 @@
     "localidad": "villa-amengual",
     "lat": -44.7193,
     "lng": -72.1645,
+    "preliminar": true,
     "nombre": {
       "es": "Comedor Las Torres",
       "en": "Las Torres Diner"
@@ -4381,8 +4453,7 @@
     "como": {
       "es": "En el casco de Villa Amengual; dirección exacta por confirmar.",
       "en": "In the centre of Villa Amengual; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3037,
@@ -4390,6 +4461,7 @@
     "localidad": "villa-amengual",
     "lat": -44.7153,
     "lng": -72.1699,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta costumbrista de Villa Amengual",
       "en": "Villa Amengual Folk Festival"
@@ -4405,8 +4477,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Villa Amengual.",
       "en": "Villa Amengual main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3038,
@@ -4414,6 +4485,7 @@
     "localidad": "puerto-cisnes",
     "lat": -44.74,
     "lng": -72.6859,
+    "preliminar": true,
     "nombre": {
       "es": "Hostal Piedra del Gato",
       "en": "Piedra del Gato Hostel"
@@ -4429,8 +4501,7 @@
     "como": {
       "es": "En el casco de Puerto Cisnes; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Cisnes; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3039,
@@ -4438,6 +4509,7 @@
     "localidad": "puerto-cisnes",
     "lat": -44.7448,
     "lng": -72.6867,
+    "preliminar": true,
     "nombre": {
       "es": "Marisquería El Cisne",
       "en": "El Cisne Seafood Restaurant"
@@ -4453,8 +4525,7 @@
     "como": {
       "es": "En el casco de Puerto Cisnes; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Cisnes; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3040,
@@ -4462,6 +4533,7 @@
     "localidad": "puerto-cisnes",
     "lat": -44.7408,
     "lng": -72.6921,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta del Pescador de Puerto Cisnes",
       "en": "Puerto Cisnes Fisherman's Festival"
@@ -4477,8 +4549,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Puerto Cisnes.",
       "en": "Puerto Cisnes main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3041,
@@ -4486,6 +4557,7 @@
     "localidad": "villa-manihuales",
     "lat": -45.2081,
     "lng": -72.1517,
+    "preliminar": true,
     "nombre": {
       "es": "Hospedaje Mañihuales",
       "en": "Mañihuales Guesthouse"
@@ -4501,8 +4573,7 @@
     "como": {
       "es": "En el casco de Villa Mañihuales; dirección exacta por confirmar.",
       "en": "In the centre of Villa Mañihuales; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3042,
@@ -4510,6 +4581,7 @@
     "localidad": "villa-manihuales",
     "lat": -45.2129,
     "lng": -72.1525,
+    "preliminar": true,
     "nombre": {
       "es": "Comedor Ruta 7",
       "en": "Ruta 7 Diner"
@@ -4525,8 +4597,7 @@
     "como": {
       "es": "En el casco de Villa Mañihuales; dirección exacta por confirmar.",
       "en": "In the centre of Villa Mañihuales; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3043,
@@ -4534,6 +4605,7 @@
     "localidad": "villa-manihuales",
     "lat": -45.2089,
     "lng": -72.1579,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta costumbrista de Villa Mañihuales",
       "en": "Villa Mañihuales Folk Festival"
@@ -4549,8 +4621,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Villa Mañihuales.",
       "en": "Villa Mañihuales main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3044,
@@ -4558,6 +4629,7 @@
     "localidad": "puerto-aysen",
     "lat": -45.4011,
     "lng": -72.6917,
+    "preliminar": true,
     "nombre": {
       "es": "Hostal Puente Ibáñez",
       "en": "Puente Ibáñez Hostel"
@@ -4573,8 +4645,7 @@
     "como": {
       "es": "En el casco de Puerto Aysén; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Aysén; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3045,
@@ -4582,6 +4653,7 @@
     "localidad": "puerto-aysen",
     "lat": -45.4059,
     "lng": -72.6925,
+    "preliminar": true,
     "nombre": {
       "es": "Restaurante Río Aysén",
       "en": "Río Aysén Restaurant"
@@ -4597,8 +4669,7 @@
     "como": {
       "es": "En el casco de Puerto Aysén; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Aysén; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3046,
@@ -4606,6 +4677,7 @@
     "localidad": "puerto-aysen",
     "lat": -45.4019,
     "lng": -72.6979,
+    "preliminar": true,
     "nombre": {
       "es": "Semana aysenina",
       "en": "Puerto Aysén Town Week"
@@ -4621,8 +4693,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Puerto Aysén.",
       "en": "Puerto Aysén main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3047,
@@ -4630,6 +4701,7 @@
     "localidad": "puerto-chacabuco",
     "lat": -45.4645,
     "lng": -72.8137,
+    "preliminar": true,
     "nombre": {
       "es": "Hospedaje Chacabuco",
       "en": "Chacabuco Guesthouse"
@@ -4645,8 +4717,7 @@
     "como": {
       "es": "En el casco de Puerto Chacabuco; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Chacabuco; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3048,
@@ -4654,6 +4725,7 @@
     "localidad": "puerto-chacabuco",
     "lat": -45.4693,
     "lng": -72.8145,
+    "preliminar": true,
     "nombre": {
       "es": "Marisquería del Terminal",
       "en": "Terminal Seafood Restaurant"
@@ -4669,8 +4741,7 @@
     "como": {
       "es": "En el casco de Puerto Chacabuco; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Chacabuco; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3049,
@@ -4678,6 +4749,7 @@
     "localidad": "puerto-chacabuco",
     "lat": -45.4653,
     "lng": -72.8199,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta del Pescador de Puerto Chacabuco",
       "en": "Puerto Chacabuco Fisherman's Festival"
@@ -4693,8 +4765,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Puerto Chacabuco.",
       "en": "Puerto Chacabuco main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3050,
@@ -4702,6 +4773,7 @@
     "localidad": "coyhaique",
     "lat": -45.5682,
     "lng": -72.0632,
+    "preliminar": true,
     "nombre": {
       "es": "Hostal Piedra del Indio",
       "en": "Piedra del Indio Hostel"
@@ -4717,8 +4789,7 @@
     "como": {
       "es": "En el casco de Coyhaique; dirección exacta por confirmar.",
       "en": "In the centre of Coyhaique; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3051,
@@ -4726,6 +4797,7 @@
     "localidad": "coyhaique",
     "lat": -45.5763,
     "lng": -72.0646,
+    "preliminar": true,
     "nombre": {
       "es": "Restaurante Simpson",
       "en": "Simpson Restaurant"
@@ -4741,8 +4813,7 @@
     "como": {
       "es": "En el casco de Coyhaique; dirección exacta por confirmar.",
       "en": "In the centre of Coyhaique; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3052,
@@ -4750,6 +4821,7 @@
     "localidad": "coyhaique",
     "lat": -45.5695,
     "lng": -72.0737,
+    "preliminar": true,
     "nombre": {
       "es": "Aniversario de Coyhaique",
       "en": "Coyhaique Anniversary Celebration"
@@ -4765,8 +4837,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Coyhaique.",
       "en": "Coyhaique main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3053,
@@ -4774,6 +4845,7 @@
     "localidad": "balmaceda",
     "lat": -45.9115,
     "lng": -71.6917,
+    "preliminar": true,
     "nombre": {
       "es": "Hospedaje Balmaceda",
       "en": "Balmaceda Guesthouse"
@@ -4789,8 +4861,7 @@
     "como": {
       "es": "En el casco de Balmaceda; dirección exacta por confirmar.",
       "en": "In the centre of Balmaceda; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3054,
@@ -4798,6 +4869,7 @@
     "localidad": "balmaceda",
     "lat": -45.9163,
     "lng": -71.6925,
+    "preliminar": true,
     "nombre": {
       "es": "Comedor La Estepa",
       "en": "La Estepa Diner"
@@ -4813,8 +4885,7 @@
     "como": {
       "es": "En el casco de Balmaceda; dirección exacta por confirmar.",
       "en": "In the centre of Balmaceda; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3055,
@@ -4868,6 +4939,7 @@
     "localidad": "balmaceda",
     "lat": -45.9123,
     "lng": -71.6979,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta costumbrista de Balmaceda",
       "en": "Balmaceda Folk Festival"
@@ -4883,8 +4955,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Balmaceda.",
       "en": "Balmaceda main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3058,
@@ -4916,6 +4987,7 @@
     "localidad": "villa-cerro-castillo",
     "lat": -46.1194,
     "lng": -72.1606,
+    "preliminar": true,
     "nombre": {
       "es": "Hospedaje Cerro Castillo",
       "en": "Cerro Castillo Guesthouse"
@@ -4931,8 +5003,7 @@
     "como": {
       "es": "En el casco de Villa Cerro Castillo; dirección exacta por confirmar.",
       "en": "In the centre of Villa Cerro Castillo; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3060,
@@ -4940,6 +5011,7 @@
     "localidad": "villa-cerro-castillo",
     "lat": -46.1242,
     "lng": -72.1614,
+    "preliminar": true,
     "nombre": {
       "es": "Cocinería Paredón de las Manos",
       "en": "Paredón de las Manos Eatery"
@@ -4955,8 +5027,7 @@
     "como": {
       "es": "En el casco de Villa Cerro Castillo; dirección exacta por confirmar.",
       "en": "In the centre of Villa Cerro Castillo; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3061,
@@ -4964,6 +5035,7 @@
     "localidad": "villa-cerro-castillo",
     "lat": -46.1202,
     "lng": -72.1668,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta costumbrista de Villa Cerro Castillo",
       "en": "Villa Cerro Castillo Folk Festival"
@@ -4979,8 +5051,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Villa Cerro Castillo.",
       "en": "Villa Cerro Castillo main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3062,
@@ -4988,6 +5059,7 @@
     "localidad": "puerto-rio-tranquilo",
     "lat": -46.623,
     "lng": -72.6705,
+    "preliminar": true,
     "nombre": {
       "es": "Cabañas Capillas de Mármol",
       "en": "Capillas de Mármol Cabins"
@@ -5003,8 +5075,7 @@
     "como": {
       "es": "En el casco de Puerto Río Tranquilo; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Río Tranquilo; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3063,
@@ -5012,6 +5083,7 @@
     "localidad": "puerto-rio-tranquilo",
     "lat": -46.6278,
     "lng": -72.6713,
+    "preliminar": true,
     "nombre": {
       "es": "Cocinería Exploradores",
       "en": "Exploradores Eatery"
@@ -5027,8 +5099,7 @@
     "como": {
       "es": "En el casco de Puerto Río Tranquilo; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Río Tranquilo; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3064,
@@ -5059,6 +5130,7 @@
     "localidad": "puerto-rio-tranquilo",
     "lat": -46.6238,
     "lng": -72.6767,
+    "preliminar": true,
     "nombre": {
       "es": "Aniversario de Puerto Río Tranquilo",
       "en": "Puerto Río Tranquilo Anniversary Celebration"
@@ -5074,8 +5146,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Puerto Río Tranquilo.",
       "en": "Puerto Río Tranquilo main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3066,
@@ -5083,6 +5154,7 @@
     "localidad": "puerto-guadal",
     "lat": -46.842,
     "lng": -72.6997,
+    "preliminar": true,
     "nombre": {
       "es": "Cabañas Los Maquis",
       "en": "Los Maquis Cabins"
@@ -5098,8 +5170,7 @@
     "como": {
       "es": "En el casco de Puerto Guadal; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Guadal; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3067,
@@ -5107,6 +5178,7 @@
     "localidad": "puerto-guadal",
     "lat": -46.8468,
     "lng": -72.7005,
+    "preliminar": true,
     "nombre": {
       "es": "Cocinería Puerto Guadal",
       "en": "Puerto Guadal Eatery"
@@ -5122,8 +5194,7 @@
     "como": {
       "es": "En el casco de Puerto Guadal; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Guadal; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3068,
@@ -5131,6 +5202,7 @@
     "localidad": "puerto-guadal",
     "lat": -46.8428,
     "lng": -72.7059,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta costumbrista de Puerto Guadal",
       "en": "Puerto Guadal Folk Festival"
@@ -5146,8 +5218,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Puerto Guadal.",
       "en": "Puerto Guadal main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3069,
@@ -5155,6 +5226,7 @@
     "localidad": "chile-chico",
     "lat": -46.5377,
     "lng": -71.7258,
+    "preliminar": true,
     "nombre": {
       "es": "Hostal Jeinimeni",
       "en": "Jeinimeni Hostel"
@@ -5170,8 +5242,7 @@
     "como": {
       "es": "En el casco de Chile Chico; dirección exacta por confirmar.",
       "en": "In the centre of Chile Chico; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3070,
@@ -5179,6 +5250,7 @@
     "localidad": "chile-chico",
     "lat": -46.5425,
     "lng": -71.7266,
+    "preliminar": true,
     "nombre": {
       "es": "Restaurante Costanera del Lago",
       "en": "Costanera del Lago Restaurant"
@@ -5194,8 +5266,7 @@
     "como": {
       "es": "En el casco de Chile Chico; dirección exacta por confirmar.",
       "en": "In the centre of Chile Chico; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3071,
@@ -5203,6 +5274,7 @@
     "localidad": "chile-chico",
     "lat": -46.5385,
     "lng": -71.732,
+    "preliminar": true,
     "nombre": {
       "es": "Fiesta de la Cereza de Chile Chico",
       "en": "Chile Chico Cherry Festival"
@@ -5218,8 +5290,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Chile Chico.",
       "en": "Chile Chico main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3072,
@@ -5227,6 +5298,7 @@
     "localidad": "puerto-bertrand",
     "lat": -47.0197,
     "lng": -72.8217,
+    "preliminar": true,
     "nombre": {
       "es": "Cabañas Nacimiento del Baker",
       "en": "Nacimiento del Baker Cabins"
@@ -5242,8 +5314,7 @@
     "como": {
       "es": "En el casco de Puerto Bertrand; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Bertrand; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3073,
@@ -5251,6 +5322,7 @@
     "localidad": "puerto-bertrand",
     "lat": -47.0245,
     "lng": -72.8225,
+    "preliminar": true,
     "nombre": {
       "es": "Comedor del Baker",
       "en": "Del Baker Diner"
@@ -5266,8 +5338,7 @@
     "como": {
       "es": "En el casco de Puerto Bertrand; dirección exacta por confirmar.",
       "en": "In the centre of Puerto Bertrand; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3074,
@@ -5275,6 +5346,7 @@
     "localidad": "puerto-bertrand",
     "lat": -47.0205,
     "lng": -72.8279,
+    "preliminar": true,
     "nombre": {
       "es": "Torneo de pesca deportiva de Puerto Bertrand",
       "en": "Puerto Bertrand Sport Fishing Tournament"
@@ -5290,8 +5362,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Puerto Bertrand.",
       "en": "Puerto Bertrand main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3075,
@@ -5299,6 +5370,7 @@
     "localidad": "cochrane",
     "lat": -47.2502,
     "lng": -72.5681,
+    "preliminar": true,
     "nombre": {
       "es": "Hospedaje Plaza Cochrane",
       "en": "Plaza Cochrane Guesthouse"
@@ -5314,8 +5386,7 @@
     "como": {
       "es": "En el casco de Cochrane; dirección exacta por confirmar.",
       "en": "In the centre of Cochrane; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3076,
@@ -5323,6 +5394,7 @@
     "localidad": "cochrane",
     "lat": -47.2583,
     "lng": -72.5695,
+    "preliminar": true,
     "nombre": {
       "es": "Cocinería Río Baker",
       "en": "Río Baker Eatery"
@@ -5338,8 +5410,7 @@
     "como": {
       "es": "En el casco de Cochrane; dirección exacta por confirmar.",
       "en": "In the centre of Cochrane; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3077,
@@ -5347,6 +5418,7 @@
     "localidad": "caleta-tortel",
     "lat": -47.7945,
     "lng": -73.533,
+    "preliminar": true,
     "nombre": {
       "es": "Hospedaje Las Pasarelas",
       "en": "Las Pasarelas Guesthouse"
@@ -5362,8 +5434,7 @@
     "como": {
       "es": "En el casco de Caleta Tortel; dirección exacta por confirmar.",
       "en": "In the centre of Caleta Tortel; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3078,
@@ -5371,6 +5442,7 @@
     "localidad": "caleta-tortel",
     "lat": -47.7993,
     "lng": -73.5338,
+    "preliminar": true,
     "nombre": {
       "es": "Cocinería del Cipresal",
       "en": "Del Cipresal Eatery"
@@ -5386,8 +5458,7 @@
     "como": {
       "es": "En el casco de Caleta Tortel; dirección exacta por confirmar.",
       "en": "In the centre of Caleta Tortel; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3079,
@@ -5418,6 +5489,7 @@
     "localidad": "caleta-tortel",
     "lat": -47.7953,
     "lng": -73.5392,
+    "preliminar": true,
     "nombre": {
       "es": "Aniversario de Caleta Tortel",
       "en": "Caleta Tortel Anniversary Celebration"
@@ -5433,8 +5505,7 @@
     "como": {
       "es": "Plaza y sede vecinal de Caleta Tortel.",
       "en": "Caleta Tortel main square and community hall."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3081,
@@ -5442,6 +5513,7 @@
     "localidad": "villa-ohiggins",
     "lat": -48.4664,
     "lng": -72.5571,
+    "preliminar": true,
     "nombre": {
       "es": "Hospedaje Fin de Ruta",
       "en": "Fin de Ruta Guesthouse"
@@ -5457,8 +5529,7 @@
     "como": {
       "es": "En el casco de Villa O'Higgins; dirección exacta por confirmar.",
       "en": "In the centre of Villa O'Higgins; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3082,
@@ -5466,6 +5537,7 @@
     "localidad": "villa-ohiggins",
     "lat": -48.4712,
     "lng": -72.5579,
+    "preliminar": true,
     "nombre": {
       "es": "Cocinería El Viajero",
       "en": "El Viajero Eatery"
@@ -5481,8 +5553,7 @@
     "como": {
       "es": "En el casco de Villa O'Higgins; dirección exacta por confirmar.",
       "en": "In the centre of Villa O'Higgins; exact address to be confirmed."
-    },
-    "preliminar": true
+    }
   },
   {
     "id": 3083,
@@ -5490,6 +5561,7 @@
     "localidad": "villa-ohiggins",
     "lat": -48.4672,
     "lng": -72.5633,
+    "preliminar": true,
     "nombre": {
       "es": "Aniversario de Villa O’Higgins",
       "en": "Villa O’Higgins Anniversary Celebration"
@@ -5505,7 +5577,6 @@
     "como": {
       "es": "Plaza y sede vecinal de Villa O'Higgins.",
       "en": "Villa O'Higgins main square and community hall."
-    },
-    "preliminar": true
+    }
   }
 ]

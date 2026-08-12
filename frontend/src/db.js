@@ -26,7 +26,15 @@ function db() {
         d.createObjectStore('reportes', { keyPath: 'id' })
       if (!d.objectStoreNames.contains('salientes'))
         d.createObjectStore('salientes', { keyPath: 'clave', autoIncrement: true })
-      // v5 — Calificaciones y analítica (Fase 3). Otras dos stores:
+      // v5 — TRES stores nuevas, que llegaron por dos ramas distintas y comparten
+      // número de versión. No hay problema en que así sea: el `upgrade` de
+      // IndexedDB corre una sola vez por salto de versión y cada `createObjectStore`
+      // va con su propio guard, así que quien venga de la v4 se lleva las tres.
+      //
+      //  - `rutas`: trazados y áreas del mapa (la red de pasarelas de Tortel,
+      //    senderos, rutas, glaciares). En su propio store y no en `lugares`
+      //    porque no son un punto: cada fila trae una geometría GeoJSON que
+      //    Leaflet dibuja.
       //  - `calificacionesSalientes`: buzón de salida de las estrellas, igual
       //    que `salientes` para los reportes. La ficha se lee en la ruta y se
       //    califica ahí mismo; la señal llega después.
@@ -35,6 +43,7 @@ function db() {
       //    servidor (tipo, referencia, día → cantidad), así que veinte fichas
       //    vistas sin señal son una fila, no veinte, y reenviar un lote perdido
       //    no puede duplicar nada.
+      if (!d.objectStoreNames.contains('rutas')) d.createObjectStore('rutas', { keyPath: 'id' })
       if (!d.objectStoreNames.contains('calificacionesSalientes'))
         d.createObjectStore('calificacionesSalientes', { keyPath: 'clave', autoIncrement: true })
       if (!d.objectStoreNames.contains('metricas'))
@@ -86,6 +95,19 @@ export async function guardarLocalidades(lista) {
 export async function leerLocalidades() {
   const d = await db()
   return d.getAll('localidades')
+}
+
+export async function guardarRutas(lista) {
+  const d = await db()
+  const tx = d.transaction('rutas', 'readwrite')
+  await tx.store.clear() // lista canónica: despublicar una ruta tiene que borrarla
+  await Promise.all(lista.map((r) => tx.store.put(r)))
+  await tx.done
+}
+
+export async function leerRutas() {
+  const d = await db()
+  return d.getAll('rutas')
 }
 
 // ---- Crowdsourcing (Fase 3) ----
