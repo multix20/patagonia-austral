@@ -123,14 +123,30 @@ export async function obtenerRutas() {
       const r = await fetch(`${API_URL}/api/rutas`, { headers: { Accept: 'application/json' } })
       if (r.ok) {
         const datos = await r.json()
-        await guardarRutas(datos)
+        // Guardar puede fallar sin que eso invalide el dato que YA se descargó
+        // (pasó: un navegador con la v5 vieja no tenía el store `rutas` y el
+        // fallo se llevaba puesta la respuesta buena). Se avisa y se sigue.
+        try {
+          await guardarRutas(datos)
+        } catch (e) {
+          console.warn('No se pudieron cachear las rutas:', e)
+        }
         return datos
       }
     } catch {
       // sin red, o backend viejo sin /api/rutas: seguir con lo cacheado
     }
   }
-  return leerRutas()
+  // Si el store no existe (versión de IndexedDB desalineada), leer lanza. Sin
+  // este guard la promesa se rechaza, `setRutas` nunca corre y la capa queda
+  // vacía SIN un solo error visible — que es exactamente cómo se escondió el
+  // bug de la v5.
+  try {
+    return await leerRutas()
+  } catch (e) {
+    console.warn('No hay rutas cacheadas legibles:', e)
+    return []
+  }
 }
 
 export async function fechaActualizacion() {
