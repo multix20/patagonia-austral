@@ -441,7 +441,11 @@ const MapView = forwardRef(function MapView(
       if (trazadosRef.current === grupo) trazadosRef.current = null
     }
     // Depende del SLUG y no del objeto: el objeto cambia de identidad en cada
-    // render de App y volvería a dibujar la capa entera sin necesidad.
+    // render de App y volvería a dibujar la capa entera sin necesidad. La omisión
+    // es deliberada y va silenciada como en el resto del archivo — si no, deja un
+    // warning permanente en `npm run lint`, que es lo que hace que después nadie
+    // mire la salida del linter.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rutas, vista, localidadActiva?.slug, lang])
 
   useEffect(() => {

@@ -71,6 +71,14 @@ class Ruta extends Model
             return count($coords);
         }
 
-        return array_sum(array_map(fn ($c) => $this->contar($c), $coords));
+        // El `is_array` no sobra: un GeoJSON de tipo Point trae `coordinates`
+        // como [lon, lat], o sea números sueltos en el primer nivel. Ahí
+        // `$coords[0][0]` es null (offset sobre un float), no entra por la rama
+        // de arriba, y la recursión recibía un float → TypeError, que en el CMS
+        // se ve como un 500 al abrir la lista de trazados. `rutas` no debería
+        // tener Points —los tipos son área/ruta/sendero/pasarela— pero la
+        // geometría se puede pegar a mano desde el editor, y una fila mal pegada
+        // no puede tumbar la pantalla entera.
+        return array_sum(array_map(fn ($c) => is_array($c) ? $this->contar($c) : 0, $coords));
     }
 }

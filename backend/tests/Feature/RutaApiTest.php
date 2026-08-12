@@ -114,5 +114,15 @@ class RutaApiTest extends TestCase
             ],
         ]);
         $this->assertSame(8, $area->vertices());
+
+        // Un Point trae `coordinates` como [lon, lat]: números sueltos en el
+        // primer nivel. No corresponde a ningún tipo de esta tabla, pero la
+        // geometría se puede pegar a mano en el CMS, y antes del guard esto
+        // reventaba con un TypeError — o sea, una fila mal pegada dejaba la
+        // lista de trazados en un 500. Ahora cuenta 0 y la pantalla vive.
+        $punto = $this->ruta([
+            'geometria' => ['type' => 'Point', 'coordinates' => [-73.5361, -47.7968]],
+        ]);
+        $this->assertSame(0, $punto->vertices());
     }
 }
