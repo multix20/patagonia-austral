@@ -3,7 +3,7 @@ import { openDB } from 'idb'
 // Almacenamiento local estructurado (IndexedDB) según plan de contingencia
 // offline: los contenidos quedan disponibles sin conexión tras la primera visita.
 const DB_NOMBRE = 'cochrane-turismo'
-const DB_VERSION = 5
+const DB_VERSION = 6
 
 function db() {
   return openDB(DB_NOMBRE, DB_VERSION, {
@@ -26,10 +26,23 @@ function db() {
         d.createObjectStore('reportes', { keyPath: 'id' })
       if (!d.objectStoreNames.contains('salientes'))
         d.createObjectStore('salientes', { keyPath: 'clave', autoIncrement: true })
-      // v5 — TRES stores nuevas, que llegaron por dos ramas distintas y comparten
-      // número de versión. No hay problema en que así sea: el `upgrade` de
-      // IndexedDB corre una sola vez por salto de versión y cada `createObjectStore`
-      // va con su propio guard, así que quien venga de la v4 se lleva las tres.
+      // v5 — TRES stores nuevas, que llegaron por dos ramas distintas y
+      // compartieron número de versión.
+      //
+      // ⚠️ ESO FUE UN ERROR, y por eso la versión saltó a la 6 (12-ago-2026). El
+      // razonamiento original ("cada createObjectStore tiene su guard, así que
+      // quien venga de la v4 se lleva las tres") es cierto solo para quien
+      // venga de la v4. Quien ya estaba EN la v5 no vuelve a pasar por acá: el
+      // `upgrade` de IndexedDB corre únicamente cuando SUBE el número de
+      // versión. Las dos ramas se desplegaron con un día de diferencia, así que
+      // todo el que abrió la app en el medio quedó con una v5 sin `rutas`, y el
+      // fallo fue mudo: guardar reventaba, el catch se lo tragaba y la capa
+      // quedaba vacía sin un solo error en consola.
+      //
+      // La regla que queda: **si se agrega un store, sube la versión, aunque el
+      // número ya se haya usado ese mismo día**. Es gratis —los guards hacen que
+      // repetir el upgrade no cueste nada— y es la única forma de alcanzar a
+      // quien ya pasó por el número anterior.
       //
       //  - `rutas`: trazados y áreas del mapa (la red de pasarelas de Tortel,
       //    senderos, rutas, glaciares). En su propio store y no en `lugares`
