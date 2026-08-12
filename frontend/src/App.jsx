@@ -804,16 +804,19 @@ function AppInterna() {
 
       {/* Barra superior flotante */}
       <div className="topbar">
+        {/* Campanita, en el lugar que ocupaba el menú ☰ (eliminado el 12-ago-2026).
+            El menú tenía ocho filas: tres duplicaban algo que ya estaba a un
+            toque (volver a la ruta, asistente, idioma), dos no hacían nada al
+            tocarlas, y de las tres útiles esta era la que más pesa — es el canal
+            por donde llega un corte de camino. Enterrarla detrás de un menú era
+            justo al revés de lo que necesita: el punto de no leídos ya vivía en
+            este botón, así que ahora el punto y su destino son la misma cosa. */}
         <button
           className="fab-sq"
-          onClick={() => setHoja('menu')}
-          aria-label={lang === 'es' ? 'Menú' : 'Menu'}
+          onClick={abrirPanelAvisos}
+          aria-label={t('menuAvisos')}
         >
-          <Icon nombre="menu" tam={22} color="var(--tinta)" />
-          {/* El punto también marca la versión esperando: si cierran el aviso,
-              el camino a "Actualizar" sigue señalizado desde el menú. */}
-          {/* El punto ya no marca "hay actualización": esa entra sola y no
-              necesita que nadie la atienda. Queda solo para avisos sin leer. */}
+          <Icon nombre="bell" tam={21} color="var(--tinta)" />
           {noLeidos > 0 && <span className="fab-dot" />}
         </button>
 
@@ -1021,112 +1024,6 @@ function AppInterna() {
       </div>
 
       {/* Hoja: menú */}
-      <div className={`sheet ${hoja === 'menu' ? 'show' : ''}`}>
-        <div className="grab" />
-        <div className="sheet-head">
-          <h2>{t('titulo')}</h2>
-          <button className="x-btn" onClick={() => setHoja(null)} aria-label="Cerrar">
-            <Icon nombre="x" tam={15} />
-          </button>
-        </div>
-        <div className="sheet-body">
-          <div
-            className="menu-row"
-            onClick={() => {
-              setHoja(null)
-              volverRuta()
-            }}
-          >
-            <span className="m-ico">
-              <Icon nombre="route" tam={20} color="var(--verde)" />
-            </span>
-            <div>
-              <b>{t('menuVerRuta')}</b>
-              <div className="m-sub">{t('menuVerRutaSub')}</div>
-            </div>
-          </div>
-          {/* La lupa de la barra superior la ocupa ahora el idioma, así que el
-              buscador necesita una puerta que funcione también dentro de un
-              pueblo (allí la píldora del centro vuelve a la ruta, no busca). */}
-          <div className="menu-row" onClick={abrirBuscador}>
-            <span className="m-ico">
-              <Icon nombre="search" tam={20} color="var(--verde)" />
-            </span>
-            <div>
-              <b>{t('menuBuscar')}</b>
-              <div className="m-sub">{t('menuBuscarSub')}</div>
-            </div>
-          </div>
-          <div className="menu-row" onClick={abrirChat}>
-            <span className="m-ico">
-              <Icon nombre="message-circle" tam={20} color="var(--verde)" />
-            </span>
-            <div>
-              <b>{t('menuAsistente')}</b>
-              <div className="m-sub">{t('menuAsistenteSub')}</div>
-            </div>
-          </div>
-          <div className="menu-row" onClick={abrirPanelAvisos}>
-            <span className="m-ico">
-              <Icon nombre="bell" tam={20} color="var(--verde)" />
-            </span>
-            <div>
-              <b>{t('menuAvisos')}</b>
-              <div className="m-sub">{t('menuAvisosSub')}</div>
-            </div>
-            {noLeidos > 0 && <span className="menu-badge">{noLeidos}</span>}
-          </div>
-          <div className="menu-row">
-            <span className="m-ico">
-              <Icon nombre="wifi" tam={20} color="var(--verde)" />
-            </span>
-            <div>
-              <b>{t('menuOffline')}</b>
-              <div className="m-sub">{t('menuOfflineSub')}</div>
-            </div>
-          </div>
-          <div className="menu-row">
-            <span className="m-ico">
-              <Icon nombre="map-pin" tam={20} color="var(--verde)" />
-            </span>
-            <div>
-              <b>{t('menuAcerca')}</b>
-              <div className="m-sub">{t('menuAcercaSub')}</div>
-            </div>
-          </div>
-          <div className="menu-row" onClick={revisarActualizaciones}>
-            <span className="m-ico">
-              <Icon nombre="download" tam={20} color="var(--verde)" />
-            </span>
-            <div>
-              <b>{t('menuVersion')}</b>
-              <div className="m-sub">
-                {__VERSION_APP__} · {estadoAct === 'lista' ? t('updBoton') : t('menuVersionSub')}
-              </div>
-            </div>
-            {estadoAct === 'lista' && <span className="menu-badge">1</span>}
-          </div>
-          <div className="menu-row">
-            <span className="m-ico">
-              <Icon nombre="globe" tam={20} color="var(--verde)" />
-            </span>
-            <div>
-              <b>{t('idioma')}</b>
-              <div className="m-sub">Español · English</div>
-            </div>
-            <button
-              className="menu-lang"
-              onClick={(e) => {
-                e.stopPropagation()
-                cambiarIdioma()
-              }}
-            >
-              <Icon nombre="globe" tam={12} /> {lang === 'es' ? 'EN' : 'ES'}
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Hoja: reportar (crowdsourcing, Fase 3) */}
       <div className={`sheet ${hoja === 'reportar' ? 'show' : ''}`}>
         <div className="grab" />
@@ -1260,6 +1157,17 @@ function AppInterna() {
                 </div>
               ))}
             </div>
+            {/* Versión y chequeo manual, al pie. Vivían en el menú y ese menú ya
+                no existe. No es un control para el viajero —la app se actualiza
+                sola al abrirla— pero sí es como se comprueba de un vistazo que
+                una versión nueva entró, y eso hizo falta más de una vez. Va
+                discreto y al final, no compitiendo con los avisos. */}
+            <button className="pa-version" onClick={revisarActualizaciones}>
+              <Icon nombre="download" tam={12} />
+              <span>
+                {__VERSION_APP__} · {estadoAct === 'lista' ? t('updBoton') : t('menuVersionSub')}
+              </span>
+            </button>
           </div>
         </div>
       )}
