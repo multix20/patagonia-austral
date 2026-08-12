@@ -37,21 +37,21 @@ class ReporteApiTest extends TestCase
         $this->localidad();
 
         $r = $this->postJson('/api/reportes', [
-            'tipo' => 'combustible',
+            'tipo' => 'peligro',
             'lat' => -47.2545,
             'lng' => -72.5738,
-            'comentario' => 'No hay bencina en la bomba',
+            'comentario' => 'Piedras sueltas en la curva',
             'dispositivo' => 'dispositivo-de-prueba-1',
         ]);
 
         $r->assertCreated()
-            ->assertJsonPath('tipo', 'combustible')
+            ->assertJsonPath('tipo', 'peligro')
             ->assertJsonPath('localidad', 'cochrane')
             ->assertJsonPath('confirmaciones', 0);
 
         $reporte = Reporte::first();
         $this->assertEqualsWithDelta(
-            now()->addHours(Reporte::VIDA_HORAS['combustible'])->timestamp,
+            now()->addHours(Reporte::VIDA_HORAS['peligro'])->timestamp,
             $reporte->expira_en->timestamp,
             5
         );
@@ -71,7 +71,7 @@ class ReporteApiTest extends TestCase
         $this->localidad();
 
         $this->postJson('/api/reportes', [
-            'tipo' => 'camino',
+            'tipo' => 'peligro',
             'lat' => -33.4489,   // Santiago, ~1.000 km al norte de la ruta
             'lng' => -70.6693,
             'dispositivo' => 'dispositivo-lejano',
@@ -91,14 +91,14 @@ class ReporteApiTest extends TestCase
         ])->assertStatus(422);
 
         $this->postJson('/api/reportes', [
-            'tipo' => 'camino',
+            'tipo' => 'peligro',
             'lat' => 999,
             'lng' => -72.5,
             'dispositivo' => 'dispositivo-de-prueba-1',
         ])->assertStatus(422);
 
         $this->postJson('/api/reportes', [
-            'tipo' => 'camino',
+            'tipo' => 'peligro',
             'lat' => -47.2,
             'lng' => -72.5,
             'comentario' => str_repeat('a', 281),
@@ -114,7 +114,7 @@ class ReporteApiTest extends TestCase
     {
         $this->localidad();
         $datos = [
-            'tipo' => 'hielo',
+            'tipo' => 'accidente',
             'lat' => -47.2539,
             'lng' => -72.5732,
             'dispositivo' => 'dispositivo-de-prueba-1',
@@ -136,7 +136,7 @@ class ReporteApiTest extends TestCase
     public function test_index_solo_devuelve_vigentes(): void
     {
         $loc = $this->localidad();
-        $base = ['tipo' => 'camino', 'lat' => -47.25, 'lng' => -72.57, 'localidad_id' => $loc->id];
+        $base = ['tipo' => 'peligro', 'lat' => -47.25, 'lng' => -72.57, 'localidad_id' => $loc->id];
 
         $vivo = Reporte::create($base + ['dispositivo' => 'a', 'expira_en' => now()->addHour()]);
         Reporte::create($base + ['dispositivo' => 'b', 'expira_en' => now()->subMinute()]);
@@ -153,7 +153,7 @@ class ReporteApiTest extends TestCase
     {
         $loc = $this->localidad();
         $reporte = Reporte::create([
-            'tipo' => 'ferry', 'lat' => -47.25, 'lng' => -72.57, 'localidad_id' => $loc->id,
+            'tipo' => 'peligro', 'lat' => -47.25, 'lng' => -72.57, 'localidad_id' => $loc->id,
             'dispositivo' => 'autor', 'expira_en' => now()->addHours(2),
         ]);
         $antes = $reporte->expira_en->timestamp;
@@ -177,73 +177,76 @@ class ReporteApiTest extends TestCase
     }
 
     /**
-     * Confirmar NUNCA acorta un reporte de vida larga. El tope de extensión era
-     * de 24 h fijas y se aplicaba con un `min()`, así que confirmar una faena
-     * (168 h) la dejaba en 24 h: la comunidad enterraba el reporte justo por
-     * darle la razón. Es el caso que hace utilizable la temporada de obras del
-     * Plan Ruta Austral, por eso tiene test propio.
+     * Confirmar NUNCA acorta un reporte, ni siquiera uno de un tipo RETIRADO.
+     *
+     * Al recortar el crowdsourcing a tres tipos (ago-2026) los viejos salieron de
+     * `VIDA_HORAS`, así que su tope de extensión pasó a ser el mínimo de 24 h. Un
+     * `camping` con 72 h por delante que alguien confirma NO puede caer a 24 h:
+     * la comunidad enterraría el reporte justo por darle la razón, y encima por
+     * un cambio nuestro que el viajero no pidió. Lo que sostiene esto es el
+     * `max()` de `votar()`; este test es el que lo vigila.
      */
-    public function test_confirmar_no_acorta_un_reporte_de_vida_larga(): void
+    public function test_confirmar_no_acorta_un_reporte_de_tipo_retirado(): void
     {
         // Reloj congelado a propósito. Sin esto el test es INESTABLE (~1 de cada
-        // 65 corridas): el reporte nace con `now()+168 h` y el controlador
-        // recalcula el tope con SU propio `now()`, así que si el POST cae en el
-        // segundo siguiente al `create` el resultado queda un segundo más allá y
-        // la igualdad exacta falla. Es ruido de reloj, no un cambio de conducta
-        // — pero rompía CI en `main` cada tanto, que es peor que un test lento.
+        // 65 corridas): el reporte nace con un `now()` y el controlador recalcula
+        // el tope con el SUYO, así que si el POST cae en el segundo siguiente al
+        // `create` la igualdad exacta falla. Es ruido de reloj, no un cambio de
+        // conducta — pero rompía CI en `main` cada tanto.
         $this->freezeTime();
 
         $loc = $this->localidad();
         $reporte = Reporte::create([
-            'tipo' => 'faena', 'lat' => -47.25, 'lng' => -72.57, 'localidad_id' => $loc->id,
-            'dispositivo' => 'autor', 'expira_en' => now()->addHours(Reporte::VIDA_HORAS['faena']),
+            'tipo' => 'camping', 'lat' => -47.25, 'lng' => -72.57, 'localidad_id' => $loc->id,
+            'dispositivo' => 'autor', 'expira_en' => now()->addHours(72),
         ]);
         $antes = $reporte->expira_en->timestamp;
 
         $this->postJson("/api/reportes/{$reporte->id}/voto", [
             'confirma' => true,
-            'dispositivo' => 'votante-faena',
+            'dispositivo' => 'votante-retirado',
         ])->assertOk()->assertJsonPath('confirmaciones', 1);
 
-        // Recién creado ya está en el tope (una vida entera por delante): la
-        // confirmación no puede estirarlo más, pero tampoco recortarlo.
+        // Queda intacto: ni se estira (está sobre el tope) ni se recorta.
         $this->assertSame($antes, $reporte->refresh()->expira_en->timestamp);
-
-        // Cuando ya le queda poco, la confirmación sí estira.
-        $reporte->update(['expira_en' => now()->addHours(5)]);
-        $quedaba = $reporte->expira_en->timestamp;
-        $this->postJson("/api/reportes/{$reporte->id}/voto", [
-            'confirma' => true,
-            'dispositivo' => 'votante-faena-2',
-        ])->assertOk();
-
-        $this->assertSame(
-            $quedaba + Reporte::EXTENSION_HORAS * 3600,
-            $reporte->refresh()->expira_en->timestamp
-        );
     }
 
-    /** La faena del Plan Ruta Austral es un tipo válido y dura una semana. */
-    public function test_faena_es_un_tipo_valido_con_vigencia_de_semana(): void
+    /**
+     * Los tres tipos vivos comparten la MISMA vigencia de 24 h, y los retirados
+     * ya no se pueden crear. Es la promesa que la app le hace al viajero en la
+     * hoja de reportar ("dura 24 horas"), así que no puede depender de que nadie
+     * toque la constante sin darse cuenta.
+     */
+    public function test_los_tres_tipos_vivos_duran_24_horas(): void
     {
         $this->localidad();
 
-        $this->postJson('/api/reportes', [
-            'tipo' => 'faena',
-            'lat' => -47.2545,
-            'lng' => -72.5738,
-            'comentario' => 'Pare y siga por faena, esperas de 20 min',
-            'dispositivo' => 'dispositivo-de-prueba-faena',
-        ])->assertCreated()->assertJsonPath('tipo', 'faena');
+        $this->assertSame(['peligro', 'accidente', 'faena'], Reporte::tipos());
+
+        foreach (Reporte::tipos() as $i => $tipo) {
+            $this->postJson('/api/reportes', [
+                'tipo' => $tipo,
+                'lat' => -47.2545,
+                'lng' => -72.5738,
+                'dispositivo' => "dispositivo-de-prueba-{$i}",
+            ])->assertCreated()->assertJsonPath('tipo', $tipo);
+
+            $this->assertSame(24, Reporte::VIDA_HORAS[$tipo]);
+        }
 
         $this->assertEqualsWithDelta(
-            now()->addHours(168)->timestamp,
+            now()->addHours(24)->timestamp,
             Reporte::first()->expira_en->timestamp,
             5
         );
-        // Una faena tiene que durar más que un corte de camino común: si alguien
-        // iguala los plazos, este test lo caza.
-        $this->assertGreaterThan(Reporte::VIDA_HORAS['camino'], Reporte::VIDA_HORAS['faena']);
+
+        // Un tipo retirado se rechaza como cualquier otro valor desconocido.
+        $this->postJson('/api/reportes', [
+            'tipo' => 'combustible',
+            'lat' => -47.2545,
+            'lng' => -72.5738,
+            'dispositivo' => 'dispositivo-de-prueba-retirado',
+        ])->assertStatus(422);
     }
 
     /** Tres descartes sin confirmaciones esconden el reporte (y sale del index). */
@@ -251,7 +254,7 @@ class ReporteApiTest extends TestCase
     {
         $loc = $this->localidad();
         $reporte = Reporte::create([
-            'tipo' => 'fauna', 'lat' => -47.25, 'lng' => -72.57, 'localidad_id' => $loc->id,
+            'tipo' => 'accidente', 'lat' => -47.25, 'lng' => -72.57, 'localidad_id' => $loc->id,
             'dispositivo' => 'autor', 'expira_en' => now()->addHours(5),
         ]);
 
@@ -281,7 +284,7 @@ class ReporteApiTest extends TestCase
         $this->localidad();
 
         $this->postJson('/api/reportes', [
-            'tipo' => 'tiempo',
+            'tipo' => 'faena',
             'lat' => -47.85,   // ~70 km al sur de Cochrane, camino a Tortel
             'lng' => -73.0,
             'dispositivo' => 'dispositivo-de-prueba-1',

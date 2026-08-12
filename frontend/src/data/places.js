@@ -222,6 +222,13 @@ export const ETIQUETAS_LOCALIDAD = {
   // choque desaparece por el lado, así que el 'alta' se quitó: sobraba, y solo
   // despegaba la etiqueta de su propio punto.
   'puerto-aysen': 'izq',
+  // Puerto Cisnes está al final del desvío costero de la X-25, o sea A LA
+  // IZQUIERDA de la Ruta 7 y casi a la misma latitud que Villa Amengual, que
+  // queda sobre la ruta. Con el rótulo por defecto (a la derecha) el nombre
+  // salía disparado hacia el interior y se topaba con el de Amengual justo
+  // encima del tronco de la Carretera — dos nombres encimados tapando la línea
+  // que el mapa existe para mostrar. Mandado al canal Puyuhuapi se lee solo.
+  'puerto-cisnes': 'izq',
   // Los dos pueblos del lago General Carrera rotulan hacia AFUERA del lago, cada
   // uno hacia su propia orilla: Chile Chico está en el borde ESTE, así que su
   // nombre va a la derecha (hacia Argentina, que en el mapa es espacio limpio), y

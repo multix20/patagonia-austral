@@ -21,15 +21,15 @@ import Icon, { iconoHTML } from './Icon'
 //      · CON key → COMBINA por zoom: lejos, Stadia "Stamen Terrain" (relieve con
 //        verde de bosque, estepa parda, agua celeste e hielos blancos → el look
 //        "vivo" tipo Google Maps); al ACERCAR (zoom ≥ ZOOM_CORTE_TERRENO) cede a
-//        Stadia `osm_bright`, un mapa CALLEJERO con nombres de calles, POIs y
-//        parques (calidad Google Maps). El terreno es relieve, no callejero:
-//        precioso en la vista general, pero en un pueblo plano queda casi en
-//        blanco → por eso las calles toman el detalle de cerca.
+//        un mapa CALLEJERO con nombres de calles (ver ESTILO_CERCA). El terreno
+//        es relieve, no callejero: precioso en la vista general, pero en un
+//        pueblo plano queda casi en blanco → por eso las calles toman el detalle
+//        de cerca.
 //      · SIN key → solo CARTO Voyager sin rótulos (fallback): así el preview y el
 //        dev local siguen andando aunque falte la key (el mapa no se rompe).
 //    El terreno (lejos) va SIN rótulos: los nombres de localidad los ponen
-//    NUESTROS marcadores. Al acercar, `osm_bright` sí trae rótulos de calle/POI
-//    (lo que se busca). `{r}` pide teselas @2x (retina) → más nítido en el celular.
+//    NUESTROS marcadores. Al acercar sí entran los rótulos de calle, que es lo
+//    que se busca. `{r}` pide teselas @2x (retina) → más nítido en el celular.
 //  - 'satelite' → Esri World Imagery: fotografía satelital de alto contraste,
 //    útil para ubicar geografía real (ríos, glaciares, sendas).
 // Todas quedan cacheadas por el service worker (reglas `carto-tiles`,
@@ -55,12 +55,37 @@ const TESELA_TERRENO = {
   },
   esStadia: true,
 }
-// Calles de calidad "Google Maps" para la cercanía (Stadia `osm_bright`): mapa
-// callejero colorido CON nombres de calles, POIs y parques — muy superior al
-// Voyager sin rótulos, que se veía pelado. Solo disponible con key de Stadia; sin
-// key se cae a Voyager (el fallback keyless de siempre).
+/**
+ * Estilo callejero para la CERCANÍA (dentro de un pueblo). Trae los nombres de
+ * calle, que es lo que hacía falta: el terreno es relieve y en un pueblo plano
+ * queda casi en blanco.
+ *
+ * Por qué `alidade_smooth` y no `osm_bright` (ago-2026). Los dos son mapas de
+ * OpenStreetMap, pero `osm_bright` dibuja los POI de OSM con harta prominencia, y
+ * ahí está el problema: los datos de los servicios chicos de la Austral están
+ * incompletos o equivocados en las plataformas globales — es la tesis del
+ * producto — y OSM no es la excepción. En Cochrane se veía "Buses Cordillera",
+ * un negocio que ya no está donde dice. Eso hace dos daños a la vez: le muestra
+ * al viajero un dato falso, y lo pone al lado de NUESTRAS fichas curadas con el
+ * mismo peso visual, así que no hay forma de saber cuál de los dos rótulos
+ * creer. Un directorio que se vende por tener el dato bueno no puede pintar el
+ * dato malo de la competencia encima del suyo.
+ *
+ * `alidade_smooth` está pensado justamente como fondo para datos propios: mismo
+ * proveedor y misma key (cero integración nueva, cero costo extra), conserva
+ * calles y nombres de lugar, y baja muchísimo el ruido de POIs ajenos. El mapa
+ * pasa a ser el escenario y nuestros pines los protagonistas.
+ *
+ * El arreglo de fondo —corregir los POI en OpenStreetMap— es gratis y sirve para
+ * todos los proveedores a la vez (todos leen la misma base). Va anotado como
+ * tarea continua en ESTADO_Y_PENDIENTES.
+ *
+ * Si en el preview se ve demasiado apagado, la vuelta atrás es cambiar esta sola
+ * cadena por 'osm_bright'.
+ */
+const ESTILO_CERCA = 'alidade_smooth'
 const TESELA_CALLES = {
-  url: `https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png?api_key=${STADIA_KEY}`,
+  url: `https://tiles.stadiamaps.com/tiles/${ESTILO_CERCA}/{z}/{x}/{y}{r}.png?api_key=${STADIA_KEY}`,
   options: {
     attribution: '© Stadia Maps © OpenMapTiles © OpenStreetMap',
     maxZoom: 20,
@@ -272,11 +297,12 @@ const MapView = forwardRef(function MapView(
     cbReporte.current = onSeleccionarReporte
   })
 
-  // Centrar en la ubicación del usuario (lo llama el rail de la app).
+  // Controles que la app maneja desde fuera. Aquí estaba `centrarEnMi()`, que
+  // servía al botón de GPS del rail; ese botón lo reemplazó el asistente, así
+  // que el método se fue con él. La ubicación se sigue vigilando (el punto
+  // "estás aquí" y el pin de los reportes dependen de ella), solo que ya no hay
+  // nada que la centre a mano.
   useImperativeHandle(ref, () => ({
-    centrarEnMi() {
-      if (pos && mapaRef.current) mapaRef.current.setView(pos, 15, { animate: true })
-    },
     /**
      * Lleva el mapa a los reportes del tramo elegido (lo llama el filtro de la
      * app). Sin puntos vuelve a encuadrar la ruta completa, que es lo que
@@ -298,7 +324,6 @@ const MapView = forwardRef(function MapView(
         duration: 0.8,
       })
     },
-    tienePos: !!pos,
   }))
 
   // Inicializa el mapa una sola vez (la capa base la monta el efecto de `capa`).

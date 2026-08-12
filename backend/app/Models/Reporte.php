@@ -30,28 +30,28 @@ class Reporte extends Model
      * Vida útil por tipo, en HORAS. Es el corazón del modelo: un reporte no se
      * "borra", caduca — y la caducidad se evalúa al leer, así no hace falta ni
      * worker ni scheduler (que en Render free no corren).
-     * Los plazos siguen qué tan rápido cambia el dato en la Carretera Austral:
-     * el clima y la fauna se mueven en horas; un derrumbe o un corte pueden durar
-     * días; que haya bencina en un pueblo chico se vuelve dudoso al día siguiente.
+     *
+     * Recorte a TRES tipos (ago-2026), todos con la MISMA vigencia de 24 h. Antes
+     * eran once tipos con siete plazos distintos, afinados uno a uno; el problema
+     * no era el plazo sino la grilla: once botones no se contestan de un toque
+     * con el auto detenido. Los tres que quedan son los que hacen frenar a quien
+     * viene detrás, y para los tres la pregunta es la misma —"¿sigue ahí hoy?"—,
+     * así que comparten las 24 h. Un plazo único además se puede prometer en la
+     * interfaz sin letra chica.
+     *
+     * Los tipos viejos (derrumbe, hielo, camino, combustible…) ya no se pueden
+     * crear, pero los reportes existentes siguen vivos hasta su `expira_en`: la
+     * caducidad se guardó en la fila al crearla, no se recalcula al leer.
      */
     public const VIDA_HORAS = [
-        'derrumbe' => 48,
-        'camino' => 24,
-        // Faena/desvío del Plan Ruta Austral (MOP, 2026-2030): una obra no es un
-        // corte de un día, dura SEMANAS en el mismo punto. Con las 24 h de
-        // `camino` el dato se apagaba cada noche y el viajero volvía a
-        // encontrarse la faena sin aviso. Se le dan 7 días: suficiente para que
-        // cubra el viaje de quien viene detrás, y corto para que una faena
-        // terminada no quede colgada en el mapa por meses.
-        'faena' => 168,
-        'hielo' => 12,
-        'combustible' => 24,
-        'ferry' => 12,
-        'camping' => 72,
-        'tiempo' => 6,
-        'fauna' => 6,
-        'evento' => 72,
-        'comentario' => 24,
+        'peligro' => 24,
+        'accidente' => 24,
+        // Faena/desvío del Plan Ruta Austral (MOP, 2026-2030). Es el único de los
+        // tres que puede durar semanas en el mismo punto, pero se queda en 24 h
+        // como los otros: quien la vuelve a pasar la confirma, y una faena que ya
+        // nadie confirma probablemente terminó. Vale más un mapa que se apaga
+        // solo que uno con obras fantasma de hace un mes.
+        'faena' => 24,
     ];
 
     /** Cuánto extiende la vigencia cada confirmación (horas), con tope. */
@@ -67,11 +67,18 @@ class Reporte extends Model
     /**
      * Hasta cuándo pueden estirar las confirmaciones un reporte de este tipo,
      * contado desde ahora. El tope acota la EXTENSIÓN, no la vigencia natural:
-     * antes era 24 h fijas y eso ACORTABA los reportes de vida larga —
-     * confirmar un `camping` (72 h) lo dejaba en 24 h, o sea que la comunidad
-     * lo mataba justo por darle la razón. Con `faena` (168 h) el efecto habría
-     * sido siete veces peor. Ahora el tope es "una vida entera por delante",
-     * con el mínimo de 24 h de siempre para los tipos cortos.
+     * un tope fijo ACORTABA los reportes de vida larga — confirmar uno de 72 h
+     * lo dejaba en 24 h, o sea que la comunidad lo mataba justo por darle la
+     * razón. La fórmula es "una vida entera por delante", con el mínimo de 24 h
+     * para los tipos cortos.
+     *
+     * Con los tres tipos actuales en 24 h esto devuelve siempre 24, y la fórmula
+     * podría parecer de más. Se conserva por dos razones: sostiene el día que
+     * vuelva a haber un tipo de vida larga, y da un tope sano (24 h) a los tipos
+     * HISTÓRICOS, que ya no están en VIDA_HORAS. A esos el tope no les puede
+     * recortar nada igualmente: `votar()` nunca baja `expira_en` (ver el `max()`
+     * de la actualización), así que un reporte viejo simplemente deja de
+     * estirarse y vive lo que le quedaba.
      */
     public static function topeExtensionHoras(string $tipo): int
     {

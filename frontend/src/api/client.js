@@ -13,6 +13,9 @@ import {
   encolarReporte,
   leerCola,
   borrarDeCola,
+  encolarCalificacion,
+  leerColaCalificaciones,
+  borrarDeColaCalificaciones,
   guardarMeta,
   leerMeta,
 } from '../db'
@@ -247,4 +250,124 @@ export async function votarReporte(id, confirma) {
   } catch {
     return null
   }
+}
+
+// ---------------------------------------------------------------------------
+// Calificaciones (Fase 3): estrellas y comentarios sobre las fichas.
+// ---------------------------------------------------------------------------
+
+/**
+ * Nota que ESTE dispositivo le puso a cada ficha (id → estrellas), en
+ * localStorage. Es lo que permite que la ficha vuelva a abrirse con las
+ * estrellas marcadas en vez de en blanco: el servidor sabe quién calificó (por
+ * el hash), pero no hay endpoint para preguntárselo sin identificarse, y no vale
+ * la pena crear uno para algo que el propio teléfono ya sabe.
+ */
+const CLAVE_MIS_NOTAS = 'misCalificaciones'
+
+function misNotas() {
+  try {
+    return JSON.parse(localStorage.getItem(CLAVE_MIS_NOTAS) || '{}')
+  } catch {
+    return {} /* modo privado sin localStorage */
+  }
+}
+
+export function miCalificacion(placeId) {
+  return misNotas()[placeId] ?? null
+}
+
+function recordarCalificacion(placeId, estrellas) {
+  try {
+    localStorage.setItem(CLAVE_MIS_NOTAS, JSON.stringify({ ...misNotas(), [placeId]: estrellas }))
+  } catch {
+    // sin localStorage: la nota se manda igual, solo no se recuerda al volver
+  }
+}
+
+/** Opiniones (calificaciones con texto) de una ficha. Sin señal, lista vacía. */
+export async function obtenerCalificaciones(placeId) {
+  if (!API_URL || !navigator.onLine) return []
+  try {
+    const r = await fetch(`${API_URL}/api/calificaciones?place_id=${placeId}`, {
+      headers: { Accept: 'application/json' },
+    })
+    return r.ok ? await r.json() : []
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Envía una calificación. Como en los reportes, si no hay red queda en el buzón
+ * de salida y se reintenta al recuperar señal: la ficha se lee en la ruta —donde
+ * se decide dónde parar— y la opinión se escribe justo ahí.
+ *
+ * Devuelve { enviado, encolado, estrellas, calificaciones } para que la ficha
+ * pueda pintar el promedio nuevo y decirle la verdad a quien calificó.
+ */
+export async function enviarCalificacion({ placeId, estrellas, comentario = null }) {
+  const cuerpo = {
+    place_id: placeId,
+    estrellas,
+    comentario,
+    dispositivo: idDispositivo(),
+  }
+  recordarCalificacion(placeId, estrellas)
+
+  if (API_URL && navigator.onLine) {
+    try {
+      const r = await fetch(`${API_URL}/api/calificaciones`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(cuerpo),
+      })
+      if (r.ok) {
+        const datos = await r.json()
+        return { enviado: true, ...datos }
+      }
+      // 422/429: reintentar no lo arregla (ficha que no se califica, nota fuera
+      // de rango, o límite de envíos), así que no se encola.
+      if (r.status === 422 || r.status === 429) {
+        const motivo = await r
+          .json()
+          .then((d) => d?.error)
+          .catch(() => null)
+        return { enviado: false, error: r.status, motivo }
+      }
+    } catch {
+      // sin red: cae al buzón de salida
+    }
+  }
+
+  await encolarCalificacion(cuerpo)
+  return { enviado: false, encolado: true }
+}
+
+/** Vacía el buzón de salida de calificaciones. */
+export async function sincronizarColaCalificaciones() {
+  if (!API_URL || !navigator.onLine) return 0
+  const pendientes = await leerColaCalificaciones()
+  let enviadas = 0
+  for (const p of pendientes) {
+    const { clave, ...cuerpo } = p
+    try {
+      const r = await fetch(`${API_URL}/api/calificaciones`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(cuerpo),
+      })
+      // Mismo criterio que la cola de reportes: 2xx y 422 salen de la cola, todo
+      // lo demás se deja para el próximo intento. Reenviar una calificación ya
+      // entregada es inofensivo — el servidor la trata como edición y deja el
+      // mismo resultado.
+      if (r.ok || r.status === 422) {
+        await borrarDeColaCalificaciones(clave)
+        if (r.ok) enviadas++
+      }
+    } catch {
+      break // sin red otra vez: dejar el resto en la cola
+    }
+  }
+  return enviadas
 }

@@ -21,8 +21,10 @@ desplegado por separado; no interferir con sus servicios).
 - `frontend/` — React 18 + Vite, PWA (vite-plugin-pwa/Workbox), IndexedDB,
   Leaflet, bilingüe ES/EN. Sin TypeScript. Lint: `npm run lint` (oxlint).
 - `backend/` — Laravel (PHP 8.4) + Filament v3 (CMS en `/admin`), API pública
-  `/api/places`, `/api/notices`, `/api/reportes` (crowdsourcing, escribe sin login
-  → va con rate limit), Web Push VAPID (`minishlink/web-push`).
+  `/api/places`, `/api/notices`, `/api/reportes` (crowdsourcing),
+  `/api/calificaciones` (estrellas) e `/api/interacciones` (analítica). Los tres
+  últimos **escriben sin login** → todos van con rate limit.
+  Web Push VAPID (`minishlink/web-push`).
 - PostgreSQL 16. `docker-compose.prod.yml` (Caddy+SSL) para producción autoalojada.
 
 ## Deploy (producción actual — todo gratis)
@@ -117,11 +119,28 @@ conectividad que la app aborda.
 cortes de camino, clima, barcazas) sobre el sistema de avisos, aplicando disciplina
 de **PMF/APM** (segmento → validar problema → PMV mínimo → medir/pivotar; ojo con el
 arranque en frío). Detalle en `.claude/agents/roadmap.md`.
-**PMV ya implementado (27-jul-2026)**: reportes persistidos con caducidad por tipo
+**PMV ya implementado (27-jul-2026)**: reportes persistidos con caducidad
 evaluada AL LEER (por eso anda en Render free, sin worker ni scheduler), votos
 "¿sigue ahí?" que extienden u ocultan, cola offline en IndexedDB que se vacía al
 recuperar señal, y moderación en el CMS. Falta el push de "reporte cerca", que sí
 necesita el worker de la Fase 4. Tests: `backend/tests/Feature/ReporteApiTest.php`.
+
+**Recorte y ampliación (11-ago-2026)** — ver detalle en `ESTADO_Y_PENDIENTES.md`:
+- **Solo TRES tipos de reporte**: `peligro`, `accidente` y `faena` (trabajos en la
+  vía), los tres con **24 h**. Los tipos viejos ya no se crean pero se siguen
+  dibujando hasta caducar (`TIPOS_HISTORICOS` en `frontend/src/data/reportes.js`).
+- **El pin queda en la posición GPS exacta del viajero**, nunca en el centro del
+  pueblo más cercano: el reporte del camino ENTRE pueblos es el que importa.
+- **Calificaciones** (`/api/calificaciones`): estrellas 1–5 + comentario sobre las
+  fichas, sin login, una por dispositivo y ficha (volver a calificar edita), con
+  cola offline y moderación en el CMS. El promedio va desnormalizado en `places`
+  y viaja con `/api/places` → las estrellas se ven **sin señal**. Las fichas de
+  `emergencia` no se califican.
+- **Analítica** (`/api/interacciones`): rollup diario `(tipo, referencia, día) →
+  cantidad`, enviado por lotes desde IndexedDB. **Anónima por diseño** — sin
+  usuario, sesión, dispositivo, IP ni orden de eventos. Panel en el CMS.
+  Es el prerrequisito de la difusión al viajero (la analítica va antes del
+  primer volante).
 
 **Contexto estratégico — Plan Ruta Austral** (MOP, anunciado 30-abr-2026;
 fuente: mop.gob.cl). Inversión ~$800 mil millones CLP **2026–2030 enfocada en la

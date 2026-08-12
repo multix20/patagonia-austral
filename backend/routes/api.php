@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\CalificacionController;
+use App\Http\Controllers\Api\InteraccionController;
 use App\Http\Controllers\Api\LocalidadController;
 use App\Http\Controllers\Api\NoticeController;
 use App\Http\Controllers\Api\PlaceController;
@@ -29,6 +31,21 @@ Route::get('/reportes', [ReporteController::class, 'index']);
 Route::post('/reportes', [ReporteController::class, 'store'])->middleware('throttle:10,1');
 Route::post('/reportes/{reporte}/voto', [ReporteController::class, 'votar'])
     ->middleware('throttle:30,1');
+
+// Calificaciones (Fase 3): estrellas y comentarios sobre las fichas. Escribe sin
+// login igual que los reportes, así que va con el mismo cinturón: rate limit por
+// IP (10/min alcanza de sobra — nadie califica dos servicios por minuto), una
+// calificación por dispositivo y ficha, y moderación en el CMS. La lectura de
+// opiniones queda libre.
+Route::get('/calificaciones', [CalificacionController::class, 'index']);
+Route::post('/calificaciones', [CalificacionController::class, 'store'])
+    ->middleware('throttle:10,1');
+
+// Analítica de uso. Llega por LOTES desde la PWA (no una petición por toque), de
+// ahí que 20/min sea holgado: es el techo de un dispositivo reintentando una
+// cola larga, no el ritmo normal.
+Route::post('/interacciones', [InteraccionController::class, 'store'])
+    ->middleware('throttle:20,1');
 
 // Hook de despliegue de la PWA (lo llama Netlify al publicar producción): manda
 // el push de "versión nueva", que es lo que pone el indicador con la app

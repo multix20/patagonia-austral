@@ -106,32 +106,48 @@ export const RUTA7 = [
       [-47.11, -72.74],
       [-47.19, -72.63],
       [-47.2539, -72.5732], // Cochrane
-      [-47.37, -72.62],
-      [-47.52, -72.8],
-      [-47.64, -72.93],
-      [-47.716, -73.014], // Puerto Yungay (rampa de la barcaza)
+      [-47.35, -72.66],
+      [-47.47, -72.77],
+      [-47.58, -72.9],
+      [-47.68, -73.05],
+      [-47.77, -73.19], // cruce a Caleta Tortel (desvío de ~23 km al oeste)
+      [-47.855, -73.27],
+      [-47.9351, -73.3238], // Puerto Yungay (rampa de la barcaza)
     ],
   },
   // Barcaza Puerto Yungay ↔ Río Bravo (cruce del Fiordo Mitchell, ~45 min).
-  // OJO: coordenadas APROXIMADAS ajustadas a mano (Overpass/OSM no es alcanzable
-  // desde el entorno web). Para la geometría exacta, correr el script local
-  // scripts/ruta7/generar_ruta7.mjs. Antes la barcaza se trazaba como una larga
-  // diagonal desplazada al noreste, fuera del fiordo.
+  //
+  // Las dos rampas van con su coordenada REAL, no estimada: Puerto Yungay está
+  // publicado en UTM huso 18 S (625183 E, 4689555 N → -47.9351, -73.3238) y Río
+  // Bravo en 47°58'05.5"S 73°13'25.1"W (-47.9682, -73.2236). Con esos dos puntos
+  // la travesía mide 8,3 km = 4,5 millas náuticas, que cuadra con las 4,7 que
+  // publica el servicio — la comprobación de que no están cambiadas de lado.
+  //
+  // Antes Yungay caía 34 km al noreste y Río Bravo 28 km al norte, o sea que el
+  // cruce se dibujaba tierra adentro y el tramo final de la Carretera arrancaba
+  // en un lugar donde no hay camino. Era el error más grande del trazado.
+  //
+  // Yungay es la ribera NORTE del fiordo y Río Bravo la SUR; el fiordo corre
+  // NO–SE en este punto, así que la barcaza cruza hacia el sureste, no hacia el
+  // sur derecho. Para la geometría exacta del resto, correr el script local
+  // scripts/ruta7/generar_ruta7.mjs (Overpass no es alcanzable desde la web).
   {
     tipo: 'barcaza',
     puntos: [
-      [-47.716, -73.014], // Puerto Yungay
-      [-47.79, -72.95], // Río Bravo
+      [-47.9351, -73.3238], // Puerto Yungay (ribera norte)
+      [-47.9682, -73.2236], // Río Bravo (ribera sur)
     ],
   },
-  // Río Bravo → Villa O'Higgins (fin de la Carretera Austral)
+  // Río Bravo → Villa O'Higgins (fin de la Carretera Austral, ~102 km de camino)
   {
     tipo: 'camino',
     puntos: [
-      [-47.79, -72.95], // Río Bravo
-      [-47.96, -72.85],
-      [-48.14, -72.74],
-      [-48.31, -72.63],
+      [-47.9682, -73.2236], // Río Bravo
+      [-48.03, -73.14],
+      [-48.12, -73.05],
+      [-48.2, -72.93],
+      [-48.28, -72.8],
+      [-48.36, -72.68],
       [-48.4686, -72.5601], // Villa O'Higgins
     ],
   },
