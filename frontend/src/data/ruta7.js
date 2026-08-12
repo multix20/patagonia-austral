@@ -99,9 +99,16 @@ export const RUTA7 = [
       [-46.42, -72.37],
       [-46.55, -72.56],
       [-46.6252, -72.6735], // Puerto Río Tranquilo
-      [-46.73, -72.69],
-      [-46.86, -72.72], // Cruce El Maitén
-      [-46.96, -72.78],
+      // El tronco baja por el lado OESTE hacia Bertrand y NO pasa por Puerto
+      // Guadal (-46.8442, -72.7027), que es un desvío por la Ruta X-83 y no
+      // parte de la Ruta 7. El punto intermedio anterior estaba a 2 km de
+      // Guadal, así que la línea entraba visualmente al pueblo y contaba una
+      // ruta que no existe. Estos puntos van deliberadamente al oeste: son
+      // esquemáticos, como todo este trazado, pero la relación con Guadal —que
+      // queda AFUERA— sí es correcta.
+      [-46.73, -72.71],
+      [-46.84, -72.78],
+      [-46.95, -72.82],
       [-47.0219, -72.8247], // Puerto Bertrand
       [-47.11, -72.74],
       [-47.19, -72.63],

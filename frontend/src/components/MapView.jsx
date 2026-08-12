@@ -80,10 +80,25 @@ const TESELA_TERRENO = {
  * todos los proveedores a la vez (todos leen la misma base). Va anotado como
  * tarea continua en ESTADO_Y_PENDIENTES.
  *
- * Si en el preview se ve demasiado apagado, la vuelta atrás es cambiar esta sola
- * cadena por 'osm_bright'.
+ * **Corregido el 12-ago-2026: `alidade_smooth` → `outdoors`.** El diagnóstico de
+ * arriba sigue en pie —los POI de OSM no pueden competir con nuestras fichas— pero
+ * la cura resultó peor que la enfermedad: `alidade_smooth` es un fondo neutro para
+ * dashboards, y al acercarse a un pueblo dejaba una lámina gris sin calles ni
+ * relieve. Un mapa de viaje que no muestra por dónde se camina no sirve, por
+ * limpio que se vea.
+ *
+ * `outdoors` es del mismo proveedor y la misma key, y es el estilo pensado para
+ * justo esto: trae **senderos, curvas de nivel, calles y verde**, que es el
+ * lenguaje de una guía de la Carretera Austral, y carga muchísimo menos POI
+ * comercial que `osm_bright` — o sea, conserva lo que se ganó al salir de
+ * `osm_bright` sin pagar el precio de quedarse sin mapa.
+ *
+ * Los tres estilos son intercambiables cambiando esta sola cadena:
+ *   'outdoors'        → senderos + relieve + calles (actual)
+ *   'alidade_smooth'  → fondo neutro, casi sin detalle
+ *   'osm_bright'      → callejero completo, con los POI ajenos de vuelta
  */
-const ESTILO_CERCA = 'alidade_smooth'
+const ESTILO_CERCA = 'outdoors'
 const TESELA_CALLES = {
   url: `https://tiles.stadiamaps.com/tiles/${ESTILO_CERCA}/{z}/{x}/{y}{r}.png?api_key=${STADIA_KEY}`,
   options: {
@@ -206,6 +221,35 @@ function pinReporte(tipo) {
 // bomba de bencina— donde se apilan y solo se puede tocar el de encima) se
 // juntan, pero dos puntos distintos del pueblo siguen separados.
 const RADIO_CLUSTER_REP = 36
+// Radio del grupo de LUGARES. Más chico que el de reportes: dentro de un pueblo
+// los servicios están a media cuadra unos de otros y un radio grande los mete a
+// todos en una sola bolita, que es tan inútil como el montón de pines.
+const RADIO_CLUSTER_LUG = 44
+
+// Icono del grupo de LUGARES. Toma el color de la categoría que más se repite
+// adentro, así el grupo dice de qué se trata antes de abrirlo: una bolita
+// morada con "12" es "acá hay doce donde dormir", no "acá hay doce cosas".
+function iconoGrupoLugares(cluster) {
+  const cuenta = {}
+  cluster.getAllChildMarkers().forEach((m) => {
+    const c = m.options.catLugar
+    cuenta[c] = (cuenta[c] || 0) + 1
+  })
+  // Empate resuelto por el orden de CATEGORIAS, para que el color no cambie
+  // entre renders con los mismos lugares.
+  const prioridad = Object.keys(CATEGORIAS)
+  const rango = (c) => (prioridad.indexOf(c) + 1 || prioridad.length + 1)
+  const dominante = Object.entries(cuenta).sort(
+    (a, b) => b[1] - a[1] || rango(a[0]) - rango(b[0])
+  )[0]?.[0]
+  const color = CATEGORIAS[dominante]?.color || 'var(--verde)'
+  const n = cluster.getChildCount()
+  return L.divIcon({
+    className: '',
+    iconSize: [38, 38],
+    html: `<div class="cluster-pin" style="background:${color}">${n}</div>`,
+  })
+}
 
 // Icono del grupo de reportes: el mismo rombo del pin suelto, con el número y
 // el color del tipo que más se repite adentro. Así el grupo dice de qué se
@@ -264,6 +308,8 @@ const MapView = forwardRef(function MapView(
   const rutaRef = useRef(null)
   const locMarkersRef = useRef([])
   const catMarkersRef = useRef([])
+  // Los lugares también viven dentro de un markerClusterGroup.
+  const catGrupoRef = useRef(null)
   // Los reportes viven dentro de un markerClusterGroup, no sueltos en el mapa.
   const repGrupoRef = useRef(null)
   const trazadosRef = useRef(null)
@@ -359,6 +405,7 @@ const MapView = forwardRef(function MapView(
       // El grupo de reportes muere con el mapa: si se conservara, al remontar
       // (StrictMode en dev) se reusaría un grupo atado a un mapa ya destruido.
       repGrupoRef.current = null
+      catGrupoRef.current = null
       trazadosRef.current = null
     }
   }, [])
@@ -534,6 +581,10 @@ const MapView = forwardRef(function MapView(
   function limpiarCat() {
     catMarkersRef.current.forEach((m) => mapaRef.current?.removeLayer(m))
     catMarkersRef.current = []
+    if (catGrupoRef.current) {
+      catGrupoRef.current.clearLayers()
+      mapaRef.current?.removeLayer(catGrupoRef.current)
+    }
   }
 
   // Pines de localidad (vista 'ruta').
@@ -566,19 +617,45 @@ const MapView = forwardRef(function MapView(
   }, [vista, localidades, destacados, rotuladas, menores, etiquetas, lang])
 
   // Pines de categoría (vista 'localidad'), según filtro.
+  //
+  // Van AGRUPADOS. Sueltos funcionaban con seis fichas por pueblo; con el mapa
+  // municipal de Tortel cargado son más de cien en cuatro cuadras y el mapa se
+  // vuelve un muro de gotas superpuestas donde no se distingue ni el pueblo ni
+  // cuántas cosas hay. Agrupar además responde la pregunta útil de un vistazo
+  // —"acá hay doce donde dormir"— y al acercarse se abren solas.
   useEffect(() => {
     const mapa = mapaRef.current
     if (!mapa) return
     if (vista !== 'localidad') return limpiarCat()
     limpiarCat()
-    lugares
-      .filter((l) => !filtro || l.cat === filtro)
-      .forEach((l) => {
-        const m = L.marker([l.lat, l.lng], { icon: pinCategoria(l.cat) })
-          .addTo(mapa)
-          .on('click', () => cbLugar.current?.(l))
-        catMarkersRef.current.push(m)
+
+    if (!catGrupoRef.current) {
+      catGrupoRef.current = L.markerClusterGroup({
+        maxClusterRadius: RADIO_CLUSTER_LUG,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        iconCreateFunction: iconoGrupoLugares,
       })
+    }
+    const grupo = catGrupoRef.current
+    grupo.clearLayers()
+
+    const visibles = lugares.filter((l) => !filtro || l.cat === filtro)
+    visibles.forEach((l) => {
+      const m = L.marker([l.lat, l.lng], {
+        icon: pinCategoria(l.cat),
+        // Lo lee iconoGrupoLugares para pintar el grupo con la categoría dominante.
+        catLugar: l.cat,
+      }).on('click', () => cbLugar.current?.(l))
+      grupo.addLayer(m)
+    })
+
+    if (visibles.length) {
+      if (!mapa.hasLayer(grupo)) grupo.addTo(mapa)
+    } else if (mapa.hasLayer(grupo)) {
+      mapa.removeLayer(grupo)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vista, lugares, filtro])
 
@@ -733,10 +810,17 @@ const MapView = forwardRef(function MapView(
             type="button"
             className={`btn-capa ${capa === c.id ? 'activo' : ''}`}
             aria-pressed={capa === c.id}
+            aria-label={c.lbl}
+            title={c.lbl}
             onClick={() => setCapa(c.id)}
           >
-            <Icon nombre={c.icono} tam={15} />
-            <span>{c.lbl}</span>
+            {/* Solo el icono: el rótulo se quitó el 12-ago-2026. "Mapa /
+                Satélite" ocupaba una barra entera sobre el mapa para nombrar dos
+                estados que el propio mapa muestra —se ve si es foto o dibujo—, y
+                encima competía con la barra superior justo debajo. El nombre
+                sigue disponible para quien lo necesita: va en `title` y en
+                `aria-label`, así que el lector de pantalla lo lee igual. */}
+            <Icon nombre={c.icono} tam={17} />
           </button>
         ))}
       </div>
