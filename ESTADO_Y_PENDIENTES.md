@@ -22,6 +22,82 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
+## Dónde quedamos — para retomar (12-ago-2026)
+
+### Sesión del 12-ago-2026 — el lote de Tortel en producción, y lo que destapó
+
+**El contenido de Tortel YA ESTÁ EN PRODUCCIÓN.** Se corrieron los dos seeders
+contra Neon: **106 fichas** importadas (10 se omitieron por duplicadas — ya
+estaban del lote SERNATUR, y el deduplicador hizo su trabajo) y **9 trazados**.
+Publicadas por tandas desde el CMS: primero emergencias y servicios, que son dato
+duro; dormir y comer quedan en borrador hasta tener texto propio.
+
+**Cuatro cosas que solo se ven al hacerlo de verdad**, todas anotadas porque
+vuelven a pasar:
+
+1. **`config:cache` congela el `.env` entero.** El primer intento importó 0
+   fichas con el mensaje "Localidad no encontrada" repetido 116 veces: Laravel
+   seguía en SQLite local aunque el `.env` dijera `pgsql`, porque había una
+   configuración cacheada. `php artisan config:clear` antes de cualquier
+   importación.
+2. **Antes de escribir, comprobar a QUÉ base se está escribiendo.** Una línea:
+   `config('database.default')` + contar localidades. Si dice 27, es producción;
+   si dice 2, es la base local vieja. Los seeders son defensivos y no escriben
+   basura, pero el rato perdido no lo devuelve nadie.
+3. **Rotar la clave de Neon deja la API caída hasta actualizar Render.** Es
+   obvio dicho así y no lo es a las dos horas de trabajo: el backend deja de
+   conectar, la app muestra lo cacheado y parece que la importación no funcionó.
+4. **`migrate:fresh` y `db:wipe` no se escriben nunca con el `.env` apuntando a
+   Neon**, ni siquiera para probar. Quedaron en el historial del terminal y solo
+   la carpeta equivocada evitó que borraran la base.
+
+**Un bug real que salió de ahí — IndexedDB v5 partida en dos.** Las fichas
+estaban publicadas, la API las devolvía, la app corría el build del día, y el
+mapa no dibujaba los trazados. Causa: las stores nuevas de dos ramas distintas
+compartieron el número de versión, y se desplegaron con un día de diferencia.
+Quien abrió la app en el medio subió a la v5 **sin `rutas`** y nunca volvió a
+pasar por el `upgrade`, que en IndexedDB corre solo cuando **sube** el número.
+Y el fallo era mudo: guardar reventaba dentro de un `try`, leer reventaba fuera,
+la promesa se rechazaba y la capa quedaba vacía sin un error en consola.
+→ **Regla: si se agrega un store, sube la versión, aunque el número ya se haya
+usado ese mismo día.** Repetir el `upgrade` es gratis (todos los
+`createObjectStore` van con guard) y es la única forma de alcanzar a quien ya
+pasó por el número anterior. Arreglado en la v6, y `obtenerRutas` ya no se come
+el error.
+
+**Mapa y UI, a partir de verlo con contenido real:**
+
+- **Fuera el menú ☰.** Tenía ocho filas: tres duplicaban algo que ya estaba a un
+  toque (volver a la ruta, asistente, idioma), **dos no tenían siquiera un
+  `onClick`** —"Modo sin conexión" y "Acerca de", filas que se ven tocables y no
+  hacen nada— y de las tres útiles, la que más pesa estaba enterrada. Esa es la
+  **campanita**, que ahora ocupa el lugar del ☰: es donde ya vivía el punto de no
+  leídos, así que el indicador y su destino pasan a ser la misma cosa. El
+  buscador lo sigue abriendo la píldora del centro; la versión de la app se mudó
+  al pie del panel de avisos.
+- **Los pines de lugar vuelven a agruparse.** El clustering existía desde el
+  21-jul y se perdió en algún rediseño; con 106 fichas nuevas en cuatro cuadras,
+  Tortel era un muro de gotas superpuestas. El grupo lleva el **color de la
+  categoría dominante**, así responde la pregunta útil de un vistazo ("acá hay
+  doce donde dormir"). Medido: 119 pines sueltos → **13 grupos + 10 sueltos**.
+- **Mapa/Satélite pasa a solo-icono.** El rótulo ocupaba una barra entera sobre
+  el mapa para nombrar dos estados que el propio mapa muestra. El nombre sigue en
+  `title` y `aria-label`.
+- **Estilo de cercanía: `alidade_smooth` → `outdoors`.** El diagnóstico de la
+  sesión anterior sigue en pie (los POI ajenos de OSM no pueden competir con las
+  fichas curadas), pero la cura fue peor: al acercarse quedaba una lámina gris
+  sin calles ni relieve. `outdoors` es del mismo proveedor y la misma key, trae
+  senderos, curvas de nivel y calles —el lenguaje de una guía de ruta— y sigue
+  cargando muy poco POI comercial. **No se pudo ver en el navegador desde la
+  sesión web** (el proxy bloquea las teselas): si no convence, es cambiar una
+  sola cadena.
+- **Ruta 7 corregida entre Puerto Río Tranquilo y Bertrand.** El punto intermedio
+  del trazado estaba a **2,2 km de Puerto Guadal**, así que la línea parecía
+  entrar al pueblo — y Guadal es un desvío por la Ruta X-83, no parte de la
+  Ruta 7. Los puntos nuevos pasan al oeste: **5,9 km** de distancia mínima.
+
+---
+
 ## Dónde quedamos — para retomar (11-ago-2026)
 
 ### Sesión del 11-ago-2026 — recorte del crowdsourcing, calificaciones y analítica
@@ -68,6 +144,59 @@ Sesión grande, pedida de una vez. Ocho cambios, todos en la misma rama
 
 Suite backend: **42/42** (10 de reportes, 7 de calificaciones, 4 de analítica).
 `npm run build` y `npm run lint` en verde.
+
+### Sesión del 11-ago-2026 — mapa turístico de Tortel y capa de trazados
+
+De dónde salió el contenido que el 12-ago se subió a producción: el **mapa
+turístico oficial de la Municipalidad de Tortel**
+(`tortel.cl/mapa-turismo-tortel-2024`), 19 capas y 340 elementos.
+
+- **Pipeline reproducible en `scripts/tortel/`** (3 pasos, solo biblioteca
+  estándar). El mapa carga una variable JS por capa y no tiene endpoint único; el
+  README trae el **snippet de consola** que las captura todas de una vez, que es
+  lo que evita bajarlas archivo por archivo.
+- **Tres cosas que solo se vieron con el dato real:** el origen viene con el
+  **UTF-8 leído como Latin-1** ("Hospedaje RÃ­o Bravo"), lo que además rompía los
+  nombres de los campos y hacía perder el teléfono; los **nombres de las capas no
+  son los de los archivos** (el mapa llama `cama` a los alojamientos, y apareció
+  una capa `rural` que no estaba en ninguna lista); y un mismo número venía hasta
+  tres veces, con un campo `Teléfono` que traía los dos juntos en una cadena.
+- **`puntos_fijos` se mapea por SUBTIPO y no por capa.** Es la única así: adentro
+  conviven la posta, Carabineros y Bomberos con la bencina, la oficina de turismo
+  y las plazas. Mandarla entera a `servicio` habría enterrado las **tres
+  emergencias** de Tortel, que es el dato que se busca con urgencia.
+- **Tabla `rutas` (nueva).** `places` guarda un punto y Caleta Tortel **no tiene
+  calles**: se recorre por pasarelas, que son geometría de líneas. La geometría
+  va como **GeoJSON en jsonb** y no con PostGIS a propósito — acá no se hacen
+  consultas espaciales, solo se dibuja en Leaflet. Piezas: migración, modelo
+  `Ruta`, `GET /api/rutas`, `RutaSeeder`, `RutaResource` en el CMS, store `rutas`
+  en IndexedDB y dibujo en `MapView` (solo dentro de una localidad).
+- **La simplificación es lo que hace viable la capa.** El glaciar Steffen traía
+  **17.115 vértices — 669 KB en un solo polígono**, cuando el precache entero de
+  la PWA son ~666 KB. Con Douglas-Peucker por tipo (0 en las pasarelas, que se
+  miran de cerca; 60 m en los glaciares, que se miran de lejos) y redondeo a 5
+  decimales: **812 KB → 41 KB**. Además la capa **no entra al bundle**: se baja la
+  primera vez que hay señal, porque sirve en 1 de las 27 localidades.
+- **Las 214 pasarelas se funden en una sola ruta**: venían como tramos del
+  inventario municipal con su estado de conservación (dato de mantención, no de
+  viaje). El dibujo queda idéntico y el CMS no se llena de 214 filas.
+- **Los JSON generados no van al repo** (traen 40 correos personales de dueños de
+  negocios). Se regeneran con los scripts desde el volcado del mapa.
+
+**Puerto Yungay entró como localidad 27** (orden 185, entre Caleta Tortel y Villa
+O'Higgins) con tres fichas publicadas: la barcaza, la Cafetería El Peregrino y
+las Cabañas El Peregrino (mismo dueño, dato real del mapa municipal). No es un
+pueblo sino la **rampa del cruce obligatorio**, y es un hito de decisión del
+viaje. Esas dos fichas se **excluyen** del lote de Tortel para que no salgan
+duplicadas: el deduplicador compara nombre + localidad, y viven en
+`puerto-yungay`.
+
+> **Corrección posterior, del mismo día:** las coordenadas de la rampa deducidas
+> acá estaban **34 km fuera de lugar** (se ancló en la cafetería, lo único que
+> traía el mapa municipal del sector). Las corrigió la sesión de crowdsourcing
+> con la coordenada publicada del servicio — ver el punto 7 de la sesión
+> anterior. Queda anotado porque es la clase de error que produce un dato
+> razonable pero deducido, y no avisa.
 
 ### El mapa de cerca mostraba datos ajenos y viejos — qué se evaluó
 
@@ -159,7 +288,10 @@ variable queda puesta y no ocurre nada. Primero el merge, después el interrupto
 
 ---
 
-## Lo que depende de TI — acciones manuales (al 10-ago-2026)
+## Lo que depende de TI — acciones manuales (al 12-ago-2026)
+
+> **Cerrado el 12-ago:** importar el lote de Tortel a Neon. 106 fichas y 9
+> trazados, publicados por tandas desde el CMS. Ver la sesión del 12-ago.
 
 Todo lo de abajo está **fuera del alcance de una sesión de Claude**: pide tarjeta,
 dashboard, una decisión tuya o acceso a la BD de producción. Está ordenado por lo
