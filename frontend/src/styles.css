@@ -1630,6 +1630,14 @@ h1 small {
   z-index: 1;
   background: #dfe4e0;
 }
+/* El div que monta Leaflet. Va por dentro de `.mapa-full` para que React no le
+   reescriba el className y le borre las clases propias — ver el comentario en
+   MapView.jsx. Todos los selectores `.mapa-full.capa-x .leaflet-*` siguen
+   funcionando porque los panes quedan igual de descendientes. */
+.mapa-lienzo {
+  position: absolute;
+  inset: 0;
+}
 .leaflet-container {
   background: #dfe4e0;
   font-family: inherit;

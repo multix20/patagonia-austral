@@ -333,6 +333,12 @@ const MapView = forwardRef(function MapView(
   //   'sin'      = el navegador no tiene geolocation, o falló/denegó el permiso
   const [estadoGeo, setEstadoGeo] = useState('buscando')
 
+  // Las fichas, también en un ref. El encuadre por categoría las necesita para
+  // calcular los límites, pero NO puede depender de ellas: `lugares` cambia
+  // cuando llega el dato de la API o cuando alguien califica, y refrescar el
+  // encuadre ahí le movería el mapa al viajero mientras lo está mirando.
+  const lugaresRef = useRef(lugares)
+
   // Callbacks en refs para no re-suscribir los efectos del mapa en cada render.
   const cbEntrar = useRef(onEntrarLocalidad)
   const cbLugar = useRef(onSeleccionarLugar)
@@ -341,6 +347,7 @@ const MapView = forwardRef(function MapView(
     cbEntrar.current = onEntrarLocalidad
     cbLugar.current = onSeleccionarLugar
     cbReporte.current = onSeleccionarReporte
+    lugaresRef.current = lugares
   })
 
   // Controles que la app maneja desde fuera. Aquí estaba `centrarEnMi()`, que
@@ -714,6 +721,51 @@ const MapView = forwardRef(function MapView(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vista, localidadActiva?.slug])
 
+  /**
+   * Encuadre al filtrar por categoría.
+   *
+   * Un pueblo se abre con zoom fijo sobre su centro, y eso deja fuera justo lo
+   * que hace viajar: la Confluencia de los ríos Baker y Neff está a 22 km de
+   * Cochrane, así que al tocar "Qué visitar" el mapa mostraba la plaza y
+   * ninguno de los atractivos que justifican el desvío. La categoría quedaba
+   * respondida a medias — el pin existía, pero fuera de pantalla.
+   *
+   * Al filtrar, el mapa se abre hasta que quepan TODOS los puntos de esa
+   * categoría **más el centro del pueblo**. Lo segundo no sobra: sin esa ancla
+   * el mapa puede volar a un valle a media hora de camino y el viajero pierde
+   * la referencia de dónde queda eso respecto del pueblo, que es exactamente lo
+   * que necesita para decidir si va.
+   *
+   * Al soltar el filtro se vuelve a la vista del pueblo.
+   */
+  useEffect(() => {
+    const mapa = mapaRef.current
+    if (!mapa || vista !== 'localidad' || !localidadActiva) return
+
+    const centro = [localidadActiva.lat, localidadActiva.lng]
+    const puntos = filtro
+      ? lugaresRef.current.filter((l) => l.cat === filtro).map((l) => [l.lat, l.lng])
+      : []
+
+    if (!puntos.length) {
+      mapa.flyTo(centro, localidadActiva.zoom || 14, { duration: 0.7 })
+      return
+    }
+
+    mapa.flyToBounds(L.latLngBounds([centro, ...puntos]), {
+      // Relleno ASIMÉTRICO: la barra de categorías tapa la franja de abajo y la
+      // cabecera la de arriba. Con relleno parejo, el pin más al sur quedaba
+      // debajo del mismo botón que se acababa de tocar.
+      paddingTopLeft: [40, 96],
+      paddingBottomRight: [40, 104],
+      // Tope de acercamiento: una categoría con una sola ficha en el centro del
+      // pueblo, sin esto, deja al viajero mirando una esquina de calle.
+      maxZoom: localidadActiva.zoom || 14,
+      duration: 0.8,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtro, vista, localidadActiva?.slug])
+
   // Ubicación del usuario en vivo.
   useEffect(() => {
     if (!('geolocation' in navigator)) {
@@ -795,10 +847,26 @@ const MapView = forwardRef(function MapView(
 
   return (
     <>
+      {/*
+        DOS divs y no uno, a propósito. Las clases de tema (capa, terreno,
+        labels-on) las pone React; el div de adentro es de Leaflet y React no lo
+        toca nunca.
+
+        Antes era un solo div con las dos cosas, y el resultado era un bug de
+        verdad: Leaflet se agrega SUS clases al montar (`leaflet-container`,
+        `leaflet-touch`, `leaflet-grab`…) escribiendo el DOM directo, y en
+        cuanto React re-renderizaba con un className distinto —basta con que
+        aparezcan las etiquetas al acercarse— las borraba todas. Con
+        `leaflet-container` se iban `touch-action: none` y `overflow: hidden`,
+        o sea que en un teléfono el navegador se quedaba los gestos y el mapa
+        dejaba de responder al pellizco y al arrastre. Medido: al entrar a una
+        localidad, `touch-action` pasaba de `none` a `auto`.
+      */}
       <div
-        ref={contRef}
         className={`mapa-full capa-${capa} ${stadiaOk ? 'terreno' : ''} ${etiquetasVisibles ? 'labels-on' : ''}`}
-      />
+      >
+        <div ref={contRef} className="mapa-lienzo" />
+      </div>
       <div
         className="mapa-capas"
         role="group"
