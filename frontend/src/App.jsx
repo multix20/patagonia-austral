@@ -495,6 +495,15 @@ function AppInterna() {
     .filter((l) => (l.localidad || 'cochrane') === localidad)
     .sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0))
 
+  // Cuántas fichas tiene cada categoría en el pueblo abierto. Sirve para apagar
+  // los botones que no llevan a ninguna parte: hasta ahora tocar una categoría
+  // vacía dejaba el mapa en blanco sin decir por qué, y se lee como que la app
+  // se rompió. Apagado se entiende antes de tocar.
+  const conteoCat = {}
+  lugaresLocalidad.forEach((l) => {
+    conteoCat[l.cat] = (conteoCat[l.cat] || 0) + 1
+  })
+
   // Localidades ancla que se resaltan en la vista ruta (mapa y buscador): set
   // curado de puertas de entrada de la Carretera Austral (ver LOCALIDADES_DESTACADAS),
   // no las que tengan una ficha comercial destacada. Se filtra contra las localidades
@@ -657,6 +666,13 @@ function AppInterna() {
   const toggleCat = (clave) => {
     if (vista === 'ruta') {
       mostrarToast(t('eligeLocalidad'))
+      return
+    }
+    // Categoría sin fichas en este pueblo: el botón ya se ve apagado, pero
+    // sigue respondiendo para poder decir por qué. Un botón que no hace
+    // absolutamente nada al tocarlo se lee como app rota.
+    if (!conteoCat[clave]) {
+      mostrarToast(t('sinLugaresCategoria'))
       return
     }
     setFiltro((f) => (f === clave ? null : clave))
@@ -921,13 +937,23 @@ function AppInterna() {
         {Object.entries(CATEGORIAS).map(([clave, c]) => (
           <button
             key={clave}
-            className={`cat-btn ${filtro === clave ? 'on' : ''}`}
-            style={{ '--cc': c.color }}
+            className={[
+              'cat-btn',
+              filtro === clave ? 'on' : '',
+              vista === 'localidad' && !conteoCat[clave] ? 'vacia' : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            // Cada botón lleva el color de SU categoría, el mismo del pin en el
+            // mapa: así la barra hace de leyenda sin ocupar espacio. Con los seis
+            // en gris no había forma de saber de quién era cada pin.
+            style={{ '--cc': c.color, '--cf': c.fondo }}
             onClick={() => toggleCat(clave)}
             // Barra solo de iconos: el nombre de la categoría deja de dibujarse
             // (mapa más limpio) pero sigue disponible para lectores de pantalla
             // y como tooltip al mantener el cursor.
             aria-label={t(CAT_LABEL[clave])}
+            aria-pressed={filtro === clave}
             title={c.nombre[lang]}
           >
             <span className="cico">

@@ -613,64 +613,12 @@ h1 small {
   transform: scale(0.98);
 }
 
-/* ---------- Chips ---------- */
-/* Barra de categorías en la zona del pulgar (reemplaza los chips superiores).
-   Scroll horizontal si no caben; cada botón es icono + etiqueta. */
-.barra-cat {
-  display: flex;
-  gap: 2px;
-  height: var(--barra-cat-h);
-  padding: 0 6px;
-  padding-bottom: env(safe-area-inset-bottom);
-  flex-shrink: 0;
-  background: #fff;
-  border-top: 1px solid var(--borde);
-  overflow-x: auto;
-  scrollbar-width: none;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-  z-index: 5;
-}
-.barra-cat::-webkit-scrollbar {
-  display: none;
-}
-.cat-btn {
-  position: relative;
-  flex: 1 0 auto;
-  min-width: 62px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 8px 8px 6px;
-  border: none;
-  background: none;
-  color: var(--gris);
-  font-size: 10px;
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
-  border-radius: 12px;
-}
-.cat-btn.activo {
-  color: var(--cat-color, var(--verde));
-  background: color-mix(in srgb, var(--cat-color, var(--verde)) 12%, transparent);
-}
-/* Indicador superior del tab activo (además del color + tinte de fondo). */
-.cat-btn.activo::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 26px;
-  height: 3px;
-  border-radius: 0 0 3px 3px;
-  background: var(--cat-color, var(--verde));
-}
-.cat-btn.activo svg {
-  transform: scale(1.05);
-}
+/* Aquí vivía `.barra-cat`, la barra de categorías anclada al pie del layout, con
+   su `.cat-btn` de icono + etiqueta y su `.activo`. La reemplazó la barra
+   FLOTANTE sobre el mapa (`.catbar`, más abajo) y quedó sin usar en ningún JSX
+   — pero como el botón conservó el nombre de clase `cat-btn`, este bloque
+   muerto le seguía metiendo padding, min-width y tipografía a la barra viva.
+   Todo lo que la barra flotante necesita está en `.catbar .cat-btn`. */
 
 /* ---------- Lista ---------- */
 .lista {
@@ -2098,10 +2046,15 @@ h1 small {
   height: 62px;
   background: #fff;
   border-radius: 22px;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.24);
+  /* Sombra en dos capas: una corta que despega la barra del mapa y una larga y
+     suave que la sostiene. Con una sola, sobre imagen satelital la barra
+     parecía pegada al fondo. */
+  box-shadow:
+    0 1px 2px rgba(30, 42, 40, 0.1),
+    0 10px 28px rgba(30, 42, 40, 0.22);
   display: flex;
   align-items: stretch;
-  padding: 8px;
+  padding: 8px 6px;
   gap: 2px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -2110,41 +2063,71 @@ h1 small {
   display: none;
 }
 .catbar .cat-btn {
-  flex: 1 0 auto;
-  min-width: 54px;
+  /* Encogible (`1 1`, no `1 0`): en una pantalla de 320 px los seis botones
+     rígidos no cabían y la barra quedaba con scroll horizontal para seis
+     iconos. Que se aprieten unos píxeles es mejor que esconder medio botón. */
+  flex: 1 1 auto;
+  min-width: 44px;
+  padding: 0;
   border: none;
   background: none;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   border-radius: 16px;
   color: var(--gris);
   position: relative;
-  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
+/* Cada azulejo lleva el color de SU categoría —el mismo del pin en el mapa—,
+   apagado como tinte y encendido a fondo pleno. La barra pasa a ser también la
+   leyenda del mapa: con los seis en gris, el pin morado no se podía asociar con
+   "dormir" sin abrirlo. Los colores llegan por variable desde CATEGORIAS
+   (`--cf` = fondo tenue, `--cc` = color pleno), así que agregar una categoría
+   no obliga a tocar este archivo. */
 .catbar .cat-btn .cico {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f2f1ec;
-  color: var(--gris);
-  transition: all 0.15s;
+  background: var(--cf);
+  color: var(--cc);
+  transition:
+    background 0.16s,
+    color 0.16s,
+    box-shadow 0.16s,
+    transform 0.16s;
 }
+/* Activa: color pleno, glifo blanco, un anillo del tono tenue y un pelo más
+   grande. El estado tiene que leerse de un vistazo con el teléfono en la mano y
+   el pulgar tapando el botón.
+   El crecimiento tiene techo: la barra hace scroll horizontal, y eso obliga al
+   navegador a recortar también en vertical, así que lo que se salga del padding
+   de 8px queda cortado. De ahí que el resalte sea anillo + escala y no una
+   sombra larga. */
 .catbar .cat-btn.on .cico {
   background: var(--cc);
   color: #fff;
+  transform: scale(1.06);
+  box-shadow:
+    0 0 0 3px var(--cf),
+    0 2px 6px rgba(30, 42, 40, 0.3);
 }
-.catbar .cat-btn.on {
-  color: var(--cc);
+/* Sin fichas de esa categoría en este pueblo: se apaga. Sigue siendo tocable a
+   propósito (el toast explica), pero se ve desde antes que no lleva a ninguna
+   parte. */
+.catbar .cat-btn.vacia .cico {
+  background: #f4f3ee;
+  color: #c2c6c4;
 }
-.catbar .cat-btn:active {
-  transform: scale(0.96);
+.catbar .cat-btn:active .cico {
+  transform: scale(0.92);
+}
+.catbar .cat-btn.on:active .cico {
+  transform: scale(0.98);
 }
 
 /* Ficha rápida */
