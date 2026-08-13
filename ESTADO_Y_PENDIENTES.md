@@ -51,6 +51,25 @@ vuelven a pasar:
    Neon**, ni siquiera para probar. Quedaron en el historial del terminal y solo
    la carpeta equivocada evitó que borraran la base.
 
+**Credenciales de Neon — rotadas el 12-ago-2026.** Durante la importación la
+cadena de conexión quedó a la vista dos veces (pegada en el chat y visible en
+capturas de pantalla del dashboard). **Las claves expuestas ya no sirven**: se
+rotó en Neon y se actualizó `DB_URL` en Render. Vale la pena dejarlo escrito
+porque las capturas viejas siguen existiendo y no hay que asustarse al
+encontrarlas — y porque el reflejo correcto es el que se aplicó: rotar primero,
+seguir trabajando después.
+
+> **Cómo comprobar que Render quedó con la clave nueva** (es la trampa 3 de
+> arriba, y el síntoma es mudo: la PWA sigue mostrando lo que tiene cacheado):
+>
+> ```bash
+> curl -s -o /dev/null -w "%{http_code}\n" https://patagonia-austral-api.onrender.com/api/places
+> ```
+>
+> `200` = el backend está conectando a Neon. `500` = quedó con la clave vieja.
+> Desde una sesión web de Claude **no se puede correr**: el proxy del entorno
+> bloquea `onrender.com`.
+
 **Un bug real que salió de ahí — IndexedDB v5 partida en dos.** Las fichas
 estaban publicadas, la API las devolvía, la app corría el build del día, y el
 mapa no dibujaba los trazados. Causa: las stores nuevas de dos ramas distintas
