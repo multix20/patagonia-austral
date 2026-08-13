@@ -4,11 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\InteraccionResource\Pages;
 use App\Models\Interaccion;
+use App\Models\Localidad;
 use App\Models\Place;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 // Analítica de uso, solo lectura. Responde las preguntas que hay que contestar
 // antes del primer volante: cuánta gente abre la app, qué fichas se miran, desde
@@ -26,21 +26,69 @@ class InteraccionResource extends Resource
 
     protected static ?string $pluralModelLabel = 'interacciones';
 
+    // Sin esto la URL queda en /admin/interaccions: Filament pluraliza el nombre
+    // de la clase en inglés y "interaccion" no es una palabra que sepa doblar.
+    protected static ?string $slug = 'interacciones';
+
     /**
-     * Nombres de ficha para la columna "Sobre qué", cargados UNA vez por
-     * petición. Sin esto la tabla haría una consulta por fila para traducir el
-     * id a un nombre (el clásico N+1), y esta es justo la pantalla que se abre
-     * con 50 filas de golpe.
+     * Nombres de ficha y de localidad para traducir la columna "Sobre qué",
+     * cargados UNA vez por petición. Sin esto la tabla haría una consulta por
+     * fila (el clásico N+1), y esta es justo la pantalla que se abre con 50
+     * filas de golpe — y ahora además la usan los rankings del panel.
      */
     private static ?array $nombresFicha = null;
 
-    private static function nombreFicha(string $id): string
-    {
-        self::$nombresFicha ??= Place::pluck('nombre', 'id')
-            ->map(fn ($n) => is_array($n) ? ($n['es'] ?? '') : (string) $n)
-            ->all();
+    private static ?array $nombresLocalidad = null;
 
-        return self::$nombresFicha[(int) $id] ?? "Ficha #{$id}";
+    /** Etiquetas de `referencia` que no salen de ninguna tabla. */
+    private const ETIQUETAS_FIJAS = [
+        'idioma' => ['es' => 'Español', 'en' => 'English'],
+        'voto' => ['confirma' => 'Sigue ahí', 'descarta' => 'Ya no está'],
+    ];
+
+    /**
+     * Texto legible de `referencia`. NO se puede traducir sin mirar antes el
+     * tipo: la misma columna guarda un id de ficha, un slug de localidad, un
+     * idioma, un tipo de reporte o una nota de 1 a 5 según lo que haya pasado.
+     *
+     * Vive acá y no en el modelo a propósito: es presentación —depende de las
+     * etiquetas del CMS— y el modelo tiene que poder usarse sin Filament.
+     */
+    public static function etiqueta(string $tipo, ?string $referencia): string
+    {
+        $referencia = (string) $referencia;
+
+        if ($referencia === '') {
+            return '—';
+        }
+
+        if (in_array($tipo, Interaccion::TIPOS_DE_FICHA, true)) {
+            self::$nombresFicha ??= Place::pluck('nombre', 'id')
+                ->map(fn ($n) => is_array($n) ? ($n['es'] ?? '') : (string) $n)
+                ->all();
+
+            // Una ficha borrada deja su histórico huérfano. Se muestra el id en
+            // vez de esconder la fila: el número siguió contando para el total.
+            return self::$nombresFicha[(int) $referencia] ?? "Ficha #{$referencia}";
+        }
+
+        if ($tipo === 'localidad') {
+            self::$nombresLocalidad ??= Localidad::pluck('nombre', 'slug')
+                ->map(fn ($n) => is_array($n) ? ($n['es'] ?? '') : (string) $n)
+                ->all();
+
+            return self::$nombresLocalidad[$referencia] ?? $referencia;
+        }
+
+        if ($tipo === 'reporte') {
+            return ReporteResource::TIPOS[$referencia] ?? $referencia;
+        }
+
+        if ($tipo === 'calificacion') {
+            return $referencia === '1' ? '1 estrella' : "{$referencia} estrellas";
+        }
+
+        return self::ETIQUETAS_FIJAS[$tipo][$referencia] ?? $referencia;
     }
 
     public static function table(Table $table): Table
@@ -63,18 +111,10 @@ class InteraccionResource extends Resource
                     ->label('Sobre qué')
                     ->placeholder('—')
                     // La referencia cruda es un id o un slug: ilegible en una
-                    // tabla que se lee para decidir. Las fichas se traducen a su
-                    // nombre; el resto (slug de localidad, tipo de reporte,
-                    // idioma) ya se entiende tal cual.
-                    ->formatStateUsing(function (?string $state, Interaccion $i): string {
-                        if ($state === null || $state === '') {
-                            return '—';
-                        }
-
-                        return in_array($i->tipo, ['ficha', 'como_llegar', 'llamar', 'compartir'], true)
-                            ? self::nombreFicha($state)
-                            : $state;
-                    })
+                    // tabla que se lee para decidir. `etiqueta()` la traduce
+                    // según el tipo — nombre de ficha, nombre de localidad,
+                    // "Trabajos en la vía", "Español"…
+                    ->formatStateUsing(fn (?string $state, Interaccion $i): string => self::etiqueta($i->tipo, $state))
                     ->wrap(),
                 Tables\Columns\TextColumn::make('cantidad')
                     ->label('Veces')
@@ -87,10 +127,11 @@ class InteraccionResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('tipo')
                     ->label('Qué')->options(Interaccion::TIPOS),
-                Tables\Filters\Filter::make('ultimos_30')
-                    ->label('Últimos 30 días')
-                    ->default()
-                    ->query(fn (Builder $q) => $q->where('dia', '>=', now()->subDays(30)->toDateString())),
+                // El filtro de fechas que vivía acá lo reemplazó el selector de
+                // periodo de la PÁGINA (ver ListInteracciones): tenerlo en los
+                // dos lados dejaba las tarjetas de arriba y la lista de abajo
+                // contando ventanas distintas, que es la peor forma de mentir
+                // en un panel — cada número es correcto y juntos no cuadran.
             ])
             // Lo más reciente y lo más usado arriba: así la primera pantalla ya
             // responde "qué está pasando ahora".
