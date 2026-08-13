@@ -122,6 +122,7 @@ const DICCIONARIO = {
     buscandoUbicacion: 'Buscando tu ubicación…',
     sinUbicacion: 'Sin ubicación: revisa el permiso de GPS',
     eligeLocalidad: 'Elige una localidad para filtrar',
+    sinLugaresCategoria: 'Todavía no hay lugares de esa categoría aquí',
     // Los tres tipos vivos del crowdsourcing.
     repPeligro: 'Peligro',
     repAccidente: 'Accidente',
@@ -252,6 +253,7 @@ const DICCIONARIO = {
     buscandoUbicacion: 'Finding your location…',
     sinUbicacion: 'No location: check your GPS permission',
     eligeLocalidad: 'Pick a town to filter',
+    sinLugaresCategoria: 'Nothing in that category here yet',
     // The three live crowdsourcing types.
     repPeligro: 'Hazard',
     repAccidente: 'Crash',

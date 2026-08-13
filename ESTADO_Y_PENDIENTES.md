@@ -95,6 +95,20 @@ el error.
   del trazado estaba a **2,2 km de Puerto Guadal**, así que la línea parecía
   entrar al pueblo — y Guadal es un desvío por la Ruta X-83, no parte de la
   Ruta 7. Los puntos nuevos pasan al oeste: **5,9 km** de distancia mínima.
+- **La barra de categorías pasa a ser también la leyenda del mapa.** Los seis
+  botones eran seis azulejos grises idénticos mientras los pines del mapa son
+  morado / naranja / verde / azul / rosa / rojo: el color estaba definido en
+  `CATEGORIAS` y la barra no lo usaba, así que no había cómo saber de qué era el
+  pin morado sin abrirlo. Ahora cada botón lleva **su** color (tinte apagado,
+  fondo pleno encendido) y el color viene por variable desde `CATEGORIAS`, así
+  que agregar una categoría no obliga a tocar el CSS. De paso:
+  **las categorías sin fichas en el pueblo abierto se ven apagadas** —hasta ahora
+  tocarlas dejaba el mapa en blanco sin explicar nada, que se lee como app
+  rota—, el estado activo viaja en `aria-pressed`, y los botones ahora encogen
+  (`flex: 1 1`), que era lo que hacía aparecer scroll horizontal en pantallas de
+  320 px. Se borró además el bloque muerto `.barra-cat`/`.cat-btn.activo`: la
+  barra vieja ya no la usa ningún JSX, pero como el botón conservó el nombre de
+  clase le seguía metiendo padding y tipografía a la barra viva.
 
 ---
 
