@@ -110,6 +110,61 @@ el error.
   barra vieja ya no la usa ningún JSX, pero como el botón conservó el nombre de
   clase le seguía metiendo padding y tipografía a la barra viva.
 
+### Analítica: de lista cruda a PANEL (13-ago-2026)
+
+`/admin` → Analítica → Interacciones era la tabla del rollup tal cual sale de la
+base, y **esa tabla no puede contestar ninguna de las preguntas por las que se
+construyó**: como se guarda una fila por `(tipo, referencia, DÍA)`, la misma
+ficha aparece repetida una vez por jornada y "qué localidad se mira más" hay que
+sumarlo a ojo. Ordenar por "Veces" tampoco sirve — ordena días sueltos, no
+totales. Ahora arriba van las cifras ya agregadas y la lista queda abajo como el
+detalle al que se baja cuando algo llama la atención:
+
+- **Cuatro tarjetas comparadas contra el periodo anterior** — aperturas, fichas
+  vistas, **contactos a un negocio** (cómo llegar + llamar + compartir, lo más
+  parecido a una venta que puede medir un directorio) y aportes de viajeros.
+  La comparación es el punto: "87 aperturas" no se puede interpretar solo, y
+  esta pantalla existe para contestar *"¿el volante movió la aguja?"*, que es
+  una pregunta sobre la diferencia entre dos periodos.
+- **Actividad por día** (líneas): alcance y profundidad sobre **un solo eje**
+  —las dos series cuentan eventos, así que comparten escala honestamente— con
+  los días sin actividad rellenados en cero. Sin ese relleno el gráfico pondría
+  el lunes al lado del jueves con la misma separación que dos días seguidos: no
+  estaría incompleto, estaría mintiendo sobre el ritmo.
+- **Dos rankings**: localidades más abiertas y fichas más miradas, esta última
+  con el desglose *N vistas · M contactos* — que es exactamente el dato vendible
+  de la capa comercial ("tu ficha se vio N veces este mes").
+- **Un solo selector de periodo (7 / 30 / 90 días) para TODA la página**,
+  widgets y lista incluidos, y guardado en la URL. Tenerlo por widget habría
+  dejado las tarjetas y la lista contando ventanas distintas: cada número
+  correcto por separado y ninguno cuadrando con el otro, que es la peor forma
+  de mentir en un panel.
+- **"Sobre qué" ya no muestra slugs.** Traduce según el tipo: nombre de ficha,
+  nombre de localidad, "Trabajos en la vía", "Español", "5 estrellas". Antes
+  solo resolvía fichas y el resto salía crudo (`caleta-tortel`, `es`, `faena`).
+- El resumen quedó además en el **Dashboard**, reemplazando la tarjeta de
+  Filament que solo mostraba su propia versión y un enlace a su sitio.
+- La URL pasó de `/admin/interaccions` a `/admin/interacciones` (Filament
+  pluralizaba en inglés).
+
+**Tres cosas aprendidas, por si vuelven a aparecer:**
+
+1. **Filament arma las acciones de cabecera en `booted`, o sea ANTES de que
+   corra la acción.** Un botón rotulado con el estado actual se queda mostrando
+   el anterior. Por eso el periodo vigente se dice en el **subtítulo** (que sí
+   se recalcula en cada render) y el botón se llama "Cambiar periodo" a secas.
+2. **Los widgets necesitan `#[Reactive]`** para recibir el periodo de la página:
+   sin el atributo, Livewire monta el widget una vez y se queda con el valor del
+   primer render — el selector "funciona" y no cambia nada.
+3. **El CSS del panel viene precompilado del paquete de Filament**, y solo trae
+   las clases que Filament usa. Una clase utilitaria inventada en un Blade
+   propio puede no existir —`tabular-nums` y `items-baseline` no están— y el
+   fallo es mudo. La vista de los rankings va con `style` en línea y solo toma
+   prestados los tokens de texto.
+
+Las consultas nuevas (`Interaccion::total/serie/ranking`) y la traducción de
+referencias tienen tests: `backend/tests/Feature/InteraccionPanelTest.php`.
+
 ---
 
 ## Dónde quedamos — para retomar (11-ago-2026)
