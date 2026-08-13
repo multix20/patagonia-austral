@@ -44,11 +44,51 @@ class ActividadDiaria extends ChartWidget
      */
     private const COLORES = ['#3987e5', '#d95926'];
 
+    /**
+     * Desde cuándo se puede dibujar: nunca antes del primer día medido.
+     *
+     * Sin este tope el gráfico afirmaba que hubo CERO aperturas el 20 de julio,
+     * cuando la verdad es que la analítica no existía hasta el 11 de agosto —
+     * la app se usaba igual, solo que nadie contaba. La diferencia entre "cero"
+     * y "sin medir" no es un matiz: pintaba tres semanas de línea plana en el
+     * suelo, que es la forma más rápida de que un panel deje de creerse.
+     */
+    private function desde(int $dias): ?string
+    {
+        $ventana = now()->subDays($dias - 1)->toDateString();
+        $primero = Interaccion::primerDia();
+
+        if ($primero === null) {
+            return null;
+        }
+
+        return max($ventana, $primero);
+    }
+
+    public function getDescription(): ?string
+    {
+        $primero = Interaccion::primerDia();
+
+        if ($primero === null) {
+            return 'Todavía no hay nada medido.';
+        }
+
+        // Solo cuando la medición empieza DENTRO de la ventana: si no, el eje
+        // ya cubre el periodo completo y la aclaración sobraría.
+        return $primero > now()->subDays(($this->periodo ?: 30) - 1)->toDateString()
+            ? 'La medición empieza el '.Carbon::parse($primero)->format('d/m/Y')
+            : null;
+    }
+
     protected function getData(): array
     {
         $dias = $this->periodo ?: 30;
         $hasta = now()->toDateString();
-        $desde = now()->subDays($dias - 1)->toDateString();
+        $desde = $this->desde($dias);
+
+        if ($desde === null) {
+            return ['datasets' => [], 'labels' => []];
+        }
 
         $aperturas = Interaccion::serie(['app_abierta'], $desde, $hasta);
         $fichas = Interaccion::serie(['ficha'], $desde, $hasta);

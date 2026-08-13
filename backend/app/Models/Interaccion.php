@@ -68,6 +68,51 @@ class Interaccion extends Model
     /** Tope por evento y envío: ataja un lote absurdo sin castigar el uso real. */
     public const MAX_POR_EVENTO = 500;
 
+    /**
+     * Primer día del que hay ALGO registrado, o `null` si la tabla está vacía.
+     *
+     * Es el día en que empezó a existir la medición, y hace falta para no
+     * afirmar lo que no se sabe: antes de esa fecha la app se usaba igual, solo
+     * que nadie contaba. Un gráfico que dibuja esos días planos en cero no está
+     * mostrando "cero uso", está inventando un dato — y encima el más
+     * desmoralizante posible. Se mira sobre TODOS los tipos a propósito: un día
+     * sin fichas vistas pero con aperturas sí es un cero de verdad.
+     */
+    public static function primerDia(): ?string
+    {
+        $dia = static::query()->min('dia');
+
+        return $dia ? Carbon::parse($dia)->toDateString() : null;
+    }
+
+    /**
+     * Borra el histórico hasta un día, incluido. Devuelve qué se llevó por
+     * delante, para poder decirlo en pantalla.
+     *
+     * Por qué esto existe: los primeros números de la tabla son del propio
+     * desarrollo —abrir la app veinte veces para probar el mapa cuenta veinte
+     * aperturas— y arrancar una campaña midiendo contra esa base es engañarse
+     * solo. Por qué es POR FECHA y no "borrar lo mío": la analítica es anónima
+     * por diseño (sin usuario, sin sesión, sin dispositivo, ver la migración),
+     * así que no existe el dato que permitiría distinguir las pruebas del uso
+     * real. La fecha es el único corte honesto que se puede ofrecer.
+     *
+     * @return array{filas: int, eventos: int}
+     */
+    public static function borrarHasta(string $dia): array
+    {
+        $alcance = static::query()->where('dia', '<=', $dia);
+
+        $resumen = [
+            'filas' => (clone $alcance)->count(),
+            'eventos' => (int) (clone $alcance)->sum('cantidad'),
+        ];
+
+        $alcance->delete();
+
+        return $resumen;
+    }
+
     /** Suma de `cantidad` de unos tipos entre dos días, ambos incluidos. */
     public static function total(array $tipos, string $desde, string $hasta): int
     {
