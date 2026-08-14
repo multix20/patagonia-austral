@@ -201,6 +201,36 @@ en `places.js`, que es el respaldo offline de la PWA.
   en el pueblo funcionan como referencia o como lugar de compra, merecen volver
   (la primera quizá como `servicio`, no como `atractivo`).
 
+### Mapa: la ruta ocupaba la mitad de la pantalla por un redondeo (14-ago-2026)
+
+En la vista general sobraba un montón de espacio por encima de Puerto Montt y
+por debajo de Villa O'Higgins. La causa es aritmética, no de diseño.
+
+La Carretera Austral mide **7,0° de latitud por 1,33° de longitud** — 779 km de
+alto por 105 de ancho, **siete veces más alta que ancha**—, así que el encuadre
+siempre lo manda la altura. Para que quepa entera hace falta un zoom de **6,8**,
+pero `L.map()` se creaba sin `zoomSnap`, o sea con el valor por defecto **1**:
+`fitBounds` solo puede elegir zooms ENTEROS y tiene que redondear **hacia abajo,
+a 6**. Resultado: la ruta ocupaba poco más de la mitad del alto disponible.
+
+Con `zoomSnap: 0.25` Leaflet puede encuadrar en 6,75. Medido a 412×900:
+
+| | zoom | la ruta ocupa | vacío arriba | vacío abajo |
+|---|---|---|---|---|
+| antes | 6 | 477 px — **53%** | 212 px | 211 px |
+| ahora | 6,75 | 664 px — **74%** | 116 px | 120 px |
+
+`zoomDelta` se deja en 1 para que el pellizco y los botones sigan moviéndose de
+nivel en nivel; lo fraccionario es solo para encuadrar. El precio es que la
+tesela se escala en vez de dibujarse a tamaño nativo, y a un cuarto de nivel no
+se nota.
+
+El relleno del encuadre pasó además a ser **asimétrico** (`RELLENO_RUTA`): la
+cabecera y la barra de categorías FLOTAN sobre el mapa, no le quitan espacio, así
+que con relleno parejo los dos extremos de la ruta quedaban justo debajo de
+ellas. Lo que sobra ahora arriba y abajo no es desperdicio: es el hueco exacto
+de la píldora del título y de la barra.
+
 ### Mapa: el bug del tamaño rancio (14-ago-2026)
 
 Tres síntomas que parecían tres problemas y eran **uno solo**: el mapa "saltaba a
