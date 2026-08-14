@@ -466,7 +466,7 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 20, cat: 'atractivo', localidad: 'caleta-tortel', lat: -47.783, lng: -73.599, publicado: false,
+    id: 20, cat: 'atractivo', localidad: 'caleta-tortel', lat: -47.783, lng: -73.599,
     nombre: { es: 'Isla de los Muertos', en: 'Isla de los Muertos (Island of the Dead)' },
     dist: { es: '8 km · 40 min en lancha', en: '8 km · 40 min by boat' },
     desc: {
