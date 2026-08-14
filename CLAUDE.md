@@ -83,7 +83,8 @@ Historial y decisiones: `ESTADO_Y_PENDIENTES.md`. Roadmap (README):
   los **10 alojamientos con mejores datos por localidad** (fuente SERNATUR),
   y se quitaron los 44 "(ejemplo)" para sembrar solo con datos reales.
   Desde el 27-jul-2026 rige **un servicio publicado por localidad y categoría**
-  (156 fichas = 26 × 6): el foco es la CALIDAD del dato antes del volumen. Lo que
+  (una ficha por cupo, 6 categorías × las localidades que haya): el foco es la
+  CALIDAD del dato antes del volumen. Lo que
   sale de circulación queda con `publicado: false` (no se borra) y los cupos sin
   dato real llevan una ficha `preliminar: true` sin teléfono, a reemplazar con
   data oficial (correo a encargadas de turismo / dueños, o fuentes públicas).
@@ -156,10 +157,18 @@ para 2030.)
 **Alcance norte — COMPLETADO (Fase 2.5, jul-2026)**: la app cubre **toda la
 Carretera Austral, de Puerto Montt a Villa O'Higgins**, barcazas incluidas. La
 identidad ya dice "Puerto Montt a Villa O'Higgins" en i18n, manifest e
-index.html. La fase cerró con 24 localidades y 192 lugares; **hoy son 26
-localidades y 234 fichas** (Raúl Marín Balmaceda y Balmaceda el 22-jul; **Puerto
-Yungay el 11-ago**), de las cuales **159 están publicadas y 75 de esas son
-`preliminar`**.
+index.html. La fase cerró con 24 localidades y 192 lugares; después se sumaron
+Raúl Marín Balmaceda y Balmaceda (22-jul) y **Puerto Yungay (11-ago)**, así que
+**hoy son 27 localidades**.
+
+> **Los recuentos de fichas NO se anotan acá, a propósito.** Cambian cada vez que
+> se publica o se cura algo, así que un número escrito en un documento está
+> garantizado a mentir a la semana siguiente — y ya pasó: esta línea decía "26
+> localidades y 234 fichas, 159 publicadas" mucho después de que dejara de ser
+> cierto. El número vivo está en **`/admin` → Lugares** (y el de uso, en
+> Analítica → Interacciones). Lo que sí se escribe son los hechos históricos, que
+> no rotan: cuánto tenía una fase al cerrarse, o qué se hizo en una sesión.
+
 Detalle en `ESTADO_Y_PENDIENTES.md`.
 
 **Infraestructura — SIN PENDIENTES desde el 10-ago-2026.** Los dos que quedaban
@@ -174,5 +183,43 @@ se cerraron ese día:
 **Regla que salió de activarlo:** una variable de entorno que enciende código
 nuevo solo sirve **después** de que ese código está en `main` — Render despliega
 desde ahí. Al revés no da error: simplemente no ocurre nada.
+
+**Analítica — panel, no lista (ago-2026).** `/admin` → Analítica → Interacciones
+ya no es la tabla cruda del rollup: arriba van cifras agregadas (aperturas,
+fichas vistas, **contactos a un negocio** = cómo llegar + llamar + compartir,
+aportes de viajeros), evolución diaria y rankings de localidades y fichas, todo
+con **un solo selector de periodo para la página entera**. Dos reglas que salieron
+de construirlo y valen para cualquier panel futuro:
+
+- **"Cero" y "sin medir" no son lo mismo.** El gráfico afirmaba 0 aperturas en
+  fechas anteriores a que existiera la tabla. No dibujar nada anterior al primer
+  día registrado (`Interaccion::primerDia()`).
+- **Un filtro por página, no por widget.** Con un periodo por tarjeta, cada
+  número queda correcto por separado y ninguno cuadra con el otro.
+
+Hay un botón **"Poner en cero"** para no arrastrar las cifras de las pruebas
+propias a la primera campaña. Borra por FECHA, no "mis pruebas": la analítica es
+anónima por diseño, así que el dato que permitiría distinguirlas no existe.
+
+**Tres trampas del mapa, todas descubiertas en producción (ago-2026).** Las tres
+son invisibles en un navegador de escritorio y rompen la app en un teléfono:
+
+1. **Un nodo del DOM lo controla React o lo controla la librería, nunca los dos.**
+   Leaflet se agrega sus clases al montar escribiendo el DOM directo; si React
+   maneja el `className` de ese mismo div, se las borra en el siguiente render —
+   y con ellas `touch-action: none`, o sea el pellizco y el arrastre. Por eso hay
+   dos divs: `.mapa-full` (React) y `.mapa-lienzo` (Leaflet).
+2. **Leaflet mide el contenedor una vez.** Solo lo revisa con un `resize` de
+   `window`, y en un teléfono `100dvh` cambia sin que eso pase. Sin
+   `ResizeObserver` quedan franjas sin teselas y el encuadre deja de coincidir
+   con lo que Leaflet cree que muestra.
+3. **`fitBounds` redondea el zoom hacia abajo.** Con el `zoomSnap: 1` por
+   defecto y una ruta siete veces más alta que ancha, la Austral ocupaba la mitad
+   de la pantalla. `zoomSnap: 0.25` lo arregla.
+
+Y para lo que se ancla al fondo de la pantalla: `100dvh` sigue al viewport de
+LAYOUT, que con `viewport-fit=cover` se extiende por debajo de lo visible. La
+variable `--piso-extra` (calculada desde `visualViewport`) es lo que hay que
+sumar para que la barra de categorías no se pierda abajo.
 
 Para trabajo de roadmap, usar el agente `roadmap` (`.claude/agents/roadmap.md`).

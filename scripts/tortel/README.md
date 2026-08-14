@@ -191,13 +191,32 @@ Después, **publicar es cosa del CMS**, no de los scripts:
   *Publicado: No* → seleccionar todo → acción en lote **Publicar**.
 - **Rutas** → `/admin` → Rutas y áreas → seleccionar → **Publicar**.
 
-> **Antes de publicar los 116 de una sola vez, ojo con la regla editorial.**
+> **Antes de publicar el lote entero de una vez, ojo con la regla editorial.**
 > Desde el 27-jul rige *un servicio publicado por localidad y categoría*: si
-> Tortel pasa a tener 116 fichas publicadas mientras las otras 26 localidades
-> tienen 6, el directorio queda disparejo — y estas fichas todavía tienen la
-> descripción de plantilla, no texto curado. Publicar por tandas (primero
-> emergencias y servicios, que son dato duro y no necesitan redacción) deja el
-> beneficio sin la deuda.
+> Tortel pasa a tener más de cien fichas publicadas mientras las demás
+> localidades tienen 6, el directorio queda disparejo — y estas fichas todavía
+> tienen la descripción de plantilla, no texto curado. Publicar por tandas
+> (primero emergencias y servicios, que son dato duro y no necesitan redacción)
+> deja el beneficio sin la deuda.
+
+### Cómo terminó (ago-2026), por si el aviso de arriba llega tarde
+
+Llegó tarde: se publicó el lote completo y el mapa de Tortel quedó saturado. La
+curación posterior está en dos migraciones (`limpiar_fichas_tortel` y
+`afinar_fichas_tortel`) y el detalle en `ESTADO_Y_PENDIENTES.md`. Tres cosas que
+conviene saber antes de importar otro mapa municipal:
+
+- **Duplicados literales hubo poquísimos** (tres). Lo que satura no es la
+  repetición sino el **mobiliario municipal** entrando como atractivo: plazas,
+  plazas de juegos, paraderos, gimnasios. Nadie viaja a ver eso, y tapa las
+  pasarelas y los miradores, que es a lo que sí se va.
+- **Mismo nombre no es lo mismo que duplicado.** Las cuatro "Plaza de juegos"
+  están a 200–1000 m entre sí: son cuatro plazas distintas con nombre genérico.
+  Sin comparar coordenadas, un deduplicador por nombre se habría comido tres.
+- **La regla que sirvió al final** fue de calidad del dato y solo para el
+  comercio: una ficha de alojamiento, comida o servicio comercial **sin
+  teléfono** no permite hacer nada y sale. Aplicarla a todo habría borrado las
+  pasarelas y los miradores, que no tienen teléfono ni falta que les hace.
 
 ## Lo que este script NO hace
 
