@@ -159,6 +159,17 @@ const ESTILO_TRAZADO = {
 }
 const MS_FADE_RUTA = 350
 
+/**
+ * Relleno del encuadre de la ruta completa.
+ *
+ * ASIMÉTRICO porque la cabecera y la barra de categorías FLOTAN sobre el mapa,
+ * no le quitan espacio: con relleno parejo, Puerto Montt terminaba debajo de la
+ * píldora del título y Villa O'Higgins debajo de la barra — los dos extremos de
+ * la ruta, justo tapados. A los lados alcanza con poco (la ruta es angosta),
+ * pero no con nada: ahí van las etiquetas de las localidades.
+ */
+const RELLENO_RUTA = { paddingTopLeft: [36, 96], paddingBottomRight: [36, 100] }
+
 // A partir de este zoom se muestran los nombres de TODAS las localidades (como
 // Google Maps: al acercar aparecen las etiquetas). Más lejos que esto solo se
 // rotulan las destacadas, para no saturar la vista general de toda la ruta.
@@ -367,7 +378,7 @@ const MapView = forwardRef(function MapView(
       if (!mapa) return
       if (!puntos?.length) {
         if (rutaRef.current) {
-          mapa.flyToBounds(rutaRef.current.getBounds(), { padding: [54, 54], duration: 0.8 })
+          mapa.flyToBounds(rutaRef.current.getBounds(), { ...RELLENO_RUTA, duration: 0.8 })
         }
         return
       }
@@ -385,6 +396,26 @@ const MapView = forwardRef(function MapView(
     const mapa = L.map(contRef.current, {
       zoomControl: false,
       attributionControl: true,
+      /**
+       * Zoom en pasos de un cuarto, y no de uno entero (lo que trae Leaflet).
+       *
+       * Importa por la forma de esta ruta en concreto: la Carretera Austral
+       * mide 7,0° de latitud por 1,33° de longitud —779 km de alto por 105 de
+       * ancho, siete veces más alta que ancha—, así que el encuadre siempre lo
+       * manda la altura. Para que quepa entera hace falta un zoom de 6,8; con
+       * pasos enteros Leaflet tiene que redondear HACIA ABAJO, a 6, y la ruta
+       * termina ocupando poco más de la mitad del alto disponible. Ese sobrante
+       * es el vacío que se veía por encima de Puerto Montt y por debajo de
+       * Villa O'Higgins.
+       *
+       * El precio de los pasos fraccionarios es que la tesela se escala en vez
+       * de dibujarse a tamaño nativo. A un cuarto de nivel el reescalado no se
+       * nota, y a cambio la ruta —que es el contenido— gana casi la mitad de
+       * pantalla. `zoomDelta` se deja en 1 para que el pellizco y los botones
+       * sigan moviéndose de nivel en nivel.
+       */
+      zoomSnap: 0.25,
+      zoomDelta: 1,
     }).setView(CENTRO_RUTA, 6)
     mapaRef.current = mapa
     // Pane propio para la Ruta 7, con transición de opacidad: así la línea se
@@ -737,7 +768,7 @@ const MapView = forwardRef(function MapView(
         duration: 0.9,
       })
     } else if (vista === 'ruta' && rutaRef.current) {
-      mapa.flyToBounds(rutaRef.current.getBounds(), { padding: [54, 54], duration: 0.8 })
+      mapa.flyToBounds(rutaRef.current.getBounds(), { ...RELLENO_RUTA, duration: 0.8 })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vista, localidadActiva?.slug])
