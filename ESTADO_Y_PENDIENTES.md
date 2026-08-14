@@ -129,6 +129,54 @@ el error.
   barra vieja ya no la usa ningún JSX, pero como el botón conservó el nombre de
   clase le seguía metiendo padding y tipografía a la barra viva.
 
+### Limpieza de Tortel: no eran duplicados, era volumen (14-ago-2026)
+
+El lote municipal dejó **123 fichas publicadas en un pueblo de ~500 habitantes** y
+el mapa se volvió ilegible. La sospecha era "hay muchos duplicados"; al medirlo,
+el diagnóstico resultó ser otro.
+
+**Duplicados literales: cuatro.** El grave era **la posta de salud dos veces** —
+ficha 21 (hecha a mano, tel 131) y ficha 4024 "Posta Salud Rural" (del mapa
+municipal, celular local), a 112 m, las dos como `emergencia` y **con teléfonos
+distintos**. Ante una urgencia el mapa ofrecía dos fichas y dos números. Los
+otros tres: un mirador mapeado dos veces a 93 m, y "Hospedaje Giselle 1 y 2"
+(mismo teléfono, 13 m). Ojo con los falsos positivos: las cuatro "Plaza de
+juegos" están a 200–1000 m unas de otras (son cuatro plazas reales con nombre
+genérico) y "Cabaña Cony"/"Cabañas Ámbar" comparten teléfono pero están a 625 m
+(mismo dueño, dos lugares).
+
+**Lo que saturaba era el volumen:** 17 de los 33 "atractivos" eran mobiliario
+municipal (seis plazas, cuatro plazas de juegos, dos plazoletas, paradero,
+gimnasio, pérgola, plaza de deportes) y había once miradores compitiendo entre
+sí. Nadie viaja a Tortel a ver una plaza de juegos, y esas fichas enterraban las
+pasarelas y los miradores que sí son motivo de viaje.
+
+Aplicado por migración de datos (`limpiar_fichas_tortel`, el mismo patrón que
+`publicar_un_servicio_por_localidad`): **123 → 97 publicadas**, atractivos
+**33 → 9**, emergencias 4 → 3 sin duplicado y con el celular local. Nada se
+borra: todo queda `publicado: false` y `down()` lo revierte entero.
+
+> **La migración compara el nombre además del id.** Los ids vienen del lote
+> (4000+), pero al importar a producción diez fichas se omitieron por duplicadas,
+> así que la numeración de allá no tiene por qué calzar con una base local.
+> Actuar solo por id podía despublicar una ficha distinta de la revisada — en
+> emergencias, sacar del mapa la posta equivocada.
+
+**Lo que NO se pudo hacer desde la sesión web:** verificar cuáles siguen
+operando. SERNATUR y `aysenpatagonia.cl` están bloqueados por el proxy del
+entorno, y el proyecto no tiene clave de Google Maps (`GoogleMaps.php` solo
+parsea enlaces pegados a mano). Queda pendiente contrastar el listado contra el
+registro SERNATUR corriendo `scripts/sernatur/` en local.
+
+**Dos cosas para revisar a ojo**, que salieron de paso:
+
+- **"Isla de los Muertos" está sin publicar** (ficha 20) — y es probablemente el
+  sitio más icónico de Tortel. No se tocó porque venía así de antes y no era el
+  encargo, pero conviene mirarlo.
+- **"El Mercadito" y "Plaza de Armas"** entraron en el barrido del mobiliario. Si
+  en el pueblo funcionan como referencia o como lugar de compra, merecen volver
+  (la primera quizá como `servicio`, no como `atractivo`).
+
 ### Mapa: el bug del tamaño rancio (14-ago-2026)
 
 Tres síntomas que parecían tres problemas y eran **uno solo**: el mapa "saltaba a
