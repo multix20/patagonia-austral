@@ -24,6 +24,61 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ## Dónde quedamos — para retomar (14-ago-2026)
 
+### Propuestas de ficha: que el dato lo mande su dueño
+
+**El problema que resuelve.** Los datos que faltan —teléfono real, ubicación
+exacta, horario— había que pedirlos por correo o WhatsApp, leerlos a mano y
+transcribirlos al CMS. Eso no escala más allá de unas decenas y convierte al
+administrador en intermediario a tiempo completo.
+
+Ahora cada ficha tiene un **enlace personal** (`rutaaustral.cl/mi-ficha/xxxx`).
+El dueño lo abre en su teléfono, **parado en su local**, toca "usar mi ubicación"
+y corrige lo que esté mal. Lo que manda cae en `/admin` → **Propuestas de
+fichas** con el ANTES y el DESPUÉS lado a lado, y un botón para aplicarlo.
+
+**Por qué el dato viene del dueño y no de una API de mapas.** Se evaluó usar
+Google Places y se descartó por dos razones, en este orden:
+
+1. **La tesis del proyecto es que los servicios chicos de la Austral están
+   incompletos o equivocados en las plataformas globales.** Google es una de
+   ellas. Ir a buscar el dato ahí es heredar el mismo error que la app viene a
+   corregir.
+2. **Los términos de Google Maps Platform no permiten almacenar y republicar el
+   contenido de Places** (solo el `place_id` de forma indefinida). Un directorio
+   comercial construido sobre esa fuente choca de frente con esa cláusula.
+
+> La clave de Google sigue sirviendo, pero como herramienta de **contraste**, no
+> de origen: detectar fichas marcadas como cerradas, o pines que difieren mucho
+> del de Google para revisarlos a mano. Eso es uso legítimo y barato.
+
+**Tres decisiones de diseño que conviene no deshacer:**
+
+- **Lo que llega NO toca la ficha.** El endpoint es público —el token del enlace
+  es toda la credencial— así que lo enviado es una sugerencia hasta que alguien
+  la revisa. Si esto se rompiera, cualquiera con un enlace edita el directorio.
+- **Lista blanca cerrada de campos** (`Propuesta::CAMPOS`). Sin ella una
+  propuesta podría traer `publicado` o `destacado` y saltarse la curación. Lo
+  editorial no se delega, ni siquiera al dueño del negocio.
+- **La traducción al inglés no se inventa.** El dueño escribe en español y se
+  conserva el inglés que ya estaba. Un texto a medio traducir es menos dañino que
+  una traducción automática sin revisar en una app que se vende por el dato.
+
+**Nada es obligatorio en el formulario**: quien solo quiera corregir el teléfono
+manda eso y listo. Un formulario que exige diez campos se abandona en el tercero.
+
+**Pendientes de este frente**, en orden:
+
+- **Fotos en el formulario.** Quedaron fuera de la primera versión a propósito:
+  subir a R2 desde un endpoint público es superficie de ataque, y el dato que
+  bloquea la campaña es la ubicación y el contacto, no la foto. Se piden por
+  correo mientras tanto.
+- **Columna `horario` en `places`.** El formulario ya lo PREGUNTA y lo guarda en
+  `datos`, pero no hay dónde volcarlo. Se pregunta igual porque el dato caro es
+  conseguirlo, no guardarlo: teniendo las respuestas, agregar la columna después
+  es media hora; al revés habría que volver a escribirle a todos.
+- **Recordatorio a quien no responde.** La tabla ya sabe quién no contestó
+  (`estado = 'enviada'`), así que es solo redactar el segundo correo.
+
 ### Ubicar el pin con una foto (EXIF GPS)
 
 En el CMS, junto a "Pegar desde Google Maps", hay ahora **"Ubicar con una foto"**:

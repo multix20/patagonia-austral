@@ -13,6 +13,22 @@
   to = "/proyecto.html"
   status = 200
 
+# Formulario con el que el dueño de un servicio actualiza SU ficha. Lo sirve el
+# BACKEND (Laravel), no la PWA: es una página que se abre una vez, con señal, y
+# meterla en el bundle que se precachea para la ruta sería cargarle peso a quien
+# nunca la va a abrir.
+#
+# Se proxea (status 200, no 301) para que el enlace del correo se vea del dominio
+# propio. No es estética: un enlace a `…onrender.com` en un correo frío a un
+# negocio que no te conoce parece phishing, y con razón.
+#
+# Va ANTES del comodín, por lo mismo que /proyecto.
+[[redirects]]
+  from = "/mi-ficha/*"
+  to = "https://patagonia-austral-api.onrender.com/mi-ficha/:splat"
+  status = 200
+  force = true
+
 # SPA: todas las rutas sirven index.html
 [[redirects]]
   from = "/*"
