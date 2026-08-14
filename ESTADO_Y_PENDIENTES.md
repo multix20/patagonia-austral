@@ -129,6 +129,43 @@ el error.
   barra vieja ya no la usa ningún JSX, pero como el botón conservó el nombre de
   clase le seguía metiendo padding y tipografía a la barra viva.
 
+### Mapa: el bug del tamaño rancio (14-ago-2026)
+
+Tres síntomas que parecían tres problemas y eran **uno solo**: el mapa "saltaba a
+un lugar indeterminado" al cambiar de capa después de volver de una localidad, se
+"perdía espacio en los bordes", y la barra de categorías "se bajaba un tercio"
+mientras el mapa cargaba.
+
+**Leaflet mide el contenedor UNA vez y guarda ese tamaño.** Solo lo revisa si le
+llega un `resize` de `window` (su `trackResize`), y en un teléfono el contenedor
+cambia de alto sin que eso pase: `100dvh` se recalcula cuando la barra del
+navegador se pliega o se despliega, y ahí no hay evento de window que valga. El
+código llamaba a `invalidateSize()` **una sola vez, 200 ms después de montar**, y
+nunca más.
+
+Medido: al crecer el contenedor de 700 a 900 px sin `resize`, quedaban **37 px de
+franja sin ninguna tesela** — el "espacio perdido en los bordes" — y el centro
+real dejaba de coincidir con el que Leaflet cree que tiene, así que cualquier
+cosa que redibujara (cambiar de capa, volver de un pueblo) mostraba un encuadre
+que no era el esperado. Arreglado con un **`ResizeObserver`** sobre el div del
+mapa: cualquier cambio de tamaño, venga de donde venga, se le avisa a Leaflet.
+Verificado con la misma medición: ahora las teselas cubren el contenedor entero
+al crecer y al encoger.
+
+**La barra que se hundía es la otra cara de lo mismo.** Los controles flotantes
+se anclan al fondo de `.app`, que mide `100dvh`; pero `dvh` sigue al viewport de
+LAYOUT, y con `viewport-fit=cover` ese layout se extiende por debajo del área que
+de verdad se ve. Ahora `App.jsx` calcula desde `visualViewport` cuánto del fondo
+está tapado y lo publica en **`--piso-extra`**, que suman las siete reglas
+ancladas abajo (`.catbar`, `.qcard`, `.rcard`, `.instalar`, `.tarjeta-push`,
+`.fab-chat`, `.rail`). Normalmente vale `0px` y no cambia nada.
+
+> Se sube la BARRA, no se encoge la app, a propósito: encogerla haría que el mapa
+> pegara un salto de tamaño cada vez que aparece el teclado.
+
+Verificado: con 120 px del fondo tapados, `--piso-extra` pasa a `120px` y la barra
+sube exactamente eso, quedando justo en el borde de lo visible.
+
 ### Mapa: encuadre por categoría, y un bug de gestos que apareció al probarlo (13-ago-2026)
 
 **Al filtrar por categoría el mapa ahora se abre hasta que quepan todos los

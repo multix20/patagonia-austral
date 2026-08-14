@@ -404,7 +404,28 @@ const MapView = forwardRef(function MapView(
     mapa.on('zoomend', sincronizarEtiquetas)
     sincronizarEtiquetas()
     setTimeout(() => mapa.invalidateSize(), 200)
+
+    /**
+     * Leaflet mide el contenedor UNA vez y guarda ese tamaño. Solo lo revisa de
+     * nuevo si le llega un `resize` de `window` (su `trackResize`), y en un
+     * teléfono el contenedor cambia de alto SIN que eso pase: `100dvh` se
+     * recalcula solo cuando la barra del navegador se pliega o se despliega, y
+     * ahí no hay evento de window que valga.
+     *
+     * Con el tamaño viejo, Leaflet dibuja teselas para una pantalla que ya no
+     * existe. Medido: al crecer el contenedor de 700 a 900 px sin `resize`,
+     * quedaban 37 px de franja SIN NINGUNA tesela, y el centro real del mapa
+     * dejaba de coincidir con el que Leaflet cree que tiene — de ahí que al
+     * cambiar de capa o de vista el mapa "saltara" a un lugar que no era.
+     *
+     * El observador lo arregla de raíz: cualquier cambio de tamaño del div, y
+     * venga de donde venga, se le avisa a Leaflet.
+     */
+    const observador = new ResizeObserver(() => mapa.invalidateSize({ pan: false }))
+    observador.observe(contRef.current)
+
     return () => {
+      observador.disconnect()
       mapa.off('zoomend', sincronizarEtiquetas)
       mapa.remove()
       mapaRef.current = null
