@@ -77,6 +77,7 @@ class PlaceResource extends Resource
                         ->default(false)
                         ->inline(false),
                     self::campoPegarGoogleMaps(),
+                    self::campoUbicarConFoto(),
                     Forms\Components\TextInput::make('lat')
                         ->label('Latitud')
                         ->numeric()

@@ -22,6 +22,52 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
+## Dónde quedamos — para retomar (14-ago-2026)
+
+### Ubicar el pin con una foto (EXIF GPS)
+
+En el CMS, junto a "Pegar desde Google Maps", hay ahora **"Ubicar con una foto"**:
+se sube una foto sacada EN el lugar y las coordenadas se completan solas desde el
+GPS que la cámara dejó en el EXIF (precisión de 5–10 m).
+
+Por qué hace falta habiendo ya el campo de Maps: **no todos los dueños de
+servicios de la Austral tienen su negocio en Google Maps, ni saben copiar un
+enlace.** Sacar una foto parado en la puerta lo hace cualquiera. Y le gana a una
+dirección escrita, que muchas veces ni existe ("camino a Tortel km 3, casa azul").
+
+**La foto NO se guarda**: se lee el punto y se descarta. Es deliberado — la foto
+que sirve para ubicar (una puerta, un cartel) casi nunca es la que uno quiere
+publicar, y esas van en la sección Fotos.
+
+> **La trampa, y hay que decirla en la campaña: WhatsApp borra el EXIF.**
+> Recomprime la imagen al mandarla *como foto* y en esa pasada se pierden las
+> coordenadas. Sobreviven si el archivo viaja intacto: como **documento** en
+> WhatsApp, adjunto en un **correo**, o AirDrop. Cuando no encuentra GPS, el CMS
+> lo dice con esas palabras en vez de un "no se pudo": el problema casi nunca es
+> la foto, es el camino que tomó.
+>
+> **Lo mejor sigue siendo pedir la ubicación de WhatsApp** ("Enviar ubicación"),
+> que manda coordenadas directas y lo sabe hacer cualquiera. El EXIF es la red de
+> seguridad para las fotos que sí lleguen enteras.
+
+**El extractor (`App\Support\ExifGps`) está hecho para NO inventar**, y esa es la
+propiedad que cuidan sus ocho tests: un pin mal puesto manda a alguien media hora
+de ripio en la dirección equivocada, así que ante cualquier duda devuelve `null`.
+Rechaza el (0,0) —la "isla nula" frente a África, que no la produce una cámara
+sino un GPS que no alcanzó a fijar posición—, las fracciones con denominador
+cero, y las coordenadas fuera de rango.
+
+> **Un bug que encontró el propio test**, y vale la pena recordarlo: la primera
+> versión decidía el hemisferio con "¿es la letra negativa? si no, positiva". Con
+> una referencia corrupta —el byte nulo de un EXIF a medio escribir— eso daba
+> **+47,25: una foto de Cochrane con el pin en Siberia**. Ahora se exige que la
+> referencia sea exactamente una de las dos letras válidas. La regla general: no
+> uses "distinto de X" para decidir entre dos opciones cuando existe una tercera
+> posibilidad, que es que el dato esté malo.
+
+Pendiente relacionado: `ext-exif` ya está en el Dockerfile de producción, así que
+no hay nada que instalar.
+
 ## Dónde quedamos — para retomar (12-ago-2026)
 
 ### Sesión del 12-ago-2026 — el lote de Tortel en producción, y lo que destapó
