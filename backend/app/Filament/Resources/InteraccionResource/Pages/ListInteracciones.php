@@ -4,10 +4,14 @@ namespace App\Filament\Resources\InteraccionResource\Pages;
 
 use App\Filament\Resources\InteraccionResource;
 use App\Filament\Resources\InteraccionResource\Widgets;
+use App\Models\Interaccion;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Forms\Components\DatePicker;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Livewire\Attributes\Url;
 
 /**
@@ -103,6 +107,7 @@ class ListInteracciones extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            $this->accionBorrar(),
             ActionGroup::make(
                 collect(self::PERIODOS)
                     ->map(fn (string $etiqueta, int $dias) => Action::make("periodo{$dias}")
@@ -116,6 +121,65 @@ class ListInteracciones extends ListRecords
                 ->button()
                 ->outlined(),
         ];
+    }
+
+    /**
+     * Poner el contador en cero antes de empezar a medir de verdad.
+     *
+     * Los primeros números de la tabla son del propio desarrollo —abrir la app
+     * veinte veces para probar el mapa cuenta veinte aperturas—, y arrancar una
+     * campaña midiendo contra esa base es engañarse solo: el panel mostraría
+     * una caída el día que dejas de probar y un "crecimiento" que en realidad
+     * es tráfico tuyo saliendo del promedio.
+     *
+     * El corte es POR FECHA y no "borrar mis pruebas" porque la analítica es
+     * anónima por diseño —sin usuario, sin sesión, sin dispositivo (ver la
+     * migración)—, así que el dato que haría falta para distinguirlas no existe
+     * ni existirá. La fecha es el único corte honesto que se puede ofrecer.
+     */
+    private function accionBorrar(): Action
+    {
+        return Action::make('borrarAnalitica')
+            ->label('Poner en cero')
+            ->icon('heroicon-m-trash')
+            ->color('danger')
+            ->outlined()
+            ->modalIcon('heroicon-o-exclamation-triangle')
+            ->modalHeading('Poner la analítica en cero')
+            ->modalDescription(
+                'Borra el histórico hasta el día que elijas, incluido. No se puede deshacer '
+                .'y no hay respaldo: son contadores, no contenido. Sirve para no arrastrar '
+                .'las cifras de tus propias pruebas a la primera campaña.'
+            )
+            ->modalSubmitActionLabel('Sí, borrar')
+            ->form([
+                DatePicker::make('hasta')
+                    ->label('Borrar todo lo registrado hasta este día (incluido)')
+                    ->native(false)
+                    ->displayFormat('d/m/Y')
+                    ->default(now())
+                    // No hay filas futuras, así que "hasta hoy" borra todo. Y
+                    // dejar elegir mañana solo invitaría a pensar que se puede
+                    // programar un borrado, que no es lo que hace.
+                    ->maxDate(now())
+                    ->required()
+                    ->helperText('Con la fecha de hoy se borra todo. Con la de ayer, se conserva lo de hoy.'),
+            ])
+            ->action(function (array $data): void {
+                $hasta = Carbon::parse($data['hasta'])->toDateString();
+                $borrado = Interaccion::borrarHasta($hasta);
+
+                Notification::make()
+                    ->success()
+                    ->title('Analítica puesta en cero')
+                    ->body(sprintf(
+                        'Se borraron %s filas (%s interacciones) hasta el %s.',
+                        number_format($borrado['filas'], 0, ',', '.'),
+                        number_format($borrado['eventos'], 0, ',', '.'),
+                        Carbon::parse($hasta)->format('d/m/Y'),
+                    ))
+                    ->send();
+            });
     }
 
     /** La lista de abajo mira exactamente la misma ventana que los widgets. */

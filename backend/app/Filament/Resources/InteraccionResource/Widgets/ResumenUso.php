@@ -5,6 +5,7 @@ namespace App\Filament\Resources\InteraccionResource\Widgets;
 use App\Models\Interaccion;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Carbon;
 use Livewire\Attributes\Reactive;
 
 /**
@@ -53,13 +54,19 @@ class ResumenUso extends StatsOverviewWidget
         $actual = array_sum($serie);
         $previo = Interaccion::total($tipos, $desdePrevio, $hastaPrevio);
 
+        // ¿El periodo anterior es comparable, o es anterior a que existiera la
+        // medición? No es lo mismo "esa semana no vino nadie" que "esa semana
+        // no estábamos contando", y hasta ahora la tarjeta decía lo primero.
+        $primerDia = Interaccion::primerDia();
+        $sinMedicion = $primerDia === null || $primerDia > $hastaPrevio;
+
         // `null` = no hay con qué comparar (el periodo previo está en cero, así
         // que el porcentaje sería una división por cero, no un infinito).
         $variacion = $previo > 0 ? (int) round(($actual - $previo) / $previo * 100) : null;
 
         $tarjeta = (new Stat($titulo, number_format($actual, 0, ',', '.')))
             ->icon($icono)
-            ->description($this->comparacion($actual, $previo, $dias, $variacion))
+            ->description($this->comparacion($actual, $previo, $dias, $variacion, $sinMedicion, $primerDia))
             ->descriptionIcon(match (true) {
                 in_array($variacion, [null, 0], true) => null,
                 $variacion > 0 => 'heroicon-m-arrow-trending-up',
@@ -77,8 +84,22 @@ class ResumenUso extends StatsOverviewWidget
         return $actual > 0 ? $tarjeta->chart(array_values($serie)) : $tarjeta;
     }
 
-    private function comparacion(int $actual, int $previo, int $dias, ?int $variacion): string
-    {
+    private function comparacion(
+        int $actual,
+        int $previo,
+        int $dias,
+        ?int $variacion,
+        bool $sinMedicion,
+        ?string $primerDia,
+    ): string {
+        // Primero lo que se sabe del periodo ANTERIOR, porque cambia el sentido
+        // de todo lo demás: si no había medición, no hubo cero — no hubo dato.
+        if ($sinMedicion) {
+            return $primerDia === null
+                ? 'Todavía no hay nada medido'
+                : 'Sin comparación: la medición empieza el '.Carbon::parse($primerDia)->format('d/m/Y');
+        }
+
         if ($actual === 0 && $previo === 0) {
             return 'Sin datos en este periodo';
         }

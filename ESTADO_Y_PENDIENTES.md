@@ -129,6 +129,41 @@ el error.
   barra vieja ya no la usa ningún JSX, pero como el botón conservó el nombre de
   clase le seguía metiendo padding y tipografía a la barra viva.
 
+### Mapa: encuadre por categoría, y un bug de gestos que apareció al probarlo (13-ago-2026)
+
+**Al filtrar por categoría el mapa ahora se abre hasta que quepan todos los
+puntos de esa categoría, más el centro del pueblo.** Un pueblo se abre con zoom
+fijo sobre su centro, y eso dejaba fuera justo lo que hace viajar: la
+Confluencia de los ríos Baker y Neff está a 22 km de Cochrane, así que al tocar
+"Qué visitar" se veía la plaza y ninguno de los atractivos que justifican el
+desvío — la categoría quedaba respondida a medias, con el pin existiendo fuera
+de pantalla. El centro del pueblo entra en el encuadre a propósito: sin esa
+ancla el mapa vuela a un valle a media hora y se pierde la referencia de dónde
+queda una cosa respecto de la otra, que es lo que hace falta para decidir si se
+va. Soltar el filtro devuelve el mapa al pueblo. Medido en Cochrane: zoom 13 →
+**11** al filtrar "Visitar", y de vuelta a 13 al soltarlo.
+
+**Y probándolo apareció un bug preexistente y serio: el mapa perdía los gestos
+táctiles.** Leaflet se agrega sus propias clases al montar (`leaflet-container`,
+`leaflet-touch`, `leaflet-grab`…) escribiendo el DOM directo, pero ese mismo div
+tenía el `className` controlado por React. En cuanto React re-renderizaba con un
+className distinto —basta con que aparezcan las etiquetas al acercarse— **las
+borraba todas**. Con `leaflet-container` se iban `touch-action: none` y
+`overflow: hidden`, así que **en un teléfono el navegador se quedaba los gestos
+y el mapa dejaba de responder al pellizco y al arrastre**. Medido: al entrar a
+una localidad, `touch-action` pasaba de `none` a `auto`.
+
+> **La regla general, que vale para cualquier librería que toque el DOM:** un
+> nodo lo controla React **o** lo controla la librería, nunca los dos. Ahora son
+> dos divs — el de fuera lleva las clases de tema (capa, terreno, `labels-on`) y
+> es de React; el de dentro (`.mapa-lienzo`) es de Leaflet y React no lo toca.
+> Los selectores `.mapa-full.capa-x .leaflet-*` siguen funcionando porque los
+> panes quedan igual de descendientes.
+>
+> El comentario viejo del código decía justo lo contrario ("las controla React
+> en el className, no con classList, si no un re-render las borraría"): el miedo
+> era real pero la solución estaba al revés, y de paso creó este bug.
+
 ### Analítica: de lista cruda a PANEL (13-ago-2026)
 
 `/admin` → Analítica → Interacciones era la tabla del rollup tal cual sale de la

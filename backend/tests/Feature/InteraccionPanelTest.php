@@ -142,6 +142,50 @@ class InteraccionPanelTest extends TestCase
     }
 
     /**
+     * `primerDia` es lo que separa "cero" de "sin medir". El panel lo usa para
+     * no dibujar —ni afirmar— actividad cero en días anteriores a que la
+     * analítica existiera: la app se usaba igual, solo que nadie contaba.
+     */
+    public function test_el_primer_dia_medido_es_el_mas_antiguo_de_todos_los_tipos(): void
+    {
+        $this->assertNull(Interaccion::primerDia(), 'Sin filas no hay día medido, ni siquiera hoy.');
+
+        Interaccion::sumar('ficha', '1', 1, now()->subDays(3));
+        Interaccion::sumar('app_abierta', null, 1, now()->subDays(9));
+        Interaccion::sumar('localidad', 'cochrane', 1, now());
+
+        $this->assertSame(now()->subDays(9)->toDateString(), Interaccion::primerDia());
+    }
+
+    /** El corte del "poner en cero" es por fecha, e incluye el día elegido. */
+    public function test_borrar_hasta_respeta_el_limite_y_cuenta_lo_borrado(): void
+    {
+        Interaccion::sumar('app_abierta', null, 20, now()->subDays(5));
+        Interaccion::sumar('ficha', '1', 5, now()->subDay());
+        Interaccion::sumar('ficha', '2', 3, now()->subDay());
+        Interaccion::sumar('app_abierta', null, 2, now());
+
+        $borrado = Interaccion::borrarHasta(now()->subDay()->toDateString());
+
+        // Tres filas y 28 interacciones: todo menos lo de hoy.
+        $this->assertSame(['filas' => 3, 'eventos' => 28], $borrado);
+        $this->assertSame(1, Interaccion::count());
+        $this->assertSame(now()->toDateString(), Interaccion::primerDia());
+    }
+
+    /** Con la fecha de hoy se borra todo: no hay filas con fecha futura. */
+    public function test_borrar_hasta_hoy_deja_la_tabla_vacia(): void
+    {
+        Interaccion::sumar('app_abierta', null, 44, now()->subDays(2));
+        Interaccion::sumar('ficha', '1', 8, now());
+
+        Interaccion::borrarHasta(now()->toDateString());
+
+        $this->assertSame(0, Interaccion::count());
+        $this->assertNull(Interaccion::primerDia());
+    }
+
+    /**
      * La misma columna guarda cosas distintas según el tipo. Traducirla sin
      * mirar el tipo es lo que dejaba slugs crudos en pantalla.
      */
