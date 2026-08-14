@@ -84,9 +84,10 @@ Ver `backend/SETUP.md` para el detalle de configuración.
   lugares en total; identidad actualizada a "Puerto Montt a Villa O'Higgins")
 - **Fase 3 — Capa comercial:** fichas destacadas, planes de negocio, analítica.
   🔄 **En curso.** Hecho: base de destacados, un servicio publicado por localidad
-  y categoría (156 fichas), fotos de fichas y **crowdsourcing tipo Waze
-  desplegado** (reportes de ruta con votos, caducidad y cola offline).
-  Pendiente: dato real en las 75 fichas `preliminar`, analítica y planes de pago.
+  y categoría, fotos de fichas, **crowdsourcing tipo Waze desplegado** (reportes
+  de ruta con votos, caducidad y cola offline) y **panel de analítica de uso**
+  (aperturas, fichas vistas, contactos y rankings, con selector de periodo).
+  Pendiente: dato real en las fichas `preliminar` y planes de pago.
 - **Fase 4 — Publicación:** producción, dominio propio, PWA instalable, difusión.
   🔄 **Parcial.** Hecho: **dominio propio `rutaaustral.cl`** con SSL y correo,
   PWA instalable con iconos por plataforma y aviso de versión nueva, la vista
