@@ -2960,7 +2960,9 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 3077, cat: 'alojamiento', localidad: 'caleta-tortel', lat: -47.7945, lng: -73.533, preliminar: true,
+    // Fuera de circulación (ago-2026): sin teléfono, y la ficha comercial que
+    // no se puede contactar no le sirve a nadie. Relleno (preliminar) ya reemplazado por los 31 alojamientos reales de Tortel.
+    id: 3077, cat: 'alojamiento', localidad: 'caleta-tortel', lat: -47.7945, lng: -73.533, preliminar: true, publicado: false,
     nombre: { es: 'Hospedaje Las Pasarelas', en: 'Las Pasarelas Guesthouse' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -2973,7 +2975,9 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 3078, cat: 'comida', localidad: 'caleta-tortel', lat: -47.7993, lng: -73.5338, preliminar: true,
+    // Fuera de circulación (ago-2026): sin teléfono, y la ficha comercial que
+    // no se puede contactar no le sirve a nadie. Relleno (preliminar) ya reemplazado por las 16 fichas de comida reales.
+    id: 3078, cat: 'comida', localidad: 'caleta-tortel', lat: -47.7993, lng: -73.5338, preliminar: true, publicado: false,
     nombre: { es: 'Cocinería del Cipresal', en: 'Del Cipresal Eatery' },
     dist: { es: 'En el pueblo', en: 'In the village' },
     desc: {
@@ -2986,7 +2990,9 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 3079, cat: 'servicio', localidad: 'caleta-tortel', lat: -47.7955, lng: -73.5342,
+    // Fuera de circulación (ago-2026): sin teléfono, y la ficha comercial que
+    // no se puede contactar no le sirve a nadie. No es un negocio sino el nombre de una categoría; hoy hay 18 comercios reales.
+    id: 3079, cat: 'servicio', localidad: 'caleta-tortel', lat: -47.7955, lng: -73.5342, publicado: false,
     nombre: { es: 'Abastecimiento en Caleta Tortel', en: 'Supplies in Caleta Tortel' },
     dist: { es: 'Sector centro, por las pasarelas', en: 'Central sector, via the boardwalks' },
     desc: {
