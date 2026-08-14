@@ -6,6 +6,7 @@ use App\Filament\Concerns\TieneCampoUbicacionGoogleMaps;
 use App\Filament\Resources\PlaceResource\Pages;
 use App\Models\Localidad;
 use App\Models\Place;
+use App\Models\Propuesta;
 use App\Services\AlmacenamientoFotos;
 use App\Services\GuardarFoto;
 use Filament\Forms;
@@ -14,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\HtmlString;
 
 class PlaceResource extends Resource
 {
@@ -242,6 +244,36 @@ class PlaceResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    /**
+                     * Genera el enlace personal con el que cada dueño actualiza
+                     * SU ficha, y los devuelve en una lista lista para pegar en
+                     * el correo de la campaña.
+                     *
+                     * Van con el nombre del negocio al lado porque el enlace por
+                     * sí solo es indistinguible del de otro: mandarle a alguien
+                     * el enlace equivocado le daría acceso a editar una ficha
+                     * ajena.
+                     */
+                    Tables\Actions\BulkAction::make('enlace_actualizar')
+                        ->label('Enlace para actualizar')
+                        ->icon('heroicon-o-link')
+                        ->color('info')
+                        ->deselectRecordsAfterCompletion()
+                        ->modalHeading('Enlaces para la campaña')
+                        ->modalDescription('Uno por ficha. Cópialos al correo que le mandes a cada negocio.')
+                        ->modalSubmitAction(false)
+                        ->modalCancelActionLabel('Cerrar')
+                        ->modalContent(function (Collection $records) {
+                            $filas = $records->map(function (Place $ficha) {
+                                $p = Propuesta::invitar($ficha);
+
+                                return '<div style="margin-bottom:10px"><strong>'
+                                    .e($ficha->nombre['es'] ?? '').'</strong><br>'
+                                    .'<code style="font-size:12px;word-break:break-all">'.e($p->url()).'</code></div>';
+                            })->implode('');
+
+                            return new HtmlString('<div style="max-height:60vh;overflow:auto">'.$filas.'</div>');
+                        }),
                     Tables\Actions\BulkAction::make('publicar')
                         ->label('Publicar')
                         ->icon('heroicon-o-eye')
