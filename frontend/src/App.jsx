@@ -266,6 +266,44 @@ function AppInterna() {
     contarCola().then(setEnCola)
   }, [])
 
+  /**
+   * Cuánto del fondo de la app queda FUERA de lo que se ve, en `--piso-extra`.
+   *
+   * La app mide `100dvh` y los controles flotantes se anclan a su fondo. Pero
+   * `dvh` sigue al viewport de LAYOUT, y en un teléfono ese no es siempre el
+   * que se ve: con `viewport-fit=cover` y la barra del navegador desplegada, el
+   * layout se extiende por debajo del área visible. Resultado, y es lo que se
+   * reportó: la barra de categorías "se baja" y queda cortada o fuera de
+   * pantalla justo mientras el mapa carga y la barra del navegador se acomoda.
+   *
+   * `visualViewport` es lo que de verdad se ve, y avisa de cada cambio. La
+   * diferencia entre los dos es exactamente lo que hay que subir los controles.
+   * Normalmente es 0 y no cambia nada; solo actúa cuando de verdad hay algo
+   * tapado.
+   *
+   * Se sube la BARRA, no se encoge la app: así el mapa sigue a sangre y no da
+   * un salto de tamaño cada vez que aparece el teclado.
+   */
+  useEffect(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+
+    const aplicar = () => {
+      const oculto = Math.max(0, document.documentElement.clientHeight - (vv.offsetTop + vv.height))
+      document.documentElement.style.setProperty('--piso-extra', `${Math.round(oculto)}px`)
+    }
+
+    aplicar()
+    vv.addEventListener('resize', aplicar)
+    vv.addEventListener('scroll', aplicar)
+    window.addEventListener('orientationchange', aplicar)
+    return () => {
+      vv.removeEventListener('resize', aplicar)
+      vv.removeEventListener('scroll', aplicar)
+      window.removeEventListener('orientationchange', aplicar)
+    }
+  }, [])
+
   // Analítica de uso: engancha los disparadores de envío y cuenta la apertura.
   // Todo lo que sale de aquí es anónimo y agregado por día — ver analitica.js.
   useEffect(() => {

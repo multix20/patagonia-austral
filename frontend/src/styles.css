@@ -9,6 +9,11 @@
   --amarillo: #f5a623;
   --claude: #d97757; /* coral del chatbot (estilo Claude Code) */
   --barra-cat-h: 60px; /* alto de la barra de categorías (zona del pulgar) */
+  /* Cuánto del fondo de la app queda FUERA de lo visible. Normalmente 0; en un
+     teléfono sube cuando el layout (100dvh, viewport-fit=cover) se extiende por
+     debajo del área que de verdad se ve, y entonces todo lo anclado abajo
+     quedaría cortado. Lo calcula App.jsx desde `visualViewport`. */
+  --piso-extra: 0px;
 }
 
 * {
@@ -1168,7 +1173,7 @@ h1 small {
 /* ---------- Banner instalación ---------- */
 .instalar {
   position: absolute;
-  bottom: calc(var(--barra-cat-h) + 14px);
+  bottom: calc(var(--barra-cat-h) + 14px + var(--piso-extra));
   left: 12px;
   right: 12px;
   background: var(--verde-osc);
@@ -1211,7 +1216,7 @@ h1 small {
    el permiso pendiente. */
 .tarjeta-push {
   position: absolute;
-  bottom: calc(var(--barra-cat-h) + 14px);
+  bottom: calc(var(--barra-cat-h) + 14px + var(--piso-extra));
   left: 12px;
   right: 12px;
   background: var(--claude);
@@ -1308,7 +1313,7 @@ h1 small {
 /* ---------- Chatbot ---------- */
 .fab-chat {
   position: absolute;
-  bottom: calc(var(--barra-cat-h) + 16px);
+  bottom: calc(var(--barra-cat-h) + 16px + var(--piso-extra));
   right: 14px;
   width: 48px;
   height: 48px;
@@ -2002,7 +2007,7 @@ h1 small {
 .rail {
   position: absolute;
   right: 14px;
-  bottom: 122px;
+  bottom: calc(122px + var(--piso-extra));
   z-index: 40;
   display: flex;
   flex-direction: column;
@@ -2047,7 +2052,7 @@ h1 small {
   position: absolute;
   left: 14px;
   right: 14px;
-  bottom: calc(20px + env(safe-area-inset-bottom));
+  bottom: calc(20px + env(safe-area-inset-bottom) + var(--piso-extra));
   z-index: 45;
   /* Barra solo de iconos (sin los rótulos Dormir/Comer/…): más baja y compacta,
      así tapa menos mapa. Los nombres viven en aria-label/title. */
@@ -2143,7 +2148,7 @@ h1 small {
   position: absolute;
   left: 14px;
   right: 14px;
-  bottom: calc(20px + env(safe-area-inset-bottom));
+  bottom: calc(20px + env(safe-area-inset-bottom) + var(--piso-extra));
   z-index: 55;
   background: #fff;
   border-radius: 24px;
@@ -2728,7 +2733,7 @@ h1 small {
   position: absolute;
   left: 14px;
   right: 14px;
-  bottom: calc(20px + env(safe-area-inset-bottom));
+  bottom: calc(20px + env(safe-area-inset-bottom) + var(--piso-extra));
   z-index: 56;
   background: #fff;
   border-radius: 22px;
