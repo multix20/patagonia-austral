@@ -168,6 +168,30 @@ entorno, y el proyecto no tiene clave de Google Maps (`GoogleMaps.php` solo
 parsea enlaces pegados a mano). Queda pendiente contrastar el listado contra el
 registro SERNATUR corriendo `scripts/sernatur/` en local.
 
+**Segunda pasada, el mismo día** (`afinar_fichas_tortel`), con dos correcciones:
+
+1. **Vuelven cinco miradores.** La primera pasada dejó tres de once por criterio
+   propio; el alcance acordado después era más corto —duplicados y mobiliario
+   municipal— así que lo recortado de más se republica. Un mirador sin teléfono
+   es normal: no es un negocio, es un lugar.
+2. **Regla de calidad del dato, solo para el COMERCIO.** Una ficha de
+   alojamiento, comida o servicio comercial sin teléfono no permite hacer nada
+   —ni reservar ni preguntar— y sale hasta tener el dato. Se aplica solo ahí a
+   propósito: con la misma vara habrían desaparecido las pasarelas y los
+   miradores. Salen seis, y **tres son el relleno del propio proyecto**
+   (`preliminar: true`, "cupo reservado sin teléfono a reemplazar cuando llegue
+   la información oficial"): llegó, Tortel tiene hoy 31 alojamientos y 16
+   comidas reales con teléfono. La tercera, "Abastecimiento en Caleta Tortel",
+   nunca fue un negocio sino el nombre de una categoría.
+
+> **Excepción deliberada:** biblioteca, CONAF, municipalidad, registro civil y
+> **estación de combustible** se quedan sin teléfono. Ahí la ficha vale por la
+> ubicación, y en la Austral saber dónde hay bencina es información de seguridad.
+
+Estado final: **96 publicadas** (atractivos 14, alojamiento 30, comida 15,
+servicio 33, emergencia 3, evento 1). El relleno despublicado se marcó también
+en `places.js`, que es el respaldo offline de la PWA.
+
 **Dos cosas para revisar a ojo**, que salieron de paso:
 
 - **"Isla de los Muertos" está sin publicar** (ficha 20) — y es probablemente el
