@@ -479,7 +479,15 @@ export const LUGARES_SEED = [
     },
   },
   {
-    id: 21, cat: 'emergencia', localidad: 'caleta-tortel', lat: -47.795, lng: -73.533, tel: '131',
+    // Teléfono: el celular de la posta local, no el 131. El 131 es el SAMU
+    // nacional y funciona desde cualquier parte; estando EN Tortel lo que sirve
+    // es el número que contesta en el pueblo (fuente: mapa oficial de la
+    // municipalidad). El lote municipal traía esta misma posta como una segunda
+    // ficha —"Posta Salud Rural", a 112 m y con este número—, y tener dos fichas
+    // de emergencia con teléfonos distintos era lo peor del lote: se despublicó
+    // la duplicada y este es el número que queda (ver la migración
+    // limpiar_fichas_tortel).
+    id: 21, cat: 'emergencia', localidad: 'caleta-tortel', lat: -47.795, lng: -73.533, tel: '+56 9 9824 1609',
     nombre: { es: 'Posta de Salud Caleta Tortel', en: 'Caleta Tortel Health Post' },
     dist: { es: 'Sector centro, por las pasarelas', en: 'Central sector, via the boardwalks' },
     desc: {
