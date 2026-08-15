@@ -263,17 +263,7 @@ class PlaceResource extends Resource
                         ->modalDescription('Uno por ficha. Cópialos al correo que le mandes a cada negocio.')
                         ->modalSubmitAction(false)
                         ->modalCancelActionLabel('Cerrar')
-                        ->modalContent(function (Collection $records) {
-                            $filas = $records->map(function (Place $ficha) {
-                                $p = Propuesta::invitar($ficha);
-
-                                return '<div style="margin-bottom:10px"><strong>'
-                                    .e($ficha->nombre['es'] ?? '').'</strong><br>'
-                                    .'<code style="font-size:12px;word-break:break-all">'.e($p->url()).'</code></div>';
-                            })->implode('');
-
-                            return new HtmlString('<div style="max-height:60vh;overflow:auto">'.$filas.'</div>');
-                        }),
+                        ->modalContent(fn (Collection $records) => static::ventanaEnlaces($records)),
                     Tables\Actions\BulkAction::make('publicar')
                         ->label('Publicar')
                         ->icon('heroicon-o-eye')
@@ -306,6 +296,41 @@ class PlaceResource extends Resource
                 ]),
             ])
             ->defaultSort('id');
+    }
+
+    /**
+     * Ventana con los enlaces personales para actualizar fichas.
+     *
+     * La comparten la acción en lote de la lista (varias fichas, para armar la
+     * campaña de correos) y la de la pantalla de edición (una sola). Es el mismo
+     * enlace en los dos casos: `Propuesta::invitar()` reusa la invitación que ya
+     * esté sin responder, así que abrir esta ventana dos veces no genera dos
+     * enlaces distintos para el mismo negocio.
+     *
+     * Cada enlace va con el nombre del negocio al lado porque uno es
+     * indistinguible de otro a simple vista, y mandarle a alguien el equivocado
+     * le daría acceso a editar una ficha ajena.
+     *
+     * El botón de copiar no es un adorno: esto se opera desde el teléfono, y
+     * seleccionar a dedo una URL de 40 caracteres dentro de una ventana con
+     * scroll es donde el flujo se rompía.
+     */
+    public static function ventanaEnlaces(\Illuminate\Support\Collection $fichas): HtmlString
+    {
+        $filas = $fichas->map(function (Place $ficha) {
+            $url = Propuesta::invitar($ficha)->url();
+
+            return '<div style="margin-bottom:14px">'
+                .'<strong>'.e($ficha->nombre['es'] ?? '').'</strong><br>'
+                .'<code style="font-size:12px;word-break:break-all">'.e($url).'</code><br>'
+                .'<button type="button" x-data="{copiado:false}"'
+                .' @click="navigator.clipboard.writeText('.e(json_encode($url)).'); copiado=true; setTimeout(() => copiado=false, 1500)"'
+                .' x-text="copiado ? \'¡Copiado!\' : \'Copiar enlace\'"'
+                .' style="margin-top:4px;padding:4px 10px;border:1px solid currentColor;border-radius:6px;font-size:12px"></button>'
+                .'</div>';
+        })->implode('');
+
+        return new HtmlString('<div style="max-height:60vh;overflow:auto">'.$filas.'</div>');
     }
 
     public static function getPages(): array
