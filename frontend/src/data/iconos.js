@@ -56,6 +56,12 @@ export function esRecomendado(lugar) {
   if (!lugar || !CATEGORIAS_CON_LLAMA.includes(lugar.cat)) return false
   // Una ficha preliminar es un cupo reservado con datos por confirmar: no puede
   // recomendarse algo cuyo nombre y teléfono todavía estamos verificando.
+  //
+  // OJO con el alcance: `preliminar` es un flag de la SEMILLA (lo lee el
+  // PlaceSeeder para decidir qué publica) y no existe como columna, así que la
+  // API no lo manda — este cortafuegos protege el directorio empaquetado, no
+  // las fichas que llegan del servidor. Para que valga en producción hay que
+  // subir el flag a la tabla `places` y agregarlo a `Place::toApi()`.
   if (lugar.preliminar) return false
   const nota = Number(lugar.estrellas)
   const total = Number(lugar.calificaciones || 0)

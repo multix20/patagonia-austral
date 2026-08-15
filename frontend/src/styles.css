@@ -823,11 +823,14 @@ h1 small {
   border-radius: 12px;
   margin: 0 0 10px 6px;
 }
+/* Explicación de la regla, bajo las estrellas. Necesita aire ABAJO: es gris y
+   la descripción de la ficha viene enseguida, así que sin separación las dos
+   se leen como un solo párrafo y la regla se pierde. */
 .ficha-llama-nota {
   font-size: 11.5px;
   line-height: 1.45;
   color: var(--gris);
-  margin: 4px 0 2px;
+  margin: 4px 0 11px;
 }
 .ficha-cuerpo p {
   font-size: 14px;
