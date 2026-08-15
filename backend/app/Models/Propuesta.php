@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 // Propuesta de ficha enviada por el dueño de un servicio. Ver la migración para
@@ -134,8 +135,75 @@ class Propuesta extends Model
             $ficha->lng = (float) $datos['lng'];
         }
 
+        // Solo se toca `imagenes` si vinieron fotos: si no, una propuesta de
+        // texto dejaría el campo en `[]` en fichas que lo tenían en null, un
+        // cambio invisible pero gratuito.
+        if (($this->datos['fotos'] ?? []) !== []) {
+            $ficha->imagenes = $this->moverFotosALaFicha($ficha);
+        }
+
         $ficha->save();
 
         $this->update(['estado' => 'aplicada', 'resuelta_en' => now()]);
+    }
+
+    /**
+     * Pasa las fotos de la propuesta a la carpeta de las fichas y devuelve la
+     * lista completa de imágenes que le queda a la ficha.
+     *
+     * Se MUEVEN, no se copian: una vez aprobada, la foto es contenido de la guía
+     * y no tiene por qué seguir habitando la carpeta de lo no revisado.
+     *
+     * Se AGREGAN al final. Las fotos que ya tenía la ficha son las curadas, y la
+     * primera de la lista es la cabecera en la app: dejar que una foto recién
+     * llegada del formulario desplace a la que se eligió a mano sería cambiar la
+     * portada sin decidirlo.
+     *
+     * @return array<int, string>
+     */
+    private function moverFotosALaFicha(Place $ficha): array
+    {
+        $actuales = array_values(array_filter($ficha->imagenes ?? [], 'is_string'));
+        $nuevas = array_filter($this->datos['fotos'] ?? [], 'is_string');
+        $disco = Storage::disk(config('fotos.disco'));
+        $destino = trim((string) config('fotos.carpeta'), '/');
+        $cupo = (int) config('fotos.max_por_ficha') - count($actuales);
+
+        foreach (array_slice($nuevas, 0, max(0, $cupo)) as $ruta) {
+            $nueva = $destino.'/'.basename($ruta);
+
+            if ($disco->exists($ruta) && $disco->move($ruta, $nueva)) {
+                $actuales[] = $nueva;
+            }
+        }
+
+        return $actuales;
+    }
+
+    /**
+     * Borra del bucket las fotos que llegaron con la propuesta.
+     *
+     * Se llama al descartar: si nadie las va a usar, dejarlas es pagar
+     * almacenamiento por contenido que además nunca fue revisado. Tras aplicar
+     * ya no hay nada que borrar — las fotos se movieron a la ficha.
+     */
+    public function borrarFotos(): void
+    {
+        $fotos = array_filter($this->datos['fotos'] ?? [], 'is_string');
+
+        if ($fotos !== []) {
+            Storage::disk(config('fotos.disco'))->delete($fotos);
+        }
+    }
+
+    /** URLs públicas de las fotos propuestas, para verlas en la revisión. */
+    public function fotosUrl(): array
+    {
+        $disco = Storage::disk(config('fotos.disco'));
+
+        return array_map(
+            fn (string $ruta) => $disco->url($ruta),
+            array_values(array_filter($this->datos['fotos'] ?? [], 'is_string'))
+        );
     }
 }

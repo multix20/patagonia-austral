@@ -14,6 +14,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-ext-install -j"$(nproc)" pdo_pgsql pgsql bcmath intl zip gd exif pcntl gmp \
     && rm -rf /var/lib/apt/lists/*
 
+# Los mismos límites de subida que la imagen de Render: si los dos despliegues
+# aceptan fotos de distinto tamaño, el que se probó no dice nada del otro.
+COPY docker/php.ini /usr/local/etc/php/conf.d/zz-patagonia.ini
+
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 

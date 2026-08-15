@@ -16,10 +16,15 @@ class GuardarFoto
     public function __construct(private ImagenServicio $imagenes) {}
 
     /**
-     * @param  mixed  $archivo  El temporal de Livewire (tiene get() y getClientOriginalName()).
+     * @param  mixed  $archivo  El temporal de Livewire, o un UploadedFile del
+     *                          formulario público: los dos tienen get() y
+     *                          getClientOriginalName().
+     * @param  string|null  $carpeta  Dónde dejarla. Por omisión la de las fichas;
+     *                                el formulario del dueño pasa la de
+     *                                propuestas, que es contenido sin revisar.
      * @return string|null Ruta dentro del disco, o null si el archivo no era una imagen legible.
      */
-    public function guardar(mixed $archivo): ?string
+    public function guardar(mixed $archivo, ?string $carpeta = null): ?string
     {
         $binario = $archivo->get();
 
@@ -45,7 +50,7 @@ class GuardarFoto
         // Nombre aleatorio y no el original: evita colisiones entre fichas, no
         // filtra cómo se llamaba el archivo en el computador de quien lo subió, y
         // esquiva los acentos y espacios que traen problema en una URL.
-        $ruta = trim((string) config('fotos.carpeta'), '/').'/'.Str::uuid()->toString().'.webp';
+        $ruta = trim($carpeta ?? (string) config('fotos.carpeta'), '/').'/'.Str::uuid()->toString().'.webp';
 
         Storage::disk(config('fotos.disco'))->put($ruta, $webp, 'public');
 

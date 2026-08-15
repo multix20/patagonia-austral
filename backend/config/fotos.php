@@ -15,6 +15,18 @@ return [
     // Carpeta dentro del bucket.
     'carpeta' => 'fichas',
 
+    // Carpeta APARTE para las fotos que llegan por el formulario público del
+    // dueño (`/mi-ficha/{token}`). Separadas a propósito: hasta que alguien las
+    // apruebe en el CMS no son contenido de la guía, y mezclarlas con las de las
+    // fichas haría imposible distinguir de un vistazo lo curado de lo que entró
+    // sin revisar. Al aplicar la propuesta la foto se MUEVE a 'carpeta'.
+    'carpeta_propuestas' => 'propuestas',
+
+    // Cuántas fotos puede mandar el dueño de una vez. Tres y no seis: lo que se
+    // le pide es una buena foto de su negocio, no un álbum, y cada archivo extra
+    // es una subida más que hacer con la señal de un pueblo de la Austral.
+    'max_por_propuesta' => 3,
+
     // Cuántas fotos por ficha. La primera es la cabecera y la miniatura; el resto
     // queda guardado y ordenado, listo para el carrusel cuando se haga.
     'max_por_ficha' => 6,
