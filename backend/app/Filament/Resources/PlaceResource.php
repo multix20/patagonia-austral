@@ -98,6 +98,15 @@ class PlaceResource extends Resource
                         ->tel()
                         ->maxLength(255)
                         ->helperText('Opcional. Habilita el botón de llamada directa.'),
+                    Forms\Components\TextInput::make('whatsapp')
+                        ->label('WhatsApp')
+                        ->tel()
+                        ->maxLength(255)
+                        ->helperText('Solo si es distinto del teléfono: si el teléfono ya es un móvil, la app lo usa para el chat. Habilita "Pedir disponibilidad" en el asistente.'),
+                    Forms\Components\TextInput::make('horario')
+                        ->label('Horario de atención')
+                        ->maxLength(255)
+                        ->helperText('Texto libre, como lo diga el dueño. Ej: Todos los días 9:00–22:00 · Invierno hasta las 20:00.'),
                 ]),
 
             Forms\Components\Section::make('Contenido bilingüe (Español / English)')

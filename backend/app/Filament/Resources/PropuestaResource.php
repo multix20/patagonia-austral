@@ -36,6 +36,7 @@ class PropuestaResource extends Resource
     private const ETIQUETAS = [
         'nombre' => 'Nombre',
         'tel' => 'Teléfono',
+        'whatsapp' => 'WhatsApp',
         'horario' => 'Horario',
         'descripcion' => 'Descripción',
         'como' => 'Cómo llegar',
@@ -182,8 +183,7 @@ class PropuestaResource extends Resource
             }
 
             $actual = match ($campo) {
-                'tel' => (string) ($ficha->tel ?? ''),
-                'horario' => '',  // no existe en la ficha todavía
+                'tel', 'whatsapp', 'horario' => (string) ($ficha->{$campo} ?? ''),
                 default => is_array($ficha->{$campo} ?? null) ? ($ficha->{$campo}['es'] ?? '') : '',
             };
 

@@ -1532,6 +1532,40 @@ h1 small {
   border-bottom-right-radius: 4px;
   align-self: flex-end;
 }
+/* Acciones dentro de un mensaje del bot (pedir disponibilidad, escribirle a un
+   negocio). Van en columna y a lo ancho del globo: son el paso siguiente de la
+   conversación, no una decoración, y cada una tiene que ser un blanco cómodo
+   para un pulgar en movimiento. */
+.msg-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+.msg-accion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--verde);
+  background: var(--verde);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  line-height: 1.3;
+}
+.msg-accion span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.msg-accion:active {
+  filter: brightness(0.92);
+}
 .escribiendo {
   align-self: flex-start;
   background: #fff;

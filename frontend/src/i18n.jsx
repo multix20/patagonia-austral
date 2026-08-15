@@ -112,6 +112,13 @@ const DICCIONARIO = {
     llamar: 'Llamar',
     whatsapp: 'WhatsApp',
     comoLlegar: 'Cómo llegar',
+    // El horario se muestra tal cual lo dijo el negocio. La app NO calcula si
+    // está abierto ahora mismo: el dato es texto libre ("en invierno hasta las
+    // 20") y afirmar "abierto" sobre eso manda a alguien a manejar 40 km de
+    // ripio hasta una puerta cerrada.
+    horarioFicha: 'Horario',
+    consultaPendiente: 'Tienes 1 consulta guardada — mándala desde el asistente',
+    consultasPendientes: 'Tienes {n} consultas guardadas — mándalas desde el asistente',
     guardar: 'Guardar',
     reporteEnviado: '¡Gracias! Tu reporte ya está en el mapa.',
     verFicha: 'Ver ficha completa',
@@ -243,6 +250,9 @@ const DICCIONARIO = {
     llamar: 'Call',
     whatsapp: 'WhatsApp',
     comoLlegar: 'Directions',
+    horarioFicha: 'Hours',
+    consultaPendiente: 'You have 1 saved request — send it from the assistant',
+    consultasPendientes: 'You have {n} saved requests — send them from the assistant',
     guardar: 'Save',
     reporteEnviado: 'Thanks! Your report is on the map.',
     verFicha: 'See full details',

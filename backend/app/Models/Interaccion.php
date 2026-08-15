@@ -43,6 +43,16 @@ class Interaccion extends Model
         'voto' => 'Voto en un reporte',
         'calificacion' => 'Calificación enviada',
         'idioma' => 'Cambio de idioma',
+        // Copiloto del asistente: el viajero pidió disponibilidad a un negocio
+        // desde el chat. Es la interacción más cercana a una venta que puede
+        // medir un directorio —muy por encima de "vio la ficha"— y es el número
+        // con el que se le muestra a un negocio que la app le sirve.
+        'consulta_reserva' => 'Consulta de disponibilidad',
+        // La misma consulta, pero armada sin cobertura: queda guardada para
+        // mandarla al llegar al pueblo. Se cuenta aparte porque mide algo
+        // distinto: cuánta decisión se toma en la ruta, sin señal.
+        'consulta_guardada' => 'Consulta guardada sin señal',
+        'perfil_viaje' => 'Viaje configurado en el asistente',
     ];
 
     /**
@@ -53,7 +63,7 @@ class Interaccion extends Model
     public const GRUPOS = [
         // Lo más parecido a una venta que puede medir un directorio: alguien
         // pidió cómo llegar, llamó, o le mandó la ficha a otra persona.
-        'contacto' => ['como_llegar', 'llamar', 'compartir'],
+        'contacto' => ['como_llegar', 'llamar', 'compartir', 'consulta_reserva'],
         // Lo que devuelve la comunidad: reportes de ruta, votos y estrellas.
         'aportes' => ['reporte', 'voto', 'calificacion'],
     ];
@@ -63,7 +73,7 @@ class Interaccion extends Model
      * es otra cosa (slug de localidad, idioma, tipo de reporte), y por eso no
      * se puede traducir a un nombre sin mirar antes el tipo.
      */
-    public const TIPOS_DE_FICHA = ['ficha', 'como_llegar', 'llamar', 'compartir'];
+    public const TIPOS_DE_FICHA = ['ficha', 'como_llegar', 'llamar', 'compartir', 'consulta_reserva', 'consulta_guardada'];
 
     /** Tope por evento y envío: ataja un lote absurdo sin castigar el uso real. */
     public const MAX_POR_EVENTO = 500;

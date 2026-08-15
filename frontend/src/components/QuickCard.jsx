@@ -1,6 +1,7 @@
 import Icon from './Icon'
 import { CATEGORIAS, urlComoLlegar } from '../data/places'
 import { contar } from '../analitica'
+import { numeroWhatsApp } from '../reservas'
 import { useI18n } from '../i18n'
 
 // Ficha rápida (Sprint UX/UI): tarjeta compacta que sube al tocar un pin en el
@@ -18,7 +19,11 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
   const foto = lugar.imagenes?.[0]
   const distancia = lugar.dist?.[lang]?.split('·')[0]?.trim()
   const telLimpio = lugar.tel ? lugar.tel.replace(/\s/g, '') : null
-  const waNum = (lugar.whatsapp || lugar.tel || '').replace(/[^\d]/g, '')
+  // Un fijo no tiene WhatsApp: `numeroWhatsApp` devuelve null salvo que el
+  // número sirva de verdad para el chat. Antes se limpiaba el teléfono a
+  // dígitos y se armaba el enlace igual, así que un fijo de Cochrane habría
+  // abierto un chat inexistente.
+  const waNum = numeroWhatsApp(lugar)
 
   const compartir = async () => {
     const nombre = lugar.nombre[lang]
@@ -41,7 +46,11 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
   // no solo en la ficha completa — mucha gente actúa desde esta tarjeta sin
   // llegar a abrirla.
   const acciones = []
-  if (lugar.destacado && waNum) {
+  // El WhatsApp va en TODA ficha que tenga uno, no solo en las destacadas: en la
+  // Austral es el canal por el que se reserva, y esconderlo en las fichas
+  // normales obliga a copiar el número a mano justo donde la señal alcanza para
+  // un mensaje y no para mucho más.
+  if (waNum) {
     acciones.push({
       cls: 'wa',
       icon: 'message-circle',
@@ -133,10 +142,16 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
               {lugar.hrs && <span className="qc-dot" />}
             </>
           )}
+          {/* El horario, tal cual lo declaró el negocio. Este chip decía
+              "Abierto ahora" o "Cerrado" según `lugar.abierto`, un campo que la
+              API nunca envió: sin él, la condición daba siempre falso y toda
+              ficha con horario se anunciaba CERRADA. Y aunque llegara, el
+              horario es texto libre ("en invierno hasta las 20"): afirmar que
+              está abierto sobre eso manda a alguien a manejar 40 km de ripio
+              hasta una puerta cerrada. Se muestra el dato y decide quien viaja. */}
           {lugar.hrs && (
-            <span className={`qc-chip ${lugar.abierto ? 'qc-open' : ''}`}>
-              <Icon nombre="clock" tam={13} /> {lugar.abierto ? t('abiertoAhora') : t('cerrado')} ·{' '}
-              {lugar.hrs}
+            <span className="qc-chip">
+              <Icon nombre="clock" tam={13} /> {lugar.hrs}
             </span>
           )}
         </div>

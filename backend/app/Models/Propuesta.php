@@ -30,20 +30,20 @@ class Propuesta extends Model
      * y saltarse la curación entera. Lo editorial —qué se publica y qué se
      * destaca— no se delega, ni siquiera al dueño del negocio.
      */
-    public const CAMPOS = ['nombre', 'tel', 'descripcion', 'como', 'horario', 'lat', 'lng'];
+    public const CAMPOS = ['nombre', 'tel', 'whatsapp', 'descripcion', 'como', 'horario', 'lat', 'lng'];
 
     /**
-     * `horario` se PIDE pero no se vuelca solo: `places` todavía no tiene esa
-     * columna. Se guarda en `datos` y se muestra en la revisión para que quien
-     * cura lo incorpore donde corresponda.
+     * Campos que se piden al dueño pero que la revisión no puede volcar sola,
+     * por no tener columna en `places`. Hoy no hay ninguno: `horario` estaba
+     * acá y ya tiene la suya (ver `add_contacto_a_places`).
      *
-     * Se pregunta igual porque es de lo más valioso que puede aportar un dueño
-     * —"¿está abierto?" es la pregunta del viajero que llega a las 8 de la
-     * tarde— y porque el dato caro es conseguirlo, no guardarlo: teniendo las
-     * respuestas, agregar la columna después es media hora. Al revés, habría que
+     * La constante se queda igual, vacía, porque el caso vuelve a aparecer cada
+     * vez que se le pregunta algo nuevo a los dueños antes de modelarlo — que es
+     * el orden correcto: el dato caro es conseguirlo, no guardarlo. Teniendo las
+     * respuestas, agregar la columna después es media hora; al revés hay que
      * volver a escribirle a todos.
      */
-    public const SOLO_INFORMATIVOS = ['horario'];
+    public const SOLO_INFORMATIVOS = [];
 
     public function place(): BelongsTo
     {
@@ -125,8 +125,14 @@ class Propuesta extends Model
             $ficha->{$campo} = ['es' => $texto, 'en' => $actual['en'] ?? $texto];
         }
 
-        if (trim((string) ($datos['tel'] ?? '')) !== '') {
-            $ficha->tel = trim($datos['tel']);
+        // Contacto y horario: texto plano, se copian tal cual vinieron. El
+        // WhatsApp es el que abre la reserva desde el asistente, así que es de
+        // lo más rentable que puede llegar por esta vía.
+        foreach (['tel', 'whatsapp', 'horario'] as $campo) {
+            $valor = trim((string) ($datos[$campo] ?? ''));
+            if ($valor !== '') {
+                $ficha->{$campo} = $valor;
+            }
         }
 
         // La ubicación va junta o no va: media coordenada deja el pin en el mar.
