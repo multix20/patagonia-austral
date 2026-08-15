@@ -142,6 +142,10 @@ class PropuestaResource extends Resource
                     ->visible(fn (Propuesta $p): bool => $p->respondida())
                     ->requiresConfirmation()
                     ->action(function (Propuesta $p): void {
+                        // Primero el bucket y después el estado: si se marca
+                        // descartada y el borrado falla, las fotos quedan
+                        // huérfanas y ya nadie las va a mirar para saberlo.
+                        $p->borrarFotos();
                         $p->update(['estado' => 'descartada', 'resuelta_en' => now()]);
                         Notification::make()->success()->title('Propuesta descartada')->send();
                     }),
@@ -199,6 +203,22 @@ class PropuestaResource extends Resource
                 .'<br><span style="color:#6b7572;font-size:11px">antes: '
                 .number_format((float) $ficha->lat, 5, ',', '').', '
                 .number_format((float) $ficha->lng, 5, ',', '').'</span></div>';
+        }
+
+        // Las fotos se MIRAN, no se resumen: es lo único de la propuesta que no
+        // se puede juzgar leyendo. Van al final y en miniatura, que alcanza para
+        // decidir si la foto es del negocio y está presentable.
+        $fotos = $p->fotosUrl();
+
+        if ($fotos !== []) {
+            $lineas[] = '<div style="margin-top:10px"><strong>Fotos propuestas:</strong>'
+                .'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">'
+                .implode('', array_map(
+                    fn (string $url) => '<img src="'.e($url).'" alt="" '
+                        .'style="width:92px;height:92px;object-fit:cover;border-radius:8px;border:1px solid #e2e0d8">',
+                    $fotos
+                ))
+                .'</div><span style="color:#6b7572;font-size:11px">Se suman a las que ya tiene la ficha.</span></div>';
         }
 
         return $lineas === []

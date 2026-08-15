@@ -11,6 +11,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-ext-install -j"$(nproc)" pdo_pgsql pgsql bcmath intl zip gd exif pcntl gmp \
     && rm -rf /var/lib/apt/lists/*
 
+# Límites de subida. Va en conf.d y no reemplazando php.ini para que solo
+# sobreescriba lo que nombra y herede el resto de los valores de la imagen.
+COPY docker/php.ini /usr/local/etc/php/conf.d/zz-patagonia.ini
+
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 

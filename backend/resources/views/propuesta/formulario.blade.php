@@ -31,7 +31,9 @@
         .caja h2 { font-size:15px; margin-bottom:4px; }
         .caja .ayuda { font-size:13px; color:var(--gris); margin-bottom:12px; }
         label { display:block; font-size:13px; font-weight:600; margin:14px 0 5px; }
-        input[type=text], textarea { width:100%; padding:11px 12px; border:1px solid var(--borde);
+        input[type=file] { width:100%; padding:12px; border:1px dashed var(--borde);
+                         border-radius:9px; font-size:14px; background:#fff; }
+      input[type=text], textarea { width:100%; padding:11px 12px; border:1px solid var(--borde);
             border-radius:9px; font-size:16px; background:#fff; color:var(--tinta); }
         textarea { min-height:90px; resize:vertical; }
         .actual { font-size:12px; color:var(--gris); margin-top:4px; }
@@ -75,7 +77,7 @@
             Sin `@csrf`: esta ruta está fuera de la verificación (ver
             `bootstrap/app.php`), porque la credencial es el token del enlace.
         --}}
-        <form method="POST" action="/mi-ficha/{{ $propuesta->token }}">
+        <form method="POST" action="/mi-ficha/{{ $propuesta->token }}" enctype="multipart/form-data">
 
             <div class="caja">
                 <h2>Contacto</h2>
@@ -117,6 +119,22 @@
                 <label for="descripcion">Descripción</label>
                 <textarea id="descripcion" name="descripcion" maxlength="1000"></textarea>
             </div>
+
+            @if ($aceptaFotos)
+                <div class="caja">
+                    <h2>Fotos de tu negocio</h2>
+                    <p class="ayuda">
+                        Hasta {{ config('fotos.max_por_propuesta') }}. La primera es la que va a
+                        ver el viajero al abrir tu ficha, así que parte por la mejor.
+                        Sácalas con el teléfono, no hace falta achicarlas.
+                    </p>
+                    <input type="file" id="fotos" name="fotos[]" accept="image/*" multiple>
+                    <div class="estado ok" id="estado-fotos"></div>
+                    <div class="actual">
+                        Si tu ficha ya tiene fotos, estas se suman: no reemplazan las que hay.
+                    </div>
+                </div>
+            @endif
 
             <button type="submit" class="btn-enviar">Enviar mis datos</button>
         </form>
@@ -162,6 +180,41 @@
                 { enableHighAccuracy: true, timeout: 15000 }
             )
         })
+
+        // Subir fotos con la señal de un pueblo de la Austral puede tardar
+        // bastante, y un formulario que no responde parece uno que se colgó: sin
+        // aviso, la reacción natural es volver a tocar "Enviar" y mandar todo dos
+        // veces. Por eso el botón se bloquea y dice qué está pasando.
+        var campoFotos = document.getElementById('fotos')
+
+        if (campoFotos) {
+            var tope = {{ (int) config('fotos.max_por_propuesta') }}
+            var avisoFotos = document.getElementById('estado-fotos')
+
+            campoFotos.addEventListener('change', function () {
+                var cuantas = campoFotos.files.length
+
+                if (cuantas === 0) {
+                    avisoFotos.style.display = 'none'
+                    return
+                }
+
+                avisoFotos.style.display = 'block'
+                avisoFotos.className = cuantas > tope ? 'estado mal' : 'estado ok'
+                avisoFotos.textContent = cuantas > tope
+                    ? 'Elegiste ' + cuantas + '. Se van a guardar solo las primeras ' + tope + '.'
+                    : cuantas + (cuantas === 1 ? ' foto lista para enviar.' : ' fotos listas para enviar.')
+            })
+
+            document.querySelector('form').addEventListener('submit', function (e) {
+                var boton = e.target.querySelector('.btn-enviar')
+                boton.disabled = true
+                boton.style.opacity = '.6'
+                boton.textContent = campoFotos.files.length > 0
+                    ? 'Enviando fotos… puede demorar, no cierres la página'
+                    : 'Enviando…'
+            })
+        }
     </script>
 </body>
 </html>

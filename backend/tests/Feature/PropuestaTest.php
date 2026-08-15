@@ -8,6 +8,8 @@ use App\Models\Propuesta;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use ReflectionMethod;
 use Tests\TestCase;
 
@@ -240,5 +242,144 @@ class PropuestaTest extends TestCase
 
         $this->assertTrue($exceptuada->invoke($verificador, Request::create('/mi-ficha/loquesea', 'POST')));
         $this->assertFalse($exceptuada->invoke($verificador, Request::create('/admin/login', 'POST')));
+    }
+
+    /**
+     * La foto del dueño aterriza en la carpeta de propuestas, NO en la de las
+     * fichas, y la ficha no se entera hasta que alguien apruebe.
+     *
+     * Es la misma propiedad que protegen los tests de arriba para el texto, pero
+     * acá importa el doble: una foto sin revisar en la carpeta del contenido
+     * publicado es indistinguible de una curada.
+     */
+    public function test_las_fotos_van_a_la_carpeta_de_propuestas_sin_tocar_la_ficha(): void
+    {
+        Storage::fake(config('fotos.disco'));
+        $ficha = $this->ficha();
+        $propuesta = Propuesta::invitar($ficha);
+
+        $this->post('/mi-ficha/'.$propuesta->token, [
+            'fotos' => [UploadedFile::fake()->image('local.jpg', 800, 600)],
+        ])->assertOk();
+
+        $guardadas = $propuesta->fresh()->datos['fotos'];
+
+        $this->assertCount(1, $guardadas);
+        $this->assertStringStartsWith(config('fotos.carpeta_propuestas').'/', $guardadas[0]);
+        $this->assertNull($ficha->fresh()->imagenes);
+    }
+
+    /** Lo que se guarda es un WebP nuestro, nunca el archivo que llegó. */
+    public function test_la_foto_se_reconvierte_a_webp(): void
+    {
+        Storage::fake(config('fotos.disco'));
+        $propuesta = Propuesta::invitar($this->ficha());
+
+        $this->post('/mi-ficha/'.$propuesta->token, [
+            'fotos' => [UploadedFile::fake()->image('foto.png', 400, 300)],
+        ]);
+
+        $ruta = $propuesta->fresh()->datos['fotos'][0];
+
+        $this->assertStringEndsWith('.webp', $ruta);
+        Storage::disk(config('fotos.disco'))->assertExists($ruta);
+    }
+
+    /**
+     * Un archivo que no es imagen se rechaza.
+     *
+     * `image` valida el contenido y no la extensión, así que un ejecutable
+     * renombrado a .jpg tampoco pasa.
+     */
+    public function test_rechaza_un_archivo_que_no_es_imagen(): void
+    {
+        Storage::fake(config('fotos.disco'));
+        $propuesta = Propuesta::invitar($this->ficha());
+
+        $this->post('/mi-ficha/'.$propuesta->token, [
+            'fotos' => [UploadedFile::fake()->create('bicho.jpg', 40, 'application/x-php')],
+        ])->assertSessionHasErrors('fotos.0');
+
+        $this->assertSame('enviada', $propuesta->fresh()->estado);
+    }
+
+    /**
+     * Nadie puede proponer una RUTA: las genera el servidor al guardar el
+     * binario. Si se aceptara la que manda el navegador, una propuesta podría
+     * apuntar a cualquier objeto del bucket y colarlo en una ficha al aplicarse.
+     *
+     * Mandar texto donde va un archivo no pasa la regla `image`, así que el
+     * envío se rechaza entero en vez de ignorarse en silencio.
+     */
+    public function test_no_se_puede_proponer_una_ruta_de_foto_escrita_a_mano(): void
+    {
+        Storage::fake(config('fotos.disco'));
+        $propuesta = Propuesta::invitar($this->ficha());
+
+        $this->post('/mi-ficha/'.$propuesta->token, [
+            'fotos' => ['fichas/de-otra-ficha.webp'],
+        ])->assertSessionHasErrors('fotos.0');
+
+        $propuesta = $propuesta->fresh();
+
+        $this->assertSame('enviada', $propuesta->estado);
+        $this->assertNull($propuesta->datos);
+    }
+
+    /** Al aplicar, la foto se muda a la carpeta de fichas y se suma al final. */
+    public function test_aplicar_mueve_las_fotos_y_las_agrega_a_las_que_ya_habia(): void
+    {
+        Storage::fake(config('fotos.disco'));
+        $ficha = $this->ficha();
+        $ficha->update(['imagenes' => ['fichas/la-curada.webp']]);
+        $propuesta = Propuesta::invitar($ficha);
+
+        $this->post('/mi-ficha/'.$propuesta->token, [
+            'fotos' => [UploadedFile::fake()->image('nueva.jpg')],
+        ]);
+
+        $propuesta->fresh()->aplicar();
+        $imagenes = $ficha->fresh()->imagenes;
+
+        $this->assertCount(2, $imagenes);
+        // La curada sigue primera: es la portada en la app y no la desplaza una
+        // foto recién llegada del formulario.
+        $this->assertSame('fichas/la-curada.webp', $imagenes[0]);
+        $this->assertStringStartsWith(config('fotos.carpeta').'/', $imagenes[1]);
+        Storage::disk(config('fotos.disco'))->assertExists($imagenes[1]);
+    }
+
+    /** Descartar no deja la foto ocupando bucket para siempre. */
+    public function test_descartar_borra_las_fotos_del_bucket(): void
+    {
+        Storage::fake(config('fotos.disco'));
+        $propuesta = Propuesta::invitar($this->ficha());
+
+        $this->post('/mi-ficha/'.$propuesta->token, [
+            'fotos' => [UploadedFile::fake()->image('nueva.jpg')],
+        ]);
+
+        $propuesta = $propuesta->fresh();
+        $ruta = $propuesta->datos['fotos'][0];
+        $propuesta->borrarFotos();
+
+        Storage::disk(config('fotos.disco'))->assertMissing($ruta);
+    }
+
+    /** El tope por propuesta se aplica en el servidor, no solo en el formulario. */
+    public function test_no_acepta_mas_fotos_que_el_tope(): void
+    {
+        Storage::fake(config('fotos.disco'));
+        $propuesta = Propuesta::invitar($this->ficha());
+
+        $demasiadas = array_map(
+            fn (int $i) => UploadedFile::fake()->image("f{$i}.jpg"),
+            range(0, (int) config('fotos.max_por_propuesta'))
+        );
+
+        $this->post('/mi-ficha/'.$propuesta->token, ['fotos' => $demasiadas])
+            ->assertSessionHasErrors('fotos');
+
+        $this->assertSame('enviada', $propuesta->fresh()->estado);
     }
 }

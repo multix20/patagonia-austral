@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Propuesta;
+use App\Services\AlmacenamientoFotos;
+use App\Services\GuardarFoto;
 use Illuminate\Http\Request;
 
 /**
@@ -35,6 +37,10 @@ class PropuestaController extends Controller
         return view('propuesta.formulario', [
             'propuesta' => $propuesta,
             'ficha' => $propuesta->place,
+            // Sin credenciales de R2 la subida falla al GUARDAR, o sea después
+            // de que el dueño eligió la foto y llenó el formulario entero. Si el
+            // almacenamiento no está en pie, mejor no ofrecer el campo.
+            'aceptaFotos' => app(AlmacenamientoFotos::class)->listo(),
         ]);
     }
 
@@ -58,7 +64,16 @@ class PropuestaController extends Controller
             // un punto en Santiago no es un pin impreciso, es un error.
             'lat' => ['nullable', 'numeric', 'between:-49.5,-40.5'],
             'lng' => ['nullable', 'numeric', 'between:-75.5,-70.5'],
+            // `image` valida el contenido, no la extensión: un .php renombrado a
+            // .jpg no pasa. Es la primera de tres barreras — las otras dos son
+            // el recodificado a WebP (lo que se guarda NUNCA es el archivo que
+            // llegó) y la carpeta aparte, que mantiene lo no revisado fuera de
+            // donde vive el contenido publicado.
+            'fotos' => ['nullable', 'array', 'max:'.config('fotos.max_por_propuesta')],
+            'fotos.*' => ['image', 'max:'.config('fotos.max_subida_kb')],
         ]);
+
+        unset($datos['fotos']);
 
         // La latitud sin la longitud (o al revés) deja el pin en el mar: o van
         // las dos o no va ninguna.
@@ -66,12 +81,53 @@ class PropuestaController extends Controller
             unset($datos['lat'], $datos['lng']);
         }
 
+        $limpios = array_intersect_key($datos, array_flip(Propuesta::CAMPOS));
+
+        // Las rutas de las fotos NO salen de la lista blanca: las genera el
+        // servidor al guardar los archivos. Lo que manda el navegador son los
+        // binarios, nunca una ruta — si se aceptara una ruta escrita por quien
+        // envía, una propuesta podría apuntar a cualquier objeto del bucket.
+        $fotos = $this->guardarFotos($request);
+        if ($fotos !== []) {
+            $limpios['fotos'] = $fotos;
+        }
+
         $propuesta->update([
-            'datos' => array_intersect_key($datos, array_flip(Propuesta::CAMPOS)),
+            'datos' => $limpios,
             'estado' => 'respondida',
             'respondida_en' => now(),
         ]);
 
         return view('propuesta.gracias', ['ficha' => $propuesta->place]);
+    }
+
+    /**
+     * Guarda las fotos que vinieron y devuelve sus rutas.
+     *
+     * Van a la carpeta de propuestas, no a la de las fichas: todavía no son
+     * contenido de la guía. Se mueven al aplicar (`Propuesta::aplicar`).
+     *
+     * Una foto ilegible se salta en silencio en vez de rechazar el envío entero:
+     * el resto de lo que escribió el dueño —el teléfono, la ubicación— vale
+     * igual, y hacerle perder el formulario completo por un archivo raro es la
+     * forma más segura de que no lo vuelva a llenar.
+     *
+     * @return array<int, string>
+     */
+    private function guardarFotos(Request $request): array
+    {
+        if (! $request->hasFile('fotos') || ! app(AlmacenamientoFotos::class)->listo()) {
+            return [];
+        }
+
+        $guardador = app(GuardarFoto::class);
+        $carpeta = (string) config('fotos.carpeta_propuestas');
+
+        return collect($request->file('fotos'))
+            ->take((int) config('fotos.max_por_propuesta'))
+            ->map(fn ($archivo) => $guardador->guardar($archivo, $carpeta))
+            ->filter()
+            ->values()
+            ->all();
     }
 }
