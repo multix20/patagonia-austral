@@ -60,8 +60,22 @@
             </p>
         </div>
 
-        <form method="POST" action="{{ url('/mi-ficha/'.$propuesta->token) }}">
-            @csrf
+        {{--
+            La dirección de envío va RELATIVA a propósito.
+
+            Con `url()` Laravel la arma con el host de la petición, que en
+            producción es el del backend (`…onrender.com`) porque Netlify proxea
+            `/mi-ficha/*` hacia allá reescribiendo el Host. La página, en cambio,
+            se abrió en `rutaaustral.cl`: el envío salía cruzado de dominio, la
+            cookie de sesión no viajaba y Laravel respondía 419 al enviar.
+
+            Relativa, el formulario siempre vuelve al mismo host desde el que se
+            abrió, sea el dominio propio o el del backend.
+
+            Sin `@csrf`: esta ruta está fuera de la verificación (ver
+            `bootstrap/app.php`), porque la credencial es el token del enlace.
+        --}}
+        <form method="POST" action="/mi-ficha/{{ $propuesta->token }}">
 
             <div class="caja">
                 <h2>Contacto</h2>
