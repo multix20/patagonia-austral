@@ -1490,12 +1490,24 @@ h1 small {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  /* Los mensajes se apoyan ABAJO, junto a los chips y el campo de escribir.
+     Con `flex-start` la conversación arrancaba pegada al techo y dejaba media
+     pantalla en blanco entre la pregunta del bot y los botones para
+     responderla — el pulgar quedaba lejos de lo único que había que tocar, y
+     la pantalla parecía rota. `auto` en el margen superior del primer mensaje
+     hace que crezca hacia arriba a medida que la conversación avanza. */
+  justify-content: flex-end;
+}
+.chat-msgs > :first-child {
+  margin-top: auto;
 }
 .msg {
-  max-width: 82%;
-  padding: 9px 12px;
+  max-width: 86%;
+  padding: 10px 13px;
   border-radius: 14px;
-  font-size: 13px;
+  /* 14px y no 13: esto se lee a pleno sol, en un teléfono sujeto con una mano,
+     muchas veces por alguien que ya lleva seis horas manejando. */
+  font-size: 14px;
   line-height: 1.5;
   white-space: pre-line;
 }
@@ -1599,6 +1611,21 @@ h1 small {
   overflow-x: auto;
   flex-shrink: 0;
   scrollbar-width: none;
+}
+/* Cuando el bot está haciendo una pregunta guiada, las opciones NO se esconden
+   tras un scroll horizontal: son la única forma de contestar, y las seis del
+   vehículo no caben en el ancho de un teléfono. Se envuelven en varias líneas
+   para que se vean todas de una vez. */
+.chat-sugerencias.en-flujo {
+  flex-wrap: wrap;
+  overflow-x: visible;
+  padding-bottom: 10px;
+}
+.chat-sugerencias.en-flujo .sugerencia {
+  flex: 1 1 auto;
+  min-width: 88px;
+  text-align: center;
+  padding: 10px 14px;
 }
 .chat-sugerencias::-webkit-scrollbar {
   display: none;

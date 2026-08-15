@@ -24,6 +24,71 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ## Dónde quedamos — para retomar (15-ago-2026)
 
+### Las barcazas completas, y el chat que cabía en la pantalla
+
+**Lo que faltaba.** Probando el copiloto en el teléfono aparecieron dos cosas.
+La primera: preguntar por barcazas devolvía **una sola** —la del corredor que
+tenías delante, Hornopirén— como si fuera la única forma de avanzar. Y no lo es:
+a la Austral se entra y se sale también **por mar** desde Puerto Montt, desde
+Quellón y desde Chacabuco, y esa elección cambia el viaje entero. La segunda: el
+chat abría con la conversación pegada al techo y **media pantalla en blanco**
+entre la pregunta del bot y los botones para responderla.
+
+**Catálogo de cruces** (`frontend/src/data/barcazas.js`), con once entradas en
+cuatro grupos: los tres del corredor (La Arena–Puelche, el bimodal
+Hornopirén–Caleta Gonzalo, Yungay–Río Bravo), las alternativas por mar
+(Puerto Montt–Chaitén, Quellón–Chaitén, Quellón–Melinka–Puerto Cisnes, la ruta
+Cordillera Quellón–Chacabuco, Puerto Montt–Chacabuco), los de lago (Chile
+Chico–Ibáñez y el del lago O'Higgins hacia El Chaltén) y el del río Palena.
+Cada uno con operador, duración, si se reserva y si es gratis. Fuentes:
+navieraustral.cl, barcazas.cl/Somarco, Naviera Transal y las fichas ya curadas
+del propio directorio.
+
+> **Los horarios de zarpe NO se guardan, a propósito.** Cambian por temporada,
+> por clima y por operador. Un horario equivocado empaquetado en la app es peor
+> que no tener horario: manda a alguien a una rampa a esperar un barco que no
+> viene. Se guarda lo estable —ruta, operador, duración, reserva, gratuidad— y el
+> bot siempre cierra diciendo que se confirma el día antes. Es la misma regla de
+> "cero y sin medir no son lo mismo", aplicada a un dato que rota.
+
+**La barcaza se nombra, no se cuenta.** Antes el plan del día decía "hay 1
+barcaza en el tramo". Un número no sirve para decidir: ahora dice cuál es,
+cuánto dura, si hay que reservar y que Yungay es **gratis y sin reserva**.
+
+**Y ahora la barcaza gasta día, que es el error que importaba.** El plan proponía
+228 km cruzando el bimodal de Hornopirén —cinco horas de navegación más la
+espera— contando **solo 3 h 48 de manejo**. Ese día no existe: el bimodal *es* el
+día. Cada cruce lleva sus horas y se descuentan del presupuesto diario
+convertidas a kilómetros equivalentes. El itinerario resultante coincide con
+cómo se hace la ruta de verdad: día 1 Puerto Montt→Hornopirén (84 km), día 2 el
+bimodal completo hasta Caleta Gonzalo.
+
+**Un cruce es un tramo, no un punto.** Primera versión: "el cruce está entre el
+km A y el km B". Mal — la rampa de Hornopirén está en el mismo kilómetro que el
+pueblo, así que el bimodal se cobraba **dos veces**: el día que llegas a
+Hornopirén y el día que zarpas de ahí, y el día 1 aparecía con siete horas de
+barcaza que eran del día siguiente. Cada cruce guarda **sus dos rampas** y se
+cuenta por solape real de tramos.
+
+**UX del chat**, tres arreglos que se ven en un teléfono y no en un escritorio:
+- **La conversación se apoya abajo**, junto a los chips y al campo de escribir.
+  Con `flex-start` el pulgar quedaba lejos de lo único que había que tocar y la
+  pantalla parecía rota.
+- **Las opciones de una pregunta guiada ya no van en scroll horizontal**: los
+  seis vehículos no caben en el ancho de un teléfono, y lo que no se ve no se
+  elige. Se envuelven en varias líneas.
+- **"2 de 4" delante de cada pregunta** del perfil. Cuatro preguntas seguidas sin
+  saber cuántas faltan se sienten como un formulario, y un formulario se
+  abandona.
+- Cuerpo de 13 a 14 px: esto se lee a pleno sol, con una mano, después de seis
+  horas manejando.
+
+**Pendiente de este frente**: los horarios sí podrían mostrarse el día que
+exista una fuente que se pueda releer sola (no copiada a mano); mientras tanto,
+el bot manda a confirmar.
+
+---
+
 ### El asistente pasa de buscador a copiloto (y ya se puede reservar)
 
 **El punto de partida.** El chat respondía bien "¿qué hay en este pueblo?", pero

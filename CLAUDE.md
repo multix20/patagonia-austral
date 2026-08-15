@@ -225,6 +225,27 @@ empaquetados, o sea **sin señal**. Motor en `frontend/src/viaje.js`; consultas 
   son aproximadas —el trazado semilla se salta el rodeo del lago General Carrera—
   hasta que se corra `scripts/ruta7/generar_ruta7.mjs` en local.
 
+**Las barcazas son un catálogo propio** (`frontend/src/data/barcazas.js`, 11
+cruces): los tres del corredor, las alternativas por mar (Puerto Montt–Chaitén,
+Quellón–Chaitén, Quellón–Cisnes, ruta Cordillera, Chacabuco), los de lago
+(Ibáñez y el del lago O'Higgins a El Chaltén) y el del río Palena. Tres reglas:
+
+- **Los horarios de zarpe NO se guardan**, a propósito: rotan por temporada y
+  clima, y uno equivocado manda a alguien a esperar un barco que no viene. Se
+  guarda lo estable (operador, duración, reserva, gratuidad) y el bot manda a
+  confirmar el día antes.
+- **Una barcaza gasta día, no distancia.** Sus horas se descuentan del
+  presupuesto diario; si no, el plan cruza el bimodal de Hornopirén (5 h) y
+  sigue 228 km como si nada.
+- **Un cruce es un tramo entre dos rampas, no un punto.** Con un punto, el
+  bimodal se cobraba dos veces (el día que llegas a Hornopirén y el que zarpas).
+
+**El chat se mira en un teléfono, no en un escritorio.** La conversación se
+apoya **abajo** (con `flex-start` quedaba media pantalla en blanco entre la
+pregunta y los botones), las opciones de una pregunta guiada **se envuelven** en
+vez de esconderse tras un scroll horizontal —lo que no se ve no se elige— y cada
+pregunta del perfil dice **"2 de 4"**.
+
 **Tres trampas del mapa, todas descubiertas en producción (ago-2026).** Las tres
 son invisibles en un navegador de escritorio y rompen la app en un teléfono:
 

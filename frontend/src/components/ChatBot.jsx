@@ -12,8 +12,10 @@ import {
   sePuedeConsultar,
   urlWhatsApp,
 } from '../reservas'
+import { CRUCES, RESERVA } from '../data/barcazas'
 import {
   NOMBRE_VEHICULO,
+  crucesEntre,
   etapas,
   formatoHoras,
   guardarPerfil,
@@ -44,8 +46,8 @@ import {
 //    propio WhatsApp. Ver `reservas.js` para por qué.
 
 const SUGERENCIAS = {
-  es: ['¿Dónde estoy?', 'Plan de hoy', '¿Dónde dormir?', '¿Qué visitar?', 'Emergencias', 'Combustible'],
-  en: ['Where am I?', "Today's plan", 'Where to sleep?', 'What to visit?', 'Emergencies', 'Fuel'],
+  es: ['¿Dónde estoy?', 'Plan de hoy', 'Barcazas', '¿Dónde dormir?', '¿Qué visitar?', 'Combustible', 'Emergencias'],
+  en: ['Where am I?', "Today's plan", 'Ferries', 'Where to sleep?', 'What to visit?', 'Fuel', 'Emergencies'],
 }
 
 function normalizar(s) {
@@ -203,6 +205,16 @@ function saludo(lang, loc, lugares = [], perfil = null) {
 // ruta y muchas veces con guantes.
 const PASOS_PERFIL = ['personas', 'dias', 'vehiculo', 'sentido']
 
+/**
+ * "2 de 4" delante de la pregunta. Cuatro preguntas seguidas sin saber cuántas
+ * faltan se sienten como un formulario, y un formulario se abandona; sabiendo
+ * que son cuatro, se contestan.
+ */
+function conPaso(paso, texto, lang) {
+  const n = PASOS_PERFIL.indexOf(paso) + 1
+  return `${n} ${lang === 'es' ? 'de' : 'of'} ${PASOS_PERFIL.length} · ${texto}`
+}
+
 function preguntaPerfil(paso, lang) {
   const es = lang === 'es'
   switch (paso) {
@@ -333,16 +345,19 @@ function textoPlanDia(ctx) {
         .join('\n')
     : ''
 
-  const barcazas =
-    plan.barcazas > 0
-      ? es
-        ? `\n\n⚠️ Hay ${plan.barcazas} ${plan.barcazas === 1 ? 'barcaza' : 'barcazas'} en el tramo: revisa el horario ANTES de salir, es lo que decide el día.`
-        : `\n\n⚠️ There ${plan.barcazas === 1 ? 'is 1 ferry' : `are ${plan.barcazas} ferries`} on this leg: check the schedule BEFORE you go, it decides your day.`
-      : ''
+  // La barcaza se NOMBRA, no se cuenta: "hay 1 barcaza" no sirve para decidir.
+  // Lo que decide el día es cuál es, cuánto dura y si hay que reservar.
+  const barcazas = plan.cruces.length
+    ? (es ? '\n\n⚠️ Barcazas en el tramo:\n' : '\n\n⚠️ Ferries on this leg:\n') +
+      plan.cruces.map((c) => `• ${lineaCruce(c, lang)}`).join('\n') +
+      (es
+        ? '\nConfirma el horario del día antes: la barcaza es lo que decide el día, no los kilómetros.'
+        : '\nCheck the schedule the day before: the ferry decides your day, not the mileage.')
+    : ''
 
   const texto = es
-    ? `Hoy llegas bien hasta **${meta.nombre[lang]}**: unos ${km(plan.km)}, cerca de ${formatoHoras(plan.horas)} de manejo.${enCamino ? `\n\nEn el camino:\n${enCamino}` : ''}${desvios}${barcazas}\n\nSon estimaciones para un viaje con paradas, no una carrera: en la Austral el ripio y las fotos mandan.`
-    : `Today you'll comfortably reach **${meta.nombre[lang]}**: about ${km(plan.km)}, roughly ${formatoHoras(plan.horas)} of driving.${enCamino ? `\n\nAlong the way:\n${enCamino}` : ''}${desvios}${barcazas}\n\nThese are estimates for a trip with stops, not a race: on the Austral, gravel and photo stops rule.`
+    ? `Hoy llegas bien hasta **${meta.nombre[lang]}**: unos ${km(plan.km)}, cerca de ${formatoHoras(plan.horas)} de manejo${plan.horasCruces ? ` más ${formatoHoras(plan.horasCruces)} de barcaza y espera` : ''}.${enCamino ? `\n\nEn el camino:\n${enCamino}` : ''}${desvios}${barcazas}\n\nSon estimaciones para un viaje con paradas, no una carrera: en la Austral el ripio y las fotos mandan.`
+    : `Today you'll comfortably reach **${meta.nombre[lang]}**: about ${km(plan.km)}, roughly ${formatoHoras(plan.horas)} of driving${plan.horasCruces ? ` plus ${formatoHoras(plan.horasCruces)} of ferry and waiting` : ''}.${enCamino ? `\n\nAlong the way:\n${enCamino}` : ''}${desvios}${barcazas}\n\nThese are estimates for a trip with stops, not a race: on the Austral, gravel and photo stops rule.`
 
   return {
     texto,
@@ -352,6 +367,79 @@ function textoPlanDia(ctx) {
     sugerencias: es
       ? [`Dormir en ${meta.nombre[lang]}`, 'Mi itinerario', '¿Dónde estoy?']
       : [`Sleep in ${meta.nombre[lang]}`, 'My itinerary', 'Where am I?'],
+  }
+}
+
+/** Una línea de barcaza: nombre, cuánto dura, si se reserva y si es gratis. */
+function lineaCruce(c, lang) {
+  const partes = [c.duracion[lang], RESERVA[lang][c.reserva]]
+  if (c.gratis) partes.push(lang === 'es' ? '**gratis**' : '**free**')
+  if (c.operador) partes.push(c.operador)
+  return `**${c.nombre[lang]}** — ${partes.join(' · ')}`
+}
+
+/**
+ * Todo lo que hay que saber de barcazas, no solo las del tramo de hoy.
+ *
+ * El viajero preguntaba por barcazas y el bot le nombraba una sola —la del
+ * corredor que tenía delante— como si fuera la única forma de avanzar. Y no lo
+ * es: a la Austral se entra y se sale por mar desde Puerto Montt, desde Quellón
+ * y desde Chacabuco, y esa elección cambia el viaje entero. Se muestra en tres
+ * bloques porque son tres decisiones distintas: lo que vas a cruzar sí o sí, por
+ * dónde puedes entrar o salir, y los cruces de lago que son atajos.
+ */
+function textoBarcazas(ctx) {
+  const { pos, localidades, lang, perfil } = ctx
+  const es = lang === 'es'
+  const bloque = (titulo, lista) =>
+    lista.length ? `\n\n${titulo}\n${lista.map((c) => `• ${lineaCruce(c, lang)}`).join('\n')}` : ''
+
+  // Si hay GPS, lo primero es lo que tiene por delante en su sentido: eso es
+  // acción, el resto es contexto.
+  let porDelante = []
+  const r = pos && localidades?.length ? ubicarEnRuta(pos, localidades) : null
+  if (r) {
+    const fin = perfil?.sentido === 'norte' ? 0 : 99999
+    porDelante = crucesEntre(r.kmYo, fin)
+  }
+
+  const corredor = CRUCES.filter((c) => c.tipo === 'corredor')
+  const mar = CRUCES.filter((c) => c.tipo === 'mar')
+  const lago = CRUCES.filter((c) => c.tipo === 'lago')
+  const ramal = CRUCES.filter((c) => c.tipo === 'ramal')
+
+  const cabecera = porDelante.length
+    ? bloque(
+        es ? 'Lo que te queda por cruzar:' : 'Still ahead of you:',
+        porDelante
+      )
+    : bloque(es ? 'Los cruces de la ruta (van sí o sí):' : 'The route crossings (unavoidable):', corredor)
+
+  const detalle = porDelante.length
+    ? porDelante
+        .map((c) => `\n\n**${c.nombre[lang]}**\n${c.nota[lang]}`)
+        .join('')
+    : ''
+
+  return {
+    texto:
+      (es
+        ? 'En la Austral la barcaza no es un detalle: es lo que decide el día.'
+        : 'On the Austral the ferry is no detail: it decides your day.') +
+      cabecera +
+      detalle +
+      bloque(
+        es ? 'Entrar o salir por mar (alternativas al camino):' : 'Entering or leaving by sea (alternatives to the road):',
+        mar
+      ) +
+      bloque(es ? 'Cruces de lago:' : 'Lake crossings:', lago) +
+      bloque(es ? 'En los ramales:' : 'On the side roads:', ramal) +
+      (es
+        ? '\n\nNo guardo las horas de zarpe a propósito: cambian por temporada y por clima, y un horario equivocado guardado en la app es peor que ninguno. Confírmalas con el operador o en la rampa el día antes.'
+        : '\n\nI deliberately do not store departure times: they change with season and weather, and a wrong time saved in the app is worse than none. Confirm with the operator or at the ramp the day before.'),
+    sugerencias: es
+      ? ['Plan de hoy', 'Mi itinerario', 'Estado de caminos']
+      : ["Today's plan", 'My itinerary', 'Road conditions'],
   }
 }
 
@@ -366,8 +454,10 @@ function textoItinerario(ctx) {
       const paso = e.intermedias.length
         ? ` (por ${e.intermedias.slice(0, 2).map((l) => l.nombre[lang]).join(', ')})`
         : ''
-      const barcaza = e.barcazas > 0 ? (es ? ' · con barcaza' : ' · ferry') : ''
-      return `• **${es ? 'Día' : 'Day'} ${e.dia}: ${e.meta.nombre[lang]}**${paso} — ${km(e.km)}, ${formatoHoras(e.horas)}${barcaza}`
+      const barcaza = e.cruces.length
+        ? ` · ${es ? 'barcaza' : 'ferry'}: ${e.cruces.map((c) => c.nombre[lang].split(' (')[0]).join(' + ')}`
+        : ''
+      return `• **${es ? 'Día' : 'Day'} ${e.dia}: ${e.meta.nombre[lang]}**${paso} — ${km(e.km)}, ${formatoHoras(e.horas + e.horasCruces)}${barcaza}`
     })
     .join('\n')
 
@@ -416,6 +506,11 @@ function responder(pregunta, ctx) {
 
   if (tiene('itinerario', 'mi ruta', 'planificar', 'etapas', 'cuantos dias', 'itinerary', 'my route', 'plan my trip'))
     return textoItinerario(ctx)
+
+  // Antes de "estado de caminos": "barcaza" caía ahí y se llevaba una respuesta
+  // sobre ripio y clima, que no es lo que se preguntó.
+  if (tiene('barcaza', 'transbordador', 'ferry', 'ferries', 'cruce', 'cruzar', 'navegar', 'quellon', 'chiloe', 'zarpe'))
+    return textoBarcazas(ctx)
 
   if (tiene('cambiar viaje', 'cambiar perfil', 'otro vehiculo', 'change trip', 'edit trip'))
     return { rehacerPerfil: true }
@@ -496,7 +591,7 @@ function responder(pregunta, ctx) {
       sugerencias: es ? ['Plan de hoy', 'Estado de caminos', '¿Dónde comer?'] : ["Today's plan", 'Road conditions', 'Where to eat?'],
     }
 
-  if (tiene('camino', 'ruta', 'estado', 'carretera', 'nieve', 'transito', 'barcaza', 'ripio', 'road', 'route', 'snow', 'conditions', 'ferry'))
+  if (tiene('camino', 'estado', 'carretera', 'nieve', 'transito', 'ripio', 'road', 'snow', 'conditions'))
     return {
       texto: es
         ? `El estado de los caminos cambia con el clima, sobre todo en invierno, y algunos tramos son de ripio o dependen de barcazas.\n\n• Consulta en la oficina de información turística o en Carabineros de ${loc} antes de salir.\n• La app te avisa cuando se reportan cortes o novedades.\n\nCarga combustible antes de tramos largos hacia el sur.`
@@ -595,7 +690,9 @@ export default function ChatBot({
     setFlujo({ tipo: 'perfil', paso: 'personas', datos: {} })
     setSugerencias(q.opciones)
     setMensajes((prev) =>
-      prev.some((m) => m.quien === 'usuario') ? prev : [...prev, { quien: 'bot', texto: q.texto }]
+      prev.some((m) => m.quien === 'usuario')
+        ? prev
+        : [...prev, { quien: 'bot', texto: conPaso('personas', q.texto, lang) }]
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [abierto])
@@ -654,7 +751,7 @@ export default function ChatBot({
   function arrancarPerfil() {
     const q = preguntaPerfil('personas', lang)
     setFlujo({ tipo: 'perfil', paso: 'personas', datos: {} })
-    decir(q.texto)
+    decir(conPaso('personas', q.texto, lang))
     setSugerencias(q.opciones)
   }
 
@@ -713,7 +810,7 @@ export default function ChatBot({
       if (siguiente) {
         const q = preguntaPerfil(siguiente, lang)
         setFlujo({ tipo: 'perfil', paso: siguiente, datos })
-        decir(q.texto)
+        decir(conPaso(siguiente, q.texto, lang))
         setSugerencias(q.opciones)
         return
       }
@@ -881,7 +978,7 @@ export default function ChatBot({
           </div>
         )}
       </div>
-      <div className="chat-sugerencias">
+      <div className={`chat-sugerencias${enFlujo ? ' en-flujo' : ''}`}>
         {sugerencias.map((s, i) => {
           const chip = typeof s === 'string' ? { txt: s } : s
           return (

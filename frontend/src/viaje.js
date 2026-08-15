@@ -1,4 +1,5 @@
 import { RUTA7 } from './data/ruta7'
+import { CRUCES_CORREDOR } from './data/barcazas'
 
 // Copiloto de ruta: dónde estás, qué viene y cuánto te falta (Fase 3).
 //
@@ -201,6 +202,51 @@ export function barcazasEntre(kmA, kmB) {
   return BARCAZAS.filter((b) => b.hasta > desde && b.desde < hasta).length
 }
 
+/**
+ * Los cruces del corredor que caen en un tramo, con nombre y todo.
+ *
+ * Se ubican por la coordenada de su rampa y no por el orden de los tramos
+ * `barcaza` del trazado: si mañana se regenera `ruta7.js` con la geometría real
+ * de OSM, el número de tramos punteados puede cambiar, y hacer depender de eso
+ * QUÉ barcaza se nombra sería un error silencioso — diría "Yungay" donde va
+ * "La Arena". La rampa, en cambio, está donde está.
+ */
+const CRUCES_CON_KM = CRUCES_CORREDOR.map((c) => {
+  const a = proyectar([c.lat, c.lng]).km
+  const b = proyectar([c.lat2, c.lng2]).km
+  return { ...c, km: Math.min(a, b), kmFin: Math.max(a, b) }
+})
+
+/**
+ * Los cruces que caen dentro de un tramo.
+ *
+ * Se compara SOLAPE de tramos y no "el punto del cruce está entre A y B", que
+ * es lo primero que se me ocurrió y estaba mal: la rampa de Hornopirén está en
+ * el mismo kilómetro que el pueblo, así que el bimodal se cobraba dos veces —el
+ * día que llegas a Hornopirén y el día que zarpas de ahí—, y el día 1 aparecía
+ * con siete horas de barcaza que en realidad eran del día 2. Un cruce ocupa el
+ * tramo entre sus dos rampas; se cuenta si ese tramo se solapa de verdad
+ * (longitud mayor que cero) con el del día.
+ */
+export function crucesEntre(kmA, kmB) {
+  const desde = Math.min(kmA, kmB)
+  const hasta = Math.max(kmA, kmB)
+  return CRUCES_CON_KM.filter((c) => c.kmFin > desde && c.km < hasta).sort((a, b) => a.km - b.km)
+}
+
+/**
+ * Lo que se lleva una barcaza del día, medido en kilómetros equivalentes.
+ *
+ * Una barcaza no es distancia, es TIEMPO, y el presupuesto del día está en km.
+ * Sin esta conversión el copiloto proponía cruzar el bimodal de Hornopirén
+ * —cinco horas de navegación más la espera— y seguir 228 km hasta El Amarillo,
+ * contando solo 3 h 48 de manejo. Ese día no existe: el bimodal ES el día.
+ */
+function kmQueCuestanLosCruces(cruces, vehiculo) {
+  const v = VEHICULOS[vehiculo] || VEHICULOS.auto
+  return cruces.reduce((total, c) => total + (c.horas || 0) * v.kmHora, 0)
+}
+
 /** Distancia aproximada por camino entre dos puntos, en km. */
 export function distanciaRuta(a, b) {
   const A = kmDeRuta(a[0], a[1])
@@ -283,7 +329,11 @@ export function planDelDia({ pos, localidades, perfil, sentido = 'sur' }) {
   if (adelante.length === 0) return { ...r, meta: null, intermedias: [], desvios: [], siguiente: null }
 
   const tope = v.kmDia * MARGEN_DIA
-  const alcance = adelante.filter((l) => Math.abs(l.kmRuta - r.kmYo) * FACTOR_SINUOSIDAD <= tope)
+  // El costo del día = camino + lo que se lleven las barcazas del tramo.
+  const cuesta = (l) =>
+    Math.abs(l.kmRuta - r.kmYo) * FACTOR_SINUOSIDAD +
+    kmQueCuestanLosCruces(crucesEntre(r.kmYo, l.kmRuta), perfil?.vehiculo)
+  const alcance = adelante.filter((l) => cuesta(l) <= tope)
   // La meta tiene que ser un pueblo del camino: terminar la etapa en un ramal
   // que el viajero no eligió es mandarlo 60 km al lado de su ruta.
   const paso = alcance.filter((l) => !l.esDesvio)
@@ -295,7 +345,11 @@ export function planDelDia({ pos, localidades, perfil, sentido = 'sur' }) {
     meta,
     km,
     horas: horasDe(km, perfil?.vehiculo),
-    barcazas: barcazasEntre(r.kmYo, meta.kmRuta),
+    // El tiempo de barcaza va APARTE del de manejo: son cosas distintas para
+    // quien planifica (una se maneja, la otra se espera) y sumarlas en un solo
+    // número escondería justo el dato que decide el día.
+    horasCruces: crucesEntre(r.kmYo, meta.kmRuta).reduce((t, c) => t + (c.horas || 0), 0),
+    cruces: crucesEntre(r.kmYo, meta.kmRuta),
     intermedias: paso.slice(0, -1),
     // Los desvíos del tramo se ofrecen aparte, con sus kilómetros: son el
     // "¿me desvío a Tortel?" que se decide en la ruta.
@@ -320,7 +374,10 @@ export function etapas({ pos, localidades, perfil, sentido = 'sur' }) {
 
   for (let dia = 1; dia <= perfil.dias && restantes.length > 0; dia++) {
     const alcance = restantes.filter(
-      (l) => Math.abs(l.kmRuta - km0) * FACTOR_SINUOSIDAD <= v.kmDia * MARGEN_DIA
+      (l) =>
+        Math.abs(l.kmRuta - km0) * FACTOR_SINUOSIDAD +
+          kmQueCuestanLosCruces(crucesEntre(km0, l.kmRuta), perfil.vehiculo) <=
+        v.kmDia * MARGEN_DIA
     )
     const paso = alcance.filter((l) => !l.esDesvio)
     // Si ni la primera parada cabe en un día, igual se hace: es un tramo largo,
@@ -333,7 +390,8 @@ export function etapas({ pos, localidades, perfil, sentido = 'sur' }) {
       meta,
       km,
       horas: horasDe(km, perfil.vehiculo),
-      barcazas: barcazasEntre(km0, meta.kmRuta),
+      horasCruces: crucesEntre(km0, meta.kmRuta).reduce((t, c) => t + (c.horas || 0), 0),
+      cruces: crucesEntre(km0, meta.kmRuta),
       intermedias: paso.slice(0, -1),
       desvios: alcance.filter((l) => l.esDesvio),
     })
