@@ -7,6 +7,7 @@ import {
   obtenerCalificaciones,
 } from '../api/client'
 import { contar } from '../analitica'
+import { numeroWhatsApp } from '../reservas'
 import { useI18n } from '../i18n'
 
 const DORADO = '#E8A33D'
@@ -75,6 +76,7 @@ export default function PlaceDetail({ lugar, onCerrar, onActualizar }) {
   // La primera foto es la portada. El resto ya viaja en el JSON y queda
   // disponible para el carrusel, cuando se haga.
   const foto = lugar.imagenes?.[0]
+  const wa = numeroWhatsApp(lugar)
   // `calificable` lo manda la API; la semilla empaquetada no lo trae, así que
   // sin dato se decide igual que el backend (todo salvo emergencias).
   const calificable = lugar.calificable ?? lugar.cat !== 'emergencia'
@@ -204,6 +206,16 @@ export default function PlaceDetail({ lugar, onCerrar, onActualizar }) {
           </span>
           <span>{lugar.dist[lang]}</span>
         </div>
+        {lugar.hrs && (
+          <div className="dato">
+            <span className="d-ico">
+              <Icon nombre="clock" tam={16} />
+            </span>
+            <span>
+              {t('horarioFicha')}: {lugar.hrs}
+            </span>
+          </div>
+        )}
         {lugar.tel && (
           <div className="dato">
             <span className="d-ico">
@@ -211,6 +223,21 @@ export default function PlaceDetail({ lugar, onCerrar, onActualizar }) {
             </span>
             <a href={`tel:${lugar.tel.replace(/\s/g, '')}`} onClick={() => contar('llamar', lugar.id)}>
               {lugar.tel}
+            </a>
+          </div>
+        )}
+        {wa && (
+          <div className="dato">
+            <span className="d-ico">
+              <Icon nombre="message-circle" tam={16} />
+            </span>
+            <a
+              href={`https://wa.me/${wa}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => contar('llamar', lugar.id)}
+            >
+              {t('whatsapp')}
             </a>
           </div>
         )}

@@ -72,13 +72,28 @@
                        placeholder="{{ $ficha->nombre['es'] ?? '' }}">
                 <div class="actual">Ahora dice: {{ $ficha->nombre['es'] ?? '—' }}</div>
 
-                <label for="tel">Teléfono / WhatsApp</label>
+                <label for="tel">Teléfono</label>
                 <input type="text" id="tel" name="tel" maxlength="40" placeholder="+56 9 ...">
                 <div class="actual">Ahora dice: {{ $ficha->tel ?: 'sin teléfono' }}</div>
+
+                {{-- El WhatsApp va en su propio campo, y no metido en el del
+                     teléfono, porque es el que abre las consultas de reserva
+                     desde el asistente de la app: si llega mezclado con un fijo
+                     no hay forma de saber a cuál se le puede escribir. --}}
+                <label for="whatsapp">WhatsApp <span style="font-weight:400">(si es otro número)</span></label>
+                <input type="text" id="whatsapp" name="whatsapp" maxlength="40" placeholder="+56 9 ...">
+                <div class="actual">
+                    @if ($ficha->whatsapp)
+                        Ahora dice: {{ $ficha->whatsapp }}
+                    @else
+                        Déjalo en blanco si te escriben al mismo número de arriba.
+                    @endif
+                </div>
 
                 <label for="horario">Horario de atención</label>
                 <input type="text" id="horario" name="horario" maxlength="200"
                        placeholder="Ej: todos los días 9:00–21:00, o solo temporada">
+                <div class="actual">Ahora dice: {{ $ficha->horario ?: 'sin horario' }}</div>
             </div>
 
             <div class="caja">

@@ -28,6 +28,8 @@ import MapView from './components/MapView'
 import PlaceDetail from './components/PlaceDetail'
 import QuickCard from './components/QuickCard'
 import ChatBot from './components/ChatBot'
+import { kmEntre } from './viaje'
+import { consultasPendientes } from './reservas'
 
 // Cuánto se calla el banner de instalar cuando la persona toca "Entendido" en el
 // camino manual (el que solo explica el gesto, sin botón que instale). Un mes
@@ -84,16 +86,6 @@ const RADIO_TRAMO_KM = 200
 // significaría no decirle nada al que está sin cobertura.
 const RADIO_RUTA_KM = 150
 
-// Distancia aproximada en km (haversine).
-function kmEntre(lat1, lng1, lat2, lng2) {
-  const rad = Math.PI / 180
-  const dLat = (lat2 - lat1) * rad
-  const dLng = (lng2 - lng1) * rad
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) ** 2
-  return 12742 * Math.asin(Math.min(1, Math.sqrt(a)))
-}
 
 // Los tipos de reporte del crowdsourcing viven en data/reportes.js (los comparten
 // la hoja de reportar, el mapa y la API).
@@ -362,6 +354,14 @@ function AppInterna() {
     // la ficha ("guardada sin señal"), y un segundo cartel a los tres días,
     // fuera de contexto, no le dice nada.
     await sincronizarColaCalificaciones()
+
+    // Las consultas de disponibilidad NO las manda la app: las manda la persona
+    // desde su WhatsApp. Lo único que se puede hacer al recuperar señal es
+    // avisarle que las tiene guardadas — el envío de un toque está en el chat.
+    const pendientes = await consultasPendientes()
+    if (pendientes.length > 0) {
+      mostrarToast(t(pendientes.length === 1 ? 'consultaPendiente' : 'consultasPendientes').replace('{n}', pendientes.length))
+    }
   }
 
   useEffect(() => {
@@ -1241,6 +1241,13 @@ function AppInterna() {
         onCerrar={() => setChatAbierto(false)}
         lugares={vista === 'localidad' ? lugaresLocalidad : lugares}
         localidadNombre={locActiva ? locActiva.nombre[lang] : null}
+        // El copiloto necesita el viaje entero, no solo el pueblo activo: la
+        // posición para ubicarse en la ruta, las localidades para saber qué
+        // viene, y todas las fichas para contar qué hay en el camino y a quién
+        // se le puede escribir en el pueblo donde va a terminar el día.
+        pos={posMapa}
+        localidades={localidades}
+        todosLugares={lugares}
       />
 
       {/* Acá vivía el aviso "Nueva versión lista" con su botón Actualizar. Se

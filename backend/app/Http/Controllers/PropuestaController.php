@@ -50,6 +50,7 @@ class PropuestaController extends Controller
         $datos = $request->validate([
             'nombre' => ['nullable', 'string', 'max:120'],
             'tel' => ['nullable', 'string', 'max:40'],
+            'whatsapp' => ['nullable', 'string', 'max:40'],
             'descripcion' => ['nullable', 'string', 'max:1000'],
             'como' => ['nullable', 'string', 'max:500'],
             'horario' => ['nullable', 'string', 'max:200'],

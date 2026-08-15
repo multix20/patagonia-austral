@@ -22,7 +22,111 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
-## Dónde quedamos — para retomar (14-ago-2026)
+## Dónde quedamos — para retomar (15-ago-2026)
+
+### El asistente pasa de buscador a copiloto (y ya se puede reservar)
+
+**El punto de partida.** El chat respondía bien "¿qué hay en este pueblo?", pero
+el viajero no está en un pueblo: está en el camino, decidiendo dónde parar. Y
+cuando decidía, la app lo dejaba a medias — copiar un teléfono a mano.
+
+**Lo que ahora hace el bot.** Con cuatro toques arma el **perfil de viaje**
+(cuántos van, cuántos días, en qué vehículo, hacia dónde), lo guarda y lo usa
+para todo:
+
+- **"¿Dónde estoy?"** — el pueblo más cercano, a cuántos km, y qué viene en cada
+  sentido.
+- **"Plan de hoy"** — hasta dónde llega **hoy** según el ritmo real de su
+  vehículo, qué pueblos hay en el camino (con un atractivo de cada uno), qué
+  desvíos existen y **cuántas barcazas** cruza. Todo calculado con el trazado y
+  las localidades que ya viajaban empaquetados: **funciona sin señal**.
+- **"Mi itinerario"** — el viaje repartido en etapas por los días que tiene, y le
+  dice cuántos días le sobran para quedarse en vez de sumar kilómetros.
+- **"Pedir disponibilidad"** — abre WhatsApp con el mensaje **ya escrito**
+  ("¿tienen disponibilidad para 2 personas esta noche?"), con el nombre del
+  negocio y mencionando la app. Sin cobertura **se guarda** y se le recuerda al
+  entrar al primer pueblo con señal.
+
+**El bot NO reserva, y el copy nunca dice que sí.** Los negocios chicos de la
+Austral no tienen sistema de reservas —contestan un WhatsApp— y consultar
+disponibilidad sin señal es imposible por definición. Prometer una reserva que
+nadie confirmó es la forma más rápida de quemar la confianza con el primer
+viajero que llegue a una cabaña ocupada, y con el dueño que lo recibe.
+
+**Dos campos nuevos en la ficha: `whatsapp` y `horario`.**
+
+> **El hallazgo que ordenó el trabajo: no faltaba bot, faltaba dato.** La tarjeta
+> del mapa leía `lugar.whatsapp`, `lugar.hrs` y `lugar.abierto` desde que se
+> escribió, contra campos que **no existían en ninguna parte** — ni columna, ni
+> API. El botón de WhatsApp nunca se dibujó en producción, y el chip de horario,
+> al evaluar un `abierto` siempre indefinido, habría anunciado **CERRADA** toda
+> ficha con horario. Ahora las columnas existen y viajan en `/api/places`; el
+> chip muestra el horario **sin afirmar si está abierto** (es texto libre como
+> "en invierno hasta las 20": decir "abierto" sobre eso manda a alguien a manejar
+> 40 km de ripio hasta una puerta cerrada).
+
+El WhatsApp se pide **también en el formulario de los dueños**, y se hizo ahora
+por calendario: la campaña de correos estaba por salir, y volver a escribirle a
+todos después es el costo caro. Es el mismo argumento que ya estaba escrito para
+`horario`, que por fin tiene columna propia.
+
+**Un fijo no tiene WhatsApp.** El número se valida antes de ofrecer el botón
+(móvil chileno de 9 dígitos que parte en 9, o un internacional explícito). Antes
+se limpiaba el teléfono a dígitos y se armaba el enlace igual: un fijo de
+Cochrane habría abierto un chat inexistente, y el viajero se habría quedado
+esperando una respuesta que nadie iba a leer.
+
+**Precisión de las distancias — lo que se midió.** El trazado empaquetado es una
+aproximación, así que se contrastó contra distancias conocidas: Puerto Montt →
+Villa O'Higgins da **1.033 km** (reales ~1.058) y Cochrane → Tortel **129 km**
+(reales ~125). Donde falla es el tramo más sinuoso: Coyhaique → Cochrane, **244
+km contra ~340 reales**, porque el trazado semilla resuelve el rodeo del lago
+General Carrera con cuatro rectas. **No se subió el factor de corrección**:
+arreglaría ese tramo y arruinaría los otros dos. La solución de verdad ya existe
+y es correr `scripts/ruta7/generar_ruta7.mjs` **en local** (Overpass está
+bloqueado en el entorno web), que reemplaza el trazado por la geometría real de
+OSM — el día que se corra, estas cifras mejoran solas. Mientras tanto: todo se
+rotula como aproximado y el ritmo diario lleva un 10% de colchón, porque
+subestimar distancias es lo que manda a alguien a manejar de noche en ripio.
+
+**Los ramales no son paradas del camino.** Puerto Aysén, Chacabuco, Futaleufú,
+Palena, Raúl Marín, Puerto Cisnes, Balmaceda, Chile Chico y Caleta Tortel están
+**fuera** de la Ruta 7, y la primera versión los ponía como meta de etapa: un
+viaje al sur terminaba el día 3 en Puerto Aysén, a 56 km al lado de su ruta. Se
+detectan por la distancia al trazado (>15 km) y se ofrecen como lo que son —un
+**desvío** con sus kilómetros aparte, que se elige.
+
+**Con GPS, las listas van por cercanía.** "¿Dónde dormir?" en la vista de toda la
+ruta devolvía los alojamientos de los 27 pueblos en el orden de la API, con
+Puerto Montt arriba mientras la persona está parada en Cochrane. Ahora se ordena
+por distancia, se muestran los 8 más cercanos y **se dice que se recortó**.
+
+**Analítica**: tres tipos nuevos (`consulta_reserva`, `consulta_guardada`,
+`perfil_viaje`), y el primero entra al grupo "contacto a un negocio" — es la
+métrica más cercana a una venta que puede medir un directorio, y la que se le
+muestra a un negocio para venderle la ficha destacada. Ojo con el detalle que lo
+haría fallar en silencio: la lista de tipos es **cerrada y validada**, así que un
+tipo que la PWA manda y el backend no conoce devuelve 422 y tira abajo el **lote
+entero**, incluidas las métricas que sí eran válidas.
+
+**Verificado en navegador** (Chromium + GPS simulado en Cochrane), no solo por
+build: perfil de 4 pasos, plan del día, itinerario, lista por cercanía, apertura
+de WhatsApp con el texto correcto (`wa.me/56950206647?text=Hola Cabañas El
+Peregrino, los vi en la app Ruta Austral…`), encolado sin señal y recordatorio al
+volver la cobertura. Backend: 79 tests en verde, 4 nuevos en
+`ContactoReservaTest`.
+
+**Lo que queda de este frente:**
+- Correr `scripts/ruta7/generar_ruta7.mjs` en local para la geometría real (es lo
+  que arregla el tramo Coyhaique–Cochrane).
+- Cargar los WhatsApp reales en el CMS: hasta que haya números, el botón solo
+  aparece donde el teléfono ya es un móvil.
+- El panel del CMS todavía no grafica los tipos nuevos aparte (se cuentan dentro
+  de "contacto"); vale una tarjeta propia cuando haya datos.
+
+---
+
+## Dónde quedamos (14-ago-2026)
 
 ### Propuestas de ficha: que el dato lo mande su dueño
 

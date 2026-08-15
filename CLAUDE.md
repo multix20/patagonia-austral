@@ -201,6 +201,30 @@ Hay un botón **"Poner en cero"** para no arrastrar las cifras de las pruebas
 propias a la primera campaña. Borra por FECHA, no "mis pruebas": la analítica es
 anónima por diseño, así que el dato que permitiría distinguirlas no existe.
 
+**El asistente es un copiloto, y ya se puede reservar (15-ago-2026).** Con un
+**perfil de viaje** de cuatro toques (personas, días, vehículo, sentido) y el GPS,
+el bot responde "¿dónde estoy?", "plan de hoy" (hasta dónde llega según el ritmo
+real del vehículo, qué hay en el camino, qué desvíos, cuántas barcazas) y "mi
+itinerario" por etapas — todo calculado con el trazado y las localidades ya
+empaquetados, o sea **sin señal**. Motor en `frontend/src/viaje.js`; consultas en
+`frontend/src/reservas.js`. Tres reglas que salieron de construirlo:
+
+- **El bot NO reserva: deja el mensaje escrito.** Abre WhatsApp con el texto ya
+  armado y lo manda la persona. Los negocios chicos no tienen sistema de reservas
+  y sin señal no se puede confirmar nada; el copy dice "pedir disponibilidad",
+  nunca "reservar". Sin cobertura la consulta se guarda y se recuerda al llegar
+  al pueblo.
+- **Un campo que la app consume tiene que llegar por la API.** `whatsapp`, `hrs`
+  y `abierto` se leían en `QuickCard` sin existir en ninguna parte: el botón de
+  WhatsApp nunca se dibujó, y el chip habría dicho **CERRADA** en toda ficha con
+  horario. Hoy `whatsapp` y `horario` son columnas y viajan en `/api/places`; el
+  horario se **muestra sin afirmar** si está abierto (es texto libre).
+- **Los ramales no son paradas del camino.** Puerto Aysén, Chile Chico, Tortel y
+  compañía están fuera de la Ruta 7 (>15 km del trazado): se ofrecen como
+  **desvío** con sus km aparte, nunca como meta de una etapa. Y las distancias
+  son aproximadas —el trazado semilla se salta el rodeo del lago General Carrera—
+  hasta que se corra `scripts/ruta7/generar_ruta7.mjs` en local.
+
 **Tres trampas del mapa, todas descubiertas en producción (ago-2026).** Las tres
 son invisibles en un navegador de escritorio y rompen la app en un teléfono:
 

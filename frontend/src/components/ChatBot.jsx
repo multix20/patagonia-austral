@@ -2,6 +2,26 @@ import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import Huemul from './Huemul'
 import { useI18n } from '../i18n'
+import { contar } from '../analitica'
+import {
+  consultasPendientes,
+  descartarConsulta,
+  guardarConsulta,
+  mensajeConsulta,
+  numeroWhatsApp,
+  sePuedeConsultar,
+  urlWhatsApp,
+} from '../reservas'
+import {
+  NOMBRE_VEHICULO,
+  etapas,
+  formatoHoras,
+  guardarPerfil,
+  kmEntre,
+  leerPerfil,
+  planDelDia,
+  ubicarEnRuta,
+} from '../viaje'
 
 // Asistente turístico offline: motor de reglas que responde con los
 // contenidos locales (IndexedDB). No requiere conexión.
@@ -11,14 +31,25 @@ import { useI18n } from '../i18n'
 // Las respuestas basadas en datos listan esos lugares; los consejos de prosa
 // son genéricos de la Carretera Austral (no afirman datos específicos de un
 // pueblo que serían falsos en otro).
+//
+// COPILOTO (ago-2026): además de responder, acompaña el viaje. Con el PERFIL
+// (cuántos van, cuántos días, en qué vehículo, hacia dónde) y la POSICIÓN GPS
+// arma el plan del día y el itinerario, y deja lista la consulta de
+// disponibilidad por WhatsApp. Dos reglas que lo ordenan todo:
+//
+//  - Nada de esto puede depender de la señal. El plan se calcula con el trazado
+//    y las localidades que ya viajan empaquetados (`viaje.js`), y la consulta
+//    que no se puede mandar se guarda para el próximo pueblo con cobertura.
+//  - El bot NO reserva: deja el mensaje escrito y lo manda la persona desde su
+//    propio WhatsApp. Ver `reservas.js` para por qué.
 
 const SUGERENCIAS = {
-  es: ['¿Qué visitar?', '¿Dónde dormir?', '¿Dónde comer?', 'Emergencias', 'Combustible', 'Estado de caminos'],
-  en: ['What to visit?', 'Where to sleep?', 'Where to eat?', 'Emergencies', 'Fuel', 'Road conditions'],
+  es: ['¿Dónde estoy?', 'Plan de hoy', '¿Dónde dormir?', '¿Qué visitar?', 'Emergencias', 'Combustible'],
+  en: ['Where am I?', "Today's plan", 'Where to sleep?', 'What to visit?', 'Emergencies', 'Fuel'],
 }
 
 function normalizar(s) {
-  return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
 // Recorta un texto a un resumen corto (primeras palabras), sin partir palabras,
@@ -35,10 +66,10 @@ function resumenBreve(texto, max = 120) {
 //  - conTel:  agrega el teléfono cuando existe (alojamiento, comida, servicios).
 //  - conDesc: agrega una descripción breve real (atractivos) en vez de la distancia.
 // Cada ítem cabe en UNA línea para no romper el render Markdown (viñetas).
-function listaLugares(lugares, cat, lang, { conTel = false, conDesc = false } = {}) {
+function listaLugares(lugares, cat, lang, { conTel = false, conDesc = false, max = 0 } = {}) {
   const tel = lang === 'es' ? 'Tel' : 'Phone'
-  return lugares
-    .filter((l) => l.cat === cat)
+  const elegidos = lugares.filter((l) => l.cat === cat)
+  return (max > 0 ? elegidos.slice(0, max) : elegidos)
     .map((l) => {
       // El nombre en **negrita** lo resalta el render Markdown de los mensajes.
       let linea = `• **${l.nombre[lang]}**`
@@ -122,6 +153,25 @@ function Markdown({ texto }) {
   return bloques
 }
 
+/**
+ * Los lugares ordenados por cercanía al viajero.
+ *
+ * Sin esto, en la vista "toda la ruta" la respuesta a "¿dónde dormir?" eran los
+ * alojamientos de los 27 pueblos en el orden en que vinieron de la API — con
+ * Puerto Montt arriba mientras la persona está parada en Cochrane. Teniendo GPS
+ * no hay excusa: primero lo que tiene al lado.
+ */
+function porCercania(lugares, pos) {
+  if (!pos) return lugares
+  return [...lugares].sort(
+    (a, b) => kmEntre(pos[0], pos[1], a.lat, a.lng) - kmEntre(pos[0], pos[1], b.lat, b.lng)
+  )
+}
+
+// Cuántos lugares lista el bot de una categoría. Diez ya es una lista larga de
+// leer en un teléfono; el mapa y el buscador están para ver el resto.
+const MAX_LISTA = 8
+
 // Lista los lugares de una categoría o, si no hay, un aviso claro para esa localidad.
 function listaOFallback(lugares, cat, lang, loc, opciones = {}) {
   const l = listaLugares(lugares, cat, lang, opciones)
@@ -131,43 +181,266 @@ function listaOFallback(lugares, cat, lang, loc, opciones = {}) {
     : `(No places of this category are loaded for ${loc} yet. Tap the map or list to explore.)`
 }
 
-function saludo(lang, loc, lugares = []) {
+function saludo(lang, loc, lugares = [], perfil = null) {
   const es = lang === 'es'
-  // Si ya hay lugares de la localidad cargados, el saludo arranca con lo que hay
-  // (concreto y propio del pueblo), no con una frase genérica.
+  // Sin perfil, lo primero que ofrece el bot es armarlo: es lo que lo convierte
+  // en copiloto (plan del día, itinerario, consultas ya escritas con el número
+  // de personas correcto) y son cuatro toques.
+  if (!perfil) {
+    return es
+      ? `¡Hola! Soy tu copiloto de la Carretera Austral. Puedo decirte dónde estás, hasta dónde llegas hoy, qué hay en el camino y dejarte lista la consulta de disponibilidad donde quieras parar.\n\nPara eso necesito cuatro datos de tu viaje — son cuatro toques.`
+      : `Hi! I'm your Carretera Austral copilot. I can tell you where you are, how far you'll get today, what's along the way, and draft your availability request wherever you want to stop.\n\nI just need four things about your trip — four taps.`
+  }
   const detalle = lugares.length > 0 ? `\n\n${resumenLocalidad(lugares, lang, loc)}` : ''
   return es
-    ? `¡Hola! Soy tu asistente turístico para ${loc}. Puedo ayudarte con lugares para visitar, alojamiento, comida, emergencias y consejos de ruta.${detalle || '\n\n¿Qué necesitas saber?'}`
-    : `Hi! I'm your tourist assistant for ${loc}. I can help with places to visit, lodging, food, emergencies and road tips.${detalle || '\n\nWhat do you need to know?'}`
+    ? `¡Hola de nuevo! Soy tu copiloto para ${loc}. Puedo ayudarte con el plan del día, lugares para visitar, alojamiento, comida y emergencias.${detalle || '\n\n¿Qué necesitas saber?'}`
+    : `Hi again! I'm your copilot for ${loc}. I can help with today's plan, places to visit, lodging, food and emergencies.${detalle || '\n\nWhat do you need to know?'}`
 }
 
-function responder(pregunta, lugares, lang, loc) {
+// ---- Perfil de viaje: las cuatro preguntas ---------------------------------
+
+// Chips, no teclado: esto se contesta con el pulgar, detenido a la orilla de la
+// ruta y muchas veces con guantes.
+const PASOS_PERFIL = ['personas', 'dias', 'vehiculo', 'sentido']
+
+function preguntaPerfil(paso, lang) {
+  const es = lang === 'es'
+  switch (paso) {
+    case 'personas':
+      return {
+        texto: es ? '¿Cuántos viajan?' : 'How many are traveling?',
+        opciones: [
+          { txt: es ? 'Solo yo' : 'Just me', val: 1 },
+          { txt: '2', val: 2 },
+          { txt: '3', val: 3 },
+          { txt: es ? '4 o más' : '4 or more', val: 4 },
+        ],
+      }
+    case 'dias':
+      return {
+        texto: es ? '¿Cuántos días tienes para la ruta?' : 'How many days do you have for the route?',
+        opciones: [
+          { txt: es ? '2 o 3' : '2 or 3', val: 3 },
+          { txt: es ? '4 a 6' : '4 to 6', val: 5 },
+          { txt: es ? 'Una semana' : 'A week', val: 7 },
+          { txt: es ? 'Dos o más' : 'Two weeks +', val: 14 },
+        ],
+      }
+    case 'vehiculo':
+      return {
+        texto: es ? '¿En qué andas? Cambia mucho el ritmo del día.' : "What are you traveling in? It changes the day's pace a lot.",
+        opciones: ['auto', '4x4', 'motorhome', 'moto', 'bus', 'bici'].map((v) => ({
+          txt: NOMBRE_VEHICULO[lang][v],
+          val: v,
+        })),
+      }
+    default:
+      return {
+        texto: es ? '¿Hacia dónde vas?' : 'Which way are you heading?',
+        opciones: [
+          { txt: es ? 'Hacia el sur' : 'Southbound', val: 'sur' },
+          { txt: es ? 'Hacia el norte' : 'Northbound', val: 'norte' },
+        ],
+      }
+  }
+}
+
+function resumenPerfil(perfil, lang) {
+  const es = lang === 'es'
+  const gente = perfil.personas === 1 ? (es ? 'viajas solo' : 'traveling solo') : es ? `van ${perfil.personas}` : `${perfil.personas} of you`
+  const rumbo = perfil.sentido === 'sur' ? (es ? 'hacia el sur' : 'southbound') : es ? 'hacia el norte' : 'northbound'
+  return es
+    ? `Listo: ${gente}, ${perfil.dias} días, en ${NOMBRE_VEHICULO.es[perfil.vehiculo].toLowerCase()}, ${rumbo}.\n\nCon eso ya puedo armarte el plan. Si algo cambia, dime "cambiar viaje".`
+    : `Got it: ${gente}, ${perfil.dias} days, by ${NOMBRE_VEHICULO.en[perfil.vehiculo].toLowerCase()}, ${rumbo}.\n\nI can plan from here. If anything changes, say "change trip".`
+}
+
+// ---- Copiloto: dónde estás, plan del día, itinerario ------------------------
+
+const SIN_GPS = {
+  es: 'Todavía no tengo tu ubicación. Activa el GPS y vuelve a preguntarme — el mapa te muestra el punto azul cuando ya te ubicó. (Esto funciona sin señal: el GPS no necesita internet.)',
+  en: "I don't have your location yet. Turn on GPS and ask me again — the map shows a blue dot once it has you. (This works without signal: GPS doesn't need internet.)",
+}
+
+const km = (n) => `${Math.round(n)} km`
+
+function textoUbicacion(ctx) {
+  const { pos, localidades, lang } = ctx
+  const r = ubicarEnRuta(pos, localidades)
+  if (!r) return { texto: SIN_GPS[lang] }
+  const es = lang === 'es'
+  const cerca = r.cercana
+
+  const linea =
+    cerca.distancia < 3
+      ? es
+        ? `Estás en **${cerca.nombre[lang]}**.`
+        : `You're in **${cerca.nombre[lang]}**.`
+      : es
+        ? `Estás a unos **${km(cerca.distancia)}** de **${cerca.nombre[lang]}**.`
+        : `You're about **${km(cerca.distancia)}** from **${cerca.nombre[lang]}**.`
+
+  // `distancia` ya viene por camino y con el ramal incluido, así que un desvío
+  // como Tortel muestra lo que de verdad hay que manejar para llegar.
+  const proximas = (lista, titulo) =>
+    lista.length === 0
+      ? ''
+      : `\n\n${titulo}\n${lista
+          .slice(0, 3)
+          .map((l) => `• **${l.nombre[lang]}** — ${km(l.distancia)}${l.esDesvio ? (es ? ' (desvío)' : ' (detour)') : ''}`)
+          .join('\n')}`
+
+  return {
+    texto:
+      linea +
+      proximas(r.haciaElSur, es ? 'Hacia el sur:' : 'To the south:') +
+      proximas(r.haciaElNorte, es ? 'Hacia el norte:' : 'To the north:') +
+      (es
+        ? '\n\nLas distancias son aproximadas, sobre el trazado de la ruta.'
+        : '\n\nDistances are approximate, measured along the route.'),
+  }
+}
+
+function textoPlanDia(ctx) {
+  const { pos, localidades, lang, perfil, todosLugares } = ctx
+  const es = lang === 'es'
+  const plan = planDelDia({ pos, localidades, perfil, sentido: perfil?.sentido })
+  if (!plan) return { texto: SIN_GPS[lang] }
+  if (!plan.meta) {
+    return {
+      texto: es
+        ? 'Estás en la punta de la ruta en ese sentido: no queda tramo por delante. Si diste la vuelta, dime "cambiar viaje" y ajustamos el rumbo.'
+        : "You're at the end of the route in that direction: there's no leg ahead. If you turned around, say \"change trip\" and we'll fix the heading.",
+    }
+  }
+
+  const meta = plan.meta
+  const enCamino = plan.intermedias
+    .slice(0, 4)
+    .map((l) => {
+      // Un atractivo real de ese pueblo, si lo hay: convierte una lista de
+      // nombres en una razón para parar.
+      const hito = todosLugares?.find((x) => x.localidad === l.slug && x.cat === 'atractivo')
+      return `• **${l.nombre[lang]}**${hito ? ` — ${hito.nombre[lang]}` : ''}`
+    })
+    .join('\n')
+
+  // Los ramales se ofrecen aparte y con sus kilómetros: "¿me desvío a Tortel?"
+  // es una decisión del día, no una parada más del camino.
+  const desvios = plan.desvios.length
+    ? (es ? '\n\nDesvíos en este tramo:\n' : '\n\nDetours on this leg:\n') +
+      plan.desvios
+        .map((l) => `• **${l.nombre[lang]}** — +${km(l.ramal)} ${es ? 'desde el cruce' : 'from the junction'}`)
+        .join('\n')
+    : ''
+
+  const barcazas =
+    plan.barcazas > 0
+      ? es
+        ? `\n\n⚠️ Hay ${plan.barcazas} ${plan.barcazas === 1 ? 'barcaza' : 'barcazas'} en el tramo: revisa el horario ANTES de salir, es lo que decide el día.`
+        : `\n\n⚠️ There ${plan.barcazas === 1 ? 'is 1 ferry' : `are ${plan.barcazas} ferries`} on this leg: check the schedule BEFORE you go, it decides your day.`
+      : ''
+
+  const texto = es
+    ? `Hoy llegas bien hasta **${meta.nombre[lang]}**: unos ${km(plan.km)}, cerca de ${formatoHoras(plan.horas)} de manejo.${enCamino ? `\n\nEn el camino:\n${enCamino}` : ''}${desvios}${barcazas}\n\nSon estimaciones para un viaje con paradas, no una carrera: en la Austral el ripio y las fotos mandan.`
+    : `Today you'll comfortably reach **${meta.nombre[lang]}**: about ${km(plan.km)}, roughly ${formatoHoras(plan.horas)} of driving.${enCamino ? `\n\nAlong the way:\n${enCamino}` : ''}${desvios}${barcazas}\n\nThese are estimates for a trip with stops, not a race: on the Austral, gravel and photo stops rule.`
+
+  return {
+    texto,
+    // La acción natural al final del día es tener dónde dormir allá, y esa
+    // decisión se toma AHORA, en el camino, no al llegar de noche.
+    ofrecerReserva: meta,
+    sugerencias: es
+      ? [`Dormir en ${meta.nombre[lang]}`, 'Mi itinerario', '¿Dónde estoy?']
+      : [`Sleep in ${meta.nombre[lang]}`, 'My itinerary', 'Where am I?'],
+  }
+}
+
+function textoItinerario(ctx) {
+  const { pos, localidades, lang, perfil } = ctx
+  const es = lang === 'es'
+  const lista = etapas({ pos, localidades, perfil, sentido: perfil?.sentido })
+  if (!lista.length) return { texto: SIN_GPS[lang] }
+
+  const dias = lista
+    .map((e) => {
+      const paso = e.intermedias.length
+        ? ` (por ${e.intermedias.slice(0, 2).map((l) => l.nombre[lang]).join(', ')})`
+        : ''
+      const barcaza = e.barcazas > 0 ? (es ? ' · con barcaza' : ' · ferry') : ''
+      return `• **${es ? 'Día' : 'Day'} ${e.dia}: ${e.meta.nombre[lang]}**${paso} — ${km(e.km)}, ${formatoHoras(e.horas)}${barcaza}`
+    })
+    .join('\n')
+
+  const sobran = perfil.dias - lista.length
+  const cierre =
+    sobran > 0
+      ? es
+        ? `\n\nTe sobran ${sobran} ${sobran === 1 ? 'día' : 'días'}: úsalos en los pueblos que más te gusten en vez de sumar kilómetros. La Austral se disfruta quedándose.`
+        : `\n\nYou have ${sobran} spare ${sobran === 1 ? 'day' : 'days'}: spend them in the towns you like most instead of adding mileage. The Austral rewards staying put.`
+      : es
+        ? '\n\nVa justo: si algo se atrasa (barcaza, clima, un camino cortado), recorta una parada en vez de manejar de noche.'
+        : "\n\nIt's tight: if something slips (ferry, weather, a closed road), drop a stop instead of driving at night."
+
+  return {
+    texto: (es ? `Tu ruta en ${lista.length} etapas, desde donde estás:\n\n` : `Your route in ${lista.length} legs, from where you are:\n\n`) + dias + cierre,
+    sugerencias: es ? ['Plan de hoy', '¿Dónde dormir?', 'Estado de caminos'] : ["Today's plan", 'Where to sleep?', 'Road conditions'],
+  }
+}
+
+// ---- Motor de reglas --------------------------------------------------------
+
+function responder(pregunta, ctx) {
   const p = normalizar(pregunta)
   const tiene = (...ks) => ks.some((k) => p.includes(k))
+  const { lang, loc, pos } = ctx
   const es = lang === 'es'
   const sug = SUGERENCIAS[lang]
+  // Todas las listas salen de acá: lo más cerca primero cuando hay GPS.
+  const lugares = porCercania(ctx.lugares, pos)
+  // Aviso honesto cuando la lista se recortó: nadie tiene por qué adivinar que
+  // hay más, y en la vista de toda la ruta hay muchos más.
+  const recorte = (cat) =>
+    lugares.filter((l) => l.cat === cat).length > MAX_LISTA
+      ? es
+        ? `\n\n(Te muestro los ${MAX_LISTA} más cercanos a ti. En el mapa y el buscador están todos.)`
+        : `\n\n(Showing the ${MAX_LISTA} closest to you. The map and search have them all.)`
+      : ''
+
+  // -- Copiloto. Va PRIMERO: si alguien pregunta "¿hasta dónde llego hoy?", la
+  // respuesta útil es su tramo, no la lista de atractivos del pueblo activo.
+  if (tiene('donde estoy', 'donde ando', 'mi ubicacion', 'where am i', 'my location'))
+    return textoUbicacion(ctx)
+
+  if (tiene('plan de hoy', 'plan del dia', 'que hago hoy', 'hasta donde llego', 'hoy llego', 'today', 'todays plan', 'how far'))
+    return textoPlanDia(ctx)
+
+  if (tiene('itinerario', 'mi ruta', 'planificar', 'etapas', 'cuantos dias', 'itinerary', 'my route', 'plan my trip'))
+    return textoItinerario(ctx)
+
+  if (tiene('cambiar viaje', 'cambiar perfil', 'otro vehiculo', 'change trip', 'edit trip'))
+    return { rehacerPerfil: true }
+
+  if (tiene('reservar', 'reserva', 'disponibilidad', 'book', 'booking', 'availability'))
+    return { iniciarReserva: 'alojamiento' }
 
   if (tiene('hola', 'buenas', 'hello', 'hi ', 'hey'))
     return {
       texto: es
-        ? `¡Hola! ¿En qué te puedo ayudar? Pregúntame por atractivos, alojamiento, comida, servicios o emergencias en ${loc}.`
-        : `Hi! How can I help? Ask me about attractions, lodging, food, services or emergencies in ${loc}.`,
+        ? `¡Hola! ¿En qué te puedo ayudar? Pregúntame por el plan de hoy, atractivos, alojamiento, comida, servicios o emergencias en ${loc}.`
+        : `Hi! How can I help? Ask me about today's plan, attractions, lodging, food, services or emergencies in ${loc}.`,
       sugerencias: sug,
     }
 
   if (tiene('gracias', 'thanks', 'thank you', 'perfecto', 'genial'))
     return {
       texto: es
-        ? `¡De nada! Que disfrutes tu visita a ${loc} y la Patagonia. Aquí estaré — incluso sin conexión a internet.`
-        : `You're welcome! Enjoy your visit to ${loc} and Patagonia. I'll be here — even without internet.`,
+        ? `¡De nada! Buen viaje por la Austral. Aquí estaré — incluso sin conexión a internet.`
+        : `You're welcome! Safe travels on the Austral. I'll be here — even without internet.`,
       sugerencias: sug,
     }
 
   if (tiene('que hay', 'resumen', 'cuentame', 'informacion', 'que tienes', 'que ofrece', 'overview', 'summary', 'tell me about', 'what is there', 'whats here'))
-    return {
-      texto: resumenLocalidad(lugares, lang, loc),
-      sugerencias: sug,
-    }
+    return { texto: resumenLocalidad(lugares, lang, loc), sugerencias: sug }
 
   if (tiene('emergencia', 'hospital', 'urgencia', 'accidente', 'carabineros', 'policia', 'bomberos', 'rescate', 'emergency', 'police', 'fire', 'rescue', 'ambulance'))
     return {
@@ -180,21 +453,25 @@ function responder(pregunta, lugares, lang, loc) {
   if (tiene('dormir', 'alojamiento', 'hostal', 'cabana', 'hotel', 'hospedaje', 'sleep', 'stay', 'lodging', 'hostel', 'cabin'))
     return {
       texto: es
-        ? `Opciones de alojamiento en ${loc}:\n\n${listaOFallback(lugares, 'alojamiento', lang, loc, { conTel: true })}\n\nEn temporada alta (dic–feb) conviene reservar con anticipación.`
-        : `Lodging options in ${loc}:\n\n${listaOFallback(lugares, 'alojamiento', lang, loc, { conTel: true })}\n\nIn high season (Dec–Feb) book in advance.`,
+        ? `Opciones de alojamiento en ${loc}:\n\n${listaOFallback(lugares, 'alojamiento', lang, loc, { conTel: true, max: MAX_LISTA })}${recorte('alojamiento')}\n\nEn temporada alta (dic–feb) conviene reservar con anticipación.`
+        : `Lodging options in ${loc}:\n\n${listaOFallback(lugares, 'alojamiento', lang, loc, { conTel: true, max: MAX_LISTA })}${recorte('alojamiento')}\n\nIn high season (Dec–Feb) book in advance.`,
+      // Si alguno se puede contactar, el paso siguiente no es otra búsqueda: es
+      // escribirle. El bot lo ofrece en vez de dejar al viajero copiando números.
+      ofrecerReservaCat: 'alojamiento',
       sugerencias: es ? ['¿Dónde comer?', '¿Qué visitar?', 'Combustible'] : ['Where to eat?', 'What to visit?', 'Fuel'],
     }
 
   if (tiene('comer', 'restaurante', 'comida', 'almuerzo', 'cena', 'cafe', 'desayuno', 'kuchen', 'eat', 'food', 'restaurant', 'lunch', 'dinner', 'coffee'))
     return {
       texto: es
-        ? `Dónde comer en ${loc}:\n\n${listaOFallback(lugares, 'comida', lang, loc, { conTel: true })}\n\nEl cordero al palo es un plato típico de la Patagonia.`
-        : `Where to eat in ${loc}:\n\n${listaOFallback(lugares, 'comida', lang, loc, { conTel: true })}\n\nSpit-roasted lamb is a Patagonian specialty.`,
+        ? `Dónde comer en ${loc}:\n\n${listaOFallback(lugares, 'comida', lang, loc, { conTel: true, max: MAX_LISTA })}${recorte('comida')}\n\nEl cordero al palo es un plato típico de la Patagonia.`
+        : `Where to eat in ${loc}:\n\n${listaOFallback(lugares, 'comida', lang, loc, { conTel: true, max: MAX_LISTA })}${recorte('comida')}\n\nSpit-roasted lamb is a Patagonian specialty.`,
+      ofrecerReservaCat: 'comida',
       sugerencias: es ? ['¿Dónde dormir?', 'Eventos', '¿Qué visitar?'] : ['Where to sleep?', 'Events', 'What to visit?'],
     }
 
   if (tiene('combustible', 'bencina', 'gasolina', 'petroleo', 'servicio', 'banco', 'cajero', 'fuel', 'gas', 'petrol', 'diesel', 'service')) {
-    const servicios = listaLugares(lugares, 'servicio', lang, { conTel: true })
+    const servicios = listaLugares(lugares, 'servicio', lang, { conTel: true, max: MAX_LISTA })
     return {
       texto: es
         ? `Combustible y servicios en ${loc}:\n\n${servicios || '(Aún no tengo estaciones ni servicios cargados para esta localidad.)'}\n\nLa bencina escasea en la Carretera Austral y las estaciones están lejos entre sí: carga el estanque completo cada vez que puedas, sobre todo antes de tramos largos hacia el sur.`
@@ -214,9 +491,9 @@ function responder(pregunta, lugares, lang, loc) {
   if (tiene('visitar', 'atractivo', 'hacer', 'panorama', 'conocer', 'sendero', 'trekking', 'caminata', 'parque', 'mirador', 'laguna', 'glaciar', 'lago', 'visit', 'attraction', 'see', 'hike', 'trail', 'park'))
     return {
       texto: es
-        ? `Los imperdibles de ${loc}:\n\n${listaOFallback(lugares, 'atractivo', lang, loc, { conDesc: true })}\n\nToca cualquier lugar en el mapa o la lista para ver cómo llegar. Toda la información funciona sin conexión.`
-        : `${loc}'s must-sees:\n\n${listaOFallback(lugares, 'atractivo', lang, loc, { conDesc: true })}\n\nTap any place on the map or list for directions. Everything works offline.`,
-      sugerencias: es ? ['Ver fauna / huemules', 'Estado de caminos', '¿Dónde comer?'] : ['Wildlife / huemul', 'Road conditions', 'Where to eat?'],
+        ? `Los imperdibles de ${loc}:\n\n${listaOFallback(lugares, 'atractivo', lang, loc, { conDesc: true, max: MAX_LISTA })}${recorte('atractivo')}\n\nToca cualquier lugar en el mapa o la lista para ver cómo llegar. Toda la información funciona sin conexión.`
+        : `${loc}'s must-sees:\n\n${listaOFallback(lugares, 'atractivo', lang, loc, { conDesc: true, max: MAX_LISTA })}${recorte('atractivo')}\n\nTap any place on the map or list for directions. Everything works offline.`,
+      sugerencias: es ? ['Plan de hoy', 'Estado de caminos', '¿Dónde comer?'] : ["Today's plan", 'Road conditions', 'Where to eat?'],
     }
 
   if (tiene('camino', 'ruta', 'estado', 'carretera', 'nieve', 'transito', 'barcaza', 'ripio', 'road', 'route', 'snow', 'conditions', 'ferry'))
@@ -224,7 +501,7 @@ function responder(pregunta, lugares, lang, loc) {
       texto: es
         ? `El estado de los caminos cambia con el clima, sobre todo en invierno, y algunos tramos son de ripio o dependen de barcazas.\n\n• Consulta en la oficina de información turística o en Carabineros de ${loc} antes de salir.\n• La app te avisa cuando se reportan cortes o novedades.\n\nCarga combustible antes de tramos largos hacia el sur.`
         : `Road conditions change with the weather, especially in winter, and some sections are gravel or depend on ferries.\n\n• Check at the tourist information office or with the police (Carabineros) in ${loc} before you leave.\n• The app notifies you when closures or updates are reported.\n\nFill up before long stretches heading south.`,
-      sugerencias: es ? ['Combustible', 'Emergencias', '¿Qué visitar?'] : ['Fuel', 'Emergencies', 'What to visit?'],
+      sugerencias: es ? ['Combustible', 'Emergencias', 'Plan de hoy'] : ['Fuel', 'Emergencies', "Today's plan"],
     }
 
   if (tiene('clima', 'tiempo', 'viento', 'lluvia', 'frio', 'temperatura', 'weather', 'wind', 'rain', 'cold'))
@@ -246,20 +523,30 @@ function responder(pregunta, lugares, lang, loc) {
   if (tiene('offline', 'sin conexion', 'internet', 'senal', 'signal', 'connection'))
     return {
       texto: es
-        ? '¡Esa es la gracia de esta app! Toda la información —lugares, mapas, teléfonos y este asistente— queda guardada en tu teléfono al instalarla.\n\nEn gran parte de la ruta no hay señal, así que la app está diseñada para funcionar 100% sin internet.'
-        : "That's the whole point of this app! All the information —places, maps, phone numbers and this assistant— is stored on your phone when you install it.\n\nMuch of the route has no signal, so the app is designed to work 100% offline.",
+        ? '¡Esa es la gracia de esta app! Toda la información —lugares, mapas, teléfonos y este asistente— queda guardada en tu teléfono al instalarla.\n\nEn gran parte de la ruta no hay señal, así que la app está diseñada para funcionar 100% sin internet. Si me pides una consulta de disponibilidad sin cobertura, te la dejo guardada y te la recuerdo al llegar al pueblo.'
+        : "That's the whole point of this app! All the information —places, maps, phone numbers and this assistant— is stored on your phone when you install it.\n\nMuch of the route has no signal, so the app is designed to work 100% offline. If you ask for an availability request with no coverage, I'll save it and remind you when you reach town.",
       sugerencias: sug,
     }
 
   return {
     texto: es
-      ? `Puedo ayudarte con estos temas sobre ${loc}:\n\n• Qué visitar (senderos, parques, miradores)\n• Dónde dormir y dónde comer\n• Emergencias y teléfonos útiles\n• Combustible y servicios\n• Estado de caminos y clima\n• Eventos y ferias\n\nPrueba con una de las sugerencias o escribe tu pregunta con otras palabras.`
-      : `I can help you with these topics about ${loc}:\n\n• What to visit (trails, parks, viewpoints)\n• Where to sleep and eat\n• Emergencies and useful phone numbers\n• Fuel and services\n• Road conditions and weather\n• Events and fairs\n\nTry one of the suggestions or rephrase your question.`,
+      ? `Puedo ayudarte con esto:\n\n• Dónde estás y hasta dónde llegas hoy\n• Tu itinerario por etapas\n• Pedir disponibilidad donde quieras parar\n• Qué visitar, dónde dormir y dónde comer en ${loc}\n• Emergencias, combustible, caminos y clima\n\nPrueba con una de las sugerencias o escribe tu pregunta con otras palabras.`
+      : `I can help you with:\n\n• Where you are and how far you'll get today\n• Your route, leg by leg\n• Asking about availability wherever you want to stop\n• What to visit, where to sleep and eat in ${loc}\n• Emergencies, fuel, roads and weather\n\nTry one of the suggestions or rephrase your question.`,
     sugerencias: sug,
   }
 }
 
-export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre }) {
+// ---- Componente -------------------------------------------------------------
+
+export default function ChatBot({
+  abierto,
+  onCerrar,
+  lugares,
+  localidadNombre,
+  pos = null,
+  localidades = [],
+  todosLugares = [],
+}) {
   const { t, lang } = useI18n()
   const loc =
     localidadNombre || (lang === 'es' ? 'la Carretera Austral' : 'the Carretera Austral')
@@ -275,7 +562,17 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
   const [sugerencias, setSugerencias] = useState(SUGERENCIAS[lang])
   const [texto, setTexto] = useState('')
   const [escribiendo, setEscribiendo] = useState(false)
+  const [perfil, setPerfil] = useState(() => leerPerfil())
+  // Flujo guiado en curso: { tipo: 'perfil'|'reserva', paso, datos }. Vive en
+  // estado y NO en el historial: si se recarga la app a mitad de las preguntas,
+  // es mejor volver a empezar que retomar un formulario a medias.
+  const [flujo, setFlujo] = useState(null)
   const msgsRef = useRef(null)
+
+  const ctx = { lugares, lang, loc, pos, localidades, perfil, todosLugares }
+
+  const decir = (texto, extra = {}) =>
+    setMensajes((m) => [...m, { quien: 'bot', texto, ...extra }])
 
   // Saludo inicial. Se actualiza si cambia el idioma o la localidad mientras la
   // conversación aún no tiene preguntas del usuario (así no "miente" el pueblo);
@@ -284,16 +581,60 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
     if (!abierto) return
     setMensajes((prev) => {
       if (prev.some((m) => m.quien === 'usuario')) return prev
-      return [{ quien: 'bot', texto: saludo(lang, loc, lugares) }]
+      return [{ quien: 'bot', texto: saludo(lang, loc, lugares, leerPerfil()) }]
     })
     // `lugares` se lee del closure al abrir/cambiar de localidad; no va en deps
     // (su referencia cambia en cada render y dispararía el efecto en bucle).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [abierto, lang, loc])
 
+  // Sin perfil, la conversación arranca por ahí: es lo que permite todo lo demás.
   useEffect(() => {
-    setSugerencias(SUGERENCIAS[lang])
+    if (!abierto || perfil || flujo) return
+    const q = preguntaPerfil('personas', lang)
+    setFlujo({ tipo: 'perfil', paso: 'personas', datos: {} })
+    setSugerencias(q.opciones)
+    setMensajes((prev) =>
+      prev.some((m) => m.quien === 'usuario') ? prev : [...prev, { quien: 'bot', texto: q.texto }]
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [abierto])
+
+  useEffect(() => {
+    if (!flujo) setSugerencias(SUGERENCIAS[lang])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lang])
+
+  // Consultas que quedaron guardadas sin señal: al abrir el chat CON cobertura,
+  // el bot las recuerda con su botón para mandarlas. Es el cierre del ciclo
+  // "decides en la ruta, avisas al llegar al pueblo".
+  useEffect(() => {
+    if (!abierto || !navigator.onLine) return
+    let vigente = true
+    consultasPendientes().then((lista) => {
+      if (!vigente || lista.length === 0) return
+      const es = lang === 'es'
+      decir(
+        es
+          ? `Tienes ${lista.length} ${lista.length === 1 ? 'consulta guardada' : 'consultas guardadas'} de cuando no había señal. Ahora sí puedes mandarlas:`
+          : `You have ${lista.length} saved ${lista.length === 1 ? 'request' : 'requests'} from when there was no signal. You can send them now:`,
+        {
+          acciones: lista.map((c) => ({
+            k: 'wa',
+            lbl: c.nombre,
+            numero: c.numero,
+            msg: c.texto,
+            placeId: c.placeId,
+            clave: c.clave,
+          })),
+        }
+      )
+    })
+    return () => {
+      vigente = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [abierto])
 
   // Persiste la conversación en la sesión (se limpia al cerrar la pestaña).
   useEffect(() => {
@@ -308,21 +649,188 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
     msgsRef.current?.scrollTo(0, msgsRef.current.scrollHeight)
   }, [mensajes, escribiendo])
 
+  // -- Flujos guiados ---------------------------------------------------------
+
+  function arrancarPerfil() {
+    const q = preguntaPerfil('personas', lang)
+    setFlujo({ tipo: 'perfil', paso: 'personas', datos: {} })
+    decir(q.texto)
+    setSugerencias(q.opciones)
+  }
+
+  /** Lista de negocios contactables de una categoría, como acciones del mensaje. */
+  function accionesDeContacto(cat, cuando, desde = lugares) {
+    const datos = perfil || { personas: 2 }
+    return porCercania(desde, pos)
+      .filter((l) => l.cat === cat && sePuedeConsultar(l))
+      .slice(0, 5)
+      .map((l) => ({
+        k: 'wa',
+        lbl: l.nombre[lang],
+        numero: numeroWhatsApp(l),
+        msg: mensajeConsulta({ lugar: l, lang, personas: datos.personas, cuando }),
+        placeId: l.id,
+      }))
+  }
+
+  function arrancarReserva(cat, localidadDestino = null) {
+    const es = lang === 'es'
+    const desde = localidadDestino
+      ? todosLugares.filter((l) => l.localidad === localidadDestino.slug)
+      : lugares
+    const hay = desde.some((l) => l.cat === cat && sePuedeConsultar(l))
+
+    if (!hay) {
+      decir(
+        es
+          ? 'Todavía no tengo un número al que escribirle por acá. Puedes llamar a los que aparecen en la lista, o tocar la ficha para ver el contacto completo.'
+          : "I don't have a number to message here yet. You can call the ones listed, or open a place to see its full contact."
+      )
+      return
+    }
+
+    setFlujo({ tipo: 'reserva', paso: 'cuando', datos: { cat, desde } })
+    decir(
+      cat === 'alojamiento'
+        ? es ? '¿Para cuándo necesitas el alojamiento?' : 'When do you need the room?'
+        : es ? '¿Para cuándo?' : 'For when?'
+    )
+    setSugerencias([
+      { txt: es ? 'Hoy' : 'Today', val: 'hoy' },
+      { txt: es ? 'Mañana' : 'Tomorrow', val: 'manana' },
+      { txt: es ? 'En unos días' : 'In a few days', val: 'pronto' },
+    ])
+  }
+
+  /** Un chip de flujo: guarda la respuesta y hace la pregunta siguiente. */
+  function avanzarFlujo(opcion) {
+    setMensajes((m) => [...m, { quien: 'usuario', texto: opcion.txt }])
+
+    if (flujo.tipo === 'perfil') {
+      const datos = { ...flujo.datos, [flujo.paso]: opcion.val }
+      const siguiente = PASOS_PERFIL[PASOS_PERFIL.indexOf(flujo.paso) + 1]
+
+      if (siguiente) {
+        const q = preguntaPerfil(siguiente, lang)
+        setFlujo({ tipo: 'perfil', paso: siguiente, datos })
+        decir(q.texto)
+        setSugerencias(q.opciones)
+        return
+      }
+
+      const nuevo = guardarPerfil(datos)
+      setPerfil(nuevo)
+      setFlujo(null)
+      contar('perfil_viaje')
+      decir(resumenPerfil(nuevo, lang))
+      setSugerencias(SUGERENCIAS[lang])
+      return
+    }
+
+    // Reserva: elegido el cuándo, se listan los negocios contactables.
+    const { cat, desde } = flujo.datos
+    const acciones = accionesDeContacto(cat, opcion.val, desde)
+    const es = lang === 'es'
+    setFlujo(null)
+    setSugerencias(SUGERENCIAS[lang])
+    decir(
+      es
+        ? `Listo. Toca uno y te abro el chat con el mensaje ya escrito — solo revisas y envías:`
+        : `Done. Tap one and I'll open the chat with the message ready — just review and send:`,
+      { acciones }
+    )
+  }
+
+  /** Ejecuta la acción de un botón dentro de un mensaje del bot. */
+  async function ejecutarAccion(a) {
+    if (a.k === 'tel') {
+      contar('llamar', a.placeId)
+      window.location.href = `tel:${a.numero}`
+      return
+    }
+
+    // WhatsApp. Sin cobertura no hay forma de entregarlo: se guarda el mensaje
+    // ya escrito y se recuerda al llegar al pueblo. No se pierde nada, y es
+    // exactamente cómo se viaja la Austral.
+    if (!navigator.onLine) {
+      await guardarConsulta({ placeId: a.placeId, nombre: a.lbl, numero: a.numero, texto: a.msg })
+      contar('consulta_guardada', a.placeId)
+      decir(
+        lang === 'es'
+          ? `Guardada tu consulta a **${a.lbl}**. Cuando entres a un pueblo con señal te la recuerdo para mandarla de un toque.`
+          : `Saved your request to **${a.lbl}**. When you reach a town with signal I'll remind you to send it with one tap.`
+      )
+      return
+    }
+
+    contar('consulta_reserva', a.placeId)
+    if (a.clave != null) await descartarConsulta(a.clave)
+    window.open(urlWhatsApp(a.numero, a.msg), '_blank', 'noopener,noreferrer')
+  }
+
   function enviar(txt) {
     const pregunta = (txt ?? texto).trim()
     if (!pregunta) return
     setTexto('')
+    // Escribir a mano cancela el flujo guiado: si alguien interrumpe las
+    // preguntas para consultar otra cosa, se le responde eso — dejarlo atrapado
+    // en un cuestionario es la forma más rápida de que cierre el chat.
+    setFlujo(null)
     setMensajes((m) => [...m, { quien: 'usuario', texto: pregunta }])
     setEscribiendo(true)
     setTimeout(() => {
-      const r = responder(pregunta, lugares, lang, loc)
+      const r = responder(pregunta, ctx)
       setEscribiendo(false)
-      setMensajes((m) => [...m, { quien: 'bot', texto: r.texto }])
+
+      if (r.rehacerPerfil) {
+        arrancarPerfil()
+        return
+      }
+      if (r.iniciarReserva) {
+        arrancarReserva(r.iniciarReserva)
+        return
+      }
+
+      const es = lang === 'es'
+      const extra = {}
+      // Ofrecer el contacto es el paso siguiente natural de una lista de
+      // alojamientos o restaurantes; se agrega solo si hay a quién escribirle.
+      if (r.ofrecerReservaCat && lugares.some((l) => l.cat === r.ofrecerReservaCat && sePuedeConsultar(l))) {
+        extra.acciones = [
+          {
+            k: 'flujo',
+            cat: r.ofrecerReservaCat,
+            lbl: r.ofrecerReservaCat === 'alojamiento'
+              ? es ? 'Pedir disponibilidad' : 'Ask availability'
+              : es ? 'Consultar por mesa' : 'Ask about a table',
+          },
+        ]
+      }
+      if (r.ofrecerReserva) {
+        const destino = r.ofrecerReserva
+        const hay = todosLugares.some(
+          (l) => l.localidad === destino.slug && l.cat === 'alojamiento' && sePuedeConsultar(l)
+        )
+        if (hay) {
+          extra.acciones = [
+            {
+              k: 'flujo',
+              cat: 'alojamiento',
+              slug: destino.slug,
+              lbl: es ? `Pedir disponibilidad en ${destino.nombre[lang]}` : `Ask availability in ${destino.nombre[lang]}`,
+            },
+          ]
+        }
+      }
+
+      decir(r.texto, extra)
       if (r.sugerencias) setSugerencias(r.sugerencias)
     }, 700 + Math.random() * 500)
   }
 
   if (!abierto) return null
+
+  const enFlujo = flujo !== null
 
   return (
     <div className="chat" role="dialog" aria-label={t('chatNombre')}>
@@ -347,6 +855,24 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
         {mensajes.map((m, i) => (
           <div key={i} className={`msg ${m.quien}`}>
             {m.quien === 'bot' ? <Markdown texto={m.texto} /> : m.texto}
+            {m.acciones?.length > 0 && (
+              <div className="msg-acciones">
+                {m.acciones.map((a, j) => (
+                  <button
+                    key={j}
+                    className="msg-accion"
+                    onClick={() =>
+                      a.k === 'flujo'
+                        ? arrancarReserva(a.cat, a.slug ? localidades.find((l) => l.slug === a.slug) : null)
+                        : ejecutarAccion(a)
+                    }
+                  >
+                    <Icon nombre={a.k === 'tel' ? 'phone' : 'message-circle'} tam={15} />
+                    <span>{a.lbl}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         ))}
         {escribiendo && (
@@ -356,11 +882,18 @@ export default function ChatBot({ abierto, onCerrar, lugares, localidadNombre })
         )}
       </div>
       <div className="chat-sugerencias">
-        {sugerencias.map((s) => (
-          <button key={s} className="sugerencia" onClick={() => enviar(s)}>
-            {s}
-          </button>
-        ))}
+        {sugerencias.map((s, i) => {
+          const chip = typeof s === 'string' ? { txt: s } : s
+          return (
+            <button
+              key={`${chip.txt}-${i}`}
+              className="sugerencia"
+              onClick={() => (enFlujo ? avanzarFlujo(chip) : enviar(chip.txt))}
+            >
+              {chip.txt}
+            </button>
+          )
+        })}
       </div>
       <div className="chat-input">
         <input

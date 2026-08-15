@@ -3,7 +3,7 @@ import { openDB } from 'idb'
 // Almacenamiento local estructurado (IndexedDB) según plan de contingencia
 // offline: los contenidos quedan disponibles sin conexión tras la primera visita.
 const DB_NOMBRE = 'cochrane-turismo'
-const DB_VERSION = 6
+const DB_VERSION = 7
 
 function db() {
   return openDB(DB_NOMBRE, DB_VERSION, {
@@ -61,6 +61,17 @@ function db() {
         d.createObjectStore('calificacionesSalientes', { keyPath: 'clave', autoIncrement: true })
       if (!d.objectStoreNames.contains('metricas'))
         d.createObjectStore('metricas', { keyPath: 'clave' })
+      // v7 — `consultas`: las solicitudes de disponibilidad que el asistente
+      // dejó armadas sin señal.
+      //
+      // NO es un buzón de salida como `salientes`: esto no lo envía la app a
+      // ninguna API, lo manda la persona por WhatsApp desde su propio número.
+      // Sin señal no hay forma de entregarlo, así que se guarda el mensaje ya
+      // escrito y se le recuerda al llegar al pueblo — que es exactamente cómo
+      // se viaja la Austral: se decide dónde parar en el camino y se avisa al
+      // reencontrar la cobertura.
+      if (!d.objectStoreNames.contains('consultas'))
+        d.createObjectStore('consultas', { keyPath: 'clave', autoIncrement: true })
     },
   })
 }
@@ -170,6 +181,24 @@ export async function leerColaCalificaciones() {
 export async function borrarDeColaCalificaciones(clave) {
   const d = await db()
   return d.delete('calificacionesSalientes', clave)
+}
+
+// ---- Consultas de disponibilidad (Fase 3) ----
+
+/** Guarda una consulta armada sin señal, para mandarla al recuperar cobertura. */
+export async function encolarConsulta(consulta) {
+  const d = await db()
+  return d.add('consultas', consulta)
+}
+
+export async function leerConsultas() {
+  const d = await db()
+  return d.getAll('consultas')
+}
+
+export async function borrarConsulta(clave) {
+  const d = await db()
+  return d.delete('consultas', clave)
 }
 
 // ---- Analítica de uso (Fase 3) ----

@@ -11,8 +11,9 @@ use Illuminate\Support\Facades\Storage;
 class Place extends Model
 {
     protected $fillable = [
-        'cat', 'lat', 'lng', 'tel', 'nombre', 'descripcion', 'como', 'dist', 'publicado',
-        'destacado', 'localidad_id', 'imagenes', 'calificacion_promedio', 'calificaciones_total',
+        'cat', 'lat', 'lng', 'tel', 'whatsapp', 'horario', 'nombre', 'descripcion', 'como', 'dist',
+        'publicado', 'destacado', 'localidad_id', 'imagenes', 'calificacion_promedio',
+        'calificaciones_total',
     ];
 
     protected $casts = [
@@ -129,6 +130,12 @@ class Place extends Model
             'lat' => $this->lat,
             'lng' => $this->lng,
             'tel' => $this->tel,
+            // Contacto para reservar. `hrs` conserva el nombre corto que la PWA
+            // ya venía leyendo en la tarjeta del mapa; `whatsapp` cae al
+            // teléfono en la app (la PWA decide si ese número sirve para chat),
+            // así que un negocio con un solo móvil no necesita repetirlo acá.
+            'whatsapp' => $this->whatsapp,
+            'hrs' => $this->horario,
             'nombre' => $this->nombre,
             'desc' => $this->descripcion,
             'como' => $this->como,
