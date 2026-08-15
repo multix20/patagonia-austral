@@ -5,7 +5,10 @@ namespace Tests\Feature;
 use App\Models\Localidad;
 use App\Models\Place;
 use App\Models\Propuesta;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
+use ReflectionMethod;
 use Tests\TestCase;
 
 // Cubre el formulario con el que el dueño de un servicio actualiza SU ficha.
@@ -200,5 +203,42 @@ class PropuestaTest extends TestCase
 
         $this->assertNotSame($primera->token, Propuesta::invitar($ficha)->token);
         $this->assertSame(2, Propuesta::count());
+    }
+
+    /**
+     * El formulario se envía a una dirección RELATIVA.
+     *
+     * Salió de un 419 en producción: con `url()` la dirección se armaba con el
+     * host de la petición, que es el del backend (Netlify proxea `/mi-ficha/*`
+     * hacia Render reescribiendo el Host). Como la página se abre en el dominio
+     * propio, el envío cruzaba de dominio, la cookie de sesión no viajaba y
+     * Laravel respondía "página expirada" justo al enviar.
+     *
+     * El test mira el HTML y no la respuesta porque el fallo era invisible del
+     * lado del servidor: cada petición, por separado, estaba perfecta.
+     */
+    public function test_el_formulario_se_envia_al_mismo_host_que_lo_sirvio(): void
+    {
+        $propuesta = Propuesta::invitar($this->ficha());
+
+        $this->get('/mi-ficha/'.$propuesta->token)
+            ->assertSee('action="/mi-ficha/'.$propuesta->token.'"', false)
+            ->assertDontSee('action="http', false);
+    }
+
+    /**
+     * Responder no exige token CSRF: la credencial es el token del enlace.
+     *
+     * Se comprueba sobre el middleware y no con una petición porque Laravel
+     * desactiva la verificación CSRF durante los tests — por eso justamente el
+     * 419 de producción pasó CI en verde.
+     */
+    public function test_el_formulario_esta_fuera_de_la_verificacion_csrf(): void
+    {
+        $verificador = app(VerifyCsrfToken::class);
+        $exceptuada = new ReflectionMethod($verificador, 'inExceptArray');
+
+        $this->assertTrue($exceptuada->invoke($verificador, Request::create('/mi-ficha/loquesea', 'POST')));
+        $this->assertFalse($exceptuada->invoke($verificador, Request::create('/admin/login', 'POST')));
     }
 }
