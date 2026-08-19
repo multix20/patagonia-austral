@@ -11,7 +11,9 @@ const DICCIONARIO = {
     // instalada—: sobre el mapa manda el CAMINO, no la marca, porque el viajero
     // está mirando la Ruta 7. Va igual en los dos idiomas: es el número de una
     // carretera, no una frase que se traduzca.
-    marcaMapa: 'RUTA 7',
+    // Va en caja mixta, no en versales: el chip lo compone a 16,5px/800 y en
+    // mayúsculas «RUTA 7» pesa más ancho de lo que la píldora tiene para dar.
+    marcaMapa: 'Ruta 7',
     enLinea: 'En línea',
     sinConexion: 'Sin conexión',
     bannerOffline: 'Sin conexión — mostrando información guardada en tu teléfono',
@@ -172,7 +174,9 @@ const DICCIONARIO = {
     // instalada—: sobre el mapa manda el CAMINO, no la marca, porque el viajero
     // está mirando la Ruta 7. Va igual en los dos idiomas: es el número de una
     // carretera, no una frase que se traduzca.
-    marcaMapa: 'RUTA 7',
+    // Va en caja mixta, no en versales: el chip lo compone a 16,5px/800 y en
+    // mayúsculas «RUTA 7» pesa más ancho de lo que la píldora tiene para dar.
+    marcaMapa: 'Ruta 7',
     enLinea: 'Online',
     sinConexion: 'Offline',
     bannerOffline: 'Offline — showing information saved on your phone',

@@ -8,6 +8,7 @@
   --acento: #d85a30;
   --amarillo: #f5a623;
   --claude: #d97757; /* coral del chatbot (estilo Claude Code) */
+  --claude-osc: #bd5c3a; /* coral pisado: glifos sobre fondo coral */
   --barra-cat-h: 60px; /* alto de la barra de categorías (zona del pulgar) */
   /* Cuánto del fondo de la app queda FUERA de lo visible. Normalmente 0; en un
      teléfono sube cuando el layout (100dvh, viewport-fit=cover) se extiende por
@@ -1964,57 +1965,210 @@ h1 small {
   background: var(--acento);
   border: 2px solid #fff;
 }
+/* Píldora de la ruta — objeto encendido, no tarjeta.
+   Antes era una tarjeta blanca con la marca y un subtítulo; sobre un mapa lleno
+   de tarjetas blancas (campanita, idioma, barra de categorías) no destacaba, y
+   lo que decía —el nombre del producto— no le sirve a quien va manejando. Ahora
+   lleva color pleno, brillo arriba, un barrido de luz y un punto que late, y
+   dice una sola cosa: RUTA 7.
+   Los tres adornos van en <span> propios y no en pseudo-elementos porque el
+   botón ya usa ::before/::after libres pero necesita DOS capas recortadas
+   (brillo y barrido) más una que se sale del borde (el halo) — y esa última no
+   puede vivir dentro de un contenedor con overflow:hidden. De ahí el
+   envoltorio. */
+.lp-wrap {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  /* La topbar apaga los eventos para dejar pasar el arrastre del mapa entre sus
+     botones; cada hijo los vuelve a encender. El envoltorio NO: solo el botón. */
+  pointer-events: none;
+}
+/* Halo. Se dibuja fuera del botón (inset negativo) para que el resplandor no
+   quede recortado por el overflow:hidden que necesitan el brillo y el barrido. */
+.lp-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -12px -15px;
+  border-radius: 999px;
+  background: radial-gradient(
+    58% 68% at 50% 55%,
+    rgba(18, 177, 131, 0.7) 0%,
+    rgba(18, 177, 131, 0) 72%
+  );
+  filter: blur(8px);
+  animation: lp-latido 3s ease-in-out infinite;
+  pointer-events: none;
+}
+.lp-wrap.en-pueblo::before {
+  background: radial-gradient(
+    58% 68% at 50% 55%,
+    rgba(217, 119, 87, 0.7) 0%,
+    rgba(217, 119, 87, 0) 72%
+  );
+}
 .loc-pill {
+  position: relative;
   pointer-events: auto;
   display: flex;
   align-items: center;
-  gap: 7px;
-  background: #fff;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
-  border-radius: 24px;
-  padding: 8px 14px 8px 10px;
+  gap: 9px;
+  /* 46px = el alto exacto de los .fab-sq que tiene a los lados: los tres
+     elementos de la topbar cierran la misma línea arriba y abajo. */
+  height: 46px;
+  padding: 0 15px 0 7px;
   border: none;
   cursor: pointer;
+  border-radius: 999px;
+  overflow: hidden;
   min-width: 0;
-  /* Se ajusta a su contenido en vez de estirarse. Con `flex: 1` la píldora
-     ocupaba siempre los 210 px, y desde que el rótulo de la ruta es «RUTA 7»
-     —dos palabras, sin subtítulo— eso dejaba media píldora en blanco. Sigue
-     pudiendo ENCOGER (`1` en el medio, más el `min-width: 0`), que es lo que
-     deja funcionar la elipsis del nombre en los pueblos de nombre largo, y el
-     tope de 210 px sigue mandando ahí. */
-  flex: 0 1 auto;
-  max-width: 210px;
+  /* Techo: 362px de topbar menos los dos .fab-sq (46 cada uno) y sus dos
+     huecos (8) = 254. Se deja en 244 para no pegar la píldora a los botones.
+     Hace falta entero: "Puerto Río Tranquilo" es el topónimo más largo de la
+     ruta y con el ancho viejo (210) se cortaba en "Puerto Río Tr…". */
+  max-width: 244px;
+  background: linear-gradient(135deg, #14bd8b 0%, #0f8f6c 45%, #0b6a51 100%);
+  box-shadow:
+    0 2px 4px rgba(8, 80, 65, 0.3),
+    0 12px 30px rgba(8, 80, 65, 0.5),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.48),
+    inset 0 -3px 9px rgba(0, 0, 0, 0.2);
 }
+/* Dentro de un pueblo la píldora cambia de trabajo: deja de decir dónde estás y
+   pasa a ser el botón de volver. Por eso cambia de color al coral de la app y
+   pierde el punto y el barrido — no hay ruta que reportar en curso. */
+.loc-pill.en-pueblo {
+  background: linear-gradient(135deg, #e79068 0%, #d97757 45%, #bd5c3a 100%);
+  box-shadow:
+    0 2px 4px rgba(150, 70, 40, 0.3),
+    0 12px 30px rgba(150, 70, 40, 0.48),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -3px 9px rgba(0, 0, 0, 0.2);
+}
+.loc-pill:active {
+  transform: scale(0.96);
+}
+/* Brillo superior: la franja que convierte el degradado plano en algo con
+   volumen. Va recortada por el radio del botón. */
+.lp-brillo {
+  position: absolute;
+  top: 3px;
+  left: 10px;
+  right: 10px;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+}
+/* Barrido de luz: cruza la píldora cada pocos segundos. Es lo que hace que se
+   note con el teléfono en el parabrisas y el rabillo del ojo en el camino. */
+.lp-barrido {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 30px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: lp-barrido 4.4s ease-in-out infinite;
+  pointer-events: none;
+}
+/* Disco del glifo. Blanco con el icono en el coral con que el mapa dibuja la
+   Ruta 7 (#d85a30, ver MapView): la píldora y la línea del camino son lo
+   mismo, y eso se dice con el color, no con un rótulo. */
 .loc-pill .zn {
-  width: 26px;
-  height: 26px;
+  position: relative;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  color: #fff;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.3),
+    0 2px 5px rgba(0, 0, 0, 0.24);
 }
 .loc-pill .tx {
+  position: relative;
   min-width: 0;
-  text-align: left;
-}
-.loc-pill .tx b {
-  display: block;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--tinta);
-  line-height: 1.15;
+  font-size: 16.5px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.loc-pill .tx small {
-  font-size: 9.5px;
-  color: var(--gris);
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
+/* Punto "en ruta". El lima es el único color de la app que no pertenece a
+   ninguna categoría ni a ningún estado de reporte: no se confunde con nada. */
+/* Nombre de pueblo: un punto y medio más chico que "Ruta 7" y un grado menos
+   de peso. El número de la ruta son seis caracteres y aguanta el tamaño
+   grande; un topónimo de veinte no. La medida sale del caso peor real —
+   "Puerto Río Tranquilo", el nombre más largo de la ruta, que a 16,5/800
+   quedaba en "Puerto Río Tr…" y así entra entero, con cuatro píxeles de
+   sobra. El diseño viejo también lo
+   mostraba completo: cortarlo habría sido perder algo que ya funcionaba. */
+.loc-pill.en-pueblo .tx {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+}
+.lp-vivo {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #d6f95f;
+  flex-shrink: 0;
+  animation: lp-vivo 2.2s ease-out infinite;
+}
+@keyframes lp-latido {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.08);
+  }
+}
+@keyframes lp-barrido {
+  0% {
+    transform: translateX(-140%) skewX(-20deg);
+  }
+  60%,
+  100% {
+    transform: translateX(360%) skewX(-20deg);
+  }
+}
+@keyframes lp-vivo {
+  0% {
+    box-shadow: 0 0 0 0 rgba(214, 249, 95, 0.85);
+  }
+  70% {
+    box-shadow: 0 0 0 9px rgba(214, 249, 95, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(214, 249, 95, 0);
+  }
+}
+/* Tres cosas moviéndose en bucle arriba de la pantalla son tres cosas que
+   marean a quien las pidió apagadas. El color y el relieve se quedan. */
+@media (prefers-reduced-motion: reduce) {
+  .lp-wrap::before,
+  .lp-barrido,
+  .lp-vivo {
+    animation: none;
+  }
 }
 
 /* Chip de sin conexión */

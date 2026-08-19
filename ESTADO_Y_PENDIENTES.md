@@ -22,6 +22,65 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
+## Dónde quedamos — para retomar (19-ago-2026)
+
+### La píldora del mapa dice RUTA 7 y se ve
+
+**El punto de partida.** Arriba del mapa flotaba una tarjeta blanca que decía
+"Patagonia Austral" con el subtítulo "RUTA COMPLETA". Dos problemas: sobre un
+mapa lleno de tarjetas blancas (campanita, idioma, barra de categorías) no
+destacaba, y lo que decía —el nombre del producto— no le resuelve nada a quien
+va manejando. El nombre de la app ya lo sabe: la tiene instalada.
+
+**Lo que dice ahora.** Una sola cosa: **Ruta 7**, que es lo que dicen los
+letreros de afuera. La referencia de diseño fue Waze: dejó de ser una tarjeta y
+pasó a ser un **objeto encendido** — verde de color pleno con degradado, brillo
+superior, un barrido de luz que la cruza cada 4,4 s y un punto lima que late
+mientras estás en la ruta. Dentro de un pueblo cambia de trabajo y de color: se
+pone coral, muestra el nombre del pueblo y es el botón de volver (ahí no hay
+barrido ni punto — no hay ruta en curso que latir).
+
+**Cuatro decisiones que vale la pena no volver a discutir:**
+
+- **El glifo va en `--acento` (#d85a30), no en verde.** Es exactamente el color
+  con que `MapView` dibuja la Ruta 7 sobre el mapa. La píldora y la línea del
+  camino son la misma cosa, y eso se dice con el color en vez de con un rótulo.
+- **El rótulo es la clave `marcaMapa`, con el MISMO valor en los dos idiomas.**
+  Nadie debe traducirlo a "Route 7": el extranjero que va manejando compara
+  contra la señalética de afuera, que dice RUTA 7 en los dos casos. Va en caja
+  mixta ("Ruta 7") porque el chip lo compone a 16,5px/800 y en versales no
+  cabe. Se eliminó la clave `rutaSub` ("Ruta completa"), que era el subtítulo y
+  ya no existe.
+- **El halo va en un envoltorio, no en el botón.** El botón necesita
+  `overflow: hidden` para recortar el brillo y el barrido; el resplandor se sale
+  del borde a propósito. Los dos no caben en el mismo nodo, de ahí `.lp-wrap`.
+- **El estado "pueblo" se midió contra el caso peor real.** "Puerto Río
+  Tranquilo" es el topónimo más largo de la ruta y a 16,5px/800 quedaba en
+  "Puerto Río Tr…" — el diseño viejo lo mostraba entero, así que cortarlo era
+  perder algo que ya funcionaba. Se resolvió con 14,5px/700 y techo de 244px
+  (232 reales, 12 de sobra). Cuando entre una localidad nueva de nombre largo,
+  ese es el número a revisar.
+
+**Ojo con el historial de este día.** El mismo 19-ago se mergeó a `main` una
+versión MÍNIMA de este cambio (PR #90: la tarjeta blanca de siempre, con el
+texto cambiado a «RUTA 7» y sin subtítulo). Este trabajo llegó después, por
+otra rama, y la reemplaza: dos sesiones tomaron el mismo encargo en paralelo.
+De ahí que el rótulo se llame `marcaMapa` —la clave la creó aquella— y que la
+entrada de más abajo, "Sobre el mapa manda el camino, no la marca", describa el
+paso intermedio y no lo que hay hoy en pantalla.
+
+Hay `prefers-reduced-motion`: se apagan las tres animaciones y quedan el color y
+el relieve. Tres cosas moviéndose en bucle arriba de la pantalla son tres cosas
+que marean a quien las pidió apagadas.
+
+**Las cuatro direcciones que se exploraron** (placa de señalética, Waze vivo,
+cinta de asfalto y vidrio esmerilado) quedaron dibujadas sobre la pantalla real
+en `diseno/ruta-7/`, cada una con su argumento a favor y su costo. Se eligió
+**Waze vivo**. Si mañana hay que rediscutir el elemento, el material está ahí y
+se regenera con `node gen.mjs`.
+
+---
+
 ## Dónde quedamos — para retomar (15-ago-2026)
 
 ### Iconografía de guía de ruta: el icono como DATO, y la llama de recomendado
@@ -106,6 +165,9 @@ Tres cosas que quedaron decididas con esto:
   manifest de `vite.config.js` y regenerar el OG con `scripts/generar-og.py`.
 - **El subtítulo sigue existiendo dentro de un pueblo** («VOLVER A LA RUTA»):
   ahí no es decorativo, es la única pista de que la píldora es un botón.
+  *(Superado el mismo día: en el rediseño visual esa pista pasó a ser la flecha
+  y el cambio de color a coral, y el subtítulo se fue del todo. Ver la entrada
+  de arriba.)*
 - `rutaSub` («Ruta completa» / «Whole route») se borró del diccionario: era su
   único lector.
 
