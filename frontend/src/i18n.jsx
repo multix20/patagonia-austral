@@ -6,6 +6,12 @@ const DICCIONARIO = {
   es: {
     titulo: 'Patagonia Austral',
     subtitulo: 'Carretera Austral · Puerto Montt a Villa O\'Higgins',
+    // Lo que dice la píldora sobre el mapa. NO es el nombre de la app —ese sigue
+    // siendo `titulo`, y es el que va en la pestaña del navegador y en la app
+    // instalada—: sobre el mapa manda el CAMINO, no la marca, porque el viajero
+    // está mirando la Ruta 7. Va igual en los dos idiomas: es el número de una
+    // carretera, no una frase que se traduzca.
+    marcaMapa: 'RUTA 7',
     enLinea: 'En línea',
     sinConexion: 'Sin conexión',
     bannerOffline: 'Sin conexión — mostrando información guardada en tu teléfono',
@@ -58,7 +64,6 @@ const DICCIONARIO = {
     chatPlaceholder: 'Escribe tu pregunta…',
     chatDudas: '¿Dudas?',
     // ---- Rediseño map-first (Sprint UX/UI) ----
-    rutaSub: 'Ruta completa',
     volverRuta: 'Volver a la ruta',
     aDondeVas: '¿A dónde vas?',
     buscarPh: 'Buscar localidad, servicio…',
@@ -162,6 +167,12 @@ const DICCIONARIO = {
   en: {
     titulo: 'Patagonia Austral',
     subtitulo: 'Carretera Austral · Puerto Montt to Villa O\'Higgins',
+    // Lo que dice la píldora sobre el mapa. NO es el nombre de la app —ese sigue
+    // siendo `titulo`, y es el que va en la pestaña del navegador y en la app
+    // instalada—: sobre el mapa manda el CAMINO, no la marca, porque el viajero
+    // está mirando la Ruta 7. Va igual en los dos idiomas: es el número de una
+    // carretera, no una frase que se traduzca.
+    marcaMapa: 'RUTA 7',
     enLinea: 'Online',
     sinConexion: 'Offline',
     bannerOffline: 'Offline — showing information saved on your phone',
@@ -198,7 +209,6 @@ const DICCIONARIO = {
     chatPlaceholder: 'Type your question…',
     chatDudas: 'Questions?',
     // ---- Map-first redesign (UX/UI Sprint) ----
-    rutaSub: 'Whole route',
     volverRuta: 'Back to route',
     aDondeVas: 'Where to?',
     buscarPh: 'Search town, service…',

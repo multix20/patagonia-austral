@@ -90,6 +90,25 @@ componente y otra en string para los pines de Leaflet, y ya se habían
 desincronizado — `search`, `share` y `clock` salían mutilados dentro de un pin y
 enteros en el resto de la app.
 
+### Sobre el mapa manda el camino, no la marca (19-ago-2026)
+
+La píldora de arriba del mapa decía **«Patagonia Austral / RUTA COMPLETA»**.
+Ahora dice **«RUTA 7»**, sin subtítulo: sobre el mapa lo que ubica al viajero es
+el camino en el que está, no el nombre del producto — y «Ruta completa» debajo
+del rótulo no agregaba nada.
+
+Tres cosas que quedaron decididas con esto:
+
+- **Es solo la píldora.** El nombre de la app sigue siendo Patagonia Austral en
+  la pestaña del navegador, en la app instalada y en la vista previa al
+  compartir. Por eso la cadena nueva se llama `marcaMapa` y NO se tocó `titulo`:
+  si algún día se renombra la marca de verdad, hay que tocar `index.html`, el
+  manifest de `vite.config.js` y regenerar el OG con `scripts/generar-og.py`.
+- **El subtítulo sigue existiendo dentro de un pueblo** («VOLVER A LA RUTA»):
+  ahí no es decorativo, es la única pista de que la píldora es un botón.
+- `rutaSub` («Ruta completa» / «Whole route») se borró del diccionario: era su
+  único lector.
+
 ### El asistente pasa de buscador a copiloto (y ya se puede reservar)
 
 **El punto de partida.** El chat respondía bien "¿qué hay en este pueblo?", pero
