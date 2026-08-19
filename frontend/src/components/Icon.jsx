@@ -1,3 +1,5 @@
+import { createElement } from 'react'
+
 // Set de iconos SVG (estilo Lucide, trazo 2px) — sin dependencias externas
 const RUTAS = {
   mountain: 'm8 3 4 8 5-5 5 15H2L8 3z',
@@ -56,32 +58,90 @@ const RUTAS = {
   // Cono de faena (reporte "faena / desvío" — obras del Plan Ruta Austral):
   // triángulo con dos franjas y la base apoyada en el suelo.
   cone: 'm12 3-6 15h12L12 3zM3 21h18M9.6 10.5h4.8M8 15h8',
+
+  // ---- Iconografía de guía de ruta (ago-2026) ----
+  // La llama: sello de "recomendado por los viajeros". Va SOLO aquí como forma;
+  // quién la enciende lo decide `data/iconos.js`, no el dibujo.
+  flame:
+    'M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z',
+  // Subtipos de "dónde dormir": la cabaña/casa (la carpa ya existe arriba).
+  house:
+    'M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8M3 10a2 2 0 0 1 .71-1.53l7-6a2 2 0 0 1 2.58 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z',
+  // Subtipos de "dónde comer".
+  coffee:
+    'M10 2v2M14 2v2M6 2v2M4 8h14a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1zM19 11h1a3 3 0 0 1 0 6h-1',
+  beer:
+    'M17 11h1a3 3 0 0 1 0 6h-1M9 12v6M13 12v6M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8M14 7.5c-1 0-1.44.5-3 .5s-2-.5-3-.5-1.72.5-2.5.5a2.5 2.5 0 0 1-.14-5A3.5 3.5 0 0 1 9.5 2c1.5 0 2 .5 3 .5s1.5-.5 3-.5A3.5 3.5 0 0 1 19 5.5a2.5 2.5 0 0 1-2.5 2.5c-.78 0-1.72-.5-2.5-.5z',
+  // Subtipos de "qué visitar".
+  eye: 'M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0z',
+  footprints:
+    'M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0zM20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0zM16 17h4M4 13h4',
+  droplet:
+    'M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z',
+  waves:
+    'M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1',
+  tree: 'm17 14 3 3.3a1 1 0 0 1-.7 1.7H4.7a1 1 0 0 1-.7-1.7L7 14h-.3a1 1 0 0 1-.7-1.7L9 9h-.2A1 1 0 0 1 8 7.3L12 3l4 4.3a1 1 0 0 1-.8 1.7H15l3 3.3a1 1 0 0 1-.7 1.7H17zM12 22v-3',
+  // Subtipos de "servicios".
+  ship:
+    'M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M19.4 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.9 5.3 2.8 7.8M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6M12 10V6',
+  bus: 'M8 6v6M15 6v6M4 12h16M18 18h2a1 1 0 0 0 1-1V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a1 1 0 0 0 1 1h2M10 18h4',
+  wrench:
+    'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z',
+  'shopping-bag': 'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0',
+  banknote: 'M6 12h.01M18 12h.01',
+  info: 'M12 16v-4M12 8h.01',
+  // Subtipo de "emergencias": carabineros / policía.
+  shield:
+    'M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z',
 }
 
-// Formas adicionales (círculos/rects) por icono
-const EXTRAS = {
-  'map-pin': [<circle key="c" cx="12" cy="10" r="3" />],
-  calendar: [<rect key="r" width="18" height="18" x="3" y="4" rx="2" />],
-  car: [<circle key="a" cx="7" cy="17" r="2" />, <circle key="b" cx="17" cy="17" r="2" />],
-  smartphone: [<rect key="r" width="14" height="20" x="5" y="2" rx="2" ry="2" />],
-  bot: [<rect key="r" width="16" height="12" x="4" y="8" rx="2" />],
-  globe: [<circle key="c" cx="12" cy="12" r="10" />],
-  search: [<circle key="c" cx="11" cy="11" r="8" />],
+/**
+ * Formas adicionales (círculos/rects) por icono, en UN SOLO lugar.
+ *
+ * Antes esto vivía dos veces: una como JSX para el componente y otra como
+ * string para `iconoHTML` (los pines de Leaflet). Los dos mapas se
+ * desincronizaron —`search`, `share` y `clock` tenían su círculo solo en la
+ * versión JSX—, así que esos iconos salían mutilados dentro de un pin y
+ * enteros en el resto de la app. Declarando la forma una vez y generando las
+ * dos salidas, eso no puede volver a pasar.
+ */
+const FORMAS = {
+  'map-pin': [['circle', { cx: 12, cy: 10, r: 3 }]],
+  calendar: [['rect', { width: 18, height: 18, x: 3, y: 4, rx: 2 }]],
+  car: [
+    ['circle', { cx: 7, cy: 17, r: 2 }],
+    ['circle', { cx: 17, cy: 17, r: 2 }],
+  ],
+  smartphone: [['rect', { width: 14, height: 20, x: 5, y: 2, rx: 2, ry: 2 }]],
+  bot: [['rect', { width: 16, height: 12, x: 4, y: 8, rx: 2 }]],
+  globe: [['circle', { cx: 12, cy: 12, r: 10 }]],
+  search: [['circle', { cx: 11, cy: 11, r: 8 }]],
   locate: [
-    <circle key="a" cx="12" cy="12" r="7" />,
-    <circle key="b" cx="12" cy="12" r="1.5" />,
+    ['circle', { cx: 12, cy: 12, r: 7 }],
+    ['circle', { cx: 12, cy: 12, r: 1.5 }],
   ],
   share: [
-    <circle key="a" cx="18" cy="5" r="3" />,
-    <circle key="b" cx="6" cy="12" r="3" />,
-    <circle key="c" cx="18" cy="19" r="3" />,
+    ['circle', { cx: 18, cy: 5, r: 3 }],
+    ['circle', { cx: 6, cy: 12, r: 3 }],
+    ['circle', { cx: 18, cy: 19, r: 3 }],
   ],
-  clock: [<circle key="c" cx="12" cy="12" r="10" />],
+  clock: [['circle', { cx: 12, cy: 12, r: 10 }]],
+  // Huella: los cuatro dedos van como círculos (pin de reporte "fauna en ruta").
   paw: [
-    <circle key="a" cx="5.5" cy="9" r="1.7" />,
-    <circle key="b" cx="9" cy="6" r="1.7" />,
-    <circle key="c" cx="15" cy="6" r="1.7" />,
-    <circle key="d" cx="18.5" cy="9" r="1.7" />,
+    ['circle', { cx: 5.5, cy: 9, r: 1.7 }],
+    ['circle', { cx: 9, cy: 6, r: 1.7 }],
+    ['circle', { cx: 15, cy: 6, r: 1.7 }],
+    ['circle', { cx: 18.5, cy: 9, r: 1.7 }],
+  ],
+  eye: [['circle', { cx: 12, cy: 12, r: 3 }]],
+  banknote: [
+    ['rect', { width: 20, height: 12, x: 2, y: 6, rx: 2 }],
+    ['circle', { cx: 12, cy: 12, r: 2 }],
+  ],
+  info: [['circle', { cx: 12, cy: 12, r: 10 }]],
+  bus: [
+    ['circle', { cx: 7, cy: 18, r: 2 }],
+    ['circle', { cx: 17, cy: 18, r: 2 }],
   ],
 }
 
@@ -101,23 +161,20 @@ export default function Icon({ nombre, tam = 16, color = 'currentColor', ...prop
       {...props}
     >
       {RUTAS[nombre] && <path d={RUTAS[nombre]} />}
-      {EXTRAS[nombre]}
+      {FORMAS[nombre]?.map(([tag, attrs], i) => createElement(tag, { key: i, ...attrs }))}
     </svg>
   )
 }
 
 // Versión string para usar dentro de divIcon de Leaflet
 export function iconoHTML(nombre, tam = 14, color = '#fff') {
-  const extras = {
-    'map-pin': '<circle cx="12" cy="10" r="3"/>',
-    calendar: '<rect width="18" height="18" x="3" y="4" rx="2"/>',
-    car: '<circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>',
-    smartphone: '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>',
-    bot: '<rect width="16" height="12" x="4" y="8" rx="2"/>',
-    globe: '<circle cx="12" cy="12" r="10"/>',
-    locate: '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.5"/>',
-    // Huella: los cuatro dedos van como círculos (pin de reporte "fauna en ruta")
-    paw: '<circle cx="5.5" cy="9" r="1.7"/><circle cx="9" cy="6" r="1.7"/><circle cx="15" cy="6" r="1.7"/><circle cx="18.5" cy="9" r="1.7"/>',
-  }
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tam}" height="${tam}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${RUTAS[nombre] || ''}"/>${extras[nombre] || ''}</svg>`
+  const extras = (FORMAS[nombre] || [])
+    .map(
+      ([tag, attrs]) =>
+        `<${tag} ${Object.entries(attrs)
+          .map(([k, v]) => `${k}="${v}"`)
+          .join(' ')}/>`
+    )
+    .join('')
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tam}" height="${tam}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${RUTAS[nombre] || ''}"/>${extras}</svg>`
 }

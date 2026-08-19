@@ -885,8 +885,12 @@ function AppInterna() {
             <Icon nombre={vista === 'localidad' ? 'arrow-left' : 'route'} tam={15} color="#fff" />
           </span>
           <span className="tx">
-            <b>{vista === 'localidad' && locActiva ? locActiva.nombre[lang] : t('titulo')}</b>
-            <small>{vista === 'localidad' ? t('volverRuta') : t('rutaSub')}</small>
+            <b>{vista === 'localidad' && locActiva ? locActiva.nombre[lang] : t('marcaMapa')}</b>
+            {/* El subtítulo queda SOLO dentro de un pueblo, donde dice cómo
+                salir: es la única pista de que esta píldora es un botón. En la
+                vista de ruta se quitó — «Ruta completa» debajo de «RUTA 7» no
+                agregaba nada, y el rótulo de arriba ya nombra dónde estás. */}
+            {vista === 'localidad' && <small>{t('volverRuta')}</small>}
           </span>
         </button>
 
