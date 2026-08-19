@@ -45,11 +45,12 @@ barrido ni punto — no hay ruta en curso que latir).
 - **El glifo va en `--acento` (#d85a30), no en verde.** Es exactamente el color
   con que `MapView` dibuja la Ruta 7 sobre el mapa. La píldora y la línea del
   camino son la misma cosa, y eso se dice con el color en vez de con un rótulo.
-- **"Ruta 7" NO está en el diccionario i18n.** Es una constante (`RUTA_7` en
-  `App.jsx`) con el porqué escrito al lado: con una entrada por idioma alguien
-  acabaría traduciendo "Route 7", y el extranjero que va manejando compara
-  contra la señalética de afuera, que dice RUTA 7 en los dos casos. Se eliminó
-  la clave `rutaSub` ("Ruta completa"), que era el subtítulo y ya no existe.
+- **El rótulo es la clave `marcaMapa`, con el MISMO valor en los dos idiomas.**
+  Nadie debe traducirlo a "Route 7": el extranjero que va manejando compara
+  contra la señalética de afuera, que dice RUTA 7 en los dos casos. Va en caja
+  mixta ("Ruta 7") porque el chip lo compone a 16,5px/800 y en versales no
+  cabe. Se eliminó la clave `rutaSub` ("Ruta completa"), que era el subtítulo y
+  ya no existe.
 - **El halo va en un envoltorio, no en el botón.** El botón necesita
   `overflow: hidden` para recortar el brillo y el barrido; el resplandor se sale
   del borde a propósito. Los dos no caben en el mismo nodo, de ahí `.lp-wrap`.
@@ -59,6 +60,14 @@ barrido ni punto — no hay ruta en curso que latir).
   perder algo que ya funcionaba. Se resolvió con 14,5px/700 y techo de 244px
   (232 reales, 12 de sobra). Cuando entre una localidad nueva de nombre largo,
   ese es el número a revisar.
+
+**Ojo con el historial de este día.** El mismo 19-ago se mergeó a `main` una
+versión MÍNIMA de este cambio (PR #90: la tarjeta blanca de siempre, con el
+texto cambiado a «RUTA 7» y sin subtítulo). Este trabajo llegó después, por
+otra rama, y la reemplaza: dos sesiones tomaron el mismo encargo en paralelo.
+De ahí que el rótulo se llame `marcaMapa` —la clave la creó aquella— y que la
+entrada de más abajo, "Sobre el mapa manda el camino, no la marca", describa el
+paso intermedio y no lo que hay hoy en pantalla.
 
 Hay `prefers-reduced-motion`: se apagan las tres animaciones y quedan el color y
 el relieve. Tres cosas moviéndose en bucle arriba de la pantalla son tres cosas
@@ -73,6 +82,94 @@ se regenera con `node gen.mjs`.
 ---
 
 ## Dónde quedamos — para retomar (15-ago-2026)
+
+### Iconografía de guía de ruta: el icono como DATO, y la llama de recomendado
+
+Dos cambios de UX/UI sobre las fichas, los dos con la misma idea de fondo: en una
+guía de ruta el dibujo no es decoración, **es información** — es lo único que el
+viajero lee del servicio antes de tocarlo.
+
+**1. Icono por subtipo, no por categoría** (`frontend/src/data/iconos.js`). Hasta
+ahora las seis categorías tenían un icono cada una, así que el mapa **afirmaba
+cosas falsas**: el taller mecánico, la barcaza, el cajero y el aeropuerto se
+dibujaban los cuatro con un surtidor de bencina, y la carpa y la cabaña eran la
+misma cama (dos cosas que se deciden distinto a las siete de la tarde en la
+ruta). Ahora el icono sale del **nombre** de la ficha —carpa, cabaña, barcaza,
+llave de taller, buseta, cajero, avión, mirador, sendero, glaciar, parque…— y si
+no se reconoce nada, cae al de la categoría, que es el comportamiento de siempre.
+
+Decisiones que vale la pena no volver a discutir:
+- Se deduce del **nombre**, no de la descripción: el nombre de un servicio de la
+  Austral casi siempre dice qué es ("Camping Los Ñires"), mientras que la
+  descripción menciona de pasada cosas que no son la ficha ("a 200 m del camping").
+- Se deduce **en el cliente**: sirve igual para la semilla empaquetada y para lo
+  que llega de la API, y no agrega un campo al CMS que alguien tenga que
+  mantener a mano ficha por ficha.
+- El subtipo se usa donde el dibujo representa a UNA ficha (el pin, el icono
+  grande de la tarjeta y de la ficha) y **no** en la etiqueta de categoría ni en
+  la barra de filtros: ahí el icono representa al grupo y tiene que seguir
+  siendo el mismo, o la barra deja de servir de leyenda del mapa.
+- Las reglas se contrastaron contra las 234 fichas de la semilla; de ahí
+  salieron dos correcciones: las **áreas protegidas van antes que el agua**
+  (media docena de reservas llevan el lago en el nombre y salían dibujadas como
+  laguna) y el **aeropuerto antes que los buses** (Balmaceda es "aeropuerto —
+  traslados", y traslados ganaba).
+
+**2. La llama: sello de recomendado.** Se **enciende sola** sobre las fichas con
+**4,5 estrellas o más y al menos 3 opiniones**, en dormir, comer y qué visitar.
+Se ve en el pin del mapa (sello ámbar + halo cálido), en la bolita del grupo si
+adentro hay alguna, en la tarjeta rápida y en la ficha, con la regla escrita al
+lado. Criterios:
+- **Se gana, no se compra.** El sello comercial sigue siendo otro (`destacado`,
+  la estrella): mezclarlos le quitaría el valor al que se gana.
+- **Piso de 3 opiniones**, porque un 5,0 con una opinión no es una
+  recomendación, es una anécdota — y así es como las notas de otras plataformas
+  se vuelven imposibles de creer.
+- **Nada en servicios ni emergencias**: ahí el viajero no elige, usa lo que hay,
+  y una llama sobre un hospital diría algo que esta app no debe decir. Los
+  eventos también quedan fuera (un sello ganado en la fiesta del año pasado no
+  ayuda a decidir la de este).
+- **Las fichas `preliminar` no se recomiendan**: no se puede recomendar algo cuyo
+  nombre y teléfono todavía estamos confirmando.
+- El grupo (cluster) **hereda la llama**: sin eso, agrupar escondía justo lo que
+  la llama quería contar — al alejarse un paso, el único lugar recomendado del
+  pueblo desaparecía dentro de un número.
+
+**Cuarta trampa del mapa, en la misma familia que las tres de agosto.** El sello
+se dibujaba **debajo de su propio pin**, comido por la mitad, con un `z-index: 2`
+que en cualquier otro contexto habría bastado: el CSS de Leaflet trae
+`.leaflet-map-pane svg { z-index: 200 }`, o sea que **todo svg dentro del mapa
+sube a 200** — y la gota es un svg. El sello va en `z-index: 300`. Regla general:
+dentro del mapa, cualquier cosa que deba tapar a un pin compite contra 200, no
+contra 0.
+
+**De paso**, las formas extra de los iconos (círculos y rectángulos) quedaron
+**declaradas una sola vez**: vivían duplicadas, una versión JSX para el
+componente y otra en string para los pines de Leaflet, y ya se habían
+desincronizado — `search`, `share` y `clock` salían mutilados dentro de un pin y
+enteros en el resto de la app.
+
+### Sobre el mapa manda el camino, no la marca (19-ago-2026)
+
+La píldora de arriba del mapa decía **«Patagonia Austral / RUTA COMPLETA»**.
+Ahora dice **«RUTA 7»**, sin subtítulo: sobre el mapa lo que ubica al viajero es
+el camino en el que está, no el nombre del producto — y «Ruta completa» debajo
+del rótulo no agregaba nada.
+
+Tres cosas que quedaron decididas con esto:
+
+- **Es solo la píldora.** El nombre de la app sigue siendo Patagonia Austral en
+  la pestaña del navegador, en la app instalada y en la vista previa al
+  compartir. Por eso la cadena nueva se llama `marcaMapa` y NO se tocó `titulo`:
+  si algún día se renombra la marca de verdad, hay que tocar `index.html`, el
+  manifest de `vite.config.js` y regenerar el OG con `scripts/generar-og.py`.
+- **El subtítulo sigue existiendo dentro de un pueblo** («VOLVER A LA RUTA»):
+  ahí no es decorativo, es la única pista de que la píldora es un botón.
+  *(Superado el mismo día: en el rediseño visual esa pista pasó a ser la flecha
+  y el cambio de color a coral, y el subtítulo se fue del todo. Ver la entrada
+  de arriba.)*
+- `rutaSub` («Ruta completa» / «Whole route») se borró del diccionario: era su
+  único lector.
 
 ### El asistente pasa de buscador a copiloto (y ya se puede reservar)
 

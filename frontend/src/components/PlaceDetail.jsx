@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Icon from './Icon'
 import { CATEGORIAS, urlComoLlegar } from '../data/places'
+import { esRecomendado, iconoDeLugar } from '../data/iconos'
 import {
   enviarCalificacion,
   miCalificacion,
@@ -80,6 +81,14 @@ export default function PlaceDetail({ lugar, onCerrar, onActualizar }) {
   // `calificable` lo manda la API; la semilla empaquetada no lo trae, así que
   // sin dato se decide igual que el backend (todo salvo emergencias).
   const calificable = lugar.calificable ?? lugar.cat !== 'emergencia'
+  // La llama se evalúa con el resumen VIVO, no con el `lugar` que llegó: si la
+  // calificación recién enviada es la que cruza el umbral, el sello se enciende
+  // ahí mismo en vez de esperar a la próxima carga del directorio.
+  const recomendado = esRecomendado({
+    ...lugar,
+    estrellas: resumen.estrellas,
+    calificaciones: resumen.total,
+  })
 
   // Compartir el lugar: usa el diálogo nativo del sistema (móvil) y, si no está,
   // copia el enlace al portapapeles con un aviso breve.
@@ -171,7 +180,9 @@ export default function PlaceDetail({ lugar, onCerrar, onActualizar }) {
           </>
         ) : (
           <span className="ficha-foto-ico" aria-hidden="true">
-            <Icon nombre={c.icono} tam={72} />
+            {/* Icono del SUBTIPO (ver data/iconos.js): sin foto, este dibujo es
+                lo único que muestra qué tipo de lugar es. */}
+            <Icon nombre={iconoDeLugar(lugar)} tam={72} />
           </span>
         )}
         <div className="titulo">{lugar.nombre[lang]}</div>
@@ -180,6 +191,15 @@ export default function PlaceDetail({ lugar, onCerrar, onActualizar }) {
         <span className="etiqueta-cat" style={{ background: c.color }}>
           <Icon nombre={c.icono} tam={12} /> {c.nombre[lang]}
         </span>
+        {/* Sello ganado con las calificaciones de los viajeros. Va pegado a la
+            categoría —lo primero que se lee al abrir— y con la explicación
+            debajo: un sello sin regla visible es una decoración, y encima
+            invita a pensar que se paga. */}
+        {recomendado && (
+          <span className="etiqueta-llama">
+            <Icon nombre="flame" tam={13} color="#a85c07" /> {t('recomendado')}
+          </span>
+        )}
         {/* Nota media junto a la categoría: es lo primero que se mira al abrir
             una ficha y viaja con el directorio, así que también se ve sin señal.
             El total va SIEMPRE al lado — un 5,0 con una opinión no es un 4,3 con
@@ -193,6 +213,7 @@ export default function PlaceDetail({ lugar, onCerrar, onActualizar }) {
             </small>
           </div>
         )}
+        {recomendado && <div className="ficha-llama-nota">{t('recomendadoAyuda')}</div>}
         <p>{lugar.desc[lang]}</p>
         <div className="dato">
           <span className="d-ico">

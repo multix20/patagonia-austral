@@ -6,6 +6,14 @@ const DICCIONARIO = {
   es: {
     titulo: 'Patagonia Austral',
     subtitulo: 'Carretera Austral · Puerto Montt a Villa O\'Higgins',
+    // Lo que dice la píldora sobre el mapa. NO es el nombre de la app —ese sigue
+    // siendo `titulo`, y es el que va en la pestaña del navegador y en la app
+    // instalada—: sobre el mapa manda el CAMINO, no la marca, porque el viajero
+    // está mirando la Ruta 7. Va igual en los dos idiomas: es el número de una
+    // carretera, no una frase que se traduzca.
+    // Va en caja mixta, no en versales: el chip lo compone a 16,5px/800 y en
+    // mayúsculas «RUTA 7» pesa más ancho de lo que la píldora tiene para dar.
+    marcaMapa: 'Ruta 7',
     enLinea: 'En línea',
     sinConexion: 'Sin conexión',
     bannerOffline: 'Sin conexión — mostrando información guardada en tu teléfono',
@@ -18,6 +26,11 @@ const DICCIONARIO = {
     sinLugaresLocalidad: 'Aún no hay lugares publicados en esta localidad.',
     guardadoOffline: 'Guardado para uso sin conexión',
     destacado: 'Destacado',
+    // La llama: sello que se GANA con las calificaciones. El texto de ayuda
+    // dice la regla completa a propósito — un sello sin regla visible se lee
+    // como publicidad pagada, que es justo lo contrario de lo que es.
+    recomendado: 'Recomendado',
+    recomendadoAyuda: 'Recomendado por los viajeros: 4,5 estrellas o más, con al menos 3 opiniones.',
     dispOffline: 'Esta información está disponible sin conexión',
     compartir: 'Compartir',
     enlaceCopiado: 'Enlace copiado',
@@ -156,6 +169,14 @@ const DICCIONARIO = {
   en: {
     titulo: 'Patagonia Austral',
     subtitulo: 'Carretera Austral · Puerto Montt to Villa O\'Higgins',
+    // Lo que dice la píldora sobre el mapa. NO es el nombre de la app —ese sigue
+    // siendo `titulo`, y es el que va en la pestaña del navegador y en la app
+    // instalada—: sobre el mapa manda el CAMINO, no la marca, porque el viajero
+    // está mirando la Ruta 7. Va igual en los dos idiomas: es el número de una
+    // carretera, no una frase que se traduzca.
+    // Va en caja mixta, no en versales: el chip lo compone a 16,5px/800 y en
+    // mayúsculas «RUTA 7» pesa más ancho de lo que la píldora tiene para dar.
+    marcaMapa: 'Ruta 7',
     enLinea: 'Online',
     sinConexion: 'Offline',
     bannerOffline: 'Offline — showing information saved on your phone',
@@ -168,6 +189,8 @@ const DICCIONARIO = {
     sinLugaresLocalidad: 'No places published for this town yet.',
     guardadoOffline: 'Saved for offline use',
     destacado: 'Featured',
+    recomendado: 'Travellers’ pick',
+    recomendadoAyuda: 'Picked by travellers: 4.5 stars or more, from at least 3 reviews.',
     dispOffline: 'This information is available offline',
     compartir: 'Share',
     enlaceCopiado: 'Link copied',

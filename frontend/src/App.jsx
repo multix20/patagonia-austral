@@ -46,12 +46,6 @@ const TIPOS_AVISO = {
   evento: { es: 'Evento', en: 'Event' },
 }
 
-// El nombre del camino, tal como está pintado en los letreros. NO va en el
-// diccionario a propósito: con una entrada por idioma alguien acabaría
-// traduciendo "Route 7" al inglés, y el gringo que va manejando busca en la
-// señalética de afuera, que dice RUTA 7 en los dos casos.
-const RUTA_7 = 'Ruta 7'
-
 // Etiqueta corta de categoría para la barra flotante (clave de i18n).
 const CAT_LABEL = {
   alojamiento: 'catDormir',
@@ -899,7 +893,7 @@ function AppInterna() {
             aria-label={
               vista === 'localidad' && locActiva
                 ? `${locActiva.nombre[lang]} — ${t('volverRuta')}`
-                : `${RUTA_7} — ${t('aDondeVas')}`
+                : `${t('marcaMapa')} — ${t('aDondeVas')}`
             }
           >
             <span className="lp-brillo" aria-hidden="true" />
@@ -912,7 +906,7 @@ function AppInterna() {
               />
             </span>
             <span className="tx">
-              {vista === 'localidad' && locActiva ? locActiva.nombre[lang] : RUTA_7}
+              {vista === 'localidad' && locActiva ? locActiva.nombre[lang] : t('marcaMapa')}
             </span>
             {/* Punto "en ruta": late solo en la vista de ruta completa. Dentro
                 de un pueblo no hay nada que latir — ahí la píldora es un botón

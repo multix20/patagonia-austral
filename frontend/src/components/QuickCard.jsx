@@ -1,5 +1,6 @@
 import Icon from './Icon'
 import { CATEGORIAS, urlComoLlegar } from '../data/places'
+import { esRecomendado, iconoDeLugar } from '../data/iconos'
 import { contar } from '../analitica'
 import { numeroWhatsApp } from '../reservas'
 import { useI18n } from '../i18n'
@@ -15,6 +16,7 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
   if (!lugar) return null
 
   const c = CATEGORIAS[lugar.cat]
+  const recomendado = esRecomendado(lugar)
   const mapsUrl = urlComoLlegar(lugar, lang)
   const foto = lugar.imagenes?.[0]
   const distancia = lugar.dist?.[lang]?.split('·')[0]?.trim()
@@ -104,13 +106,23 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
           </>
         ) : (
           <span className="qc-ico" aria-hidden="true">
-            <Icon nombre={c.icono} tam={64} color="rgba(255,255,255,.32)" />
+            {/* Icono del SUBTIPO, no el de la categoría: sin foto, este dibujo
+                es todo lo que la tarjeta muestra del lugar. */}
+            <Icon nombre={iconoDeLugar(lugar)} tam={64} color="rgba(255,255,255,.32)" />
           </span>
         )}
         <span className="qc-tag">
           <Icon nombre={lugar.destacado ? 'star' : c.icono} tam={12} color="#fff" />{' '}
           {lugar.destacado ? t('destacado') : c.nombre[lang]}
         </span>
+        {/* La llama va en su PROPIA píldora, al lado de la categoría y no en
+            vez de ella: son dos cosas distintas (qué es / cómo lo calificaron)
+            y el sello se pierde si se turna con el rótulo. */}
+        {recomendado && (
+          <span className="qc-llama" title={t('recomendadoAyuda')}>
+            <Icon nombre="flame" tam={13} color="#a85c07" /> {t('recomendado')}
+          </span>
+        )}
       </div>
       <div className="qc-body">
         <button className="qc-name" onClick={onVerFicha}>

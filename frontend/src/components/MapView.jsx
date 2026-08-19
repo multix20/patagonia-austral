@@ -4,6 +4,7 @@ import L from 'leaflet'
 // El CSS base del plugin se importa en main.jsx; el icono del grupo es nuestro.
 import 'leaflet.markercluster'
 import { CATEGORIAS } from '../data/places'
+import { esRecomendado, iconoDeLugar } from '../data/iconos'
 import { ESTILO_REPORTE } from '../data/reportes'
 import { RUTA7 } from '../data/ruta7'
 import Icon, { iconoHTML } from './Icon'
@@ -195,15 +196,28 @@ function pinLocalidad(loc, tier, lang, extra = '') {
   })
 }
 
-function pinCategoria(cat) {
-  const c = CATEGORIAS[cat]
+/**
+ * Gota de un lugar. El dibujo de adentro es el del SUBTIPO (ver
+ * `data/iconos.js`): en la gota es donde más se nota, porque es lo único que el
+ * viajero ve del servicio antes de tocarlo — una carpa, un taller y una barcaza
+ * dicen algo distinto de lo que decía el icono único de su categoría.
+ *
+ * Con la llama encendida la gota lleva además el sello dorado arriba a la
+ * derecha, que es la lectura de un vistazo que pedía una guía de ruta: entre
+ * quince gotas naranjas del pueblo, se ve cuál vale la pena.
+ */
+function pinCategoria(lugar) {
+  const c = CATEGORIAS[lugar.cat]
+  const rec = esRecomendado(lugar)
+  const sello = rec ? `<span class="llama">${iconoHTML('flame', 12, '#7a3f04')}</span>` : ''
   return L.divIcon({
     className: '',
     iconSize: [34, 44],
     iconAnchor: [17, 44],
-    html: `<div class="pin-cat"><div class="teardrop">
+    html: `<div class="pin-cat ${rec ? 'rec' : ''}"><div class="teardrop">
       <svg class="body" width="34" height="44" viewBox="0 0 34 44"><path d="M17 43C17 43 32 25 32 15A15 15 0 1 0 2 15C2 25 17 43 17 43Z" fill="${c.color}" stroke="#fff" stroke-width="2.5"/></svg>
-      <div class="ico">${iconoHTML(c.icono, 17, '#fff')}</div>
+      <div class="ico">${iconoHTML(iconoDeLugar(lugar), 17, '#fff')}</div>
+      ${sello}
     </div></div>`,
   })
 }
@@ -255,10 +269,15 @@ function iconoGrupoLugares(cluster) {
   )[0]?.[0]
   const color = CATEGORIAS[dominante]?.color || 'var(--verde)'
   const n = cluster.getChildCount()
+  // Si adentro hay al menos una ficha con la llama, la bolita la muestra. Sin
+  // esto, agrupar ESCONDE justo lo que la llama quería contar: al alejarse un
+  // paso, el único lugar recomendado del pueblo desaparecía dentro de un número.
+  const rec = cluster.getAllChildMarkers().some((m) => m.options.recLugar)
+  const sello = rec ? `<span class="llama">${iconoHTML('flame', 11, '#7a3f04')}</span>` : ''
   return L.divIcon({
     className: '',
     iconSize: [38, 38],
-    html: `<div class="cluster-pin" style="background:${color}">${n}</div>`,
+    html: `<div class="cluster-pin ${rec ? 'rec' : ''}" style="background:${color}">${n}${sello}</div>`,
   })
 }
 
@@ -702,10 +721,17 @@ const MapView = forwardRef(function MapView(
 
     const visibles = lugares.filter((l) => !filtro || l.cat === filtro)
     visibles.forEach((l) => {
+      const rec = esRecomendado(l)
       const m = L.marker([l.lat, l.lng], {
-        icon: pinCategoria(l.cat),
+        icon: pinCategoria(l),
+        // Lo recomendado va por encima de lo demás cuando dos gotas se pisan: el
+        // sello no sirve de nada si queda tapado por el pin de al lado. Se queda
+        // corto del +500 de los reportes, que son información perecible y mandan.
+        zIndexOffset: rec ? 200 : 0,
         // Lo lee iconoGrupoLugares para pintar el grupo con la categoría dominante.
         catLugar: l.cat,
+        // …y esto, para saber si el grupo lleva llama.
+        recLugar: rec,
       }).on('click', () => cbLugar.current?.(l))
       grupo.addLayer(m)
     })

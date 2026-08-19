@@ -480,6 +480,7 @@ h1 small {
 }
 /* Icono de cluster (agrupación de pines) en el verde de la marca. */
 .cluster-pin {
+  position: relative; /* ancla del sello de recomendado */
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -806,6 +807,31 @@ h1 small {
   padding: 3px 10px;
   border-radius: 12px;
   margin-bottom: 10px;
+}
+/* Sello de recomendado, al lado de la etiqueta de categoría. Fondo claro y no
+   sólido como el de la categoría: son dos lecturas distintas (qué es / cómo lo
+   calificaron) y con dos píldoras macizas compiten entre ellas. */
+.etiqueta-llama {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #fdf1d8;
+  color: #7a3f04;
+  border: 1px solid #f2d199;
+  padding: 2px 9px;
+  border-radius: 12px;
+  margin: 0 0 10px 6px;
+}
+/* Explicación de la regla, bajo las estrellas. Necesita aire ABAJO: es gris y
+   la descripción de la ficha viene enseguida, así que sin separación las dos
+   se leen como un solo párrafo y la regla se pierde. */
+.ficha-llama-nota {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--gris);
+  margin: 4px 0 11px;
 }
 .ficha-cuerpo p {
   font-size: 14px;
@@ -1839,6 +1865,50 @@ h1 small {
   color: #fff;
 }
 
+/* ---------- Sello "Recomendado": la llama ----------
+   Se GANA con las calificaciones de los viajeros (la regla vive en
+   data/iconos.js). Color propio —ámbar— y no el de la categoría: si tomara el
+   color del pin dejaría de distinguirse justo entre pines de la misma
+   categoría, que es donde tiene que decidir. */
+.pin-cat.rec {
+  /* La sombra de siempre MÁS un halo cálido: en un mapa de teselas claras, el
+     sello de 17 px solo no alcanza a llamar la atención de un vistazo. */
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35)) drop-shadow(0 0 5px rgba(240, 180, 41, 0.9));
+}
+.pin-cat .llama,
+.cluster-pin .llama {
+  position: absolute;
+  top: -3px;
+  right: -4px;
+  /* Por encima del cuerpo de la gota. El número es alto por una razón concreta:
+     el CSS de Leaflet trae `.leaflet-map-pane svg { z-index: 200 }`, o sea que
+     TODO svg dentro del mapa —incluida la gota, que es un svg— sube a 200. Con
+     un `z-index: 2` razonable, el sello se dibujaba DEBAJO de su propio pin y
+     se veía comido por la mitad. */
+  z-index: 300;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f5b942;
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cluster-pin.rec {
+  /* La bolita del grupo no está en un `filter` propio: el borde blanco ya la
+     separa del mapa, así que basta con el anillo cálido. */
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    0 0 0 4px rgba(240, 180, 41, 0.45);
+}
+.cluster-pin .llama {
+  top: -3px;
+  right: -3px;
+  width: 16px;
+  height: 16px;
+}
+
 /* Barra superior flotante */
 .topbar {
   position: absolute;
@@ -2359,6 +2429,7 @@ h1 small {
   position: relative;
   display: flex;
   align-items: flex-end;
+  gap: 6px; /* separa la píldora de categoría de la de recomendado */
   padding: 12px 14px;
   color: #fff;
 }
@@ -2409,6 +2480,23 @@ h1 small {
   border-radius: 20px;
   font-size: 10.5px;
   font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+/* Sello de recomendado sobre la foto. Va OPACO (no translúcido como la píldora
+   de categoría): sobre una foto cualquiera, un ámbar al 28% deja de leerse como
+   sello y parece un reflejo. */
+.qc-llama {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fdf1d8;
+  color: #7a3f04;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 10.5px;
+  font-weight: 800;
+  white-space: nowrap;
   position: relative;
   z-index: 1;
 }
