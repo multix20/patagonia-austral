@@ -53,7 +53,6 @@ const DICCIONARIO = {
     chatPlaceholder: 'Escribe tu pregunta…',
     chatDudas: '¿Dudas?',
     // ---- Rediseño map-first (Sprint UX/UI) ----
-    rutaSub: 'Ruta completa',
     volverRuta: 'Volver a la ruta',
     aDondeVas: '¿A dónde vas?',
     buscarPh: 'Buscar localidad, servicio…',
@@ -191,7 +190,6 @@ const DICCIONARIO = {
     chatPlaceholder: 'Type your question…',
     chatDudas: 'Questions?',
     // ---- Map-first redesign (UX/UI Sprint) ----
-    rutaSub: 'Whole route',
     volverRuta: 'Back to route',
     aDondeVas: 'Where to?',
     buscarPh: 'Search town, service…',

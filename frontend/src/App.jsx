@@ -46,6 +46,12 @@ const TIPOS_AVISO = {
   evento: { es: 'Evento', en: 'Event' },
 }
 
+// El nombre del camino, tal como está pintado en los letreros. NO va en el
+// diccionario a propósito: con una entrada por idioma alguien acabaría
+// traduciendo "Route 7" al inglés, y el gringo que va manejando busca en la
+// señalética de afuera, que dice RUTA 7 en los dos casos.
+const RUTA_7 = 'Ruta 7'
+
 // Etiqueta corta de categoría para la barra flotante (clave de i18n).
 const CAT_LABEL = {
   alojamiento: 'catDormir',
@@ -874,21 +880,46 @@ function AppInterna() {
           {noLeidos > 0 && <span className="fab-dot" />}
         </button>
 
-        <button
-          className="loc-pill"
-          onClick={() => (vista === 'localidad' ? volverRuta() : abrirBuscador())}
-        >
-          <span
-            className="zn"
-            style={{ background: vista === 'localidad' ? 'var(--claude)' : 'var(--verde)' }}
+        {/* Píldora de la ruta. Dejó de llevar la marca ("Patagonia Austral ·
+            Ruta completa", 12-ago-2026) y dice UNA sola cosa: en qué camino
+            está parado quien mira. Sobre el mapa, el nombre del producto no le
+            resuelve nada al que va manejando — el número de la ruta sí, porque
+            es lo que dicen los letreros de afuera.
+            El envoltorio existe para el halo: el resplandor se dibuja en su
+            ::before, fuera del botón, que va con overflow:hidden para recortar
+            el brillo y el barrido de luz. */}
+        <span className={`lp-wrap ${vista === 'localidad' ? 'en-pueblo' : ''}`}>
+          <button
+            className={`loc-pill ${vista === 'localidad' ? 'en-pueblo' : ''}`}
+            onClick={() => (vista === 'localidad' ? volverRuta() : abrirBuscador())}
+            // El nombre accesible CONTIENE el texto visible y le agrega a dónde
+            // lleva el toque: la píldora no dice lo que hace (abre el buscador,
+            // o vuelve a la ruta) y sin esto un lector de pantalla anuncia solo
+            // "Ruta 7", que no es una acción.
+            aria-label={
+              vista === 'localidad' && locActiva
+                ? `${locActiva.nombre[lang]} — ${t('volverRuta')}`
+                : `${RUTA_7} — ${t('aDondeVas')}`
+            }
           >
-            <Icon nombre={vista === 'localidad' ? 'arrow-left' : 'route'} tam={15} color="#fff" />
-          </span>
-          <span className="tx">
-            <b>{vista === 'localidad' && locActiva ? locActiva.nombre[lang] : t('titulo')}</b>
-            <small>{vista === 'localidad' ? t('volverRuta') : t('rutaSub')}</small>
-          </span>
-        </button>
+            <span className="lp-brillo" aria-hidden="true" />
+            {vista !== 'localidad' && <span className="lp-barrido" aria-hidden="true" />}
+            <span className="zn">
+              <Icon
+                nombre={vista === 'localidad' ? 'arrow-left' : 'route'}
+                tam={20}
+                color={vista === 'localidad' ? 'var(--claude-osc)' : 'var(--acento)'}
+              />
+            </span>
+            <span className="tx">
+              {vista === 'localidad' && locActiva ? locActiva.nombre[lang] : RUTA_7}
+            </span>
+            {/* Punto "en ruta": late solo en la vista de ruta completa. Dentro
+                de un pueblo no hay nada que latir — ahí la píldora es un botón
+                de volver. */}
+            {vista !== 'localidad' && <span className="lp-vivo" aria-hidden="true" />}
+          </button>
+        </span>
 
         {/* Idioma en el lugar de la lupa. La búsqueda no se pierde: la píldora
             del centro ya abre el buscador en la vista de ruta, y el menú tiene
