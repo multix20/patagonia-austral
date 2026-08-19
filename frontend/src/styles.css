@@ -1976,7 +1976,13 @@ h1 small {
   border: none;
   cursor: pointer;
   min-width: 0;
-  flex: 1;
+  /* Se ajusta a su contenido en vez de estirarse. Con `flex: 1` la píldora
+     ocupaba siempre los 210 px, y desde que el rótulo de la ruta es «RUTA 7»
+     —dos palabras, sin subtítulo— eso dejaba media píldora en blanco. Sigue
+     pudiendo ENCOGER (`1` en el medio, más el `min-width: 0`), que es lo que
+     deja funcionar la elipsis del nombre en los pueblos de nombre largo, y el
+     tope de 210 px sigue mandando ahí. */
+  flex: 0 1 auto;
   max-width: 210px;
 }
 .loc-pill .zn {
