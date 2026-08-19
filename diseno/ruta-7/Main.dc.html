@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; background: transparent; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #0f6e56; } a:hover { color: #085041; }
+    .tel { position: relative; width: 390px; height: 740px; overflow: hidden; background: #eef3ea; }
+    .mapa { position: absolute; inset: 0; display: block; }
+    .topbar { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; z-index: 40; }
+    .fab-sq { position: relative; width: 46px; height: 46px; border-radius: 14px; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.22); display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; color: #1e2a28; flex-shrink: 0; }
+    .fab-lang { flex-direction: column; gap: 1px; }
+    .fab-lang-tx { font-size: 9.5px; font-weight: 800; letter-spacing: 0.4px; line-height: 1; color: #1e2a28; }
+    .fab-dot { position: absolute; top: 8px; right: 8px; width: 9px; height: 9px; border-radius: 50%; background: #d85a30; border: 2px solid #fff; }
+    .rail { position: absolute; right: 14px; bottom: 122px; display: flex; flex-direction: column; gap: 12px; align-items: center; z-index: 40; }
+    .fab-round { width: 48px; height: 48px; border-radius: 50%; background: #fff; box-shadow: 0 5px 16px rgba(0,0,0,0.28); display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
+    .fab-asistente { background: #eef7f3; }
+    .fab-report { background: #d97757; width: 56px; height: 56px; }
+    .catbar { position: absolute; left: 14px; right: 14px; bottom: 20px; height: 62px; background: #fff; border-radius: 22px; box-shadow: 0 1px 2px rgba(30,42,40,0.1), 0 10px 28px rgba(30,42,40,0.22); display: flex; align-items: stretch; padding: 8px 6px; gap: 2px; z-index: 45; }
+    .cat-btn { flex: 1 1 auto; min-width: 44px; padding: 0; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 16px; }
+    .cico { width: 40px; height: 40px; border-radius: 13px; display: flex; align-items: center; justify-content: center; }
+    @keyframes aura-late { 0%, 100% { opacity: 0.42; transform: scale(0.98); } 50% { opacity: 0.85; transform: scale(1.05); } }
+    @keyframes brillo { 0% { transform: translateX(-130%) skewX(-18deg); } 55%, 100% { transform: translateX(320%) skewX(-18deg); } }
+    @keyframes halo-gps { 0% { r: 8; opacity: 0.55; } 100% { r: 26; opacity: 0; } }
+    .quieto * { animation: none !important; }
+  </style>
+</helmet>
+
+<div class="tel {{ quieto }}">
+  <svg class="mapa" viewBox="0 0 390 740" width="390" height="740" preserveAspectRatio="none" aria-hidden="true">
+    <rect x="0" y="0" width="390" height="740" fill="{{ m.base }}"></rect>
+    <path d="M0 0 L96 0 C74 92 100 152 78 216 C56 282 96 332 64 402 C38 460 74 522 48 598 C28 656 62 702 44 740 L0 740 Z" fill="{{ m.agua }}"></path>
+    <path d="M300 96 C340 92 384 118 388 152 C392 190 352 214 316 206 C282 198 264 168 274 138 C280 116 288 98 300 96 Z" fill="{{ m.bosque }}"></path>
+    <ellipse cx="308" cy="302" rx="72" ry="34" fill="{{ m.agua }}"></ellipse>
+    <path d="M96 470 C150 452 214 470 246 500 C276 528 262 566 216 574 C160 584 104 556 90 522 C80 498 84 474 96 470 Z" fill="{{ m.bosque }}"></path>
+    <path d="M118 662 C170 646 236 664 262 690 L262 740 L102 740 Z" fill="{{ m.bosque }}"></path>
+    <g stroke="{{ m.calle }}" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.9">
+      <path d="M204 168 C244 176 268 200 300 196"></path>
+      <path d="M198 352 C160 366 138 396 100 402"></path>
+      <path d="M222 528 C264 536 288 560 330 556"></path>
+      <path d="M214 626 C176 640 156 668 118 676"></path>
+    </g>
+    <path d="M198 -20 C178 70 216 122 202 192 C188 260 234 302 216 374 C200 438 238 488 222 562 C208 628 240 674 228 760" fill="none" stroke="#ffffff" stroke-width="9.5" stroke-linecap="round"></path>
+    <path d="M198 -20 C178 70 216 122 202 192 C188 260 234 302 216 374 C200 438 238 488 222 562 C208 628 240 674 228 760" fill="none" stroke="#d85a30" stroke-width="5.5" stroke-linecap="round"></path>
+    <g transform="translate(232 236)">
+      <path d="M17 43C17 43 33 26 33 17A16 16 0 1 0 1 17C1 26 17 43 17 43Z" fill="#534AB7" stroke="#fff" stroke-width="2.5"></path>
+      <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9" transform="translate(8.4 8.4) scale(0.72)" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+    </g>
+    <g transform="translate(122 398)">
+      <path d="M17 43C17 43 33 26 33 17A16 16 0 1 0 1 17C1 26 17 43 17 43Z" fill="#0F6E56" stroke="#fff" stroke-width="2.5"></path>
+      <path d="M8 3l4 8 5-5 5 15H2L8 3z" transform="translate(8.4 8.4) scale(0.72)" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+    </g>
+    <g transform="translate(268 552)">
+      <path d="M17 43C17 43 33 26 33 17A16 16 0 1 0 1 17C1 26 17 43 17 43Z" fill="#185FA5" stroke="#fff" stroke-width="2.5"></path>
+      <path d="M3 22h12M4 9h10M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2 2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5" transform="translate(8.6 8.6) scale(0.7)" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path>
+    </g>
+    <circle cx="212" cy="468" r="8" fill="#2f6f9f" opacity="0.28" style="animation: halo-gps 2.6s ease-out infinite;"></circle>
+    <circle cx="212" cy="468" r="7.5" fill="#2f6f9f" stroke="#fff" stroke-width="3"></circle>
+  </svg>
+
+  <div class="topbar">
+    <button class="fab-sq" type="button" aria-label="Avisos">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1e2a28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      <span class="fab-dot"></span>
+    </button>
+
+    <span style="position: relative; display: inline-flex; align-items: center;">
+      <span style="position: absolute; inset: -12px -14px; border-radius: 28px; background: radial-gradient(60% 70% at 50% 55%, {{ p.aura }} 0%, rgba(15,110,86,0) 72%); filter: blur(7px); animation: aura-late 3.6s ease-in-out infinite; pointer-events: none;"></span>
+
+      <sc-if value="{{ enRuta }}" hint-placeholder-val="{{ true }}">
+        <button type="button" onClick="{{ alternar }}" aria-label="Ruta 7" style="position: relative; display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 17px 0 8px; border: none; cursor: pointer; border-radius: 15px; overflow: hidden; background: linear-gradient(180deg, #15866c 0%, #0f6e56 48%, #0a5646 100%); box-shadow: 0 0 0 3px #ffffff, 0 1px 2px rgba(30,42,40,0.2), 0 10px 26px rgba(8,80,65,0.45), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.18);">
+          <span style="position: absolute; top: 0; bottom: 0; left: 0; width: 34px; background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%); animation: brillo 5.2s ease-in-out infinite; pointer-events: none;"></span>
+          <span style="width: 32px; height: 32px; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.22);">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#d85a30" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM9 16h6a3 3 0 0 0 0-6H9"></path></svg>
+          </span>
+          <span style="font-size: 16.5px; font-weight: 800; letter-spacing: 1.7px; color: #fff; line-height: 1; text-shadow: 0 1px 1px rgba(0,0,0,0.22);">RUTA 7</span>
+        </button>
+      </sc-if>
+
+      <sc-if value="{{ enPueblo }}" hint-placeholder-val="{{ false }}">
+        <button type="button" onClick="{{ alternar }}" aria-label="Volver a la ruta" style="position: relative; display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 17px 0 8px; border: none; cursor: pointer; border-radius: 15px; background: linear-gradient(180deg, #e08768 0%, #d97757 48%, #c4623f 100%); box-shadow: 0 0 0 3px #ffffff, 0 1px 2px rgba(30,42,40,0.2), 0 10px 26px rgba(196,98,63,0.45), inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -2px 0 rgba(0,0,0,0.18);">
+          <span style="width: 32px; height: 32px; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.22);">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c4623f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7M19 12H5"></path></svg>
+          </span>
+          <span style="font-size: 16.5px; font-weight: 800; letter-spacing: 0.9px; color: #fff; line-height: 1; text-shadow: 0 1px 1px rgba(0,0,0,0.22);">COCHRANE</span>
+        </button>
+      </sc-if>
+    </span>
+
+    <button class="fab-sq fab-lang" type="button" aria-label="Switch to English">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1e2a28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+      <span class="fab-lang-tx">EN</span>
+    </button>
+  </div>
+
+  <div class="rail">
+    <button class="fab-round fab-asistente" type="button" aria-label="Asistente">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#085041" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>
+    </button>
+    <button class="fab-round fab-report" type="button" aria-label="Reportar">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+    </button>
+  </div>
+
+  <nav class="catbar" aria-label="Filtrar por categoria">
+    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="6">
+      <button class="cat-btn" type="button" aria-label="{{ c.nombre }}">
+        <span class="cico" style="{{ c.est }}">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ c.d }}"></path></svg>
+        </span>
+      </button>
+    </sc-for>
+  </nav>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"mapa":{"editor":"enum","options":["terreno","satelital"],"default":"terreno","section":"Mapa"},"movimiento":{"editor":"boolean","default":true,"section":"Mapa"},"$preview":{"width":390,"height":740}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props)
+    this.state = { vista: 'ruta' }
+  }
+
+  renderVals() {
+    const sat = this.props.mapa === 'satelital'
+    const m = sat
+      ? { base: '#1d2823', agua: '#14313d', bosque: '#2b3b2c', calle: '#6d7a6b' }
+      : { base: '#eef3ea', agua: '#bcd8e6', bosque: '#d8e7cf', calle: '#ffffff' }
+    const cats = [
+      { nombre: 'Donde dormir', d: 'M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9', fondo: '#EEEDFE', color: '#534AB7' },
+      { nombre: 'Donde comer', d: 'M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7', fondo: '#FAECE7', color: '#D85A30' },
+      { nombre: 'Que visitar', d: 'm8 3 4 8 5-5 5 15H2L8 3z', fondo: '#E1F5EE', color: '#0F6E56' },
+      { nombre: 'Servicios', d: 'M3 22h12M4 9h10M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2 2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5', fondo: '#E6F1FB', color: '#185FA5' },
+      { nombre: 'Eventos', d: 'M8 2v4M16 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01', fondo: '#FBEAF0', color: '#D4537E' },
+      { nombre: 'Emergencias', d: 'M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z', fondo: '#FCEBEB', color: '#A32D2D' },
+    ].map((c) => Object.assign({}, c, { est: 'background:' + c.fondo + ';color:' + c.color }))
+
+    return {
+      m,
+      cats,
+      p: { aura: sat ? 'rgba(29,214,168,0.65)' : 'rgba(15,110,86,0.55)' },
+      enRuta: this.state.vista === 'ruta',
+      enPueblo: this.state.vista !== 'ruta',
+      quieto: this.props.movimiento === false ? 'quieto' : '',
+      alternar: () => this.setState({ vista: this.state.vista === 'ruta' ? 'pueblo' : 'ruta' }),
+    }
+  }
+}
+</script>
+</body>
+</html>

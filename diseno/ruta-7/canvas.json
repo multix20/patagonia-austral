@@ -1,0 +1,46 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html",    "title": "A · Placa de ruta",     "x": 0,    "y": 0, "w": 390, "h": 740 },
+    { "file": "OpcionB.dc.html", "title": "B · Waze vivo",         "x": 500,  "y": 0, "w": 390, "h": 740 },
+    { "file": "OpcionC.dc.html", "title": "C · Cinta de asfalto",  "x": 1000, "y": 0, "w": 390, "h": 740 },
+    { "file": "OpcionD.dc.html", "title": "D · Vidrio nocturno",   "x": 1500, "y": 0, "w": 390, "h": 740 }
+  ],
+  "annotations": [
+    {
+      "id": "brief",
+      "x": 0,
+      "y": -230,
+      "w": 700,
+      "text": "RUTA 7 — la píldora del mapa\n\nHoy dice «Patagonia Austral / RUTA COMPLETA». Pasa a decir solo Ruta 7, con mucha más presencia.\n\nTodo lo que rodea la píldora es la pantalla real de la app —mapa, campanita, idioma, rail y barra de categorías— con sus mismos colores, radios y sombras. Lo único que cambia entre las cuatro es la píldora.\n\nTócala para ver el segundo estado (dentro de un pueblo). Arriba de cada pantalla hay dos palancas: mapa terreno/satelital y animación sí/no."
+    },
+    {
+      "id": "nota-a",
+      "x": 0,
+      "y": 780,
+      "w": 390,
+      "text": "A · Placa de ruta\n\nDeja de ser una píldora y pasa a ser una señal de carretera: placa verde con borde blanco, como los letreros de la ruta. El cuadrado blanco lleva el glifo en coral #d85a30, el mismo color con que el mapa dibuja la Ruta 7.\n\nA favor: se lee como «camino» al instante y aguanta sobre cualquier fondo.\nEn contra: la más sobria de las cuatro; impacta por forma, no por color."
+    },
+    {
+      "id": "nota-b",
+      "x": 500,
+      "y": 780,
+      "w": 390,
+      "text": "B · Waze vivo\n\nLa más parecida a Waze: chip de color pleno, brillo arriba, barrido de luz y punto lima latiendo. Deja de ser una tarjeta blanca sobre el mapa y pasa a ser un objeto encendido.\n\nA favor: máximo impacto, se ve de reojo con el teléfono en el parabrisas.\nEn contra: suma un tercer color fuerte arriba, mientras abajo ya compiten el coral de reportar y los seis de categorías."
+    },
+    {
+      "id": "nota-c",
+      "x": 1000,
+      "y": 780,
+      "w": 390,
+      "text": "C · Cinta de asfalto\n\nLa píldora es el camino: banda oscura, línea central amarilla corriendo hacia atrás y el número encima. La animación cuenta que vas avanzando.\n\nA favor: memorable, no se parece a nada más, y se entiende sin leer.\nEn contra: oscura sobre mapa oscuro pierde borde (por eso el anillo blanco de 2,5 px), y una línea en movimiento permanente puede cansar."
+    },
+    {
+      "id": "nota-d",
+      "x": 1500,
+      "y": 780,
+      "w": 390,
+      "text": "D · Vidrio nocturno\n\nVidrio esmerilado, RUTA en chico muy espaciado sobre un 7 grande, anillo ámbar que respira. Vertical en vez de horizontal: ocupa la mitad de ancho que las otras y deja más mapa a la vista.\n\nA favor: elegante, y brillante sobre satelital o de noche.\nEn contra: sobre el mapa claro de terreno el vidrio pierde contraste, y backdrop-filter cuesta caro en un Android viejo."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}
