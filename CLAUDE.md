@@ -171,6 +171,21 @@ Raúl Marín Balmaceda y Balmaceda (22-jul) y **Puerto Yungay (11-ago)**, así q
 
 Detalle en `ESTADO_Y_PENDIENTES.md`.
 
+**Las barcazas traen horario, tarifa y contacto (21-ago-2026).** Los nueve
+cruces y terminales de la app llevan zarpes en `horario`, teléfono de reserva en
+`tel` y las tarifas dentro del texto. Tres reglas que salieron de cargarlos:
+
+- **Un valor que caduca se escribe FECHADO** — las tarifas dicen "valores
+  referenciales ago-2026" en el propio texto. Las fija el decreto de subsidio y
+  cambian por temporada: sin fecha el número envejece mintiendo; con fecha
+  sigue sirviendo de orden de magnitud, que es lo que decide el itinerario.
+- **Sin dato real no se rellena el campo** — los cruces sin reserva (La Arena,
+  Yungay, río Palena) quedaron sin teléfono a propósito.
+- **Una columna nueva hay que sembrarla también** — `whatsapp` y `horario`
+  existían en la BD y en el CMS, pero `PlaceSeeder` no las copiaba y el dato de
+  `places.json` se perdía en silencio. Al agregar una columna: BD, CMS, API **y
+  seeder**.
+
 **Infraestructura — SIN PENDIENTES desde el 10-ago-2026.** Los dos que quedaban
 se cerraron ese día:
 - **Bucket Cloudflare R2** operativo — foto probada de punta a punta
