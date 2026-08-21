@@ -22,6 +22,74 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
+## Dónde quedamos — para retomar (21-ago-2026)
+
+### Las barcazas ya traen horario, tarifa y teléfono
+
+**El punto de partida.** Las nueve fichas de cruces y terminales de la app
+—las dos rampas del bimodal (Hornopirén y Caleta Gonzalo), La Arena–Puelche,
+Yungay–Río Bravo, Chile Chico–Ibáñez, la barcaza del río Palena y los
+terminales de Chaitén, Chacabuco y Puerto Montt— **describían el trayecto pero
+no servían para planificarlo**: ni zarpes, ni valores, ni un número donde
+reservar. En la Austral la barcaza es lo que decide el día: perder el último
+zarpe cuesta una jornada entera, y el viajero decide en la ruta, sin señal. Era
+justo el dato que faltaba.
+
+**Lo que quedó cargado** (búsqueda web de agosto de 2026, sitios de los
+operadores y guías de ruta):
+
+| Cruce | Zarpes | Valor referencial | Reserva |
+|---|---|---|---|
+| Hornopirén ↔ Caleta Gonzalo (Somarco) | 10:00 subsidiado; 18:00 y 02:00 comerciales · desde Caleta Gonzalo 12:30 y 20:00 | auto $72.650 · pasajero $12.100 · moto $18.200 · bici $8.050 | barcazas.cl · +56 65 221 7413 · oficina Ingenieros Militares 450 |
+| La Arena ↔ Puelche (Transportes del Estuario) | cada ~30 min de día, cada 1½ h de madrugada | pasajeros liberados · auto $11.510 · furgón $15.210 · moto $8.280 · bici $3.130 | sin reserva, por orden de llegada |
+| Yungay ↔ Río Bravo (Fiordo Mitchell) | 10:00 · 12:00 · 16:00 · 18:00 (desde Río Bravo 11:00 · 13:00 · 17:00 · 19:00) | **gratuito** | sin reserva |
+| Chile Chico ↔ Ibáñez (Naviera Austral) | diario; 1 h antes a pie, 2 h con vehículo | pasajero $2.510 · vehículo ≤5 m $21.270 | navieraustral.cl · +56 600 401 9000 |
+| Río Palena (Raúl Marín) | verano 08:30–13:00 y 13:30–18:30; invierno hasta 17:30 | **gratuito** | sin reserva |
+| Terminales Chaitén / Chacabuco / Pto. Montt | itinerario semanal | Pto. Montt–Chaitén desde $35.000 · Quellón–Chaitén $30.000 + $140.000 vehículo · Quellón–Chacabuco $23.650 + $191.100 | navieraustral.cl · +56 600 401 9000 · Angelmó 1673 |
+
+Los zarpes van en la columna `horario` (chip de la tarjeta, se ve sin abrir la
+ficha), el contacto en `tel` y las tarifas y direcciones dentro del texto
+bilingüe. Producción se actualiza con la migración
+`2026_08_21_000001_datos_barcazas` (reversible entera: `down()` devuelve los
+textos anteriores tal cual).
+
+**Tres reglas que salieron de hacerlo:**
+
+- **Un valor que caduca se escribe FECHADO.** Todas las tarifas dicen "valores
+  referenciales ago-2026" en el propio texto. Las fija el decreto de subsidio y
+  cambian de temporada en temporada: un número sin fecha envejece mintiendo,
+  uno fechado sigue sirviendo de orden de magnitud —saber si el cruce cuesta
+  diez mil o setenta mil pesos es lo que decide el itinerario— y la ficha
+  remite igual al operador para confirmar.
+- **Sin dato real no se inventa el campo.** La Arena, Yungay y la del río
+  Palena quedaron **sin teléfono**: son cruces sin reserva, donde el número no
+  sirve de nada, y rellenarlo con cualquier cosa habría sido peor que dejarlo
+  vacío.
+- **El sembrado se comía dos columnas.** `PlaceSeeder::sembrar()` no copiaba
+  `whatsapp` ni `horario` —existen como columna desde `add_contacto_a_places`,
+  pero nadie las había sembrado todavía—, así que un horario escrito en
+  `places.json` se perdía en silencio. Corregido. Ojo con esto cada vez que se
+  agregue una columna: la columna, el CMS, la API **y el seeder**.
+
+**Lo que queda por hacer.** Los datos se juntaron desde fuera (el entorno de
+esta sesión no alcanza `barcazas.cl` ni `navieraustral.cl`), así que **hay que
+darles una pasada contra la fuente oficial**, sobre todo:
+
+1. Los **teléfonos de Somarco** en Hornopirén: se encontraron dos juegos
+   (+56 65 221 7413/7414 en Ingenieros Militares 450, y +56 65 229 4855/4858
+   con un móvil de rampa +56 9 4007 4900). Se publicó el primero y el central
+   como respaldo; conviene confirmar cuál contesta.
+2. Los **zarpes de invierno** del bimodal (abril–noviembre): lo cargado es el
+   cuadro de temporada.
+3. **Quién opera hoy Chile Chico–Ibáñez**: las fuentes se contradicen entre
+   Naviera Austral (barcaza La Tehuelche) y Somarco. Se publicó Naviera
+   Austral, que es quien la lista en su sitio.
+
+Y en diciembre, antes de la temporada, toca **revisar la tabla entera**: es el
+momento en que cambian tarifas y frecuencias.
+
+---
+
 ## Dónde quedamos — para retomar (19-ago-2026)
 
 ### La píldora del mapa dice RUTA 7 y se ve

@@ -110,6 +110,12 @@ class PlaceSeeder extends Seeder
                 'lat' => $l['lat'],
                 'lng' => $l['lng'],
                 'tel' => $l['tel'] ?? null,
+                // `whatsapp` y `horario` existen como columna desde
+                // add_contacto_a_places, pero el sembrado no los copiaba: un dato
+                // escrito en places.json se perdía en silencio al sembrar. Se
+                // notó cargando los horarios de las barcazas.
+                'whatsapp' => $l['whatsapp'] ?? null,
+                'horario' => $l['horario'] ?? null,
                 'nombre' => $l['nombre'],
                 'descripcion' => $l['desc'],
                 'como' => $l['como'],
