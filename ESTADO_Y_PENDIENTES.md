@@ -132,10 +132,14 @@ escrito y solo se veía dentro de la conversación.
   "Puerto Río Tranquilo" —el topónimo más largo de la ruta— entraba "con cuatro
   píxeles de sobra". Se midió en el navegador antes de dar nada por bueno:
   Archivo es **más angosta** que Segoe UI (143 px contra 167,2), así que el
-  caso peor pasó a tener ~28 px de holgura. **De paso cae la razón por la que
-  «RUTA 7» está en caja mixta**: el techo del texto en la píldora son 173 px y
-  en versales mide 63,6 — la objeción de ancho ya no existe, queda como
-  decisión de marca.
+  caso peor pasó a tener ~28 px de holgura. **Y cae la razón por la que
+  «RUTA 7» estaba en caja mixta**: el techo del texto en la píldora son 173 px y
+  en versales mide 63,6. Se puso en versales el mismo día (medido después: 64 px
+  reales, sin cortarse, en 360 y 390). Las mayúsculas van por CSS y no por la
+  cadena de i18n, porque esa cadena arma también el nombre accesible del botón y
+  varios lectores de pantalla deletrean lo que está escrito todo en mayúsculas
+  ("erre-u-te-a"). Dentro de un pueblo la píldora vuelve a caja mixta: ahí
+  muestra un topónimo, no un letrero.
 - **Agrandar un control flotante le quita sitio al mapa, y el mapa tiene datos
   ahí.** `places.js` decía de Puerto Yungay que "a la derecha el mapa está
   limpio hasta la frontera" — dejó de serlo al convertir el botón de reportar
@@ -145,15 +149,11 @@ escrito y solo se veía dentro de la conversación.
   navegador, en 360, 390 y 414 px: la única sin choques es Tortel `izq alta`,
   Yungay `izq` y Villa O'Higgins `izq`.
 
-**Lo que queda por hacer.** Nada bloqueante. Dos cosas quedaron sobre la mesa a
-propósito, para que las decida el fundador:
+**Lo que queda por hacer.** Nada bloqueante. Queda una sola cosa fuera:
 
-1. **«RUTA 7» en versales** — cabe de sobra (ver arriba); es un cambio de una
-   línea de CSS y hoy no está hecho porque la caja mixta era una decisión
-   escrita, no un accidente.
-2. **Logotipo en el header** — era el cuarto frente de esta sesión y quedó
-   fuera; "Patagonia Austral" sigue siendo texto plano sobre verde, y la
-   coherencia con el icono PWA y la vista previa al compartir está sin revisar.
+- **Logotipo en el header** — era el cuarto frente de esta sesión y no se tomó;
+  "Patagonia Austral" sigue siendo texto plano sobre verde, y la coherencia con
+  el icono PWA y la vista previa al compartir está sin revisar.
 
 ---
 

@@ -2083,7 +2083,18 @@ h1 small {
   min-width: 0;
   font-size: 16.5px;
   font-weight: 800;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.6px;
+  /* «RUTA 7» va en VERSALES, como el letrero de la carretera. Se compone con
+     `text-transform` y no escribiendo el texto en mayúsculas en i18n: el nombre
+     accesible del botón se arma con esa misma cadena, y varios lectores de
+     pantalla deletrean una palabra toda en mayúsculas ("erre-u-te-a"). En el DOM
+     sigue diciendo "Ruta 7" y solo cambia lo que se ve.
+     Estuvo en caja mixta porque en versales no cabía —con Segoe UI—; al pasar la
+     marca a Archivo, más angosta, el caso peor bajó a 63,6 px contra un techo de
+     173, así que la razón caducó y esto ya es solo decisión de marca.
+     El tracking sube de 0,2 a 0,6 px: las versales pegadas se leen como un
+     bloque, y a este chip lo tiene que reconocer alguien que va manejando. */
+  text-transform: uppercase;
   line-height: 1;
   color: #fff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
@@ -2104,6 +2115,10 @@ h1 small {
   font-size: 14.5px;
   font-weight: 700;
   letter-spacing: 0.1px;
+  /* Dentro de un pueblo la píldora ya no muestra el número de la ruta sino un
+     TOPÓNIMO, y un nombre propio en versales grita: "Puerto Río Tranquilo" es
+     un lugar, no un letrero. Vuelve a caja mixta. */
+  text-transform: none;
 }
 .lp-vivo {
   position: relative;

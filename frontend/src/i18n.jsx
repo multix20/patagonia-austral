@@ -11,8 +11,13 @@ const DICCIONARIO = {
     // instalada—: sobre el mapa manda el CAMINO, no la marca, porque el viajero
     // está mirando la Ruta 7. Va igual en los dos idiomas: es el número de una
     // carretera, no una frase que se traduzca.
-    // Va en caja mixta, no en versales: el chip lo compone a 16,5px/800 y en
-    // mayúsculas «RUTA 7» pesa más ancho de lo que la píldora tiene para dar.
+    // Se ve en VERSALES, pero acá se escribe en caja mixta: las mayúsculas las
+    // pone el CSS con `text-transform`. Esta misma cadena arma el nombre
+    // accesible del botón, y varios lectores de pantalla deletrean una palabra
+    // escrita toda en mayúsculas ("erre-u-te-a" en vez de "ruta").
+    // (Se veía en caja mixta de verdad hasta el 23-ago-2026, porque en versales
+    // no cabía con Segoe UI. Con la marca en Archivo, más angosta, dejó de ser
+    // un límite: 63,6 px contra un techo de 173.)
     marcaMapa: 'Ruta 7',
     enLinea: 'En línea',
     sinConexion: 'Sin conexión',
@@ -184,8 +189,13 @@ const DICCIONARIO = {
     // instalada—: sobre el mapa manda el CAMINO, no la marca, porque el viajero
     // está mirando la Ruta 7. Va igual en los dos idiomas: es el número de una
     // carretera, no una frase que se traduzca.
-    // Va en caja mixta, no en versales: el chip lo compone a 16,5px/800 y en
-    // mayúsculas «RUTA 7» pesa más ancho de lo que la píldora tiene para dar.
+    // Se ve en VERSALES, pero acá se escribe en caja mixta: las mayúsculas las
+    // pone el CSS con `text-transform`. Esta misma cadena arma el nombre
+    // accesible del botón, y varios lectores de pantalla deletrean una palabra
+    // escrita toda en mayúsculas ("erre-u-te-a" en vez de "ruta").
+    // (Se veía en caja mixta de verdad hasta el 23-ago-2026, porque en versales
+    // no cabía con Segoe UI. Con la marca en Archivo, más angosta, dejó de ser
+    // un límite: 63,6 px contra un techo de 173.)
     marcaMapa: 'Ruta 7',
     enLinea: 'Online',
     sinConexion: 'Offline',

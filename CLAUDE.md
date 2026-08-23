@@ -202,9 +202,13 @@ reglas que salieron de hacerlo:
 - **Cambiar de fuente cambia los anchos, y hay medidas escritas que dependen de
   eso.** Se miden en el navegador antes de dar nada por bueno. Archivo resultó
   más angosta que Segoe UI, así que el caso peor de la píldora
-  ("Puerto Río Tranquilo") ganó holgura en vez de romperse — y de paso caducó la
-  razón de ancho por la que «RUTA 7» está en caja mixta (queda como decisión de
-  marca, no como límite).
+  ("Puerto Río Tranquilo") ganó holgura en vez de romperse — y **caducó la razón
+  de ancho por la que «RUTA 7» estaba en caja mixta**: hoy va en versales, como
+  el letrero de la carretera. Las mayúsculas las pone el CSS (`text-transform`),
+  nunca la cadena de i18n: esa misma cadena arma el nombre accesible del botón y
+  varios lectores de pantalla deletrean una palabra escrita toda en mayúsculas.
+  Dentro de un pueblo la píldora vuelve a caja mixta — ahí muestra un topónimo,
+  y un nombre propio en versales grita.
 - **Agrandar un control flotante le quita sitio al mapa, y el mapa tiene datos
   ahí.** La píldora de reportar tapó Villa O'Higgins y Puerto Yungay, con
   `places.js` afirmando por escrito que ese lado estaba limpio. Al agrandar algo
