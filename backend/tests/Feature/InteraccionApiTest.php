@@ -75,6 +75,61 @@ class InteraccionApiTest extends TestCase
         $this->assertSame(0, Interaccion::count());
     }
 
+    /**
+     * El origen se guarda CANONIZADO: la zona horaria se reduce a país y la
+     * etiqueta de idioma a su forma corta.
+     *
+     * No es cosmética. La referencia de estos dos tipos es lo único que llega
+     * como texto libre del navegador a un endpoint que escribe sin login: si se
+     * guardara tal cual, cualquiera podría inventar variantes sin fin y la tabla
+     * dejaría de estar acotada por el catálogo, que es la propiedad por la que
+     * esto es un rollup y cabe en el plan gratis.
+     */
+    public function test_el_origen_se_guarda_como_pais_y_la_etiqueta_de_idioma_canonizada(): void
+    {
+        $this->postJson('/api/interacciones', ['eventos' => [
+            ['tipo' => 'origen_pais', 'ref' => 'America/Santiago', 'n' => 3],
+            ['tipo' => 'origen_pais', 'ref' => 'America/Punta_Arenas', 'n' => 1],
+            ['tipo' => 'origen_pais', 'ref' => 'Europe/Berlin', 'n' => 2],
+            ['tipo' => 'origen_idioma', 'ref' => 'es_AR', 'n' => 1],
+            ['tipo' => 'origen_idioma', 'ref' => 'zh-Hans-CN', 'n' => 1],
+            ['tipo' => 'origen_idioma', 'ref' => 'EN', 'n' => 1],
+        ]])->assertNoContent();
+
+        // Santiago y Punta Arenas son zonas distintas y el MISMO país: se suman
+        // en una fila. Ese plegado es justo lo que hace legible el ranking.
+        $this->assertSame(4, Interaccion::where('tipo', 'origen_pais')->where('referencia', 'CL')->value('cantidad'));
+        $this->assertSame(2, Interaccion::where('tipo', 'origen_pais')->where('referencia', 'DE')->value('cantidad'));
+
+        $idiomas = Interaccion::where('tipo', 'origen_idioma')->pluck('referencia')->sort()->values()->all();
+        $this->assertSame(['en', 'es-AR', 'zh-CN'], $idiomas);
+    }
+
+    /**
+     * Una zona o un idioma que no existen se descartan SIN tumbar el lote.
+     *
+     * Los dos lados importan: descartarlos evita guardar basura, y no responder
+     * 422 evita que un valor raro de un navegador cualquiera haga que la PWA tire
+     * a la basura todo el lote (ver el manejo del 422 en analitica.js), que se
+     * llevaría por delante fichas y contactos de ese día.
+     */
+    public function test_descarta_un_origen_que_no_existe_sin_perder_el_resto_del_lote(): void
+    {
+        $this->postJson('/api/interacciones', ['eventos' => [
+            ['tipo' => 'origen_pais', 'ref' => 'Basura/Nada', 'n' => 1],
+            ['tipo' => 'origen_pais', 'ref' => 'UTC', 'n' => 1],
+            ['tipo' => 'origen_pais', 'ref' => '+05:00', 'n' => 1],
+            ['tipo' => 'origen_idioma', 'ref' => 'xq', 'n' => 1],
+            // 'und' es como ICU dice "idioma desconocido": tiene nombre, pero no
+            // es un origen. Sin excluirlo entraría al ranking como si lo fuera.
+            ['tipo' => 'origen_idioma', 'ref' => 'und', 'n' => 1],
+            ['tipo' => 'ficha', 'ref' => '12', 'n' => 5],
+        ]])->assertNoContent();
+
+        $this->assertSame(0, Interaccion::whereIn('tipo', Interaccion::TIPOS_DE_ORIGEN)->count());
+        $this->assertSame(5, Interaccion::where('tipo', 'ficha')->value('cantidad'));
+    }
+
     /** Días distintos son filas distintas: eso es lo que permite ver la evolución. */
     public function test_separa_por_dia(): void
     {

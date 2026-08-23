@@ -157,6 +157,23 @@ class InteraccionPanelTest extends TestCase
         $this->assertSame(now()->subDays(9)->toDateString(), Interaccion::primerDia());
     }
 
+    /**
+     * El mismo "cero vs sin medir", pero por familia de eventos: el país del
+     * visitante empezó a medirse mucho después que las aperturas, así que en
+     * una ventana de 30 días su ranking cubre menos días que el contador de al
+     * lado. Sin poder preguntarlo por tipo, el widget no podría decirlo y su
+     * lista corta se leería como "casi nadie entró".
+     */
+    public function test_el_primer_dia_se_puede_preguntar_por_tipo(): void
+    {
+        Interaccion::sumar('app_abierta', null, 1, now()->subDays(9));
+        Interaccion::sumar('origen_pais', 'CL', 1, now()->subDay());
+
+        $this->assertSame(now()->subDays(9)->toDateString(), Interaccion::primerDia());
+        $this->assertSame(now()->subDay()->toDateString(), Interaccion::primerDia(['origen_pais']));
+        $this->assertNull(Interaccion::primerDia(['origen_idioma']));
+    }
+
     /** El corte del "poner en cero" es por fecha, e incluye el día elegido. */
     public function test_borrar_hasta_respeta_el_limite_y_cuenta_lo_borrado(): void
     {
@@ -221,5 +238,12 @@ class InteraccionPanelTest extends TestCase
         $this->assertSame('Ficha #99999', InteraccionResource::etiqueta('ficha', '99999'));
         // Una localidad que ya no existe cae en su slug, que igual se entiende.
         $this->assertSame('pueblo-fantasma', InteraccionResource::etiqueta('localidad', 'pueblo-fantasma'));
+
+        // El origen se guarda en código y se lee con nombre. La región del
+        // idioma se conserva porque separa dos públicos distintos de la ruta.
+        $this->assertSame('Chile', InteraccionResource::etiqueta('origen_pais', 'CL'));
+        $this->assertSame('Alemania', InteraccionResource::etiqueta('origen_pais', 'DE'));
+        $this->assertSame('Español (Argentina)', InteraccionResource::etiqueta('origen_idioma', 'es-AR'));
+        $this->assertSame('Inglés', InteraccionResource::etiqueta('origen_idioma', 'en'));
     }
 }

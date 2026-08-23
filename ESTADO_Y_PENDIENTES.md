@@ -155,6 +155,70 @@ escrito y solo se veía dentro de la conversación.
   "Patagonia Austral" sigue siendo texto plano sobre verde, y la coherencia con
   el icono PWA y la vista previa al compartir está sin revisar.
 
+### El panel ya dice DESDE DÓNDE entran (y por qué nunca va a decir quién)
+
+**El punto de partida.** El 23 de agosto la app la abrió, por primera vez,
+alguien que no era el fundador. El panel de Analítica mostraba el movimiento
+—197 aperturas, 40 fichas vistas, 11 contactos— pero no podía contestar la
+única pregunta que importaba ese día: **¿quién fue, y desde dónde?** No era un
+widget que faltara: el dato no existía. La analítica se diseñó anónima (rollup
+diario `(tipo, referencia, día) → cantidad`, sin usuario, sesión, dispositivo ni
+IP), así que no había NADA en la base con que responder.
+
+**La decisión.** No se tocó la anonimidad. "Quién" queda sin respuesta —para
+contestarlo harían falta cuentas o una cookie de seguimiento, y eso cambia el
+producto—, pero **"desde dónde" sí se puede contestar sin espiar a nadie**, y
+para decidir suele ser lo mismo: no es igual que las 30 aperturas de la semana
+vengan de Chile a que vengan de Alemania.
+
+**Lo que se hizo.** Dos contadores nuevos, que se suman en cada apertura junto a
+`app_abierta` (así los rankings totalizan lo mismo que las aperturas y se leen
+como porcentaje):
+
+| Señal | De dónde sale | Qué contesta |
+|---|---|---|
+| `origen_pais` | zona horaria del navegador (`Intl…timeZone`), reducida a país en el servidor | dónde está el **teléfono** |
+| `origen_idioma` | `navigator.language`, canonizado a `xx` / `xx-YY` | de dónde viene la **persona** |
+
+Hacen falta las dos: el alemán que ya va por Coyhaique manda `America/Santiago`
+(su teléfono cambió de hora al aterrizar) **y** `de-DE`. Con una sola señal
+aparecería como chileno. Y `es-AR` separa al argentino del chileno, que en la
+Austral son dos públicos distintos.
+
+En `/admin` → Analítica → Interacciones aparecen abajo dos rankings nuevos:
+**"Desde qué países entran"** e **"Idioma del visitante"**. Código:
+`backend/app/Support/Origen.php` (normalización y nombres),
+`frontend/src/analitica.js` → `contarOrigen()`.
+
+**Tres reglas que salieron de hacerlo:**
+
+- **Una referencia de texto libre hay que canonizarla contra un conjunto
+  cerrado.** Estos dos son los únicos eventos cuya referencia no es un id
+  nuestro sino texto del navegador, y entran por un endpoint que **escribe sin
+  login**. Si se guardara tal cual, cualquiera podría mandar referencias
+  inventadas hasta hacer crecer la tabla sin techo — justo la propiedad por la
+  que esto es un rollup y cabe en el plan gratis. Se reduce a país / `xx-YY`
+  contra la base de PHP y **lo que no existe se descarta en silencio**, sin
+  responder 422: un 422 haría que la PWA tirara el lote entero, y con él las
+  fichas y contactos del día (ver el manejo del 422 en `analitica.js`).
+- **Un dato nuevo llega con su propia fecha de estreno.** Un ranking que empezó
+  ayer, puesto al lado de un contador que lleva meses, se lee como "casi nadie
+  hizo esto" cuando la verdad es "casi nadie fue medido todavía". Por eso
+  `Interaccion::primerDia()` ahora acepta tipos y el widget dice "se mide desde
+  el dd/mm" cuando su primer día cae dentro de la ventana. Es el mismo "cero vs
+  sin medir" de agosto, aplicado por familia de eventos.
+- **La respuesta honesta a "quién" es que no se sabe.** Conviene dejarlo escrito
+  para no reabrirlo cada vez que aparezca la curiosidad: el día que se quiera
+  saber quién, la conversación es sobre cuentas y seguimiento, no sobre agregar
+  un widget.
+
+**Ojo con el orden del despliegue.** El frontend (Netlify) publica en un par de
+minutos y el backend (Render, imagen Docker) tarda más. En esa ventana la PWA
+nueva manda `origen_pais` a un backend que todavía no conoce el tipo → 422 → la
+app descarta ese lote. Son unos pocos contadores de unos pocos minutos, pero es
+la forma general del problema: **un tipo de evento nuevo hay que desplegarlo
+primero en el backend**.
+
 ---
 
 ## Dónde quedamos — para retomar (21-ago-2026)
