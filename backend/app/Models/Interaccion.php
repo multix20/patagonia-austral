@@ -53,6 +53,13 @@ class Interaccion extends Model
         // distinto: cuánta decisión se toma en la ruta, sin señal.
         'consulta_guardada' => 'Consulta guardada sin señal',
         'perfil_viaje' => 'Viaje configurado en el asistente',
+        // De dónde entró quien abrió la app. No sale de la IP sino del propio
+        // navegador: la zona horaria dice dónde está el TELÉFONO y el idioma del
+        // sistema de dónde viene la PERSONA — el alemán que ya va por Coyhaique
+        // manda `America/Santiago` y `de-DE`, y hacen falta los dos para
+        // distinguirlo de un chileno. Ver App\Support\Origen.
+        'origen_pais' => 'País del visitante',
+        'origen_idioma' => 'Idioma del visitante',
     ];
 
     /**
@@ -75,6 +82,18 @@ class Interaccion extends Model
      */
     public const TIPOS_DE_FICHA = ['ficha', 'como_llegar', 'llamar', 'compartir', 'consulta_reserva', 'consulta_guardada'];
 
+    /**
+     * Tipos cuya `referencia` llega como texto LIBRE del navegador (una zona
+     * horaria IANA, una etiqueta de idioma) y hay que canonizar ANTES de
+     * guardar — ver App\Support\Origen y el controlador.
+     *
+     * Son la única familia que no trae un id nuestro, así que la única por la
+     * que este endpoint sin login podría escribir referencias inventadas hasta
+     * hacer crecer la tabla sin techo. El rollup acota las filas al catálogo
+     * (ver la migración); estas dos hay que acotarlas a mano.
+     */
+    public const TIPOS_DE_ORIGEN = ['origen_pais', 'origen_idioma'];
+
     /** Tope por evento y envío: ataja un lote absurdo sin castigar el uso real. */
     public const MAX_POR_EVENTO = 500;
 
@@ -85,12 +104,21 @@ class Interaccion extends Model
      * afirmar lo que no se sabe: antes de esa fecha la app se usaba igual, solo
      * que nadie contaba. Un gráfico que dibuja esos días planos en cero no está
      * mostrando "cero uso", está inventando un dato — y encima el más
-     * desmoralizante posible. Se mira sobre TODOS los tipos a propósito: un día
-     * sin fichas vistas pero con aperturas sí es un cero de verdad.
+     * desmoralizante posible. Se mira sobre TODOS los tipos por defecto a
+     * propósito: un día sin fichas vistas pero con aperturas sí es un cero de
+     * verdad.
+     *
+     * Con `$tipos` se pregunta lo mismo para UNA familia de eventos, que es lo
+     * que necesita un widget cuyo dato empezó a existir después que el resto:
+     * el país del visitante se mide desde agosto de 2026, así que en una
+     * ventana de 30 días su ranking cubre menos días que las aperturas de al
+     * lado, y sin decirlo parecería que casi nadie tiene país.
      */
-    public static function primerDia(): ?string
+    public static function primerDia(?array $tipos = null): ?string
     {
-        $dia = static::query()->min('dia');
+        $dia = static::query()
+            ->when($tipos !== null, fn ($q) => $q->whereIn('tipo', $tipos))
+            ->min('dia');
 
         return $dia ? Carbon::parse($dia)->toDateString() : null;
     }

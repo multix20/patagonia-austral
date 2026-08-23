@@ -6,6 +6,7 @@ use App\Filament\Resources\InteraccionResource\Pages;
 use App\Models\Interaccion;
 use App\Models\Localidad;
 use App\Models\Place;
+use App\Support\Origen;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -86,6 +87,17 @@ class InteraccionResource extends Resource
 
         if ($tipo === 'calificacion') {
             return $referencia === '1' ? '1 estrella' : "{$referencia} estrellas";
+        }
+
+        // Se guarda el código (CL, es-AR) y no el nombre: es lo que mantiene el
+        // conjunto cerrado y lo que sobrevive a que cambie el nombre de un país.
+        // El nombre se arma acá, que es donde se lee.
+        if ($tipo === 'origen_pais') {
+            return Origen::nombrePais($referencia);
+        }
+
+        if ($tipo === 'origen_idioma') {
+            return Origen::nombreIdioma($referencia);
         }
 
         return self::ETIQUETAS_FIJAS[$tipo][$referencia] ?? $referencia;
