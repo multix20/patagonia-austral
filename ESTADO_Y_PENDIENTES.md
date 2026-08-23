@@ -22,6 +22,72 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
+## Dónde quedamos — para retomar (23-ago-2026)
+
+### Pipeline para tomar los contactos de carretera-austral.cl
+
+**Qué se hizo.** Quedó escrito el tercer pipeline de carga externa del proyecto,
+en `scripts/carretera-austral/` (los dos anteriores: SERNATUR y el mapa
+municipal de Tortel). Toma de [carretera-austral.cl](https://carretera-austral.cl/)
+—guía comercial de la ruta, hecha en WordPress— los **datos de contacto** de los
+servicios que lista, y los deja como fichas **en borrador** para curar y publicar
+desde el CMS. Tres piezas: `1_extraer.py` (red), `2_a_places.py` (decisiones
+editoriales) y `CarreteraAustralPlaceSeeder` (ids desde **5000**, no registrado
+en `DatabaseSeeder`).
+
+**La línea que se trazó, y es la decisión de fondo: hechos sí, prosa no.** Del
+sitio entran nombre, teléfono, WhatsApp, correo, web, dirección, horario y
+coordenada. Un teléfono no es de nadie —es el mismo número en cualquier guía, en
+la puerta del local y en la boleta—. Las **descripciones no se copian**: son obra
+de esa guía, que además vende sus propios paquetes, y llevárselas sería quedarse
+con su trabajo y no con un dato público. El paso 1 guarda el HTML en `crudos/`
+para poder LEER el original al curar, pero el JSON de salida no arrastra una
+línea de texto descriptivo; las descripciones salen de plantillas bilingües,
+igual que en SERNATUR y en Tortel. Por lo mismo se excluyen las páginas
+`/producto/…`: son el catálogo que el sitio vende, no dato de servicio de la ruta.
+
+Y una razón que no es de derecho sino de calidad: **el dato de una guía ajena
+también envejece**. El proyecto no se diferencia por copiar rápido sino por
+tener el teléfono que contesta, así que nada de este lote se publica sin
+verificar.
+
+**Lo que se aprendió de los dos lotes anteriores quedó incorporado de entrada**,
+en vez de tener que repararlo después:
+
+- **Comercio sin teléfono ni WhatsApp no entra** (post-mortem de Tortel). No
+  aplica a `atractivo` ni a `emergencia`, que no necesitan teléfono.
+- **Lo que no se sabe clasificar no cae a `servicio` por defecto**: se descarta y
+  se lista en el informe. Un `else` silencioso es lo que en Tortel habría
+  enterrado las emergencias del pueblo.
+- **El seeder copia `whatsapp` y `horario`.** Es la regla que salió de las
+  barcazas: al agregar una columna, BD, CMS, API **y seeder**.
+- **Deduplica también por teléfono**, con los últimos 8 dígitos, para que el
+  mismo número escrito con y sin `+56` colisione igual. El sitio lista al mismo
+  negocio en varias secciones, y el proyecto ya tiene fichas cargadas a mano.
+- **Todo en borrador, sin flag por-lugar en el seeder.** Un flag habría sido la
+  puerta para publicar el lote entero sin querer — que es literalmente lo que
+  pasó con Tortel.
+
+**Se escribió a ciegas, y por eso el informe manda.** Desde una sesión web de
+Claude Code no hay salida de red hacia carretera-austral.cl: la bloquea el proxy
+del entorno (`403` al CONNECT), igual que con `tortel.cl`. Así que los scripts
+son defensivos y cuentan todo lo que encuentran. La primera corrida de verdad es
+`--explorar`, que no baja contenido: dice qué secciones existen y cuántas URLs
+tiene cada una. El extractor va por la **API REST de WordPress** (`/wp-json`)
+antes que por el sitemap, y saca los datos con tres estrategias —`json-ld`
+(alta confianza), `encabezado+contacto` (heurística de listado) y
+`pagina-completa`—; el informe dice cuántas fichas salió por cada una, y esa
+cifra es la que decide cuánto hay que revisar a ojo.
+
+**Falta acción manual: correrlo en local.** Respeta `robots.txt`, espera 3–6 s
+entre páginas y cachea todo, así que una segunda corrida no le pide nada al
+sitio. Instrucciones completas en `scripts/carretera-austral/README.md`.
+Antes de publicar cualquier ficha del lote: verificar el teléfono, corregir el
+pin si quedó en el centro del pueblo, escribir la descripción de verdad en ES y
+EN, y respetar **un servicio publicado por localidad y categoría**.
+
+---
+
 ## Dónde quedamos — para retomar (21-ago-2026)
 
 ### Las barcazas ya traen horario, tarifa y teléfono

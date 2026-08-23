@@ -1,0 +1,9 @@
+# Páginas descargadas del sitio de terceros: no se versionan. Sirven de caché
+# local y de original para consultar al curar una ficha.
+crudos/
+# Salidas del pipeline (mismo criterio que SERNATUR y Tortel).
+ca-fichas.json
+ca_places.json
+informe.txt
+informe_places.txt
+__pycache__/
