@@ -1,3 +1,31 @@
+/* ---------- Tipografía de marca ----------
+   Archivo (SIL Open Font License 1.1), variable de 100 a 900 en un solo archivo
+   con el subconjunto latino: 35 KB para toda la tipografía de la app.
+
+   Va AUTOALOJADA, no por <link> a fonts.googleapis.com, y eso no es una
+   preferencia: esta app se abre en la ruta, donde no hay señal, y una fuente
+   que se pide a un CDN simplemente no llega — el título caería al respaldo del
+   sistema justo en el viaje para el que se hizo la app. En `public/fonts` entra
+   sola al precache, porque el glob de Workbox en vite.config.js ya incluye
+   woff2.
+
+   La elección tiene una idea detrás: Archivo viene de la rotulación —vial y de
+   señalética— y la app es una guía de camino. Que la marca, el número de la
+   ruta y los nombres de los pueblos se lean como los letreros de afuera es lo
+   que le da carácter propio frente a cualquier otro mapa. El texto corrido NO
+   la usa: se queda con la fuente del sistema, que a 13 px se lee mejor, carga
+   antes y pesa cero. */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/archivo-var-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
 :root {
   --verde: #0f6e56;
   --verde-osc: #085041;
@@ -9,6 +37,12 @@
   --amarillo: #f5a623;
   --claude: #d97757; /* coral del chatbot (estilo Claude Code) */
   --claude-osc: #bd5c3a; /* coral pisado: glifos sobre fondo coral */
+  /* Fuente de MARCA: la usa lo que nombra algo (la marca, la píldora de la
+     ruta, los pueblos del mapa, el título de una ficha). El respaldo es el
+     mismo stack de sistema que usaba toda la app antes, así que si la woff2
+     todavía no bajó no se ve nada roto, solo menos personalidad. */
+  --display: 'Archivo', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --texto: 'Segoe UI', system-ui, -apple-system, sans-serif;
   --barra-cat-h: 60px; /* alto de la barra de categorías (zona del pulgar) */
   /* Cuánto del fondo de la app queda FUERA de lo visible. Normalmente 0; en un
      teléfono sube cuando el layout (100dvh, viewport-fit=cover) se extiende por
@@ -21,7 +55,33 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: var(--texto);
+}
+
+/* Lo que NOMBRA algo va en la fuente de marca; lo que se LEE corrido, no.
+   El corte no es por tamaño ni por jerarquía visual, es por función: la marca,
+   el número de la ruta, el nombre de un pueblo en el mapa y el título de una
+   ficha son rótulos —se reconocen de un vistazo, con el teléfono en la mano y
+   el auto andando—, y ahí la letra de señalética rinde. La descripción de una
+   cabaña o un mensaje del chat son párrafos, y esos se quedan con la fuente del
+   sistema.
+
+   Cada selector va nombrado uno por uno a propósito. No sirve poner la fuente
+   en el contenedor y dejar que herede: el reset de arriba le fija `font-family`
+   a TODOS los elementos con el selector universal, así que un <span> dentro de
+   un <h1> vuelve al stack del sistema aunque el <h1> tenga otra. Lo que no está
+   en esta lista, no la usa. */
+h1,
+h2,
+.loc-pill .tx,
+.pin-loc .lbl,
+.qc-name,
+.ficha-foto .titulo,
+.chat-header .ch-nombre,
+.rt-titulo,
+.etiqueta-cat,
+.fab-report span {
+  font-family: var(--display);
 }
 
 html,
@@ -1338,77 +1398,6 @@ h1 small {
 }
 
 /* ---------- Chatbot ---------- */
-.fab-chat {
-  position: absolute;
-  bottom: calc(var(--barra-cat-h) + 16px + var(--piso-extra));
-  right: 14px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--claude);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  z-index: 950;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.fab-chat:active {
-  transform: scale(0.95);
-}
-/* Crossfade del FAB: el huemul (emblema de Aysén) aparece y desaparece
-   alternando con el spark del asistente (ciclo de 7 s) */
-.fab-iconos {
-  position: relative;
-  width: 26px;
-  height: 26px;
-}
-.fab-iconos svg {
-  position: absolute;
-  inset: 0;
-}
-.fab-iconos svg:first-child {
-  animation: fab-cruce-a 7s ease-in-out infinite;
-}
-.fab-iconos svg:last-child {
-  animation: fab-cruce-b 7s ease-in-out infinite;
-}
-@keyframes fab-cruce-a {
-  0%,
-  38% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  46%,
-  88% {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-  96%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-@keyframes fab-cruce-b {
-  0%,
-  38% {
-    opacity: 0;
-    transform: scale(0.5) rotate(-90deg);
-  }
-  46%,
-  88% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
-  96%,
-  100% {
-    opacity: 0;
-    transform: scale(0.5) rotate(90deg);
-  }
-}
 /* Respiración sutil del avatar del chat */
 .chat-header .avatar svg {
   animation: avatar-respira 3.2s ease-in-out infinite;
@@ -1424,13 +1413,8 @@ h1 small {
     transform: scale(1.06);
   }
 }
-/* Accesibilidad: sin animación si el usuario lo prefiere (queda el spark fijo) */
+/* Accesibilidad: sin animación si el usuario lo prefiere */
 @media (prefers-reduced-motion: reduce) {
-  .fab-iconos svg:first-child {
-    animation: none;
-    opacity: 0;
-  }
-  .fab-iconos svg:last-child,
   .chat-header .avatar svg,
   .escribiendo svg {
     animation: none;
@@ -2275,8 +2259,12 @@ h1 small {
   z-index: 40;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  align-items: center;
+  gap: 11px;
+  /* Alineados al borde DERECHO, no al centro: el botón de reportar dejó de ser
+     un círculo y los dos ya no miden lo mismo. Centrados, la píldora sobresalía
+     por ambos lados y el rail se leía como dos cosas sueltas en vez de una
+     columna. */
+  align-items: flex-end;
 }
 .fab-round {
   width: 48px;
@@ -2299,16 +2287,41 @@ h1 small {
   cursor: default;
 }
 /* Asistente: ocupa el lugar que tenía el botón de GPS, arriba del de reportar.
-   Fondo claro y icono verde para que se lea como "consulta" y no compita con el
-   coral de reportar, que es la acción principal del rail. */
+   Antes era un círculo blanco con un bocadillo genérico, y sobre el mapa de
+   terreno —verdes y ocres— un disco blanco no se lee como un botón: se lee como
+   un hueco. Ahora va en verde pleno con el huemul en crema, o sea con la CARA
+   del asistente y no con el icono de "chat" que tiene cualquier app.
+   La jerarquía frente a reportar, que sigue siendo la acción principal del
+   rail, ya no la lleva el color sino el TAMAÑO y la forma: este es un círculo
+   de 48 y aquél una píldora con palabra. Verde y coral son los dos colores de
+   la marca — juntos se leen como un par, no como una competencia. */
 .fab-asistente {
-  background: #eef7f3;
+  background: var(--verde);
+  color: #fff;
+  box-shadow:
+    0 0 0 2.5px rgba(255, 255, 255, 0.9),
+    0 5px 16px rgba(8, 80, 65, 0.4);
 }
+/* Reportar: píldora con palabra, no un "+" a secas. El signo solo no dice qué
+   se agrega, y lo que se agrega —un peligro, un accidente, una faena en la
+   vía— es la razón de ser del crowdsourcing: el viajero que ve el botón por
+   primera vez, sin señal y de paso, no tiene cómo adivinarlo. Con el rótulo al
+   lado la acción principal del mapa se entiende sin abrirla, y de paso ocupa el
+   espacio que le corresponde. */
 .fab-report {
   background: var(--claude);
   color: #fff;
-  width: 56px;
-  height: 56px;
+  width: auto;
+  height: 52px;
+  padding: 0 17px 0 13px;
+  gap: 6px;
+  border-radius: 26px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow:
+    0 0 0 2.5px rgba(255, 255, 255, 0.9),
+    0 6px 20px rgba(178, 74, 42, 0.45);
 }
 
 /* Barra de categorías flotante */

@@ -197,9 +197,10 @@ export const LOCALIDADES_ROTULADAS = [
   // un pueblo, es un CRUCE que en la ruta se pregunta mucho ("¿a qué hora sale
   // la barcaza?"). Sin etiqueta sería un punto verde mudo entre Tortel y Villa
   // O'Higgins, justo donde el viajero necesita entender que hay que embarcar.
-  // Rotula a la DERECHA (por defecto, sin entrada en ETIQUETAS_LOCALIDAD): a su
-  // izquierda ya rotula Caleta Tortel hacia los canales y los dos nombres se
-  // encimarían; a la derecha el mapa está limpio hasta la frontera.
+  // Rotulaba a la DERECHA, donde el mapa estaba limpio hasta la frontera. Ya no:
+  // ahí abajo vive ahora el botón de reportar. Se fue a la izquierda junto con
+  // Villa O'Higgins, y Caleta Tortel subió una línea para dejarle el sitio (ver
+  // ETIQUETAS_LOCALIDAD).
   'puerto-yungay',
 ]
 
@@ -238,7 +239,25 @@ export const ETIQUETAS_LOCALIDAD = {
   'puerto-rio-tranquilo': 'izq',
   // Tortel está metido en el estuario del Baker: a su derecha quedan el río y el
   // camino a Cochrane, y a su izquierda los canales — ahí el nombre va suelto.
-  'caleta-tortel': 'izq',
+  // El 'alta' se sumó cuando Puerto Yungay se mudó a este mismo lado (ver
+  // abajo): son dos nombres largos separados por once píxeles de latitud, y en
+  // la misma línea se pisan.
+  'caleta-tortel': 'izq alta',
+  // Los dos rótulos del extremo sur se fueron a la izquierda cuando el botón de
+  // reportar dejó de ser un círculo de 56 px y pasó a ser una píldora con
+  // palabra. El rail vive anclado abajo a la derecha, o sea justo encima del
+  // final de la Carretera en la vista general: con el botón viejo los dos
+  // nombres cabían, con el nuevo no. A su izquierda hay campo de hielo y
+  // fiordo, que es mapa vacío.
+  //   · Villa O'Higgins quedaba cortado en "Villa O…", y es el topónimo que da
+  //     título a la app entera ("Puerto Montt a Villa O'Higgins").
+  //   · Puerto Yungay solo se tapaba en pantallas de 360 px, pero es el CRUCE
+  //     de la barcaza: el dato que más se pregunta en ese tramo.
+  // Las cuatro combinaciones se probaron midiendo los rectángulos reales de los
+  // rótulos en el navegador; esta es la única sin encimarse entre sí ni con la
+  // interfaz en 360, 390 y 414 px de ancho.
+  'villa-ohiggins': 'izq',
+  'puerto-yungay': 'izq',
 }
 
 // Tercer nivel: localidades "menores" que se conservan (con sus lugares) pero se
