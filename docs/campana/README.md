@@ -43,8 +43,15 @@ la ruta.
 | Ola | A quién | Texto | Código del enlace | Cuándo |
 |---|---|---|---|---|
 | 1 | Encargadas de turismo municipal (una por comuna, no por localidad) | `correo-1-municipios.md` | `?c=muni` | Día 0 |
-| 2 | Dueños de servicios con ficha publicada | `correo-2-negocios.md` | `?c=negocio` + su enlace personal | Día 1–3 |
+| 2 | Dueños de servicios con ficha publicada, **por rubro** | `correo-2-negocios.md` | `?c=negocio` + su enlace personal | Día 1–3 |
 | 3 | Recordatorio a quien no respondió | El bloque "Recordatorio" de cada archivo | El mismo de su ola | Día 10 |
+
+La ola 2 no sale de una vez: va **por rubro**, en el orden de la tabla de
+`correo-2-negocios.md` (alojamiento → gastronomía → combustible → transporte →
+barcazas → guías → comercio). Dos razones prácticas: el buzón es nuevo y no
+aguanta cien correos en un día, y las respuestas del primer rubro corrigen el
+texto del siguiente antes de gastarlo. A **salud y emergencias no se les escribe**
+como negocio: esas fichas se confirman con la municipalidad en la ola 1.
 
 La ola 1 va primero **a propósito**: si la encargada de turismo ya conoce el
 proyecto, el correo al dueño del hospedaje deja de ser frío ("hablé con la

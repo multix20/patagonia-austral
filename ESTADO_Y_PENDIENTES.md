@@ -56,6 +56,37 @@ barras salían vacías sin error visible), y en un contenedor flex o grid hay qu
 poner `min-width: 0` a los hijos o el ancho mínimo de una tabla empuja la página
 entera y aparece scroll horizontal en el teléfono.
 
+### Los correos, comuna por comuna y rubro por rubro
+
+**Qué se agregó.** La campaña dejó de ser dos textos y pasó a ser una lista de
+envío ejecutable:
+
+- **Ola 1 — las 14 comunas.** Las 27 localidades de la app caen en 14 comunas, y
+  el correo de cada una **nombra las suyas** (Chaitén son cuatro; Cisnes, cuatro).
+  Esa lista es lo que separa un correo genérico de uno que prueba que alguien
+  miró el territorio.
+- **Ola 2 — siete rubros**, cada uno con su asunto y **el dato que de verdad
+  decide** en ese rubro: el teléfono en alojamiento, el **horario** en
+  gastronomía, **tarjeta o efectivo** en combustible, **día y hora de salida** en
+  transporte, temporada y reserva en guías, horario en comercio.
+
+**Tres cosas que quedaron fijadas:**
+
+- **La división administrativa se verifica, no se deduce por cercanía.**
+  Puerto Bertrand es comuna de **Chile Chico**, no de Cochrane, aunque esté a 50
+  km de Cochrane y a 110 de Chile Chico. Villa Amengual es de **Lago Verde**
+  aunque quede camino a Cisnes. Equivocarse de comuna en el primer correo dice
+  «no conozco el territorio», que es lo contrario de todo el argumento.
+- **El orden de envío no es alfabético.** Primero Capitán Prat —Tortel, Cochrane,
+  O'Higgins—, donde el correo no es frío; **Coyhaique y Puerto Montt al final**,
+  porque son las oficinas más grandes, las que menos necesitan la app, y las
+  únicas que se mueven si uno llega con media región ya respondida.
+- **Las barcazas no son captura de dato, son una relación.** Sus fichas ya llevan
+  zarpes, teléfono y tarifas fechadas: a las navieras se les pide **confirmar y
+  avisar el cambio de temporada**, con el compromiso de publicarlo el mismo día.
+  Y a **salud y emergencias no se les escribe como negocio**: eso se confirma con
+  la municipalidad en la ola 1.
+
 ### Posicionamiento por escrito, campaña lista para salir, y un panel que dice por dónde llegaron
 
 **Qué se hizo.** Antes de mandar el primer correo se fijó **qué dice el proyecto

@@ -5,20 +5,73 @@ con código `?c=muni`. Instrucciones de envío: `README.md`.
 
 ---
 
+## Las 14 comunas, y qué localidades nombrarle a cada una
+
+Las 27 localidades de la app caen en **14 comunas**. Nombrar dentro del correo
+todas las que le tocan a esa comuna es lo que convierte un correo genérico en uno
+que se lee: prueba que alguien miró su territorio de verdad.
+
+| # | Comuna | Localidades que la app cubre | Región |
+|---|---|---|---|
+| 1 | **Tortel** | Caleta Tortel, Puerto Yungay | Aysén |
+| 2 | **Cochrane** | Cochrane | Aysén |
+| 3 | **O'Higgins** | Villa O'Higgins | Aysén |
+| 4 | **Chile Chico** | Chile Chico, Puerto Guadal, Puerto Bertrand | Aysén |
+| 5 | **Río Ibáñez** | Villa Cerro Castillo, Puerto Río Tranquilo | Aysén |
+| 6 | **Cisnes** | Puerto Cisnes, Puyuhuapi, La Junta, Raúl Marín Balmaceda | Aysén |
+| 7 | **Lago Verde** | Villa Amengual | Aysén |
+| 8 | **Aysén** | Puerto Aysén, Puerto Chacabuco, Villa Mañihuales | Aysén |
+| 9 | **Coyhaique** | Coyhaique, Balmaceda | Aysén |
+| 10 | **Chaitén** | Chaitén, El Amarillo, Villa Santa Lucía, Caleta Gonzalo | Los Lagos |
+| 11 | **Futaleufú** | Futaleufú | Los Lagos |
+| 12 | **Palena** | Palena | Los Lagos |
+| 13 | **Hualaihué** | Hornopirén | Los Lagos |
+| 14 | **Puerto Montt** | Puerto Montt | Los Lagos |
+
+> **Ojo con Puerto Bertrand: es comuna de Chile Chico, no de Cochrane.** Es el
+> error fácil de esta tabla —está a 50 km de Cochrane y a 110 de Chile Chico— y
+> equivocarse de comuna en el primer correo dice que uno no conoce el territorio.
+> Mismo cuidado con Villa Amengual, que es de Lago Verde aunque quede en el camino
+> a Cisnes.
+
+**El orden importa, y no es alfabético.** Empezar por donde hay cara conocida y
+usar esas respuestas como prueba en las siguientes:
+
+1. **Tortel, Cochrane, O'Higgins** (provincia Capitán Prat). Es la zona del
+   fundador: acá el correo no es frío.
+2. **Chile Chico, Río Ibáñez** — vecinas, mismo circuito del lago.
+3. **Cisnes, Lago Verde, Aysén, Chaitén, Futaleufú, Palena, Hualaihué** — ya con
+   respuestas que citar («la encargada de Tortel ya nos corrigió sus datos»).
+4. **Coyhaique y Puerto Montt al final.** Son las oficinas más grandes y más
+   lentas, y son las que menos necesitan la app —tienen OIT de verdad y señal—.
+   Llegar con media región respondida es lo único que las mueve.
+
+**A quién dirigirlo.** En orden: Encargada/o de Turismo → Dirección de Desarrollo
+Económico Local (DIDEL) → Secretaría Municipal → Alcaldía. Si no hay nombre en el
+sitio de la municipalidad, va «Estimados» y se pide que lo deriven a quien vea
+turismo — pedir la derivación explícitamente funciona mejor que adivinar el cargo.
+
+---
+
 ## Asunto
 
 Preferido:
 
-> Las fichas de [Localidad] en una guía de la Carretera Austral: ¿nos ayudan a corregirlas?
+> Las fichas de [LOCALIDAD PRINCIPAL] en una guía de la Carretera Austral: ¿nos ayudan a corregirlas?
 
 Alternativa (si la primera no funciona en la ola siguiente):
 
-> [Localidad] ya está publicada en rutaaustral.cl — falta que los datos sean los suyos
+> [LOCALIDAD PRINCIPAL] ya está publicada en rutaaustral.cl — falta que los datos sean los suyos
 
 **Por qué así:** nombra la localidad (es lo único que hace que un correo frío se
 abra en una oficina municipal), dice de qué se trata y pide ayuda en vez de
 ofrecer algo. Un asunto que promete —"la nueva app de turismo de la Austral"— se
 lee como publicidad y se archiva sin abrir.
+
+**En una comuna con varias localidades, en el asunto va UNA**: la más conocida
+turísticamente, no la capital comunal. A la municipalidad de Cisnes le pega más
+«las fichas de Puyuhuapi» que «las fichas de Puerto Cisnes», aunque la oficina
+esté en Puerto Cisnes. Las demás se nombran adentro, en el cuerpo.
 
 ---
 
@@ -36,14 +89,15 @@ lee como publicidad y se archiva sin abrir.
 > una iniciativa municipal ni de SERNATUR—, gratis para el viajero y gratis para
 > los servicios: no cobro por aparecer ni cobro comisión.
 >
-> **[Localidad] ya está publicada**, con un servicio por categoría: dónde dormir,
-> dónde comer, combustible, salud, transporte y qué hacer. Los datos los reuní de
-> fuentes públicas, así que varios están incompletos o vencidos. Esos solo los
-> pueden corregir ustedes, que son los que saben cuál teléfono contesta.
+> De su comuna ya están publicadas **[LOCALIDADES: p. ej. Chaitén, El Amarillo,
+> Villa Santa Lucía y Caleta Gonzalo]**, cada una con un servicio por categoría:
+> dónde dormir, dónde comer, combustible, salud, transporte y qué hacer. Los datos
+> los reuní de fuentes públicas, así que varios están incompletos o vencidos. Esos
+> solo los pueden corregir ustedes, que son los que saben cuál teléfono contesta.
 >
 > Le pido dos cosas, y ninguna toma más de cinco minutos:
 >
-> **1.** Mire cómo se ve [Localidad]: https://rutaaustral.cl/?c=muni
+> **1.** Mire cómo se ven: https://rutaaustral.cl/?c=muni
 > Si algo está mal —un teléfono, un horario, un negocio que ya no existe, uno
 > importante que falta— respóndame este correo aunque sea con una línea. Lo
 > corrijo el mismo día.
@@ -67,9 +121,9 @@ lee como publicidad y se archiva sin abrir.
 
 > Estimada [Nombre]:
 >
-> Le escribí hace unos días por las fichas de [Localidad] en rutaaustral.cl.
+> Le escribí hace unos días por las fichas de [LOCALIDADES] en rutaaustral.cl.
 > Sé que agosto es mes cargado, así que se lo dejo más corto: acá está lo que hoy
-> muestra la guía de [Localidad] → https://rutaaustral.cl/?c=muni
+> muestra la guía de su comuna → https://rutaaustral.cl/?c=muni
 >
 > Con que me responda **qué está mal**, aunque sea en una línea, me basta. Y si
 > prefiere que no volvamos a escribirle, dígamelo y no insisto.
@@ -88,7 +142,8 @@ lee como publicidad y se archiva sin abrir.
 >
 > - Le adjunto / le paso el enlace del **QR** para el mesón: rutaaustral.cl/proyecto
 >   (está abajo del todo, se descarga e imprime).
-> - Si me pasa los correos de los alojamientos y restoranes de [Localidad], les
+> - Si me pasa los correos de los servicios de [LOCALIDADES] —alojamiento, comida,
+>   combustible, transporte, guías—, les
 >   escribo yo directamente para que cada uno confirme su propio dato. También
 >   puedo mandarles a ustedes el enlace y que lo repartan, como prefieran.
 >
