@@ -24,6 +24,38 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ## Dónde quedamos — para retomar (24-ago-2026)
 
+### Panel para mostrar el proyecto (una página, cualquier interlocutor)
+
+**Qué es.** `docs/panel-proyecto.html` — una página autocontenida que cuenta el
+proyecto entero: qué es, qué está construido, qué dice el mercado de Aysén, qué
+se está midiendo, cómo se financia y qué falta. Sirve para un municipio, para un
+fondo o para un negocio que pregunta "¿y esto qué es?", y se manda como enlace.
+Usa la **paleta y la tipografía de la app** (verde, crema, tinta y Archivo), para
+que el panel se parezca al producto del que habla.
+
+Tres reglas que se aplicaron al armarlo, y valen para cualquier material de venta
+que salga después:
+
+- **Solo cifras que no rotan.** Kilómetros, localidades, categorías y costo
+  mensual sí; recuentos de fichas no (cambian cada semana, es la regla de
+  `CLAUDE.md`). Las fuentes van al pie, con fecha.
+- **Las casillas de tracción van VACÍAS a propósito**, con un guion y "por medir".
+  Inventar un número para no mostrar un hueco es exactamente lo que el panel de
+  analítica se prohíbe a sí mismo ("cero" y "sin medir" no son lo mismo), y en un
+  documento que se manda a terceros el costo de que se note es mucho más alto.
+  Se llenan a mano desde `/admin` cuando la campaña haya corrido.
+- **El gráfico de atenciones OIT es el argumento, no el adorno.** Las nueve cifras
+  por destino suman exactamente las 6.357 atendidas de la región, y las dos puntas
+  —Cochrane #1 con 1.312, Tortel con 21— explican el proyecto solas: donde el
+  proyecto opera es donde más se pregunta, y el destino ícono no tiene a quién
+  preguntarle.
+
+Dos bugs que aparecieron al revisar el render y que valen para cualquier página
+futura: un `<span>` con `width`/`height` **en línea** ignora las dos cosas (las
+barras salían vacías sin error visible), y en un contenedor flex o grid hay que
+poner `min-width: 0` a los hijos o el ancho mínimo de una tabla empuja la página
+entera y aparece scroll horizontal en el teléfono.
+
 ### Posicionamiento por escrito, campaña lista para salir, y un panel que dice por dónde llegaron
 
 **Qué se hizo.** Antes de mandar el primer correo se fijó **qué dice el proyecto

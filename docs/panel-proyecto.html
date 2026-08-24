@@ -1,0 +1,781 @@
+<title>Panel Ruta Austral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..120,400..800&display=swap" />
+
+<style>
+  /* ------------------------------------------------------------------
+     Paleta y tipografía: son las MISMAS de la app (frontend/src/styles.css).
+     El panel tiene que parecerse al producto que está vendiendo — verde
+     #0f6e56, crema, tinta y el naranjo de acento, con Archivo como letra de
+     marca. El texto corrido va con la fuente del sistema, igual que en la PWA.
+     ------------------------------------------------------------------ */
+  :root {
+    --ground: #f7f5f0;
+    --surface: #fffefb;
+    --surface-2: #f1efe8;
+    --ink: #1e2a28;
+    --ink-2: #46534f;
+    --muted: #6b7572;
+    --line: #e2e0d8;
+    --line-fuerte: #cfccc0;
+    --verde: #0f6e56;
+    --verde-osc: #085041;
+    --verde-suave: #e1f5ee;
+    --naranjo: #d85a30;
+    --naranjo-texto: #a9401d;
+    --naranjo-suave: #faece7;
+    --marca: var(--verde);
+    --barra: #0f6e56;
+    --barra-apagada: rgba(15, 110, 86, 0.28);
+    --sombra: 0 1px 2px rgba(30, 42, 40, 0.05), 0 8px 24px -18px rgba(30, 42, 40, 0.35);
+
+    --display: 'Archivo', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --texto: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --ground: #0f1615;
+      --surface: #16211f;
+      --surface-2: #1c2927;
+      --ink: #edf2f0;
+      --ink-2: #c3cecb;
+      --muted: #94a29e;
+      --line: #263433;
+      --line-fuerte: #354644;
+      --verde: #45b591;
+      --verde-osc: #7ed3b4;
+      --verde-suave: #17322a;
+      --naranjo: #e7794f;
+      --naranjo-texto: #f0a17a;
+      --naranjo-suave: #33201a;
+      --marca: #45b591;
+      --barra: #45b591;
+      --barra-apagada: rgba(69, 181, 145, 0.26);
+      --sombra: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -20px rgba(0, 0, 0, 0.9);
+    }
+  }
+
+  :root[data-theme='dark'] {
+    --ground: #0f1615;
+    --surface: #16211f;
+    --surface-2: #1c2927;
+    --ink: #edf2f0;
+    --ink-2: #c3cecb;
+    --muted: #94a29e;
+    --line: #263433;
+    --line-fuerte: #354644;
+    --verde: #45b591;
+    --verde-osc: #7ed3b4;
+    --verde-suave: #17322a;
+    --naranjo: #e7794f;
+    --naranjo-texto: #f0a17a;
+    --naranjo-suave: #33201a;
+    --marca: #45b591;
+    --barra: #45b591;
+    --barra-apagada: rgba(69, 181, 145, 0.26);
+    --sombra: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -20px rgba(0, 0, 0, 0.9);
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--texto);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .hoja {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+
+  h1, h2, h3, .cifra, .rotulo, .escudo, .chip, .paso-n {
+    font-family: var(--display);
+  }
+
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+
+  .rotulo {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-variation-settings: 'wdth' 88;
+  }
+
+  /* ---------- Cabecera ---------- */
+  .cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 20px 28px;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--line-fuerte);
+  }
+
+  .escudo {
+    flex: none;
+    width: 62px;
+    height: 62px;
+    border-radius: 12px;
+    border: 3px solid var(--ink);
+    background: var(--surface);
+    color: var(--ink);
+    display: grid;
+    place-content: center;
+    text-align: center;
+    line-height: 1;
+  }
+  .escudo span { display: block; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; }
+  .escudo strong { display: block; font-size: 30px; font-weight: 800; font-variation-settings: 'wdth' 110; }
+
+  .titulos { flex: 1 1 380px; min-width: 260px; }
+  h1 {
+    font-size: clamp(34px, 6vw, 52px);
+    font-weight: 800;
+    font-variation-settings: 'wdth' 112;
+    letter-spacing: -0.015em;
+    line-height: 1.02;
+    margin: 6px 0 10px;
+  }
+  .bajada { font-size: clamp(16px, 2.2vw, 19px); color: var(--ink-2); max-width: 62ch; }
+  .bajada strong { color: var(--ink); font-weight: 600; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 5px 11px;
+    border-radius: 999px;
+    border: 1px solid var(--line-fuerte);
+    color: var(--ink-2);
+    background: var(--surface);
+    white-space: nowrap;
+  }
+  .chip-verde { border-color: transparent; background: var(--verde-suave); color: var(--verde-osc); }
+  .chip-naranjo { border-color: transparent; background: var(--naranjo-suave); color: var(--naranjo-texto); }
+
+  /* ---------- Secciones ---------- */
+  /* `min-width: 0` en todo lo que sea hijo de flex/grid: sin eso, el ancho
+     mínimo del contenido (la tabla, una fila de gráfico) empuja la página
+     entera y en un teléfono aparece scroll horizontal. */
+  .hoja > *, section > *, .rejilla > *, .tarjeta { min-width: 0; }
+  section { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  .titulo-seccion { display: flex; flex-direction: column; gap: 6px; }
+  h2 {
+    font-size: clamp(22px, 3.4vw, 30px);
+    font-weight: 700;
+    font-variation-settings: 'wdth' 104;
+    letter-spacing: -0.01em;
+  }
+  .entrada { color: var(--ink-2); max-width: 68ch; }
+
+  .rejilla { display: grid; gap: 14px; }
+  .rejilla-4 { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+  .rejilla-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .rejilla-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+
+  .tarjeta {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--sombra);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* ---------- Cifras ---------- */
+  .cifra {
+    font-size: clamp(30px, 4.6vw, 40px);
+    font-weight: 800;
+    font-variation-settings: 'wdth' 108;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+  .cifra small { font-size: 0.42em; font-weight: 700; letter-spacing: 0.04em; color: var(--muted); margin-left: 4px; white-space: nowrap; }
+  /* Unidad larga: en su propia línea. "MIL MILLONES" al lado del número parte
+     en dos y el pedazo suelto se lee como un título. */
+  .unidad { font-family: var(--display); font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: -2px; }
+  .pie { font-size: 13.5px; color: var(--muted); }
+  .tarjeta-cifra { gap: 8px; }
+
+  .por-medir { border-style: dashed; border-color: var(--line-fuerte); background: transparent; box-shadow: none; }
+  .por-medir .cifra { color: var(--muted); font-variation-settings: 'wdth' 96; }
+
+  /* ---------- Gráficos ---------- */
+  .grafico { display: flex; flex-direction: column; gap: 2px; }
+  .fila { display: grid; grid-template-columns: minmax(96px, 128px) 1fr auto; align-items: center; gap: 12px; padding: 3px 0; }
+  .fila-nombre { font-size: 14px; color: var(--ink-2); }
+  /* El carril es flex y la barra bloque: un <span> en línea ignora width y
+     height, y las barras salen vacías sin que falle nada visible. */
+  .carril { display: flex; height: 16px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+  .barra { display: block; height: 100%; background: var(--barra-apagada); border-radius: 0 4px 4px 0; }
+  .fila-alta .barra { background: var(--barra); }
+  .fila-alta .fila-nombre { color: var(--ink); font-weight: 600; }
+  .valor { font-family: var(--display); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); min-width: 58px; text-align: right; }
+  .valor em { display: block; font-style: normal; font-size: 11.5px; font-weight: 500; color: var(--muted); }
+
+  .nota-grafico {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    color: var(--ink-2);
+    background: var(--surface-2);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .nota-grafico b { color: var(--ink); }
+  .marca-lateral { border-left: 3px solid var(--naranjo); padding-left: 11px; }
+  .marca-lateral-verde { border-left: 3px solid var(--verde); padding-left: 11px; }
+
+  /* Barra de avance del pavimento: una sola medida, dos partes. */
+  .pavimento { display: flex; gap: 2px; height: 26px; border-radius: 4px; overflow: hidden; }
+  .pav-hecho { background: var(--barra); border-radius: 4px 0 0 4px; }
+  .pav-falta { background: var(--barra-apagada); border-radius: 0 4px 4px 0; }
+  .pav-leyenda { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--ink-2); }
+  .pav-leyenda span { display: inline-flex; align-items: center; gap: 7px; }
+  .punto { display: inline-block; width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .punto-hecho { background: var(--barra); }
+  .punto-falta { background: var(--barra-apagada); }
+
+  /* ---------- Listas ---------- */
+  .lista { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  .lista li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: baseline; font-size: 15px; color: var(--ink-2); }
+  .lista b { color: var(--ink); font-weight: 600; }
+  .vineta { display: block; width: 7px; height: 7px; border-radius: 2px; background: var(--marca); transform: translateY(-2px); }
+
+  .categorias { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cat {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 13px; font-weight: 600; font-family: var(--display);
+    padding: 6px 12px; border-radius: 8px;
+    background: var(--surface-2); color: var(--ink-2);
+    border: 1px solid var(--line);
+  }
+  .cat i { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+
+  /* ---------- Fases y calendario (esto SÍ es una secuencia) ---------- */
+  .pasos { display: flex; flex-direction: column; gap: 0; }
+  .paso { display: grid; grid-template-columns: 62px 1fr; gap: 16px; padding-bottom: 22px; position: relative; }
+  .paso:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 30px; top: 34px; bottom: 0;
+    border-left: 2px dotted var(--line-fuerte);
+  }
+  .paso-n {
+    width: 62px; min-height: 26px; padding: 5px 0; border-radius: 6px;
+    display: grid; place-content: center; text-align: center;
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; line-height: 1.1;
+    background: var(--surface-2); color: var(--muted);
+    border: 1px solid var(--line);
+    position: relative; z-index: 1;
+  }
+  .paso-hecho .paso-n { background: var(--verde-suave); color: var(--verde-osc); border-color: transparent; }
+  .paso-ahora .paso-n { background: var(--naranjo); color: #fff; border-color: transparent; }
+  .paso h3 { font-size: 16.5px; font-weight: 700; }
+  .paso p { margin: 4px 0 0; font-size: 14.5px; color: var(--ink-2); }
+
+  /* ---------- Tabla ---------- */
+  .envoltura-tabla { overflow-x: auto; max-width: 100%; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; min-width: 480px; }
+  th, td { text-align: left; padding: 11px 14px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-family: var(--display); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  td b { color: var(--ink); }
+  td { color: var(--ink-2); }
+  .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ---------- Cierre ---------- */
+  .cierre { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 26px; display: flex; flex-direction: column; gap: 16px; box-shadow: var(--sombra); }
+  .firma { font-size: 14.5px; color: var(--ink-2); }
+  .firma b { color: var(--ink); }
+  footer { border-top: 1px solid var(--line); padding-top: 20px; font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; }
+  a { color: var(--verde-osc); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, .fila:focus-visible { outline: 2px solid var(--naranjo); outline-offset: 3px; border-radius: 4px; }
+
+  @media (max-width: 560px) {
+    .fila { grid-template-columns: 1fr auto; }
+    .fila .carril { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="hoja">
+
+  <header class="cabecera">
+    <div class="escudo" aria-hidden="true"><span>RUTA</span><strong>7</strong></div>
+    <div class="titulos">
+      <p class="rotulo">Panel del proyecto · 24 de agosto de 2026</p>
+      <h1>Ruta Austral</h1>
+      <p class="bajada">
+        La guía de la Carretera Austral que el viajero lleva en el teléfono:
+        <strong>el dato verificado del servicio chico</strong>, y funcionando también
+        en los tramos sin cobertura, que es donde se decide dónde parar.
+        En una frase: <strong>una oficina de información turística que viaja en el bolsillo</strong>.
+      </p>
+      <div class="chips">
+        <span class="chip chip-verde">Puerto Montt → Villa O'Higgins</span>
+        <span class="chip">27 localidades</span>
+        <span class="chip">Gratis, sin tienda de aplicaciones</span>
+        <span class="chip">Español / English</span>
+        <span class="chip chip-naranjo">En marcha desde jul-2026</span>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="titulo-seccion">
+      <p class="rotulo">Lo que no cambia</p>
+      <h2>Las cifras estables del proyecto</h2>
+      <p class="entrada">
+        Los recuentos de fichas se miran en el CMS y cambian cada semana, así que
+        acá van solo las que no rotan: cobertura, alcance y costo.
+      </p>
+    </div>
+    <div class="rejilla rejilla-4">
+      <div class="tarjeta tarjeta-cifra">
+        <p class="cifra">1.058 <small>KM</small></p>
+        <p class="pie">La Carretera Austral completa, de Puerto Montt a Villa O'Higgins, con sus barcazas.</p>
+      </div>
+      <div class="tarjeta tarjeta-cifra">
+        <p class="cifra">27</p>
+        <p class="pie">Localidades con contenido propio: mapa, fichas, cómo llegar y qué hay alrededor.</p>
+      </div>
+      <div class="tarjeta tarjeta-cifra">
+        <p class="cifra">6</p>
+        <p class="pie">Categorías por localidad. Se publica <b>una ficha por cupo</b>: calidad antes que volumen.</p>
+      </div>
+      <div class="tarjeta tarjeta-cifra">
+        <p class="cifra">US$10 <small>/ MES</small></p>
+        <p class="pie">Costo total de operación. Un solo negocio auspiciador cubre la infraestructura entera.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="titulo-seccion">
+      <p class="rotulo">El problema</p>
+      <h2>El viajero sí busca. Lo que encuentra ya no es</h2>
+    </div>
+    <div class="rejilla rejilla-3">
+      <div class="tarjeta">
+        <p class="rotulo">01 · El dato</p>
+        <p>
+          El servicio chico de la Austral aparece incompleto, vencido o directamente
+          ausente en las plataformas globales. El teléfono que sale en internet
+          muchas veces <b>ya no es el que contesta</b>.
+        </p>
+      </div>
+      <div class="tarjeta">
+        <p class="rotulo">02 · El momento</p>
+        <p>
+          La decisión de dónde dormir o comer se toma <b>en la ruta, antes de llegar</b>.
+          En los pueblos hay señal —y buena—; lo que falta es cobertura entre pueblo y
+          pueblo, que es justo donde se decide.
+        </p>
+      </div>
+      <div class="tarjeta">
+        <p class="rotulo">03 · El camino</p>
+        <p>
+          Cortes, faenas, barcazas y clima cambian a diario y <b>nadie los mantiene</b>.
+          Con las obras 2026–2030 en Aysén, eso va a empeorar antes de mejorar.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="titulo-seccion">
+      <p class="rotulo">El producto</p>
+      <h2>Qué está construido y funcionando hoy</h2>
+      <p class="entrada">
+        No es una maqueta: está desplegado, con dominio propio, y cualquiera puede
+        instalarlo en su teléfono ahora mismo.
+      </p>
+    </div>
+    <div class="rejilla rejilla-2">
+      <div class="tarjeta">
+        <p class="rotulo">La guía</p>
+        <ul class="lista">
+          <li><i class="vineta"></i><span><b>Una ficha curada por localidad y categoría</b>, con teléfono, WhatsApp, horario y punto exacto en el mapa.</span></li>
+          <li><i class="vineta"></i><span><b>Nueve cruces y terminales de barcaza</b> con zarpes, teléfono de reserva y tarifas fechadas.</span></li>
+          <li><i class="vineta"></i><span><b>Funciona sin señal</b>: mapa, fichas y buscador viajan dentro del teléfono.</span></li>
+          <li><i class="vineta"></i><span><b>Estrellas y comentarios</b> de viajeros, visibles también sin cobertura.</span></li>
+        </ul>
+        <div class="categorias" role="list" aria-label="Categorías de cada localidad">
+          <span class="cat" role="listitem"><i style="background:#534AB7"></i>Dónde dormir</span>
+          <span class="cat" role="listitem"><i style="background:#D85A30"></i>Dónde comer</span>
+          <span class="cat" role="listitem"><i style="background:#0F6E56"></i>Qué visitar</span>
+          <span class="cat" role="listitem"><i style="background:#185FA5"></i>Servicios</span>
+          <span class="cat" role="listitem"><i style="background:#D4537E"></i>Eventos</span>
+          <span class="cat" role="listitem"><i style="background:#A32D2D"></i>Emergencias</span>
+        </div>
+      </div>
+      <div class="tarjeta">
+        <p class="rotulo">Lo vivo</p>
+        <ul class="lista">
+          <li><i class="vineta"></i><span><b>Reportes de ruta</b> tipo Waze: peligro, accidente y trabajos en la vía, con 24 h de vigencia y votación «¿sigue ahí?». Se escriben sin señal y salen solos al llegar al pueblo.</span></li>
+          <li><i class="vineta"></i><span><b>Huemul, el copiloto</b>: arma el plan del día y el itinerario por etapas con el GPS, y deja escrito el mensaje para <b>pedir disponibilidad</b> por WhatsApp.</span></li>
+          <li><i class="vineta"></i><span><b>Avisos</b> a los viajeros que instalaron la app, incluidos los programados.</span></li>
+          <li><i class="vineta"></i><span><b>El dueño corrige su propia ficha</b> desde un enlace personal, parado en su local, sin crear cuenta.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="nota-grafico marca-lateral-verde">
+      <span>
+        <b>Infraestructura sin pendientes desde el 10-ago-2026.</b> Dominio propio con
+        SSL, backend siempre encendido, almacenamiento de fotos y correo del dominio.
+        La PWA se instala desde el navegador: no hay tienda de aplicaciones de por medio,
+        ni descarga de 80 MB antes de salir.
+      </span>
+    </div>
+  </section>
+
+  <section>
+    <div class="titulo-seccion">
+      <p class="rotulo">El mercado</p>
+      <h2>Dónde pregunta la gente, y dónde no tiene a quién preguntarle</h2>
+      <p class="entrada">
+        Atenciones en Oficinas de Información Turística de la Región de Aysén,
+        temporada dic-2025 a mar-2026. Son una <b>muestra</b>, no el total de
+        visitantes: la ruta completa mueve entre 100 y 150 mil viajeros al año.
+      </p>
+    </div>
+
+    <div class="rejilla rejilla-3">
+      <div class="tarjeta tarjeta-cifra">
+        <p class="cifra">16.998</p>
+        <p class="pie">Personas registradas en la temporada (conteo de grupo de viaje) en Aysén.</p>
+      </div>
+      <div class="tarjeta tarjeta-cifra">
+        <p class="cifra">6.357</p>
+        <p class="pie">De ellas, atendidas en una oficina de información turística.</p>
+      </div>
+      <div class="tarjeta tarjeta-cifra">
+        <p class="cifra">5.477</p>
+        <p class="pie">En la provincia Capitán Prat —Cochrane, Tortel, O'Higgins—, donde opera el fundador.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <p class="rotulo">Atenciones OIT por destino · Aysén, temporada 2026</p>
+      <div class="grafico" role="img" aria-label="Atenciones en oficinas de información turística por destino en Aysén, temporada 2026: Cochrane 1.312, Cisnes 1.301, Chile Chico 1.213, Río Ibáñez 1.024, Coyhaique 720, O'Higgins 486, Aysén 178, Lago Verde 102, Tortel 21.">
+        <div class="fila fila-alta">
+          <span class="fila-nombre">Cochrane</span>
+          <span class="carril"><span class="barra" style="width:100%"></span></span>
+          <span class="valor">1.312<em>20,6 %</em></span>
+        </div>
+        <div class="fila">
+          <span class="fila-nombre">Cisnes</span>
+          <span class="carril"><span class="barra" style="width:99.2%"></span></span>
+          <span class="valor">1.301<em>20,5 %</em></span>
+        </div>
+        <div class="fila">
+          <span class="fila-nombre">Chile Chico</span>
+          <span class="carril"><span class="barra" style="width:92.5%"></span></span>
+          <span class="valor">1.213<em>19,1 %</em></span>
+        </div>
+        <div class="fila">
+          <span class="fila-nombre">Río Ibáñez</span>
+          <span class="carril"><span class="barra" style="width:78.0%"></span></span>
+          <span class="valor">1.024<em>16,1 %</em></span>
+        </div>
+        <div class="fila">
+          <span class="fila-nombre">Coyhaique</span>
+          <span class="carril"><span class="barra" style="width:54.9%"></span></span>
+          <span class="valor">720<em>11,3 %</em></span>
+        </div>
+        <div class="fila">
+          <span class="fila-nombre">O'Higgins</span>
+          <span class="carril"><span class="barra" style="width:37.0%"></span></span>
+          <span class="valor">486<em>7,6 %</em></span>
+        </div>
+        <div class="fila">
+          <span class="fila-nombre">Aysén</span>
+          <span class="carril"><span class="barra" style="width:13.6%"></span></span>
+          <span class="valor">178<em>2,8 %</em></span>
+        </div>
+        <div class="fila">
+          <span class="fila-nombre">Lago Verde</span>
+          <span class="carril"><span class="barra" style="width:7.8%"></span></span>
+          <span class="valor">102<em>1,6 %</em></span>
+        </div>
+        <div class="fila fila-alta">
+          <span class="fila-nombre">Tortel</span>
+          <span class="carril"><span class="barra" style="width:1.6%"></span></span>
+          <span class="valor">21<em>0,3 %</em></span>
+        </div>
+      </div>
+      <div class="nota-grafico marca-lateral">
+        <span>
+          <b>Las dos puntas explican el proyecto.</b> Cochrane —la zona base— es el
+          destino más consultado de la región. Tortel, que es ícono de la Patagonia,
+          registró <b>21 atenciones en toda la temporada</b>: la gente igual llega,
+          pero no tiene dónde preguntar. Ese hueco es el que llena una OIT digital.
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="titulo-seccion">
+      <p class="rotulo">Viento a favor, con fecha</p>
+      <h2>El Plan Ruta Austral mete obras justo donde está el contenido</h2>
+      <p class="entrada">
+        Anunciado por el MOP el 30 de abril de 2026. Es un plan <b>regional de Aysén</b>,
+        no la pavimentación completa de la ruta.
+      </p>
+    </div>
+    <div class="rejilla rejilla-4">
+      <div class="tarjeta tarjeta-cifra">
+        <p class="cifra">$800</p>
+        <p class="unidad">Mil millones de pesos</p>
+        <p class="pie">Inversión comprometida 2026–2030 en la Región de Aysén.</p>
+      </div>
+      <div class="tarjeta tarjeta-cifra">
+        <p class="cifra">244 <small>KM</small></p>
+        <p class="pie">Tramo intervenido, del límite regional al Lago Juncal.</p>
+      </div>
+      <div class="tarjeta tarjeta-cifra">
+        <p class="cifra">150,4 <small>KM</small></p>
+        <p class="pie">De pavimentación definitiva, más los puentes Palena y Rosselot.</p>
+      </div>
+      <div class="tarjeta tarjeta-cifra">
+        <p class="cifra">2</p>
+        <p class="pie">Barcazas nuevas —lagos General Carrera y O'Higgins— y el puerto Yungay.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <p class="rotulo">Estado de la ruta completa · 1.058 km</p>
+      <div class="pavimento" role="img" aria-label="De los 1.058 km de la Carretera Austral, 614,5 km están pavimentados (58%) y faltan 443,5 km.">
+        <span class="pav-hecho" style="flex:58.1"></span>
+        <span class="pav-falta" style="flex:41.9"></span>
+      </div>
+      <div class="pav-leyenda">
+        <span><i class="punto punto-hecho"></i> Pavimentado · <b class="num">614,5 km (58 %)</b></span>
+        <span><i class="punto punto-falta"></i> Ripio · <b class="num">443,5 km</b></span>
+      </div>
+      <p class="pie">
+        Cuatro años de faenas y desvíos sobre el mismo tramo donde la app ya tiene
+        todo su contenido. Obras significan cortes, y los cortes son exactamente el
+        problema que resuelven los reportes de ruta.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="titulo-seccion">
+      <p class="rotulo">Tracción</p>
+      <h2>Lo que se está midiendo, y lo que todavía no</h2>
+      <p class="entrada">
+        La analítica es <b>anónima por diseño</b>: no hay cuentas, ni sesión, ni
+        dispositivo, ni IP. Se cuenta qué pasó cada día, no quién lo hizo. Estas
+        cifras se llenan desde el panel del CMS y se ponen en cero antes de la
+        primera campaña, para no medir contra las pruebas propias.
+      </p>
+    </div>
+    <div class="rejilla rejilla-4">
+      <div class="tarjeta tarjeta-cifra por-medir">
+        <p class="rotulo">Aperturas</p>
+        <p class="cifra">—</p>
+        <p class="pie">Cuánta gente abre la app en el periodo.</p>
+      </div>
+      <div class="tarjeta tarjeta-cifra por-medir">
+        <p class="rotulo">Fichas vistas</p>
+        <p class="cifra">—</p>
+        <p class="pie">De los que entran, cuántos llegan a mirar un servicio.</p>
+      </div>
+      <div class="tarjeta tarjeta-cifra por-medir">
+        <p class="rotulo">Contactos a un negocio</p>
+        <p class="cifra">—</p>
+        <p class="pie">Cómo llegar, llamar, compartir y pedir disponibilidad. Lo más parecido a una venta que puede medir un directorio.</p>
+      </div>
+      <div class="tarjeta tarjeta-cifra por-medir">
+        <p class="rotulo">Por dónde llegaron</p>
+        <p class="cifra">—</p>
+        <p class="pie">Cada enlace repartido lleva su código: correo, QR del local, redes.</p>
+      </div>
+    </div>
+    <div class="nota-grafico">
+      <span>
+        <b>«Cero» y «sin medir» no son lo mismo.</b> El panel no dibuja nada anterior
+        al primer día registrado, y cada familia de datos dice desde cuándo se mide.
+        Un número inventado para llenar un cuadro vale menos que un guion honesto.
+      </span>
+    </div>
+  </section>
+
+  <section>
+    <div class="titulo-seccion">
+      <p class="rotulo">Modelo</p>
+      <h2>Gratis para quien viaja, gratis para quien aparece</h2>
+    </div>
+    <div class="envoltura-tabla">
+      <table>
+        <thead>
+          <tr><th scope="col">Pieza</th><th scope="col">Hoy</th><th scope="col">Adónde va</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Viajero</b></td>
+            <td>Gratis, sin cuenta y sin publicidad.</td>
+            <td>Igual. Es la condición para que la use.</td>
+          </tr>
+          <tr>
+            <td><b>Ficha de un negocio</b></td>
+            <td>Gratis, sin comisión por nadie que llegue.</td>
+            <td>Sigue gratis. Es lo que consigue el dato.</td>
+          </tr>
+          <tr>
+            <td><b>Ficha destacada</b></td>
+            <td>Implementada; las primeras son los dos negocios del fundador.</td>
+            <td>Es el ingreso: pago plano, local, sin comisiones.</td>
+          </tr>
+          <tr>
+            <td><b>Municipios y OIT</b></td>
+            <td>Gratis. Corrigen y difunden el dato de su comuna.</td>
+            <td>Alianza, no venta: extienden su oficina al camino.</td>
+          </tr>
+          <tr>
+            <td><b>Operación</b></td>
+            <td class="num">≈ US$10 al mes, todo incluido.</td>
+            <td>Un auspiciador la cubre; el resto es margen para fotos y terreno.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="nota-grafico marca-lateral">
+      <span>
+        <b>No se financia:</b> publicidad pagada mientras no haya señal de retención,
+        app nativa (la PWA es la decisión correcta por el offline), ni reescrituras.
+        El riesgo de este proyecto nunca fue el dinero: es el tiempo.
+      </span>
+    </div>
+  </section>
+
+  <section>
+    <div class="titulo-seccion">
+      <p class="rotulo">Recorrido</p>
+      <h2>De dónde viene y qué falta</h2>
+    </div>
+    <div class="pasos">
+      <div class="paso paso-hecho">
+        <span class="paso-n">FASE 1</span>
+        <div>
+          <h3>Multi-localidad · <span class="chip chip-verde">Hecha</span></h3>
+          <p>El modelo dejó de ser un pueblo: selector, filtros y contenido por localidad.</p>
+        </div>
+      </div>
+      <div class="paso paso-hecho">
+        <span class="paso-n">FASE 2</span>
+        <div>
+          <h3>Contenido del tramo sur · <span class="chip chip-verde">Hecha</span></h3>
+          <p>Coyhaique → Villa O'Higgins, con el asistente filtrado por localidad y la vista de toda la ruta por GPS.</p>
+        </div>
+      </div>
+      <div class="paso paso-hecho">
+        <span class="paso-n">FASE 2.5</span>
+        <div>
+          <h3>Contenido del tramo norte · <span class="chip chip-verde">Hecha</span></h3>
+          <p>Coyhaique → Puerto Montt y sus barcazas. Ahí la identidad pasó a ser la ruta completa.</p>
+        </div>
+      </div>
+      <div class="paso paso-ahora">
+        <span class="paso-n">FASE 3</span>
+        <div>
+          <h3>Dato real y capa comercial · <span class="chip chip-naranjo">En curso</span></h3>
+          <p>Campaña a municipios y dueños para confirmar cada ficha, fotos, y las primeras fichas destacadas. El PMV de reportes de ruta ya está desplegado desde julio.</p>
+        </div>
+      </div>
+      <div class="paso">
+        <span class="paso-n">FASE 4</span>
+        <div>
+          <h3>Producción definitiva</h3>
+          <p>Dominio, fotos en la nube y backend siempre encendido ya están. Quedan respaldos y monitoreo de errores.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rejilla rejilla-4">
+      <div class="tarjeta">
+        <p class="rotulo">Agosto</p>
+        <p>Campaña de correos y analítica en cero.</p>
+      </div>
+      <div class="tarjeta">
+        <p class="rotulo">Septiembre</p>
+        <p>Cerrar fichas con lo que llegue. Fotos.</p>
+      </div>
+      <div class="tarjeta">
+        <p class="rotulo">Octubre – noviembre</p>
+        <p>Difusión al viajero, que es cuando planifica.</p>
+      </div>
+      <div class="tarjeta">
+        <p class="rotulo">Diciembre – marzo</p>
+        <p>Temporada alta: medir y decidir con datos.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="cierre">
+      <p class="rotulo">Quién está detrás</p>
+      <h2>Hecho desde la ruta, no sobre la ruta</h2>
+      <p class="firma">
+        <b>Juan Pablo Monsalve Suazo</b> vive en el km 1020 de la Carretera Austral,
+        entre Cochrane y Caleta Tortel, donde tiene una hamburguesería y un furgón de
+        pasajeros y encomiendas Tortel–Cochrane. El proyecto es <b>privado e
+        independiente</b>: no es una iniciativa municipal ni de SERNATUR.
+      </p>
+      <div class="rejilla rejilla-3">
+        <div class="tarjeta">
+          <p class="rotulo">Lo que se necesita ahora</p>
+          <p>Que cada comuna confirme el dato de sus servicios. Es lo que convierte un directorio en una guía.</p>
+        </div>
+        <div class="tarjeta">
+          <p class="rotulo">Después</p>
+          <p>Fotos propias o cedidas por los negocios: en redes, la foto <em>es</em> el anuncio.</p>
+        </div>
+        <div class="tarjeta">
+          <p class="rotulo">Y para sostenerlo</p>
+          <p>Dos o tres negocios auspiciadores de la ruta. Con eso la operación se paga sola.</p>
+        </div>
+      </div>
+      <p class="firma">
+        <a href="https://rutaaustral.cl">rutaaustral.cl</a> ·
+        <a href="mailto:contacto@rutaaustral.cl">contacto@rutaaustral.cl</a> ·
+        +56 9 5156 9704
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <p>
+      <b>Fuentes.</b> Atenciones y conteo de temporada: Red de Informadores Turísticos,
+      Patagonia Chilena, temporada dic-2025 a mar-2026. Inversión y obras: Plan Ruta
+      Austral, Ministerio de Obras Públicas, anuncio del 30-abr-2026. Kilometraje y
+      estado de pavimento: MOP.
+    </p>
+    <p>
+      Los recuentos de fichas publicadas no se escriben acá a propósito: cambian cada
+      vez que se publica o se cura algo. El número vivo está en el CMS del proyecto.
+    </p>
+  </footer>
+
+</div>
