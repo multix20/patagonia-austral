@@ -110,6 +110,16 @@ export const LOCALIDADES_SEED = [
     lat: -46.1216, lng: -72.1636, zoom: 15, orden: 130,
   },
   {
+    // Desvío SE desde la Ruta 7 a la orilla norte del lago General Carrera. Entra
+    // por la misma razón que Puerto Yungay: no es un pueblo de paso, es una
+    // RAMPA — de acá zarpa la barcaza a Chile Chico, que es el atajo para cruzar
+    // el lago en vez de rodearlo. Sin él, el viajero que quiere ir a Chile Chico
+    // no ve en el mapa que existe la alternativa por agua.
+    slug: 'puerto-rio-ibanez',
+    nombre: { es: 'Puerto Río Ibáñez', en: 'Puerto Río Ibáñez' },
+    lat: -46.2925, lng: -71.9325, zoom: 15, orden: 135,
+  },
+  {
     slug: 'puerto-rio-tranquilo',
     nombre: { es: 'Puerto Río Tranquilo', en: 'Puerto Río Tranquilo' },
     lat: -46.6252, lng: -72.6735, zoom: 14, orden: 140,
@@ -202,6 +212,18 @@ export const LOCALIDADES_ROTULADAS = [
   // Villa O'Higgins, y Caleta Tortel subió una línea para dejarle el sitio (ver
   // ETIQUETAS_LOCALIDAD).
   'puerto-yungay',
+  // --- Sumadas el 24-ago-2026 (las pidió el fundador, que vive en la ruta) ---
+  // Todas EXISTÍAN ya como pin: eran puntos verdes mudos que solo decían su
+  // nombre al acercar el mapa. Lo que se les agrega no es el pin, es el rótulo
+  // fijo, porque las seis se preguntan desde la ruta ANTES de llegar. El criterio
+  // es el mismo de Puerto Yungay: rotula fijo lo que el viajero necesita ver para
+  // DECIDIR, aunque no sea un pueblo grande.
+  'hornopiren', // rampa de la barcaza que abre la Austral (Caleta La Arena → Puelche)
+  'caleta-gonzalo', // donde DESEMBARCA esa barcaza; corazón de Pumalín
+  'raul-marin-balmaceda', // desvío costero al oeste desde La Junta
+  'villa-cerro-castillo', // el cerro más fotografiado del tramo, y el cruce a Ibáñez
+  'balmaceda', // el aeropuerto por donde entra a la región medio viaje a la Austral
+  'puerto-rio-ibanez', // barcaza a Chile Chico: el atajo que evita rodear el lago
 ]
 
 // Ajustes finos del rótulo del pin de localidad (slug → clases extra). Por
@@ -258,6 +280,34 @@ export const ETIQUETAS_LOCALIDAD = {
   // interfaz en 360, 390 y 414 px de ancho.
   'villa-ohiggins': 'izq',
   'puerto-yungay': 'izq',
+  // Villa Cerro Castillo rotula a la IZQUIERDA. A su derecha, y casi a la misma
+  // latitud, está Puerto Río Ibáñez (el desvío a la barcaza), así que los dos
+  // nombres saldrían disparados al mismo pedazo de mapa. Mandando Castillo al
+  // oeste —donde está su propio cerro y no hay nada dibujado— cada uno se lee
+  // solo. Los lados de los seis rótulos nuevos se midieron en el navegador, no
+  // se supusieron.
+  'villa-cerro-castillo': 'izq',
+  // Raúl Marín Balmaceda está en la boca del río Palena, en la costa: con el
+  // rótulo por defecto su nombre —el más largo de la ruta— salía disparado hacia
+  // el interior y se encimaba con La Junta Y con Palena a la vez. Mandado al mar
+  // se lee solo. Medido: por defecto choca en 360, 390 y 414; con 'izq' los tres
+  // quedan limpios y el nombre entra entero (era la duda, por ser el más largo
+  // del mapa y estar tan al oeste).
+  'raul-marin-balmaceda': 'izq',
+}
+
+/**
+ * Localidades cuyo pin lleva un DIBUJO en vez del punto verde (slug → icono).
+ *
+ * Se reserva para lo que el viajero busca por su INFRAESTRUCTURA y no por el
+ * pueblo: Balmaceda es un caserío de la estepa, pero es el aeropuerto por donde
+ * entra a la región medio viaje a la Carretera Austral, y un punto verde igual
+ * al de los demás no dice eso en ninguna parte. El disco con dibujo es más
+ * grande que el punto, así que cada entrada nueva le quita sitio al mapa: la
+ * lista se mantiene corta a propósito.
+ */
+export const ICONOS_LOCALIDAD = {
+  balmaceda: 'plane',
 }
 
 // Tercer nivel: localidades "menores" que se conservan (con sus lugares) pero se

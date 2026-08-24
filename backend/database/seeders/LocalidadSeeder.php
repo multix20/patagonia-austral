@@ -14,8 +14,8 @@ use Illuminate\Database\Seeder;
 // desde Villa Santa Lucía; Raúl Marín Balmaceda (72) el desvío costero al oeste
 // desde La Junta; Puerto Cisnes (95) el desvío costero; Puerto Aysén (110) y
 // Chacabuco (115) la Ruta 240 desde Coyhaique; Balmaceda (125) el desvío SE con
-// el aeropuerto regional; Chile Chico (155) la ribera sur del lago General
-// Carrera. Mantener en espejo con LOCALIDADES_SEED de frontend/src/data/places.js.
+// el aeropuerto regional; Puerto Río Ibáñez (135) la rampa de la barcaza a Chile
+// Chico; Chile Chico (155) la ribera sur del lago General Carrera. Mantener en espejo con LOCALIDADES_SEED de frontend/src/data/places.js.
 class LocalidadSeeder extends Seeder
 {
     public function run(): void
@@ -176,6 +176,16 @@ class LocalidadSeeder extends Seeder
                 'lng' => -72.1636,
                 'zoom' => 15,
                 'orden' => 130,
+            ],
+            [
+                // Rampa de la barcaza a Chile Chico: el atajo por agua que evita
+                // rodear el lago General Carrera. Mismo criterio que Puerto Yungay.
+                'slug' => 'puerto-rio-ibanez',
+                'nombre' => ['es' => 'Puerto Río Ibáñez', 'en' => 'Puerto Río Ibáñez'],
+                'lat' => -46.2925,
+                'lng' => -71.9325,
+                'zoom' => 15,
+                'orden' => 135,
             ],
             [
                 'slug' => 'puerto-rio-tranquilo',

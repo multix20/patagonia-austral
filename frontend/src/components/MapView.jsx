@@ -176,6 +176,39 @@ const RELLENO_RUTA = { paddingTopLeft: [36, 96], paddingBottomRight: [36, 100] }
 // rotulan las destacadas, para no saturar la vista general de toda la ruta.
 const ZOOM_ETIQUETAS = 8
 
+/**
+ * Convierte un marcador de Leaflet en un botón de verdad.
+ *
+ * Leaflet deja cada marcador enfocable con Tab y le pone `role="button"`, pero
+ * le faltan las dos cosas que hacen que ese botón exista:
+ *  1. El NOMBRE. El `alt` que Leaflet le pone a un icono solo aplica si el icono
+ *     es una etiqueta `img`, y los nuestros son `div`: sin `aria-label`, un
+ *     lector de pantalla anuncia una fila de botones idénticos sin decir cuál es
+ *     cuál.
+ *  2. La TECLA. El navegador sintetiza el click de Enter/Espacio en los
+ *     controles nativos, no en un `div` con `role="button"`; Leaflet solo
+ *     escucha Enter para abrir popups, y estos pines no usan popup. Sin esto el
+ *     pin se enfoca y no hace nada — peor que no ser enfocable, porque promete
+ *     un botón que no responde.
+ *
+ * Se llama CADA VEZ que el marcador entra al mapa, no una sola vez al crearlo:
+ * los pines de las fichas viven dentro del grupo de agrupación, que los saca y
+ * los vuelve a meter al cambiar el zoom, y Leaflet crea un elemento nuevo en
+ * cada vuelta. La marca en `dataset` evita atar dos veces la tecla si algún día
+ * el elemento sí se reutiliza.
+ */
+function hacerBoton(marcador, nombre, alActivar) {
+  const el = marcador.getElement()
+  if (!el || el.dataset.botonListo) return
+  el.dataset.botonListo = '1'
+  el.setAttribute('aria-label', nombre)
+  el.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Enter' && ev.key !== ' ') return
+    ev.preventDefault()
+    alActivar()
+  })
+}
+
 // El nombre de la localidad en el idioma activo. `loc.nombre` es bilingüe
 // ({ es, en }): hay que resolverlo siempre, nunca pasar el objeto crudo (si no,
 // se ve "[object Object]"). Lo usan el rótulo del pin y su nombre accesible, que
@@ -201,8 +234,17 @@ function nombreLocalidad(loc, lang) {
 //   ''      = localidad normal (punto verde, etiqueta solo al acercar)
 // `extra` son clases de ajuste del rótulo ('izq', 'alta'): ver
 // ETIQUETAS_LOCALIDAD en data/places.js.
-function pinLocalidad(loc, tier, lang, extra = '') {
+function pinLocalidad(loc, tier, lang, extra = '', icono = '') {
   const nombre = nombreLocalidad(loc, lang)
+  // Marca del pin. Por defecto es el punto verde de siempre; unas pocas
+  // localidades llevan un DIBUJO en su lugar (ver ICONOS_LOCALIDAD en
+  // data/places.js) porque lo que las hace parada obligada no es el pueblo sino
+  // una infraestructura: el avión de Balmaceda es el aeropuerto por donde entra
+  // a la región medio viaje a la Austral. Es un disco más grande, así que se
+  // reserva para los pocos casos en que el dato vale ese espacio en el mapa.
+  const marca = icono
+    ? `<div class="dot ico">${iconoHTML(icono, 11, '#fff')}</div>`
+    : '<div class="dot"></div>'
   return L.divIcon({
     // La clase va en el elemento de Leaflet, que es el que recibe el foco del
     // teclado (le pone `tabindex` y `role="button"`). Ahí se dibuja el anillo de
@@ -210,7 +252,7 @@ function pinLocalidad(loc, tier, lang, extra = '') {
     className: 'marcador-loc',
     iconSize: [26, 26],
     iconAnchor: [13, 13],
-    html: `<div class="pin-loc ${tier} ${extra}"><div class="lbl">${nombre}</div><div class="dot"></div></div>`,
+    html: `<div class="pin-loc ${tier} ${extra}"><div class="lbl">${nombre}</div>${marca}</div>`,
   })
 }
 
@@ -229,7 +271,9 @@ function pinCategoria(lugar) {
   const rec = esRecomendado(lugar)
   const sello = rec ? `<span class="llama">${iconoHTML('flame', 12, '#7a3f04')}</span>` : ''
   return L.divIcon({
-    className: '',
+    // Igual que en el pin de localidad: la clase va en el elemento de Leaflet,
+    // que es el que recibe el foco del teclado, para poder dibujarle el anillo.
+    className: 'marcador-lugar',
     iconSize: [34, 44],
     iconAnchor: [17, 44],
     html: `<div class="pin-cat ${rec ? 'rec' : ''}"><div class="teardrop">
@@ -337,6 +381,7 @@ const MapView = forwardRef(function MapView(
     rotuladas = [],
     menores = [],
     etiquetas = {},
+    iconos = {},
     filtro,
     localidadActiva,
     reportes = [],
@@ -702,7 +747,7 @@ const MapView = forwardRef(function MapView(
             ? 'menor'
             : ''
       const m = L.marker([loc.lat, loc.lng], {
-        icon: pinLocalidad(loc, tier, lang, etiquetas[loc.slug] || ''),
+        icon: pinLocalidad(loc, tier, lang, etiquetas[loc.slug] || '', iconos[loc.slug] || ''),
         // Por encima de los reportes (que van en 500): entrar al pueblo es la
         // navegación principal del mapa y no puede quedar bloqueada por un pin
         // temporal que le cayó encima. Cinturón y tirantes con el anclaje del
@@ -711,32 +756,13 @@ const MapView = forwardRef(function MapView(
       })
         .addTo(mapa)
         .on('click', () => cbEntrar.current?.(loc.slug))
-      // Leaflet deja el pin enfocable con Tab y le pone `role="button"`, pero le
-      // faltan las dos cosas que hacen que ese botón exista de verdad:
-      //  1. El NOMBRE. El `alt` que Leaflet le pone a un icono solo aplica si el
-      //     icono es un <img>, y este es un <div>: sin `aria-label`, un lector
-      //     de pantalla anuncia dos docenas de botones idénticos y no dice de
-      //     qué pueblo es cada uno.
-      //  2. La TECLA. El navegador sintetiza el click de Enter/Espacio en los
-      //     controles nativos, no en un <div> con `role="button"`; Leaflet solo
-      //     escucha Enter para abrir popups, y estos pines no usan popup. Sin
-      //     esto, el pin se enfoca y no hace nada al pulsar Enter — que es peor
-      //     que no ser enfocable, porque promete un botón que no responde.
-      // Los listeners se van solos con el elemento cuando `limpiarLoc()` saca el
-      // marcador del mapa.
-      const el = m.getElement()
-      if (el) {
-        el.setAttribute('aria-label', `${verAccion} ${nombreLocalidad(loc, lang)}`)
-        el.addEventListener('keydown', (ev) => {
-          if (ev.key !== 'Enter' && ev.key !== ' ') return
-          ev.preventDefault()
-          cbEntrar.current?.(loc.slug)
-        })
-      }
+      hacerBoton(m, `${verAccion} ${nombreLocalidad(loc, lang)}`, () =>
+        cbEntrar.current?.(loc.slug)
+      )
       locMarkersRef.current.push(m)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vista, localidades, destacados, rotuladas, menores, etiquetas, lang])
+  }, [vista, localidades, destacados, rotuladas, menores, etiquetas, iconos, lang])
 
   // Pines de categoría (vista 'localidad'), según filtro.
   //
@@ -763,6 +789,7 @@ const MapView = forwardRef(function MapView(
     const grupo = catGrupoRef.current
     grupo.clearLayers()
 
+    const verAccion = lang === 'es' ? 'Ver' : 'View'
     const visibles = lugares.filter((l) => !filtro || l.cat === filtro)
     visibles.forEach((l) => {
       const rec = esRecomendado(l)
@@ -777,6 +804,15 @@ const MapView = forwardRef(function MapView(
         // …y esto, para saber si el grupo lleva llama.
         recLugar: rec,
       }).on('click', () => cbLugar.current?.(l))
+      // El nombre accesible lleva TAMBIÉN la categoría, porque en la pantalla esa
+      // información la dan el color y el dibujo de la gota: sin ella, quien no ve
+      // el pin pierde justo lo que distingue un hostal de una bomba de bencina.
+      const nombre = l.nombre?.[lang] ?? l.nombre?.es ?? ''
+      const cat = CATEGORIAS[l.cat]?.nombre?.[lang] ?? ''
+      // En 'add' y no acá: el pin vive dentro del grupo de agrupación, que lo saca
+      // y lo vuelve a meter en cada cambio de zoom. Al crearlo todavía no está en
+      // el DOM, así que `getElement()` daría null.
+      m.on('add', () => hacerBoton(m, [verAccion, nombre, cat].filter(Boolean).join(' · '), () => cbLugar.current?.(l)))
       grupo.addLayer(m)
     })
 
@@ -785,8 +821,25 @@ const MapView = forwardRef(function MapView(
     } else if (mapa.hasLayer(grupo)) {
       mapa.removeLayer(grupo)
     }
+
+    // Las BOLITAS de grupo también son botones, y con el mismo agujero: Leaflet
+    // las deja enfocables y anunciadas como botón, mudas y sin responder a
+    // Enter. Y son las que están DELANTE de las gotas —un pueblo con fichas
+    // juntas muestra la bolita, no los pines—, así que dejarlas fuera del arreglo
+    // vale casi lo mismo que no haberlo hecho: el teclado llegaría a un número
+    // sin nombre que no se abre. El grupo las crea y las destruye en cada cambio
+    // de zoom, por eso se enganchan por evento del mapa y no en un `forEach`.
+    const alAgregarCapa = (ev) => {
+      const capa = ev.layer
+      if (!L.MarkerCluster || !(capa instanceof L.MarkerCluster)) return
+      const n = capa.getChildCount()
+      const texto = lang === 'es' ? `Ver ${n} lugares agrupados` : `View ${n} grouped places`
+      hacerBoton(capa, texto, () => capa.zoomToBounds({ padding: [40, 40] }))
+    }
+    mapa.on('layeradd', alAgregarCapa)
+    return () => mapa.off('layeradd', alAgregarCapa)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vista, lugares, filtro])
+  }, [vista, lugares, filtro, lang])
 
   // Reportes del crowdsourcing (Fase 3). Se dibujan en LAS DOS vistas: en la ruta
   // son el estado del camino de punta a punta, y dentro de un pueblo son lo que
