@@ -481,26 +481,42 @@ def extraer(url, texto):
 
 # ──────────────────────────────── main ──────────────────────────────────
 
+def anotar(informe, linea=''):
+    """Va al informe Y a la pantalla, en el momento.
+
+    Antes el informe se juntaba en una lista y se imprimía TODO al final. Con
+    3–6 s de espera por página y un inventario que puede tardar minutos, eso
+    deja la consola muda un rato largo, y un script mudo parece colgado: el
+    primer reflejo de cualquiera —con razón— es cortarlo con Ctrl-C.
+    """
+    informe.append(linea)
+    print(linea, flush=True)
+
+
 def inventario(rp, sitemaps, limite, informe):
     """URLs candidatas: primero la API REST de WordPress, si no el sitemap."""
     urls, origen = [], None
+    print('Consultando la API REST de WordPress…', flush=True)
     tipos = tipos_wp()
     if tipos:
         origen = 'wp-json'
-        informe.append(f'API REST de WordPress: {len(tipos)} tipos de contenido')
+        anotar(informe, f'API REST de WordPress: {len(tipos)} tipos de contenido')
         for clave, info in sorted(tipos.items()):
             n = total_wp(info['rest_base'])
             info['total'] = n
-            informe.append(f"  · {clave} (/{info['rest_base']}): {n if n is not None else '?'}")
+            anotar(informe, f"  · {clave} (/{info['rest_base']}): "
+                            f"{n if n is not None else '?'}")
+            esperar()   # contar tipos también son peticiones: no ráfaga
         for clave, info in sorted(tipos.items()):
             if clave in ('attachment', 'wp_block', 'nav_menu_item', 'product_variation'):
                 continue
+            print(f'  listando /{info["rest_base"]}…', flush=True)
             urls += urls_wp(info['rest_base'], limite)
     if not urls:
         origen = 'sitemap'
         candidatos = sitemaps or [SITIO + '/wp-sitemap.xml', SITIO + '/sitemap_index.xml',
                                   SITIO + '/sitemap.xml']
-        informe.append('Sin API REST utilizable; se usa sitemap: ' + ', '.join(candidatos))
+        anotar(informe, 'Sin API REST utilizable; se usa sitemap: ' + ', '.join(candidatos))
         for s in candidatos:
             urls += [(u, None) for u in urls_sitemap(s)]
 
@@ -518,9 +534,9 @@ def inventario(rp, sitemaps, limite, informe):
             prohibidas += 1
             continue
         limpias.append((u, t))
-    informe.append(f'URLs candidatas: {len(limpias)}  '
-                   f'(descartadas por ser tienda/adjunto: {descartadas}; '
-                   f'prohibidas por robots.txt: {prohibidas})')
+    anotar(informe, f'URLs candidatas: {len(limpias)}  '
+                    f'(descartadas por ser tienda/adjunto: {descartadas}; '
+                    f'prohibidas por robots.txt: {prohibidas})')
     return limpias, origen
 
 
@@ -537,12 +553,13 @@ def main():
     informe = [f'Extracción de {SITIO} — {date.today().isoformat()}',
                f'User-Agent: {UA}', '']
 
+    print(f'Leyendo {SITIO}/robots.txt…', flush=True)
     rp, sitemaps, err = leer_robots()
     if err:
-        informe.append(f'robots.txt: NO se pudo leer ({err}). '
-                       'Se sigue solo con las rutas de la lista blanca interna.')
+        anotar(informe, f'robots.txt: NO se pudo leer ({err}). '
+                        'Se sigue solo con las rutas de la lista blanca interna.')
     else:
-        informe.append(f'robots.txt leído. Sitemaps declarados: {len(sitemaps)}')
+        anotar(informe, f'robots.txt leído. Sitemaps declarados: {len(sitemaps)}')
         if not permitido(rp, SITIO + '/'):
             print('robots.txt PROHÍBE recorrer el sitio con este User-Agent. '
                   'No se extrae nada.', file=sys.stderr)
@@ -551,30 +568,30 @@ def main():
     urls, origen = inventario(rp, sitemaps, args.limite, informe)
     if args.solo:
         urls = [(u, t) for u, t in urls if args.solo in u]
-        informe.append(f'Filtro --solo="{args.solo}": quedan {len(urls)} URLs')
+        anotar(informe, f'Filtro --solo="{args.solo}": quedan {len(urls)} URLs')
     if args.limite:
         urls = urls[:args.limite]
 
     if args.explorar:
-        informe.append('')
-        informe.append('MODO EXPLORAR — no se bajó ninguna página de contenido.')
+        anotar(informe)
+        anotar(informe, 'MODO EXPLORAR — no se bajó ninguna página de contenido.')
         secciones = {}
         for u, _ in urls:
             partes = [p for p in urllib.parse.urlparse(u).path.split('/') if p]
             secciones.setdefault(partes[0] if partes else '(raíz)', []).append(u)
-        informe.append(f'Secciones de primer nivel: {len(secciones)}')
+        anotar(informe, f'Secciones de primer nivel: {len(secciones)}')
         for s, us in sorted(secciones.items(), key=lambda x: -len(x[1])):
-            informe.append(f'  {len(us):4d}  /{s}/')
+            anotar(informe, f'  {len(us):4d}  /{s}/')
             for u in us[:3]:
-                informe.append(f'          {u}')
-        texto = '\n'.join(informe)
+                anotar(informe, f'          {u}')
         with open(INFORME, 'w', encoding='utf-8') as f:
-            f.write(texto + '\n')
-        print(texto)
+            f.write('\n'.join(informe) + '\n')
         print(f'\n→ {INFORME}')
         print('Revisa las secciones y después corre sin --explorar.')
         return
 
+    print(f'\nBajando {len(urls)} páginas, con 3–6 s de espera entre cada una. '
+          f'Estimado: ~{len(urls) * 4.5 / 60:.0f} min.', flush=True)
     fichas, errores, sin_datos = [], [], 0
     for i, (u, t) in enumerate(urls, 1):
         texto, cab, cacheado = pedir(u)
@@ -587,7 +604,7 @@ def main():
         if not nuevas:
             sin_datos += 1
         fichas += nuevas
-        if i % 25 == 0 or i == len(urls):
+        if i % 10 == 0 or i == len(urls):
             print(f'  {i}/{len(urls)} páginas · {len(fichas)} fichas', flush=True)
             # Progreso incremental: si se corta, lo extraído no se pierde.
             with open(SALIDA, 'w', encoding='utf-8') as f:
@@ -610,7 +627,7 @@ def main():
         s = f['ruta'][0] if f['ruta'] else '(raíz)'
         por_seccion[s] = por_seccion.get(s, 0) + 1
 
-    informe += [
+    for linea in [
         '', f'Páginas visitadas: {len(urls)}  ·  sin ningún dato de contacto: {sin_datos}',
         f'Fichas extraídas: {len(fichas)}',
         f'  con teléfono:   {sum(1 for f in fichas if f["telefonos"])}',
@@ -619,23 +636,22 @@ def main():
         f'  con dirección:  {sum(1 for f in fichas if f["direccion"])}',
         f'  con coordenada: {sum(1 for f in fichas if f["lat"] is not None)}',
         '', 'Por estrategia de extracción (las que NO son json-ld hay que revisarlas a ojo):',
-    ]
+    ]:
+        anotar(informe, linea)
     for k, v in sorted(por_estrategia.items(), key=lambda x: -x[1]):
-        informe.append(f'  {v:5d}  {k}')
-    informe.append('')
-    informe.append('Por sección del sitio:')
+        anotar(informe, f'  {v:5d}  {k}')
+    anotar(informe)
+    anotar(informe, 'Por sección del sitio:')
     for k, v in sorted(por_seccion.items(), key=lambda x: -x[1]):
-        informe.append(f'  {v:5d}  /{k}/')
+        anotar(informe, f'  {v:5d}  /{k}/')
     if errores:
-        informe.append('')
-        informe.append(f'URLs con error ({len(errores)}):')
+        anotar(informe)
+        anotar(informe, f'URLs con error ({len(errores)}):')
         for u, e in errores[:40]:
-            informe.append(f'  {e}  {u}')
+            anotar(informe, f'  {e}  {u}')
 
-    texto = '\n'.join(informe)
     with open(INFORME, 'w', encoding='utf-8') as f:
-        f.write(texto + '\n')
-    print(texto)
+        f.write('\n'.join(informe) + '\n')
     print(f'\n→ {SALIDA}\n→ {INFORME}')
     print(f'Siguiente paso: {PY_CMD} scripts/carretera-austral/2_a_places.py')
 
