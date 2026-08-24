@@ -45,7 +45,8 @@ carretera-austral.cl (la bloquea el proxy del entorno, igual que con tortel.cl:
 lo que encuentra: la primera corrida de verdad es `--explorar`, y el informe es
 el que manda.
 
-Uso:
+Uso (en Windows, `py` en vez de `python3`: el `python3` de PowerShell es el
+stub del Microsoft Store y no ejecuta nada):
     python3 scripts/carretera-austral/1_extraer.py --explorar   # reconocimiento
     python3 scripts/carretera-austral/1_extraer.py --limite 20  # prueba corta
     python3 scripts/carretera-austral/1_extraer.py              # todo
@@ -70,6 +71,11 @@ import urllib.robotparser
 from datetime import date
 
 SITIO = 'https://carretera-austral.cl'
+
+# El comando con el que este mismo script se invoca, para que los mensajes de
+# "corre esto ahora" digan el que funciona en la máquina de quien los lee. En
+# Windows `python3` es el stub del Microsoft Store: no ejecuta nada.
+PY_CMD = 'py' if os.name == 'nt' else 'python3'
 
 # Nos identificamos y dejamos dónde reclamar. A propósito NO va un correo
 # personal acá: es una cabecera que viaja a un tercero. Si quieres ser
@@ -631,7 +637,7 @@ def main():
         f.write(texto + '\n')
     print(texto)
     print(f'\n→ {SALIDA}\n→ {INFORME}')
-    print('Siguiente paso: python3 scripts/carretera-austral/2_a_places.py')
+    print(f'Siguiente paso: {PY_CMD} scripts/carretera-austral/2_a_places.py')
 
 
 if __name__ == '__main__':

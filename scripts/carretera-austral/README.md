@@ -65,6 +65,18 @@ como se supone, ahí se ve antes de bajar nada.
 
 Sin dependencias: solo biblioteca estándar de Python 3. No hace falta venv.
 
+> **En Windows el comando es `py`, no `python3`.** En PowerShell, `python3` es el
+> *stub* del Microsoft Store: no ejecuta nada, solo ofrece instalar Python. Los
+> ejemplos de acá abajo dicen `python3` porque es lo que corre en Linux y macOS;
+> en Windows reemplázalo por `py` (o `python`) y las barras por `\`:
+>
+> ```powershell
+> py scripts\carretera-austral\1_extraer.py --explorar
+> ```
+>
+> Si `py` tampoco existe, Python no está instalado: bájalo de python.org o
+> `winget install Python.Python.3.12`, marcando **Add python.exe to PATH**.
+
 ---
 
 ## Paso 1 — Extraer
