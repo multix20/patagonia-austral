@@ -118,6 +118,23 @@ la página. Todo lo que caiga **fuera de la caja Puerto Montt → O'Higgins** se
 descarta: un punto fuera de ahí no es un lugar lejano, es un `lat/lng` dado
 vuelta.
 
+### Cuando una página no da nada: `ver.py`
+
+```bash
+python3 scripts/carretera-austral/ver.py whatsapp-accounts
+python3 scripts/carretera-austral/ver.py servicios-gastronomicos --texto 4000
+python3 scripts/carretera-austral/ver.py aysen-ranch --crudo   # vuelca el HTML
+```
+
+Cuando el extractor saca cero fichas de una página, la pregunta es siempre la
+misma: **¿la página no tiene el dato, o lo tiene de una forma que el extractor
+no mira?** `ver.py` responde eso leyendo el HTML que ya quedó en `crudos/` —
+sin pedirle nada al sitio— y muestra para cada página el título, los tipos de
+JSON-LD, los `tel:`/`wa.me`/`mailto:`, las coordenadas, y **los números que
+parecen teléfono chileno aunque no estén enlazados**. Esa última línea es la
+que distingue los dos casos: un teléfono escrito como texto plano existe en la
+página y el extractor no lo ve.
+
 ## Paso 2 — Llevarlo al formato `places`
 
 ```bash
