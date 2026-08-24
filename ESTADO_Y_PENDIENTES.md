@@ -22,6 +22,62 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
+## Dónde quedamos — para retomar (24-ago-2026)
+
+### El nombre del pueblo abre el pueblo
+
+**Qué se hizo.** En la vista de ruta, el pin de una localidad se selecciona
+ahora **por el nombre y por el punto verde**. Antes solo servía el punto: el
+rótulo llevaba `pointer-events: none` en el CSS, o sea que era decoración. El
+viajero apuntaba a la palabra —que es lo grande, lo legible y lo que dice de qué
+pueblo se trata— y el toque le caía al mapa, que no hace nada. El blanco real
+eran los 26 px de la caja del punto, con 9 px de dibujo adentro.
+
+Cambió esto:
+
+- **El rótulo recibe toques**, y el pseudo-elemento `.lbl::after` le estira el
+  área tocable a unos 28 px de alto sin agrandar la píldora dibujada.
+- **Acuse de recibo**: al tocar, el punto crece y la píldora se asienta (mismo
+  recurso que la gota de los lugares). Entrar a un pueblo dispara un vuelo del
+  mapa que tarda; sin respuesta inmediata el toque se lee como que no entró.
+- **Teclado y lector de pantalla**: cada pin es un botón de verdad, con nombre
+  (`aria-label` "Ver Cochrane"), anillo de foco visible y Enter/Espacio.
+
+**Tres reglas que salieron de hacerlo:**
+
+- **Clickable y visible son la MISMA condición, y por eso van en la misma
+  regla.** Un rótulo apagado (`opacity: 0`) que igual recibiera toques sería una
+  franja transparente sobre el mapa robándole el gesto al arrastre y a los pines
+  de al lado — y hay doce apagados en la vista general, más que los quince
+  encendidos. Cada regla que enciende la opacidad enciende también el
+  `pointer-events`; las de `menor`, que nunca se muestran, lo dejan apagado.
+- **Agrandar un área tocable con `padding` cambia el ancho; con un
+  pseudo-elemento, no.** Los costados de cada rótulo están medidos uno por uno en
+  `ETIQUETAS_LOCALIDAD` para que dos nombres vecinos no se encimen: engordar la
+  píldora habría invalidado esa tabla entera. `inset: -6px -4px` en un `::after`
+  crece el blanco del dedo sin tocar el dibujo ni el flujo.
+- **`:hover` y `:active` pesan lo mismo, así que manda el orden del archivo.** En
+  un escritorio los dos se cumplen a la vez mientras se mantiene apretado el
+  botón: con el bloque de hover escrito después, la pulsación se quedaba con el
+  `scale` del hover y no se distinguía de pasar el mouse por encima. Medido en el
+  navegador, no supuesto — el bloque `@media (hover: hover)` va **antes**.
+
+Y una que es de Leaflet y conviene tener presente: **Leaflet promete un botón que
+no cumple.** A cada marcador le pone `tabindex="0"` y `role="button"`, pero no le
+pone nombre accesible (su `alt` solo aplica si el icono es un `<img>`, y estos
+son `<div>`) ni le ata Enter (solo escucha esa tecla para abrir popups, y estos
+pines no usan popup). O sea que sin las dos líneas que se agregaron, el foco
+recorría 27 botones idénticos y mudos que no respondían. Lo mismo vale para
+cualquier marcador nuevo que se agregue al mapa.
+
+**Verificado en Chromium con Playwright** (390×800, táctil): entra tocando el
+punto, tocando el centro del nombre y tocando 5 px por encima de la píldora;
+un rótulo invisible no navega; Enter con el pin enfocado entra; y un arrastre que
+**empieza sobre un rótulo** sigue paneando el mapa en vez de abrir el pueblo. Sin
+choques de rótulos ni con el botón de reportar en 360, 390 y 414 px.
+
+---
+
 ## Dónde quedamos — para retomar (23-ago-2026)
 
 ### Pipeline para tomar los contactos de carretera-austral.cl
