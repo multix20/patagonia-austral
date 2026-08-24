@@ -318,4 +318,22 @@ LAYOUT, que con `viewport-fit=cover` se extiende por debajo de lo visible. La
 variable `--piso-extra` (calculada desde `visualViewport`) es lo que hay que
 sumar para que la barra de categorías no se pierda abajo.
 
+**El nombre del pueblo abre el pueblo (24-ago-2026).** En la vista de ruta se
+entra a una localidad tocando el **punto verde o su nombre**: el rótulo era
+decoración (`pointer-events: none`) y el viajero apuntaba a la palabra —lo
+grande y legible— para que el toque le cayera al mapa. Tres reglas de esto:
+
+- **Clickable y visible son la misma condición → la misma regla CSS.** Un rótulo
+  apagado que reciba toques es una franja transparente robándole el gesto al
+  arrastre y a los pines vecinos, y en la vista general hay más apagados que
+  encendidos.
+- **Un área tocable se agranda con un `::after`, no con `padding`.** Los costados
+  de cada rótulo están medidos uno por uno en `ETIQUETAS_LOCALIDAD`: engordar la
+  píldora invalida esa tabla entera.
+- **Leaflet promete un botón que no cumple.** A cada marcador le pone
+  `tabindex="0"` y `role="button"`, pero no le da nombre accesible (su `alt`
+  solo aplica a iconos `<img>`) ni le ata Enter (solo escucha esa tecla para
+  abrir popups). Un marcador nuevo necesita las dos cosas a mano, o el foco
+  recorre botones mudos que no responden.
+
 Para trabajo de roadmap, usar el agente `roadmap` (`.claude/agents/roadmap.md`).

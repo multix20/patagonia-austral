@@ -176,9 +176,24 @@ const RELLENO_RUTA = { paddingTopLeft: [36, 96], paddingBottomRight: [36, 100] }
 // rotulan las destacadas, para no saturar la vista general de toda la ruta.
 const ZOOM_ETIQUETAS = 8
 
+// El nombre de la localidad en el idioma activo. `loc.nombre` es bilingüe
+// ({ es, en }): hay que resolverlo siempre, nunca pasar el objeto crudo (si no,
+// se ve "[object Object]"). Lo usan el rótulo del pin y su nombre accesible, que
+// tienen que decir lo mismo.
+function nombreLocalidad(loc, lang) {
+  return loc.nombre?.[lang] ?? loc.nombre?.es ?? loc.nombre ?? ''
+}
+
 // Pines con área de toque real (iconSize/iconAnchor) para tap-targets correctos.
-// `loc.nombre` es bilingüe ({ es, en }): hay que rotular con el idioma activo,
-// nunca el objeto crudo (si no, se ve "[object Object]" en la etiqueta).
+//
+// El pin ENTERO abre la localidad: el punto verde y también el nombre. Antes el
+// rótulo era decoración (`pointer-events: none` en el CSS), así que el viajero
+// apuntaba a la palabra —que es lo grande y lo legible— y el toque le caía al
+// mapa. El área tocable del punto son 26 px; la del nombre, la píldora completa
+// (ver `.pin-loc .lbl` en styles.css). Un rótulo invisible NO recibe toques: se
+// enciende junto con su opacidad, o si no sería una franja transparente
+// robándole el toque al mapa y a los pines vecinos.
+//
 // `tier` define la jerarquía visual del pin de localidad:
 //   'rel'   = ancla (punto coral + etiqueta prominente)
 //   'fija'  = hito de referencia (punto verde + etiqueta siempre visible)
@@ -187,9 +202,12 @@ const ZOOM_ETIQUETAS = 8
 // `extra` son clases de ajuste del rótulo ('izq', 'alta'): ver
 // ETIQUETAS_LOCALIDAD en data/places.js.
 function pinLocalidad(loc, tier, lang, extra = '') {
-  const nombre = loc.nombre?.[lang] ?? loc.nombre?.es ?? loc.nombre ?? ''
+  const nombre = nombreLocalidad(loc, lang)
   return L.divIcon({
-    className: '',
+    // La clase va en el elemento de Leaflet, que es el que recibe el foco del
+    // teclado (le pone `tabindex` y `role="button"`). Ahí se dibuja el anillo de
+    // foco: en el div de adentro no se puede, porque el foco no llega a él.
+    className: 'marcador-loc',
     iconSize: [26, 26],
     iconAnchor: [13, 13],
     html: `<div class="pin-loc ${tier} ${extra}"><div class="lbl">${nombre}</div><div class="dot"></div></div>`,
@@ -671,6 +689,10 @@ const MapView = forwardRef(function MapView(
     if (!mapa) return
     if (vista !== 'ruta') return limpiarLoc()
     limpiarLoc()
+    // Verbo del nombre accesible del pin. MapView recibe `lang`, no `t()`, así
+    // que las dos cadenas van acá mismo, igual que los rótulos del selector de
+    // capas de más abajo.
+    const verAccion = lang === 'es' ? 'Ver' : 'View'
     localidades.forEach((loc) => {
       const tier = destacados.includes(loc.slug)
         ? 'rel'
@@ -689,6 +711,28 @@ const MapView = forwardRef(function MapView(
       })
         .addTo(mapa)
         .on('click', () => cbEntrar.current?.(loc.slug))
+      // Leaflet deja el pin enfocable con Tab y le pone `role="button"`, pero le
+      // faltan las dos cosas que hacen que ese botón exista de verdad:
+      //  1. El NOMBRE. El `alt` que Leaflet le pone a un icono solo aplica si el
+      //     icono es un <img>, y este es un <div>: sin `aria-label`, un lector
+      //     de pantalla anuncia dos docenas de botones idénticos y no dice de
+      //     qué pueblo es cada uno.
+      //  2. La TECLA. El navegador sintetiza el click de Enter/Espacio en los
+      //     controles nativos, no en un <div> con `role="button"`; Leaflet solo
+      //     escucha Enter para abrir popups, y estos pines no usan popup. Sin
+      //     esto, el pin se enfoca y no hace nada al pulsar Enter — que es peor
+      //     que no ser enfocable, porque promete un botón que no responde.
+      // Los listeners se van solos con el elemento cuando `limpiarLoc()` saca el
+      // marcador del mapa.
+      const el = m.getElement()
+      if (el) {
+        el.setAttribute('aria-label', `${verAccion} ${nombreLocalidad(loc, lang)}`)
+        el.addEventListener('keydown', (ev) => {
+          if (ev.key !== 'Enter' && ev.key !== ' ') return
+          ev.preventDefault()
+          cbEntrar.current?.(loc.slug)
+        })
+      }
       locMarkersRef.current.push(m)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
