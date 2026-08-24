@@ -590,36 +590,47 @@ def main():
         print('Revisa las secciones y después corre sin --explorar.')
         return
 
+    fichas, errores, sin_datos = [], [], 0
+
+    def guardar(paginas, parcial):
+        with open(SALIDA, 'w', encoding='utf-8') as f:
+            json.dump({'metadata': {'fuente': SITIO, 'origen_inventario': origen,
+                                    'fecha': date.today().isoformat(),
+                                    'paginas': paginas, 'parcial': parcial},
+                       'fichas': fichas}, f, ensure_ascii=False, indent=2)
+
     print(f'\nBajando {len(urls)} páginas, con 3–6 s de espera entre cada una. '
           f'Estimado: ~{len(urls) * 4.5 / 60:.0f} min.', flush=True)
-    fichas, errores, sin_datos = [], [], 0
     for i, (u, t) in enumerate(urls, 1):
-        texto, cab, cacheado = pedir(u)
-        if texto is None:
-            errores.append((u, cab.get('_error', '?')))
+        try:
+            texto, cab, cacheado = pedir(u)
+            if texto is None:
+                errores.append((u, cab.get('_error', '?')))
+                if not cacheado:
+                    esperar()
+                continue
+            nuevas = extraer(u, texto)
+            if not nuevas:
+                sin_datos += 1
+            fichas += nuevas
+            if i % 10 == 0 or i == len(urls):
+                print(f'  {i}/{len(urls)} páginas · {len(fichas)} fichas', flush=True)
+                guardar(i, i < len(urls))   # si se corta, lo extraído no se pierde
             if not cacheado:
                 esperar()
-            continue
-        nuevas = extraer(u, texto)
-        if not nuevas:
-            sin_datos += 1
-        fichas += nuevas
-        if i % 10 == 0 or i == len(urls):
-            print(f'  {i}/{len(urls)} páginas · {len(fichas)} fichas', flush=True)
-            # Progreso incremental: si se corta, lo extraído no se pierde.
-            with open(SALIDA, 'w', encoding='utf-8') as f:
-                json.dump({'metadata': {'fuente': SITIO, 'origen_inventario': origen,
-                                        'fecha': date.today().isoformat(),
-                                        'paginas': i, 'parcial': i < len(urls)},
-                           'fichas': fichas}, f, ensure_ascii=False, indent=2)
-        if not cacheado:
-            esperar()
+        except KeyboardInterrupt:
+            # Cortar a mano es lo ESPERADO en una corrida de media hora, no un
+            # error: se guarda lo que hay y se dice dónde quedó, en vez de tirar
+            # un traceback de cuarenta líneas encima del trabajo hecho.
+            guardar(i, True)
+            print(f'\n\nCortado a mano en la página {i} de {len(urls)}. '
+                  f'{len(fichas)} fichas guardadas.')
+            print(f'→ {SALIDA} (parcial)')
+            print('Las páginas bajadas quedan en crudos/: al relanzar el mismo '
+                  'comando sigue donde quedó, sin volver a pedirlas.')
+            return
 
-    with open(SALIDA, 'w', encoding='utf-8') as f:
-        json.dump({'metadata': {'fuente': SITIO, 'origen_inventario': origen,
-                                'fecha': date.today().isoformat(),
-                                'paginas': len(urls), 'parcial': False},
-                   'fichas': fichas}, f, ensure_ascii=False, indent=2)
+    guardar(len(urls), False)
 
     por_estrategia, por_seccion = {}, {}
     for f in fichas:
@@ -657,4 +668,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('\n\nCortado a mano durante el inventario. Lo que alcanzó a bajar '
+              'queda en crudos/ y la próxima corrida lo reusa.', file=sys.stderr)
+        sys.exit(130)
