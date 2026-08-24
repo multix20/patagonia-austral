@@ -11,8 +11,13 @@ const DICCIONARIO = {
     // instalada—: sobre el mapa manda el CAMINO, no la marca, porque el viajero
     // está mirando la Ruta 7. Va igual en los dos idiomas: es el número de una
     // carretera, no una frase que se traduzca.
-    // Va en caja mixta, no en versales: el chip lo compone a 16,5px/800 y en
-    // mayúsculas «RUTA 7» pesa más ancho de lo que la píldora tiene para dar.
+    // Se ve en VERSALES, pero acá se escribe en caja mixta: las mayúsculas las
+    // pone el CSS con `text-transform`. Esta misma cadena arma el nombre
+    // accesible del botón, y varios lectores de pantalla deletrean una palabra
+    // escrita toda en mayúsculas ("erre-u-te-a" en vez de "ruta").
+    // (Se veía en caja mixta de verdad hasta el 23-ago-2026, porque en versales
+    // no cabía con Segoe UI. Con la marca en Archivo, más angosta, dejó de ser
+    // un límite: 63,6 px contra un techo de 173.)
     marcaMapa: 'Ruta 7',
     enLinea: 'En línea',
     sinConexion: 'Sin conexión',
@@ -60,8 +65,13 @@ const DICCIONARIO = {
     pushTexto: 'Te avisamos de cortes de camino, clima y barcazas aunque tengas la app cerrada.',
     pushActivar: 'Activar avisos',
     muni: 'Patagonia Austral Turismo',
-    chatNombre: 'Asistente Turístico',
-    chatDisponible: 'Disponible sin conexión',
+    // El asistente tiene NOMBRE y CARA: el huemul, emblema de Aysén y del escudo
+    // de Chile. "Asistente Turístico" es lo que se llama a sí mismo el chatbot
+    // de cualquier municipalidad; un huemul que te acompaña por la ruta es de
+    // acá y no se confunde con nada. El rol va aparte, en una línea, porque el
+    // nombre solo no dice para qué sirve.
+    chatNombre: 'Huemul',
+    chatRol: 'Tu copiloto de ruta',
     chatNota: 'Respuestas guardadas en tu dispositivo — funcionan sin internet',
     chatPlaceholder: 'Escribe tu pregunta…',
     chatDudas: '¿Dudas?',
@@ -136,6 +146,11 @@ const DICCIONARIO = {
     verFicha: 'Ver ficha completa',
     localidadesRuta: 'localidades en la ruta',
     menuAsistente: 'Asistente turístico',
+    // Rótulo VISIBLE del botón coral del mapa (antes era un "+" pelado) y su
+    // nombre accesible, que dice de más porque el botón no vive dentro de
+    // ningún contexto que lo explique.
+    railReportar: 'Reportar',
+    railReportarAria: 'Reportar algo en la ruta',
     menuAvisos: 'Avisos municipales',
     idioma: 'Idioma',
     buscandoUbicacion: 'Buscando tu ubicación…',
@@ -174,8 +189,13 @@ const DICCIONARIO = {
     // instalada—: sobre el mapa manda el CAMINO, no la marca, porque el viajero
     // está mirando la Ruta 7. Va igual en los dos idiomas: es el número de una
     // carretera, no una frase que se traduzca.
-    // Va en caja mixta, no en versales: el chip lo compone a 16,5px/800 y en
-    // mayúsculas «RUTA 7» pesa más ancho de lo que la píldora tiene para dar.
+    // Se ve en VERSALES, pero acá se escribe en caja mixta: las mayúsculas las
+    // pone el CSS con `text-transform`. Esta misma cadena arma el nombre
+    // accesible del botón, y varios lectores de pantalla deletrean una palabra
+    // escrita toda en mayúsculas ("erre-u-te-a" en vez de "ruta").
+    // (Se veía en caja mixta de verdad hasta el 23-ago-2026, porque en versales
+    // no cabía con Segoe UI. Con la marca en Archivo, más angosta, dejó de ser
+    // un límite: 63,6 px contra un techo de 173.)
     marcaMapa: 'Ruta 7',
     enLinea: 'Online',
     sinConexion: 'Offline',
@@ -207,8 +227,8 @@ const DICCIONARIO = {
     pushTexto: 'We\'ll warn you about road closures, weather and ferries even when the app is closed.',
     pushActivar: 'Enable alerts',
     muni: 'Patagonia Austral Turismo',
-    chatNombre: 'Tourist Assistant',
-    chatDisponible: 'Available offline',
+    chatNombre: 'Huemul',
+    chatRol: 'Your road copilot',
     chatNota: 'Answers stored on your device — they work without internet',
     chatPlaceholder: 'Type your question…',
     chatDudas: 'Questions?',
@@ -279,6 +299,8 @@ const DICCIONARIO = {
     verFicha: 'See full details',
     localidadesRuta: 'towns on the route',
     menuAsistente: 'Tourist assistant',
+    railReportar: 'Report',
+    railReportarAria: 'Report something on the road',
     menuAvisos: 'Municipal alerts',
     idioma: 'Language',
     buscandoUbicacion: 'Finding your location…',

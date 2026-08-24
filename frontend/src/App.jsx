@@ -28,6 +28,7 @@ import MapView from './components/MapView'
 import PlaceDetail from './components/PlaceDetail'
 import QuickCard from './components/QuickCard'
 import ChatBot from './components/ChatBot'
+import Huemul from './components/Huemul'
 import { kmEntre } from './viaje'
 import { consultasPendientes } from './reservas'
 
@@ -976,19 +977,26 @@ function AppInterna() {
           enterrado en el menú — dos toques para lo único que responde preguntas
           sin señal. Ahora es el vecino permanente del botón de reportar. */}
       <div className="rail">
+        {/* El asistente lleva la CARA del huemul, no un bocadillo de chat. El
+            bocadillo es el icono que tiene cualquier app y no promete nada; el
+            huemul —emblema de Aysén— es de acá, y es el mismo dibujo que sale
+            de avatar al abrir la conversación, así que el botón y quien
+            contesta se reconocen como la misma cosa. El SVG ya existía: hasta
+            ahora solo se veía dentro del chat. */}
         <button
           className="fab-round fab-asistente"
           onClick={abrirChat}
-          aria-label={t('menuAsistente')}
+          aria-label={`${t('chatNombre')} — ${t('chatRol')}`}
         >
-          <Icon nombre="message-circle" tam={23} color="var(--verde-osc)" />
+          <Huemul tam={27} color="#fff" />
         </button>
         <button
           className="fab-round fab-report"
           onClick={() => setHoja('reportar')}
-          aria-label={lang === 'es' ? 'Reportar' : 'Report'}
+          aria-label={t('railReportarAria')}
         >
-          <Icon nombre="plus" tam={26} color="#fff" />
+          <Icon nombre="plus" tam={22} color="#fff" />
+          <span>{t('railReportar')}</span>
         </button>
       </div>
 

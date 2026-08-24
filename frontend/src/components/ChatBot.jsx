@@ -832,16 +832,22 @@ export default function ChatBot({
 
   const enFlujo = flujo !== null
 
+  // El nombre accesible del diálogo junta nombre y rol: "Huemul" a secas no le
+  // dice a un lector de pantalla qué es esto.
   return (
-    <div className="chat" role="dialog" aria-label={t('chatNombre')}>
+    <div className="chat" role="dialog" aria-label={`${t('chatNombre')} — ${t('chatRol')}`}>
       <div className="chat-header">
         <div className="avatar">
           <Huemul tam={24} />
         </div>
         <div className="ch-info">
           <div className="ch-nombre">{t('chatNombre')}</div>
+          {/* Bajo el nombre va el ROL, no "Disponible sin conexión": eso mismo
+              lo dice, con todas sus letras, la nota que viene justo abajo. Dos
+              líneas seguidas para la misma promesa gastaban el único renglón
+              que había para explicar quién es el huemul. */}
           <div className="ch-sub">
-            <span className="ch-punto" /> {t('chatDisponible')}
+            <span className="ch-punto" /> {t('chatRol')}
           </div>
         </div>
         <button className="chat-cerrar" onClick={onCerrar} aria-label="Cerrar">

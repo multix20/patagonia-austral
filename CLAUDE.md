@@ -186,6 +186,35 @@ cruces y terminales de la app llevan zarpes en `horario`, teléfono de reserva e
   `places.json` se perdía en silencio. Al agregar una columna: BD, CMS, API **y
   seeder**.
 
+**La app tiene letra propia y el asistente tiene cara (23-ago-2026).** La
+tipografía de marca es **Archivo** (OFL, variable 100–900, subconjunto latino,
+35 KB), **autoalojada** en `frontend/public/fonts/`. La usa lo que **nombra**
+algo —marca, píldora de la ruta, rótulos del mapa, título de ficha, nombre del
+asistente, botón de reportar—; el texto corrido sigue con la fuente del sistema.
+El asistente dejó de ser un bocadillo genérico: es el **huemul** (el SVG ya
+existía en `Huemul.jsx`, solo se veía dentro del chat) y se llama **Huemul · tu
+copiloto de ruta**. Reportar es una píldora con palabra, no un "+" pelado. Tres
+reglas que salieron de hacerlo:
+
+- **Una fuente por CDN no existe sin señal.** El `<link>` a Google Fonts es el
+  camino de todos los tutoriales y el equivocado acá. Autoalojada en `public/`
+  entra sola al precache (el glob de Workbox ya incluye woff2).
+- **Cambiar de fuente cambia los anchos, y hay medidas escritas que dependen de
+  eso.** Se miden en el navegador antes de dar nada por bueno. Archivo resultó
+  más angosta que Segoe UI, así que el caso peor de la píldora
+  ("Puerto Río Tranquilo") ganó holgura en vez de romperse — y **caducó la razón
+  de ancho por la que «RUTA 7» estaba en caja mixta**: hoy va en versales, como
+  el letrero de la carretera. Las mayúsculas las pone el CSS (`text-transform`),
+  nunca la cadena de i18n: esa misma cadena arma el nombre accesible del botón y
+  varios lectores de pantalla deletrean una palabra escrita toda en mayúsculas.
+  Dentro de un pueblo la píldora vuelve a caja mixta — ahí muestra un topónimo,
+  y un nombre propio en versales grita.
+- **Agrandar un control flotante le quita sitio al mapa, y el mapa tiene datos
+  ahí.** La píldora de reportar tapó Villa O'Higgins y Puerto Yungay, con
+  `places.js` afirmando por escrito que ese lado estaba limpio. Al agrandar algo
+  anclado sobre el mapa hay que revisar `ETIQUETAS_LOCALIDAD` midiendo los
+  rótulos reales en 360, 390 y 414 px.
+
 **Infraestructura — SIN PENDIENTES desde el 10-ago-2026.** Los dos que quedaban
 se cerraron ese día:
 - **Bucket Cloudflare R2** operativo — foto probada de punta a punta

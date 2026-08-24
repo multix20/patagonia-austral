@@ -86,6 +86,75 @@ Antes de publicar cualquier ficha del lote: verificar el teléfono, corregir el
 pin si quedó en el centro del pueblo, escribir la descripción de verdad en ES y
 EN, y respetar **un servicio publicado por localidad y categoría**.
 
+### La app tiene tipografía propia, y el asistente tiene cara
+
+**El punto de partida.** La app se veía correcta y anónima. Dos causas
+concretas: `styles.css` le fijaba `'Segoe UI'` a **todos** los elementos con el
+selector universal —marca, número de ruta y nombres de pueblo incluidos—, así
+que no había una sola letra que fuera de esta app y no del sistema operativo; y
+el asistente se abría desde un círculo blanco con un **bocadillo de chat**, el
+icono que tiene cualquier app y que no promete nada.
+
+Lo segundo era además un descuido: `components/Huemul.jsx` existe hace tiempo y
+su propio comentario dice que es *"identidad animada del asistente (FAB y avatar
+del chat)"*, pero el FAB dibujaba un `message-circle`. El personaje estaba
+escrito y solo se veía dentro de la conversación.
+
+**Lo que se hizo.**
+
+- **Fuente de marca: Archivo**, variable 100–900, subconjunto latino, **35 KB en
+  un archivo**, autoalojada en `frontend/public/fonts/`. La usa lo que **nombra**
+  algo (marca, píldora de la ruta, rótulos del mapa, título de ficha, nombre del
+  asistente, botón de reportar); el texto corrido se queda con la fuente del
+  sistema. Elegida por su parentesco con la rotulación vial: la app es una guía
+  de camino y ahora se lee como los letreros de afuera.
+- **El huemul sale del chat al mapa.** El FAB del asistente es un círculo verde
+  pleno con el huemul en blanco. En el chat el asistente dejó de llamarse
+  "Asistente Turístico" —que es como se llama el chatbot de cualquier
+  municipalidad— y pasa a ser **Huemul · tu copiloto de ruta**. El saludo que ya
+  tenía ("Soy tu copiloto de la Carretera Austral") calzaba con eso desde antes.
+- **Reportar es una píldora con palabra**, no un "+" pelado: el signo solo no
+  dice qué se agrega, y lo que se agrega (peligro, accidente, faena) es la razón
+  de ser del crowdsourcing.
+- **Se borraron 70 líneas de CSS muerto**: `.fab-chat` y `.fab-iconos`, con su
+  animación de crossfade, no los renderizaba ningún nodo desde que el asistente
+  se mudó al rail.
+
+**Tres reglas que salieron de hacerlo:**
+
+- **Una fuente por CDN no existe sin señal.** El `<link>` a
+  `fonts.googleapis.com` es el camino de todos los tutoriales y es exactamente
+  el equivocado acá: la app se abre en la ruta, y la letra de marca caería al
+  respaldo del sistema justo en el viaje para el que se hizo. Autoalojada en
+  `public/` entra sola al precache, porque el glob de Workbox ya incluye woff2.
+- **Un cambio de fuente cambia los anchos, y hay medidas escritas que dependen
+  de eso.** El comentario de `.loc-pill .tx` fija 14,5 px/700 porque
+  "Puerto Río Tranquilo" —el topónimo más largo de la ruta— entraba "con cuatro
+  píxeles de sobra". Se midió en el navegador antes de dar nada por bueno:
+  Archivo es **más angosta** que Segoe UI (143 px contra 167,2), así que el
+  caso peor pasó a tener ~28 px de holgura. **Y cae la razón por la que
+  «RUTA 7» estaba en caja mixta**: el techo del texto en la píldora son 173 px y
+  en versales mide 63,6. Se puso en versales el mismo día (medido después: 64 px
+  reales, sin cortarse, en 360 y 390). Las mayúsculas van por CSS y no por la
+  cadena de i18n, porque esa cadena arma también el nombre accesible del botón y
+  varios lectores de pantalla deletrean lo que está escrito todo en mayúsculas
+  ("erre-u-te-a"). Dentro de un pueblo la píldora vuelve a caja mixta: ahí
+  muestra un topónimo, no un letrero.
+- **Agrandar un control flotante le quita sitio al mapa, y el mapa tiene datos
+  ahí.** `places.js` decía de Puerto Yungay que "a la derecha el mapa está
+  limpio hasta la frontera" — dejó de serlo al convertir el botón de reportar
+  en píldora. Tapaba **Villa O'Higgins** (el topónimo que da título a la app) y,
+  en pantallas de 360 px, **Puerto Yungay** (el cruce de la barcaza). Se probaron
+  las cuatro combinaciones midiendo los rectángulos reales de los rótulos en el
+  navegador, en 360, 390 y 414 px: la única sin choques es Tortel `izq alta`,
+  Yungay `izq` y Villa O'Higgins `izq`.
+
+**Lo que queda por hacer.** Nada bloqueante. Queda una sola cosa fuera:
+
+- **Logotipo en el header** — era el cuarto frente de esta sesión y no se tomó;
+  "Patagonia Austral" sigue siendo texto plano sobre verde, y la coherencia con
+  el icono PWA y la vista previa al compartir está sin revisar.
+
 ---
 
 ## Dónde quedamos — para retomar (21-ago-2026)
