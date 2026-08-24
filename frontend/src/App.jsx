@@ -6,6 +6,7 @@ import {
   LOCALIDADES_ROTULADAS,
   LOCALIDADES_MENORES,
   ETIQUETAS_LOCALIDAD,
+  ICONOS_LOCALIDAD,
 } from './data/places'
 import { REPORTES, ESTILO_REPORTE } from './data/reportes'
 import {
@@ -846,6 +847,7 @@ function AppInterna() {
         rotuladas={rotuladasSlugs}
         menores={menoresSlugs}
         etiquetas={ETIQUETAS_LOCALIDAD}
+        iconos={ICONOS_LOCALIDAD}
         filtro={filtro}
         localidadActiva={locActiva}
         reportes={reportesVisibles}
