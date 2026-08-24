@@ -32,6 +32,7 @@ Las cuatro reglas que gobiernan este archivo
    `emergencia`, que no necesitan teléfono.
 
 Uso:  python3 scripts/carretera-austral/2_a_places.py
+      (en Windows, `py` en vez de `python3`)
 """
 
 import hashlib
@@ -41,6 +42,9 @@ import os
 import re
 import sys
 import unicodedata
+
+# En Windows `python3` es el stub del Microsoft Store y no ejecuta nada.
+PY_CMD = 'py' if os.name == 'nt' else 'python3'
 
 RAIZ = os.path.dirname(os.path.abspath(__file__))
 ENTRADA = os.path.join(RAIZ, 'ca-fichas.json')
@@ -296,7 +300,8 @@ def existentes_del_proyecto():
 
 def main():
     if not os.path.isfile(ENTRADA):
-        sys.exit(f'Falta {ENTRADA}. Corre antes: python3 scripts/carretera-austral/1_extraer.py')
+        sys.exit(f'Falta {ENTRADA}. Corre antes: '
+                 f'{PY_CMD} scripts/carretera-austral/1_extraer.py')
 
     with open(ENTRADA, encoding='utf-8') as f:
         crudo = json.load(f)
