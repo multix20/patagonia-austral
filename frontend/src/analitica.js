@@ -82,6 +82,48 @@ export function contarOrigen() {
   if (idioma) contar('origen_idioma', idioma)
 }
 
+/**
+ * Cuenta POR DÓNDE llegó esta apertura, si el enlace traía código de canal
+ * (`rutaaustral.cl/?c=muni`, el QR del furgón, la publicación de turno).
+ *
+ * Por qué hace falta: el panel ya sabe decir "esta semana hubo 40 aperturas
+ * más", pero no cuál de las tres cosas que se hicieron esa semana las trajo — y
+ * sin eso no se sabe qué repetir, que es lo único que se le pide a medir una
+ * campaña.
+ *
+ * El código NO se valida acá contra una lista: la lista cerrada vive en el
+ * servidor (`Interaccion::CANALES`), igual que la tabla de zonas horarias del
+ * origen. Tenerla en los dos lados obligaría a acordarse de tocar dos archivos
+ * para estrenar un canal, y el que se olvidara sería siempre el que ya está
+ * instalado en el teléfono de alguien. Acá solo se recorta la forma —minúsculas
+ * y 24 caracteres— para no acumular basura en IndexedDB; lo que el servidor no
+ * reconozca lo descarta en silencio.
+ *
+ * Y el código se borra de la barra de direcciones después de contarlo, por dos
+ * razones: una recarga no vuelve a sumar, y el enlace que el viajero copie para
+ * mandárselo a un amigo no arrastra el código del canal por el que llegó él —
+ * si no, el correo a los municipios se llevaría el crédito de un boca a boca.
+ *
+ * Esto cuenta LLEGADAS, no personas: sigue sin haber sesión ni dispositivo, así
+ * que lo que pase después de esta apertura no queda atado al canal. El efecto se
+ * lee en el embudo del panel (aperturas → fichas vistas → contactos) sobre la
+ * misma ventana de fechas.
+ */
+export function contarCampana() {
+  try {
+    const url = new URL(window.location.href)
+    const codigo = url.searchParams.get('c')
+    if (!codigo) return
+
+    contar('campana', codigo.trim().toLowerCase().slice(0, 24))
+
+    url.searchParams.delete('c')
+    window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`)
+  } catch {
+    // URL rara o navegador sin history: medir jamás puede romper la apertura.
+  }
+}
+
 function programarEnvio() {
   if (!API_URL || temporizador) return
   temporizador = setTimeout(() => {

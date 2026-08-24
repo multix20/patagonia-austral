@@ -273,6 +273,30 @@ empaquetar 400 zonas en un bundle que se precachea). Tres cosas que fija esto:
   dentro de la ventana (`Interaccion::primerDia($tipos)`). Es el mismo "cero vs
   sin medir" de más arriba, aplicado por familia de eventos.
 
+**El proyecto tiene posicionamiento escrito, y la campaña sale con código
+(24-ago-2026).** Qué dice el proyecto de sí mismo —categoría, contra qué se
+compite, las pruebas y lo que **no** se dice nunca— vive en `POSICIONAMIENTO.md`;
+los correos listos para copiar y el instructivo de envío, en `docs/campana/`.
+Léelos antes de escribir cualquier copy que salga a la calle. Tres cosas que
+fijan:
+
+- **La categoría es "una OIT que viaja en el bolsillo"**, no "una app de
+  turismo": está vacía en la ruta, le sirve al municipio como extensión de su
+  oficina y es lo que explica que se publique **un servicio por localidad y
+  categoría**. Se compite contra el **dato equivocado**, nunca contra una marca.
+- **Todo enlace que se reparte lleva código de canal** (`rutaaustral.cl/?c=muni`,
+  `?c=qr-furgon`). La lista es cerrada (`Interaccion::CANALES`) por la misma
+  razón que el país y el idioma —referencia libre en un endpoint sin login— y lo
+  que no está se descarta **en silencio**: el enlace anda igual y el canal queda
+  sin medir, así que el código se agrega y se despliega **antes** de repartir el
+  enlace. El código se borra de la URL apenas se cuenta, para que el enlace
+  reenviado no le regale la visita al canal equivocado. Mide **llegadas**, no
+  personas: el efecto se lee en el embudo (aperturas → fichas vistas →
+  contactos), no ficha por ficha.
+- **La lista de contactos de la campaña no va al repo** (`.gitignore`): son
+  correos personales de dueños y de funcionarias municipales. En el repo queda
+  solo `docs/campana/contactos.ejemplo.csv`.
+
 **El asistente es un copiloto, y ya se puede reservar (15-ago-2026).** Con un
 **perfil de viaje** de cuatro toques (personas, días, vehículo, sentido) y el GPS,
 el bot responde "¿dónde estoy?", "plan de hoy" (hasta dónde llega según el ritmo

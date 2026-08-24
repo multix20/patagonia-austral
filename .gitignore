@@ -20,3 +20,9 @@ scripts/tortel/tortel_places.json
 
 scripts/tortel/tortel_rutas.json
 scripts/tortel/tortel-pois.geojson
+
+# Lista viva de la campaña de correos: son datos personales de terceros
+# (correos de dueños y de funcionarias municipales). En el repo queda solo la
+# plantilla `contactos.ejemplo.csv` — ver docs/campana/README.md §5.
+docs/campana/contactos.csv
+docs/campana/contactos-*.csv

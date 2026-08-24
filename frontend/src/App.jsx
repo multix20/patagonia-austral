@@ -20,7 +20,7 @@ import {
   votarReporte,
   sincronizarColaCalificaciones,
 } from './api/client'
-import { contar, contarOrigen, conectarAnalitica } from './analitica'
+import { contar, contarOrigen, contarCampana, conectarAnalitica } from './analitica'
 import { activarPush, pushSoportado } from './push'
 import { useActualizacion, seRecienActualizo } from './actualizacion'
 import Icon from './components/Icon'
@@ -303,6 +303,7 @@ function AppInterna() {
     const desconectar = conectarAnalitica()
     contar('app_abierta')
     contarOrigen()
+    contarCampana()
     return desconectar
   }, [])
 

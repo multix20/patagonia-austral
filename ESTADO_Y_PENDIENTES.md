@@ -24,6 +24,90 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ## Dónde quedamos — para retomar (24-ago-2026)
 
+### Posicionamiento por escrito, campaña lista para salir, y un panel que dice por dónde llegaron
+
+**Qué se hizo.** Antes de mandar el primer correo se fijó **qué dice el proyecto
+de sí mismo** (`POSICIONAMIENTO.md`), se dejaron los correos escritos y listos
+para copiar (`docs/campana/`), y se agregó al panel lo único que faltaba para
+poder evaluar la campaña: **por dónde llegó cada apertura**.
+
+**Por qué el posicionamiento va antes que el correo.** La campaña es la primera
+impresión ante las 27 localidades y ante los dueños de servicios, y esa se gasta
+una sola vez. Si el correo dice una cosa, la landing otra y la primera pantalla
+de la app una tercera, quien lo lea no concluye "qué inconsistente", concluye
+"esto no es serio" — y no vuelve ni cuando el producto esté mejor.
+
+Lo que quedó decidido, y es lo que hay que sostener:
+
+- **La categoría es "una oficina de información turística que viaja en el
+  bolsillo"**, no "una app de turismo". Existe en la cabeza de todos, está vacía
+  en la ruta (Tortel: 21 atenciones OIT en la temporada, siendo ícono), le sirve
+  a la encargada de turismo municipal como extensión de su oficina en vez de como
+  competencia, y —lo importante— **explica la curaduría**: una OIT no entrega un
+  listado de 40 hospedajes, dice uno.
+- **Se compite contra el dato equivocado, nunca contra una marca.** Hablar mal de
+  Google en un correo frío suena a resentimiento; "el teléfono que sale en
+  internet ya no es el que contesta" es un hecho que el que lee vive todas las
+  semanas.
+- **La prueba más fuerte es la que cuesta**: un servicio publicado por localidad
+  y categoría. Cualquiera dice "datos de calidad"; casi nadie despublica fichas
+  para sostenerlo.
+
+**Medir la campaña: un código por canal (`?c=`).** El panel sabía decir "esta
+semana hubo 40 aperturas más", pero no cuál de las tres cosas que se hicieron esa
+semana las trajo — y sin eso no se sabe qué repetir, que es lo único que se le
+pide a medir una campaña. Ahora el enlace del correo, el QR y cada publicación
+llevan un código (`rutaaustral.cl/?c=muni`), la app lo cuenta en la apertura y el
+CMS lo muestra en **Analítica → "Por dónde llegaron"**. Cuatro reglas salieron de
+construirlo:
+
+- **La lista de canales es cerrada** (`Interaccion::CANALES`), por lo mismo que
+  la de tipos y la de países: es una referencia de texto libre que entra por un
+  endpoint **sin login**, y sin cerrarla la tabla dejaría de estar acotada por el
+  catálogo, que es la propiedad por la que el rollup cabe en el plan gratis. Lo
+  que no está en la lista **se descarta en silencio** —sin 422— porque un 422
+  hace que la PWA tire el lote entero, con las fichas y los contactos del día
+  adentro.
+- **Por eso el canal se agrega ANTES de repartir el enlace.** Un código que no
+  existe no falla: el enlace anda, la visita se cuenta como apertura, y el canal
+  queda sin medir. Un canal nuevo es solo backend, así que hay que esperar el
+  despliegue de Render antes de mandar el correo.
+- **El código se borra de la barra de direcciones apenas se cuenta.** Si no, una
+  recarga vuelve a sumar y —peor— el enlace que el viajero copia para pasárselo a
+  un amigo arrastra el código con el que llegó él: el correo a los municipios se
+  quedaría con el crédito de un boca a boca.
+- **Esto cuenta LLEGADAS, no personas.** Sigue sin haber sesión ni dispositivo,
+  así que lo que pase después de esa apertura no queda atado al canal. El efecto
+  se lee en el embudo de la página entera —aperturas → fichas vistas →
+  contactos— sobre la misma ventana. Es la misma respuesta de siempre a "quién":
+  no se sabe, y para saberlo habría que cambiar el producto.
+
+**La lista de contactos no va al repo**, y quedó en `.gitignore`: son correos
+personales de dueños y de funcionarias municipales. En el repo vive solo la
+plantilla (`docs/campana/contactos.ejemplo.csv`). Es la misma regla de los JSON
+de los pipelines de carga.
+
+**Lo que falta y es tuyo** (nada de esto se puede hacer desde una sesión web):
+
+1. **Mail-tester antes del primer envío** (`DEPLOY.md` §2.4.1, paso 8). Menos de
+   8/10 y no se manda nada: un correo que cae en la carpeta de spam de una cuenta
+   municipal falla igual que uno que rebota, solo que sin avisar.
+2. **Armar `docs/campana/contactos.csv`** — una fila por comuna para la ola 1, una
+   por negocio para la ola 2, con el enlace personal que da `/admin` → Lugares →
+   "Enlace para actualizar".
+3. **Poner la analítica en cero** el día antes de la primera ola, y anotar la
+   fecha en `docs/campana/README.md` §6.
+4. **El QR impreso todavía no lleva código.** `qr-rutaaustral.svg/.png` apuntan a
+   `rutaaustral.cl` pelado y no hay generador en el repo, así que el mejor canal
+   del proyecto —el QR del local y del furgón— va a entrar como apertura sin
+   canal. Se arregla regenerando el QR hacia `rutaaustral.cl/?c=qr-local` (y
+   `?c=qr-furgon`, `?c=qr-meson`, que ya están en la lista) **antes de imprimir**.
+
+**Verificado:** `npm run build` y `npm run lint` limpios (el precache no cambia:
+la analítica no agrega archivos); `php artisan test --filter=Interaccion` en
+verde, con un caso nuevo que prueba las dos mitades de la regla —un canal fuera
+de lista no se guarda, y el resto del lote llega igual—.
+
 ### El nombre del pueblo abre el pueblo
 
 **Qué se hizo.** En la vista de ruta, el pin de una localidad se selecciona
