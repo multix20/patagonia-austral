@@ -111,6 +111,15 @@ ALIAS_LOCALIDAD = {
     'raul-marin': 'raul-marin-balmaceda',
     'caleta-gonzalo-pumalin': 'caleta-gonzalo',
     'pumalin': 'caleta-gonzalo',
+    # WordPress le pone un sufijo al slug cuando choca con otro: la guía de
+    # Puerto Montt vive en /visita-puerto-montt-2/.
+    'puerto-montt-2': 'puerto-montt',
+    # Puerto Sánchez NO es una localidad de la app: es un caserío en la ribera
+    # norte del lago General Carrera, y el sitio le dedica una guía propia. Se
+    # ancla a Puerto Río Tranquilo, que es la localidad de la app más cercana
+    # por camino — mismo criterio que Lago Verde → La Junta en el lote SERNATUR.
+    # Si algún día tiene ficha propia, se saca de acá.
+    'puerto-sanchez': 'puerto-rio-tranquilo',
 }
 
 # Segmento de URL → categoría de `places`. Se evalúan EN ORDEN sobre la ruta
@@ -127,7 +136,11 @@ REGLAS_CATEGORIA = [
      r'|rent-a-car|alquiler|combustible|bencina|banco|cajero|farmacia'
      r'|lavanderi|supermercado|abarrotes|mecanic|vulcaniz|guia|tour|excursion'
      r'|cabalgata|kayak|rafting|pesca|vuelo|seguro|termas|tinaja|bicicleta'
-     r'|agencia|informacion-turistica', 'servicio'),
+     r'|agencia|informacion-turistica'
+     # Salidos del informe del 24-ago: el sitio dice "centros-termales" (no
+     # "termas") y tiene una sección "experiencias-turisticas" que no calzaba
+     # con ningún patrón.
+     r'|termal|experiencia', 'servicio'),
     (r'que-hacer|atractiv|mirador|parque|reserva|sendero|trekking|caminata'
      r'|lago|laguna|glaciar|ventisquero|playa|cascada|salto|capilla|museo'
      r'|monumento|escalada|avistamiento', 'atractivo'),

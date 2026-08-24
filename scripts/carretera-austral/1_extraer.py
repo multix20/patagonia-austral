@@ -113,6 +113,14 @@ EXCLUIR_RUTA = re.compile(
     r'|wp-admin|wp-content|wp-includes|feed|author|tag|comment-page|\?)',
     re.I)
 
+# Las páginas del sitio SOBRE SÍ MISMO. No son servicios de la ruta y varias
+# traen su propio teléfono: sin esto, la guía terminaría importada como si fuera
+# un hospedaje. (Hoy las salva el filtro de localidad, que no encuentra ninguna
+# en esas URLs, pero descartarlas acá ahorra la petición y no depende de eso.)
+EXCLUIR_PROPIAS = re.compile(
+    r'^/(contacto|nosotros|club-de-amigos|anunciate|politica-|privacidad'
+    r'|finalizar-compra|redes-sociales|supercustom-menus|blog)/', re.I)
+
 # Extensiones que no son páginas.
 EXCLUIR_EXT = re.compile(r'\.(jpg|jpeg|png|gif|webp|svg|pdf|zip|mp4|mp3|kml|gpx)$', re.I)
 
@@ -211,7 +219,10 @@ def tipos_wp():
     tipos = {}
     for clave, info in (datos or {}).items():
         base = ((info or {}).get('rest_base') or '').strip()
-        if not base:
+        # Los tipos internos del editor de bloques declaran un rest_base con
+        # placeholder ("font-families/(?P<font_family_id>[\d]+)/font-faces"):
+        # eso no es una URL que se pueda pedir.
+        if not base or '(?P<' in base:
             continue
         tipos[clave] = {'rest_base': base, 'total': None}
     return tipos
@@ -230,7 +241,7 @@ def total_wp(rest_base):
     return None
 
 
-def urls_wp(rest_base, limite=None):
+def urls_wp(rest_base):
     """Recorre /wp-json/wp/v2/<tipo> paginado y devuelve [(url, titulo)]."""
     salida, pagina = [], 1
     while True:
@@ -249,7 +260,7 @@ def urls_wp(rest_base, limite=None):
             titulo = html_mod.unescape(((it or {}).get('title') or {}).get('rendered', '')).strip()
             if enlace:
                 salida.append((enlace, titulo))
-        if len(lote) < 100 or (limite and len(salida) >= limite):
+        if len(lote) < 100:
             break
         pagina += 1
         if not cacheado:
@@ -493,7 +504,7 @@ def anotar(informe, linea=''):
     print(linea, flush=True)
 
 
-def inventario(rp, sitemaps, limite, informe):
+def inventario(rp, sitemaps, informe):
     """URLs candidatas: primero la API REST de WordPress, si no el sitemap."""
     urls, origen = [], None
     print('Consultando la API REST de WordPress…', flush=True)
@@ -511,7 +522,7 @@ def inventario(rp, sitemaps, limite, informe):
             if clave in ('attachment', 'wp_block', 'nav_menu_item', 'product_variation'):
                 continue
             print(f'  listando /{info["rest_base"]}…', flush=True)
-            urls += urls_wp(info['rest_base'], limite)
+            urls += urls_wp(info['rest_base'])
     if not urls:
         origen = 'sitemap'
         candidatos = sitemaps or [SITIO + '/wp-sitemap.xml', SITIO + '/sitemap_index.xml',
@@ -527,7 +538,9 @@ def inventario(rp, sitemaps, limite, informe):
         if u in vistas:
             continue
         vistas.add(u)
-        if EXCLUIR_RUTA.search(u) or EXCLUIR_EXT.search(u):
+        ruta_u = urllib.parse.urlparse(u).path
+        if (EXCLUIR_RUTA.search(u) or EXCLUIR_EXT.search(u)
+                or EXCLUIR_PROPIAS.match(ruta_u)):
             descartadas += 1
             continue
         if not permitido(rp, u):
@@ -544,7 +557,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument('--explorar', action='store_true',
                     help='solo reconocimiento: no baja las páginas, dice qué hay')
-    ap.add_argument('--limite', type=int, default=None, help='máximo de páginas a visitar')
+    ap.add_argument('--limite', type=int, default=None,
+                    help='máximo de páginas a BAJAR (el inventario se arma entero igual)')
     ap.add_argument('--solo', default=None,
                     help='filtra las URLs que contengan este texto (p. ej. visita-cochrane)')
     args = ap.parse_args()
@@ -565,7 +579,7 @@ def main():
                   'No se extrae nada.', file=sys.stderr)
             sys.exit(2)
 
-    urls, origen = inventario(rp, sitemaps, args.limite, informe)
+    urls, origen = inventario(rp, sitemaps, informe)
     if args.solo:
         urls = [(u, t) for u, t in urls if args.solo in u]
         anotar(informe, f'Filtro --solo="{args.solo}": quedan {len(urls)} URLs')
