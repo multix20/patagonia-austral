@@ -29,11 +29,27 @@ la ruta.
    teléfono, esperar medio minuto y ver que aparezca en Analítica → "Por dónde
    llegaron". Si no aparece, el código no está en `Interaccion::CANALES` y ese
    canal se va a mandar sin medir.
-4. **Generar los enlaces personales** de las fichas a las que se les va a
-   escribir: `/admin` → Lugares → seleccionar → acción en lote **"Enlace para
-   actualizar"**. Devuelve el enlace con el nombre del negocio al lado; se pegan
-   en la columna `enlace_ficha` del CSV. Ojo: **un enlace por negocio**, y el
-   equivocado le da acceso a editar la ficha de otro.
+4. **Generar la lista de la ola 2 con un comando**, no a mano:
+
+   ```bash
+   php artisan campana:contactos --cat=alojamiento --salida=docs/campana/contactos.csv
+   ```
+
+   Saca una fila por ficha publicada con **su** enlace personal ya pegado al
+   lado, en las columnas de `contactos.ejemplo.csv`. Queda por llenar el correo
+   del dueño, que no está en la base: sale de los pipelines de carga.
+
+   - `--sin-telefono` deja solo las fichas que la campaña existe para arreglar.
+   - `--localidad=cochrane` acota a un pueblo; `--seco` muestra la lista sin
+     crear ninguna invitación.
+   - Correrlo de nuevo **reusa** los enlaces ya creados: no genera dos para el
+     mismo negocio.
+
+   Hacerlo a mano desde `/admin` → Lugares → **"Enlace para actualizar"** sigue
+   sirviendo para un caso suelto, pero para una tanda no: es donde se cuela el
+   error caro —pegar el enlace de otro negocio, que le da acceso a editar una
+   ficha ajena—. El comando saca el nombre y el enlace de la misma consulta, así
+   que no se pueden cruzar.
 5. **Mirar la ficha antes de nombrarla en el correo.** Si el correo dice "su
    ficha ya está publicada" y la ficha tiene el pin en el centro del pueblo y una
    descripción de plantilla, el remitente pierde en el primer clic.
