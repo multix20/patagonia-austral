@@ -100,6 +100,14 @@ class InteraccionResource extends Resource
             return Origen::nombreIdioma($referencia);
         }
 
+        // El canal se guarda por su código (`muni`, `qr-furgon`) porque es lo
+        // que viaja en la URL impresa; el nombre largo se arma acá, que es
+        // donde se lee. Un código que ya no está en la lista se muestra tal
+        // cual: siguió contando para el total del día en que se usó.
+        if ($tipo === 'campana') {
+            return Interaccion::CANALES[$referencia] ?? $referencia;
+        }
+
         return self::ETIQUETAS_FIJAS[$tipo][$referencia] ?? $referencia;
     }
 
@@ -116,6 +124,7 @@ class InteraccionResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'como_llegar', 'llamar', 'compartir' => 'success', // intención de ir
                         'reporte', 'voto', 'calificacion' => 'warning',    // aportes
+                        'campana' => 'info',                               // de dónde llegó
                         default => 'gray',
                     })
                     ->sortable(),

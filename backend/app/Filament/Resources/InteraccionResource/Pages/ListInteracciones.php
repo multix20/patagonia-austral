@@ -73,6 +73,11 @@ class ListInteracciones extends ListRecords
             Widgets\ActividadDiaria::class,
             Widgets\TopLocalidades::class,
             Widgets\TopFichas::class,
+            // Por dónde llegaron. Va pegado a las fichas y no al final con los
+            // dos de origen porque contesta otra cosa: no "de qué país es el
+            // que entró" sino "cuál de las cosas que hicimos lo trajo", que es
+            // la pregunta con la que se decide si una campaña se repite.
+            Widgets\TopCampanas::class,
             // De dónde llega quien abre la app. Van al final y no arriba a
             // propósito: contestan "quién vino", que es la pregunta del día que
             // aparece el primer visitante de verdad, pero lo que se mira todas

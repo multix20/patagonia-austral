@@ -130,6 +130,33 @@ class InteraccionApiTest extends TestCase
         $this->assertSame(5, Interaccion::where('tipo', 'ficha')->value('cantidad'));
     }
 
+    /**
+     * El canal de difusión solo entra si está en la lista, y lo que no está se
+     * descarta sin tumbar el lote.
+     *
+     * Es la misma regla que el origen y por el mismo motivo: la referencia sale
+     * del `?c=` de la URL, o sea de cualquiera que se invente un enlace. Lo que
+     * protege este test es que la campaña siga siendo legible — un canal
+     * inventado en el ranking hace dudar de todos los demás — y que un enlace
+     * con basura no se lleve por delante las aperturas y las fichas del día.
+     */
+    public function test_solo_guarda_canales_de_la_lista_y_no_tumba_el_lote(): void
+    {
+        $this->postJson('/api/interacciones', ['eventos' => [
+            ['tipo' => 'campana', 'ref' => 'muni', 'n' => 2],
+            ['tipo' => 'campana', 'ref' => 'qr-furgon', 'n' => 1],
+            ['tipo' => 'campana', 'ref' => 'canal-inventado', 'n' => 9],
+            ['tipo' => 'campana', 'ref' => null, 'n' => 1],
+            ['tipo' => 'app_abierta', 'ref' => null, 'n' => 4],
+        ]])->assertNoContent();
+
+        $canales = Interaccion::where('tipo', 'campana')->pluck('cantidad', 'referencia')->sortKeys()->all();
+        $this->assertSame(['muni' => 2, 'qr-furgon' => 1], $canales);
+
+        // El resto del lote llegó entero: es lo que se perdería con un 422.
+        $this->assertSame(4, Interaccion::where('tipo', 'app_abierta')->value('cantidad'));
+    }
+
     /** Días distintos son filas distintas: eso es lo que permite ver la evolución. */
     public function test_separa_por_dia(): void
     {

@@ -1,0 +1,4 @@
+comuna,localidad,tipo,rubro,organismo_o_negocio,nombre,cargo,correo,telefono,ola,enlace_ficha,enviado_en,recordado_en,respondido_en,estado,notas
+Cochrane,Cochrane,municipio,,Ilustre Municipalidad de Cochrane,,Encargada de Turismo,turismo@ejemplo.cl,+56 9 0000 0000,1,,,,,pendiente,"Reemplazar por el correo real del sitio institucional"
+Tortel,Caleta Tortel,negocio,alojamiento,Hospedaje de ejemplo,,Dueño,ejemplo@correo.cl,+56 9 0000 0000,2,https://rutaaustral.cl/mi-ficha/PEGAR-ENLACE-DEL-CMS,,,,pendiente,"El enlace sale de /admin -> Lugares -> Enlace para actualizar"
+Cisnes,Puyuhuapi,negocio,gastronomia,Restorán de ejemplo,,Dueña,,+56 9 0000 0000,2,,,,,sin-correo,"Solo hay WhatsApp: usar el guion corto de correo-2-negocios.md"

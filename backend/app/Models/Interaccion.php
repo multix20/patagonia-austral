@@ -53,6 +53,12 @@ class Interaccion extends Model
         // distinto: cuánta decisión se toma en la ruta, sin señal.
         'consulta_guardada' => 'Consulta guardada sin señal',
         'perfil_viaje' => 'Viaje configurado en el asistente',
+        // Por dónde llegó quien abrió la app: el código que lleva el enlace
+        // (`rutaaustral.cl/?c=muni`), el QR del mesón o la publicación de turno.
+        // Es lo único que separa "entraron 40 personas" de "40 personas
+        // entraron POR EL CORREO A LOS MUNICIPIOS", que es la pregunta que
+        // decide si una campaña sirvió y cuál repetir. Ver `CANALES`.
+        'campana' => 'Llegada por un canal',
         // De dónde entró quien abrió la app. No sale de la IP sino del propio
         // navegador: la zona horaria dice dónde está el TELÉFONO y el idioma del
         // sistema de dónde viene la PERSONA — el alemán que ya va por Coyhaique
@@ -93,6 +99,33 @@ class Interaccion extends Model
      * (ver la migración); estas dos hay que acotarlas a mano.
      */
     public const TIPOS_DE_ORIGEN = ['origen_pais', 'origen_idioma'];
+
+    /**
+     * Canales de difusión, en lista cerrada por el mismo motivo que los tipos:
+     * la referencia de `campana` llega del navegador —del `?c=` de la URL— a un
+     * endpoint que escribe SIN LOGIN, así que sin lista blanca cualquiera podría
+     * inventar códigos hasta hacer crecer la tabla sin techo, y el rollup
+     * dejaría de estar acotado por el catálogo.
+     *
+     * Los códigos son cortos y dictables a propósito: se imprimen en un QR, se
+     * pegan en un correo frío y a veces se leen en voz alta. Y hay que agregar
+     * el canal ACÁ antes de repartir el enlace — un código que no está en esta
+     * lista se descarta en silencio y ese canal queda sin medir, que es
+     * exactamente el error que la campaña no puede permitirse.
+     */
+    public const CANALES = [
+        'muni' => 'Correo a municipios',
+        'negocio' => 'Correo a negocios',
+        'oit' => 'Oficina de información turística',
+        'landing' => 'Landing /proyecto',
+        'qr-local' => 'QR — hamburguesería km 1020',
+        'qr-furgon' => 'QR — furgón Tortel↔Cochrane',
+        'qr-meson' => 'QR — mesón de alojamiento',
+        'facebook' => 'Grupos de Facebook',
+        'instagram' => 'Instagram',
+        'volante' => 'Volante impreso',
+        'firma' => 'Firma de correo o tarjeta',
+    ];
 
     /** Tope por evento y envío: ataja un lote absurdo sin castigar el uso real. */
     public const MAX_POR_EVENTO = 500;

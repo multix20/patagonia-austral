@@ -51,6 +51,16 @@ class InteraccionController extends Controller
                 }
             }
 
+            // Misma regla para el canal de difusión: la referencia sale del
+            // `?c=` de la URL, o sea de cualquiera que se invente un enlace. Se
+            // acepta solo lo que esté en la lista de canales y el resto se
+            // descarta EN SILENCIO —sin 422— porque un 422 haría que la PWA
+            // tirara el lote entero, y con él las aperturas y las fichas del
+            // día (ver el manejo del 422 en analitica.js).
+            if ($e['tipo'] === 'campana' && ! array_key_exists((string) $ref, Interaccion::CANALES)) {
+                continue;
+            }
+
             // El día lo pone el SERVIDOR, no el cliente. Un reloj mal puesto (o
             // alguien con ganas) podría cargar el contador a una fecha futura y
             // ensuciar el informe para siempre. Se pierde algo de precisión con

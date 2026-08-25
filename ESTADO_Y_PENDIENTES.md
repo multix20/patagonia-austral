@@ -89,6 +89,152 @@ semilla y puede que en producción ya estén publicados.
 
 ## 24-ago-2026
 
+### Panel para mostrar el proyecto (una página, cualquier interlocutor)
+
+**Qué es.** `docs/panel-proyecto.html` — una página autocontenida que cuenta el
+proyecto entero: qué es, qué está construido, qué dice el mercado de Aysén, qué
+se está midiendo, cómo se financia y qué falta. Sirve para un municipio, para un
+fondo o para un negocio que pregunta "¿y esto qué es?", y se manda como enlace.
+Usa la **paleta y la tipografía de la app** (verde, crema, tinta y Archivo), para
+que el panel se parezca al producto del que habla.
+
+Tres reglas que se aplicaron al armarlo, y valen para cualquier material de venta
+que salga después:
+
+- **Solo cifras que no rotan.** Kilómetros, localidades, categorías y costo
+  mensual sí; recuentos de fichas no (cambian cada semana, es la regla de
+  `CLAUDE.md`). Las fuentes van al pie, con fecha.
+- **Las casillas de tracción van VACÍAS a propósito**, con un guion y "por medir".
+  Inventar un número para no mostrar un hueco es exactamente lo que el panel de
+  analítica se prohíbe a sí mismo ("cero" y "sin medir" no son lo mismo), y en un
+  documento que se manda a terceros el costo de que se note es mucho más alto.
+  Se llenan a mano desde `/admin` cuando la campaña haya corrido.
+- **El gráfico de atenciones OIT es el argumento, no el adorno.** Las nueve cifras
+  por destino suman exactamente las 6.357 atendidas de la región, y las dos puntas
+  —Cochrane #1 con 1.312, Tortel con 21— explican el proyecto solas: donde el
+  proyecto opera es donde más se pregunta, y el destino ícono no tiene a quién
+  preguntarle.
+
+Dos bugs que aparecieron al revisar el render y que valen para cualquier página
+futura: un `<span>` con `width`/`height` **en línea** ignora las dos cosas (las
+barras salían vacías sin error visible), y en un contenedor flex o grid hay que
+poner `min-width: 0` a los hijos o el ancho mínimo de una tabla empuja la página
+entera y aparece scroll horizontal en el teléfono.
+
+### Los correos, comuna por comuna y rubro por rubro
+
+**Qué se agregó.** La campaña dejó de ser dos textos y pasó a ser una lista de
+envío ejecutable:
+
+- **Ola 1 — las 14 comunas.** Las 27 localidades de la app caen en 14 comunas, y
+  el correo de cada una **nombra las suyas** (Chaitén son cuatro; Cisnes, cuatro).
+  Esa lista es lo que separa un correo genérico de uno que prueba que alguien
+  miró el territorio.
+- **Ola 2 — siete rubros**, cada uno con su asunto y **el dato que de verdad
+  decide** en ese rubro: el teléfono en alojamiento, el **horario** en
+  gastronomía, **tarjeta o efectivo** en combustible, **día y hora de salida** en
+  transporte, temporada y reserva en guías, horario en comercio.
+
+**Tres cosas que quedaron fijadas:**
+
+- **La división administrativa se verifica, no se deduce por cercanía.**
+  Puerto Bertrand es comuna de **Chile Chico**, no de Cochrane, aunque esté a 50
+  km de Cochrane y a 110 de Chile Chico. Villa Amengual es de **Lago Verde**
+  aunque quede camino a Cisnes. Equivocarse de comuna en el primer correo dice
+  «no conozco el territorio», que es lo contrario de todo el argumento.
+- **El orden de envío no es alfabético.** Primero Capitán Prat —Tortel, Cochrane,
+  O'Higgins—, donde el correo no es frío; **Coyhaique y Puerto Montt al final**,
+  porque son las oficinas más grandes, las que menos necesitan la app, y las
+  únicas que se mueven si uno llega con media región ya respondida.
+- **Las barcazas no son captura de dato, son una relación.** Sus fichas ya llevan
+  zarpes, teléfono y tarifas fechadas: a las navieras se les pide **confirmar y
+  avisar el cambio de temporada**, con el compromiso de publicarlo el mismo día.
+  Y a **salud y emergencias no se les escribe como negocio**: eso se confirma con
+  la municipalidad en la ola 1.
+
+### Posicionamiento por escrito, campaña lista para salir, y un panel que dice por dónde llegaron
+
+**Qué se hizo.** Antes de mandar el primer correo se fijó **qué dice el proyecto
+de sí mismo** (`POSICIONAMIENTO.md`), se dejaron los correos escritos y listos
+para copiar (`docs/campana/`), y se agregó al panel lo único que faltaba para
+poder evaluar la campaña: **por dónde llegó cada apertura**.
+
+**Por qué el posicionamiento va antes que el correo.** La campaña es la primera
+impresión ante las 27 localidades y ante los dueños de servicios, y esa se gasta
+una sola vez. Si el correo dice una cosa, la landing otra y la primera pantalla
+de la app una tercera, quien lo lea no concluye "qué inconsistente", concluye
+"esto no es serio" — y no vuelve ni cuando el producto esté mejor.
+
+Lo que quedó decidido, y es lo que hay que sostener:
+
+- **La categoría es "una oficina de información turística que viaja en el
+  bolsillo"**, no "una app de turismo". Existe en la cabeza de todos, está vacía
+  en la ruta (Tortel: 21 atenciones OIT en la temporada, siendo ícono), le sirve
+  a la encargada de turismo municipal como extensión de su oficina en vez de como
+  competencia, y —lo importante— **explica la curaduría**: una OIT no entrega un
+  listado de 40 hospedajes, dice uno.
+- **Se compite contra el dato equivocado, nunca contra una marca.** Hablar mal de
+  Google en un correo frío suena a resentimiento; "el teléfono que sale en
+  internet ya no es el que contesta" es un hecho que el que lee vive todas las
+  semanas.
+- **La prueba más fuerte es la que cuesta**: un servicio publicado por localidad
+  y categoría. Cualquiera dice "datos de calidad"; casi nadie despublica fichas
+  para sostenerlo.
+
+**Medir la campaña: un código por canal (`?c=`).** El panel sabía decir "esta
+semana hubo 40 aperturas más", pero no cuál de las tres cosas que se hicieron esa
+semana las trajo — y sin eso no se sabe qué repetir, que es lo único que se le
+pide a medir una campaña. Ahora el enlace del correo, el QR y cada publicación
+llevan un código (`rutaaustral.cl/?c=muni`), la app lo cuenta en la apertura y el
+CMS lo muestra en **Analítica → "Por dónde llegaron"**. Cuatro reglas salieron de
+construirlo:
+
+- **La lista de canales es cerrada** (`Interaccion::CANALES`), por lo mismo que
+  la de tipos y la de países: es una referencia de texto libre que entra por un
+  endpoint **sin login**, y sin cerrarla la tabla dejaría de estar acotada por el
+  catálogo, que es la propiedad por la que el rollup cabe en el plan gratis. Lo
+  que no está en la lista **se descarta en silencio** —sin 422— porque un 422
+  hace que la PWA tire el lote entero, con las fichas y los contactos del día
+  adentro.
+- **Por eso el canal se agrega ANTES de repartir el enlace.** Un código que no
+  existe no falla: el enlace anda, la visita se cuenta como apertura, y el canal
+  queda sin medir. Un canal nuevo es solo backend, así que hay que esperar el
+  despliegue de Render antes de mandar el correo.
+- **El código se borra de la barra de direcciones apenas se cuenta.** Si no, una
+  recarga vuelve a sumar y —peor— el enlace que el viajero copia para pasárselo a
+  un amigo arrastra el código con el que llegó él: el correo a los municipios se
+  quedaría con el crédito de un boca a boca.
+- **Esto cuenta LLEGADAS, no personas.** Sigue sin haber sesión ni dispositivo,
+  así que lo que pase después de esa apertura no queda atado al canal. El efecto
+  se lee en el embudo de la página entera —aperturas → fichas vistas →
+  contactos— sobre la misma ventana. Es la misma respuesta de siempre a "quién":
+  no se sabe, y para saberlo habría que cambiar el producto.
+
+**La lista de contactos no va al repo**, y quedó en `.gitignore`: son correos
+personales de dueños y de funcionarias municipales. En el repo vive solo la
+plantilla (`docs/campana/contactos.ejemplo.csv`). Es la misma regla de los JSON
+de los pipelines de carga.
+
+**Lo que falta y es tuyo** (nada de esto se puede hacer desde una sesión web):
+
+1. **Mail-tester antes del primer envío** (`DEPLOY.md` §2.4.1, paso 8). Menos de
+   8/10 y no se manda nada: un correo que cae en la carpeta de spam de una cuenta
+   municipal falla igual que uno que rebota, solo que sin avisar.
+2. **Armar `docs/campana/contactos.csv`** — una fila por comuna para la ola 1, una
+   por negocio para la ola 2, con el enlace personal que da `/admin` → Lugares →
+   "Enlace para actualizar".
+3. **Poner la analítica en cero** el día antes de la primera ola, y anotar la
+   fecha en `docs/campana/README.md` §6.
+4. **El QR impreso todavía no lleva código.** `qr-rutaaustral.svg/.png` apuntan a
+   `rutaaustral.cl` pelado y no hay generador en el repo, así que el mejor canal
+   del proyecto —el QR del local y del furgón— va a entrar como apertura sin
+   canal. Se arregla regenerando el QR hacia `rutaaustral.cl/?c=qr-local` (y
+   `?c=qr-furgon`, `?c=qr-meson`, que ya están en la lista) **antes de imprimir**.
+
+**Verificado:** `npm run build` y `npm run lint` limpios (el precache no cambia:
+la analítica no agrega archivos); `php artisan test --filter=Interaccion` en
+verde, con un caso nuevo que prueba las dos mitades de la regla —un canal fuera
+de lista no se guarda, y el resto del lote llega igual—.
 ### Seis pueblos que estaban pero no se veían, y una zona muerta sobre el mapa
 
 **Qué se hizo (segunda tanda del 24-ago).**
