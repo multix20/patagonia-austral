@@ -374,12 +374,22 @@ export const LUGARES_SEED = [
     },
   },
   {
+    // El nombre decía "Reserva Nacional Lago Cochrane (Tamango)", que dejó de
+    // existir: el decreto 98 del 25-oct-2018 (Ministerio de Bienes Nacionales)
+    // desafectó las reservas Lago Cochrane y Lago Jeinimeni y las integró, junto
+    // al valle Chacabuco donado por Tompkins, en el Parque Nacional Patagonia.
+    // Son TRES SECTORES DE UN MISMO PARQUE, y la app los tenía como tres áreas
+    // protegidas distintas con dos nombres legalmente caducos — exactamente el
+    // problema de dato que esta app dice resolver, pero en casa.
     id: 2, cat: 'atractivo', localidad: 'cochrane', lat: -47.225, lng: -72.522, tel: '+56 67 252 2164', publicado: false,
-    nombre: { es: 'Reserva Nacional Lago Cochrane (Tamango)', en: 'Lago Cochrane National Reserve (Tamango)' },
+    nombre: {
+      es: 'Parque Nacional Patagonia — sector Tamango',
+      en: 'Patagonia National Park — Tamango sector',
+    },
     dist: { es: '6 km · 12 min en auto', en: '6 km · 12 min by car' },
     desc: {
-      es: 'Hogar de una de las últimas poblaciones de huemul del país. Senderos de baja y media dificultad bordeando el lago Cochrane, con aguas transparentes color esmeralda.',
-      en: 'Home to one of the last huemul deer populations in Chile. Easy-to-moderate trails along Lake Cochrane and its transparent emerald waters.',
+      es: 'Hogar de una de las últimas poblaciones de huemul del país. Senderos de baja y media dificultad bordeando el lago Cochrane, con aguas transparentes color esmeralda. Es la puerta más cercana a Cochrane del Parque Nacional Patagonia, que integró esta antigua reserva en 2018.',
+      en: 'Home to one of the last huemul deer populations in Chile. Easy-to-moderate trails along Lake Cochrane and its transparent emerald waters. It is the closest gateway from Cochrane into Patagonia National Park, which absorbed this former reserve in 2018.',
     },
     como: {
       es: 'Camino a Tamango desde el centro, entrada CONAF. Lleva efectivo para la entrada.',
@@ -388,7 +398,13 @@ export const LUGARES_SEED = [
   },
   {
     id: 3, cat: 'atractivo', localidad: 'cochrane', lat: -47.11, lng: -72.48, publicado: false,
-    nombre: { es: 'Parque Nacional Patagonia — Valle Chacabuco', en: 'Patagonia National Park — Chacabuco Valley' },
+    // "sector Valle Chacabuco" y no "— Valle Chacabuco": los tres sectores del
+    // parque se nombran igual (Tamango, Jeinimeni, Valle Chacabuco), para que en
+    // una lista se lea que son el mismo parque y no tres.
+    nombre: {
+      es: 'Parque Nacional Patagonia — sector Valle Chacabuco',
+      en: 'Patagonia National Park — Chacabuco Valley sector',
+    },
     dist: { es: '28 km · 40 min en auto', en: '28 km · 40 min by car' },
     desc: {
       es: 'Ex estancia convertida en uno de los parques más emblemáticos de la Patagonia. Guanacos, ñandúes y paisajes de estepa infinita. Museo y senderos de clase mundial.',
@@ -718,11 +734,18 @@ export const LUGARES_SEED = [
   },
   {
     id: 39, cat: 'atractivo', localidad: 'chile-chico', lat: -46.82, lng: -72.0, publicado: false,
-    nombre: { es: 'Reserva Nacional Lago Jeinimeni', en: 'Lago Jeinimeni National Reserve' },
+    // Mismo caso que Tamango (ver ficha 2): la descripción ya decía "hoy parte
+    // del Parque Nacional Patagonia" mientras el NOMBRE seguía siendo el de la
+    // reserva desafectada en 2018. El nombre es lo que se lee en el mapa y en la
+    // tarjeta; la descripción, solo al abrir la ficha.
+    nombre: {
+      es: 'Parque Nacional Patagonia — sector Jeinimeni',
+      en: 'Patagonia National Park — Jeinimeni sector',
+    },
     dist: { es: '52 km · 1 h 30 min en auto', en: '52 km · 1.5 h by car' },
     desc: {
-      es: 'Lagunas color esmeralda entre estepa y bosque, hoy parte del Parque Nacional Patagonia. En el camino: la Piedra Clavada, la Cueva de las Manos y el valle Lunar, de paisaje casi marciano.',
-      en: 'Emerald lagoons between steppe and forest, now part of Patagonia National Park. On the way: Piedra Clavada, the Cave of Hands and the Moon Valley with its almost Martian landscape.',
+      es: 'Lagunas color esmeralda entre estepa y bosque, en el sector norte del Parque Nacional Patagonia. En el camino: la Piedra Clavada, la Cueva de las Manos y el valle Lunar, de paisaje casi marciano.',
+      en: 'Emerald lagoons between steppe and forest, in the northern sector of Patagonia National Park. On the way: Piedra Clavada, the Cave of Hands and the Moon Valley with its almost Martian landscape.',
     },
     como: {
       es: 'Camino de ripio hacia el sur desde Chile Chico. Sin combustible ni señal en la ruta: sal preparado.',
@@ -884,7 +907,16 @@ export const LUGARES_SEED = [
   },
   {
     id: 60, cat: 'atractivo', localidad: 'villa-ohiggins', lat: -48.9, lng: -73.1,
-    nombre: { es: 'Glaciar O’Higgins (navegación por el lago)', en: 'O’Higgins Glacier (lake cruise)' },
+    // El parque va EN EL NOMBRE, igual que en el sendero de Cerro Castillo (30):
+    // esta navegación es la única puerta de la app al Parque Nacional Bernardo
+    // O'Higgins, y quien mira la tarjeta no tiene por qué saber que el glaciar
+    // está dentro de un parque nacional. Es además lo que permite reconocerlo
+    // como parque de la Ruta (ver data/parques.js) sin marcar por error todas
+    // las fichas de Villa O'Higgins.
+    nombre: {
+      es: 'Glaciar O’Higgins (P.N. Bernardo O’Higgins)',
+      en: 'O’Higgins Glacier (Bernardo O’Higgins N.P.)',
+    },
     dist: { es: 'Navegación de día completo', en: 'Full-day boat trip' },
     desc: {
       es: 'Navegación por el lago O’Higgins hasta la pared de hielo del glaciar, en el Campo de Hielo Sur. Una de las excursiones más remotas y sobrecogedoras de la Patagonia chilena.',
@@ -1042,7 +1074,12 @@ export const LUGARES_SEED = [
   },
   {
     id: 78, cat: 'atractivo', localidad: 'puerto-chacabuco', lat: -45.465, lng: -72.818,
-    nombre: { es: 'Navegación al Glaciar San Rafael', en: 'San Rafael Glacier cruise' },
+    // El parque va en el nombre por lo mismo que en la ficha 60: la descripción
+    // ya lo nombraba, pero el nombre es lo que se lee en el mapa.
+    nombre: {
+      es: 'Navegación al Glaciar San Rafael (P.N. Laguna San Rafael)',
+      en: 'San Rafael Glacier cruise (Laguna San Rafael N.P.)',
+    },
     dist: { es: 'Zarpe desde el terminal', en: 'Departs from the terminal' },
     desc: {
       es: 'Excursión estrella de la zona: catamarán por los fiordos hasta el ventisquero San Rafael, en el Parque Nacional Laguna San Rafael (Campo de Hielo Norte), donde el glaciar cae al mar entre témpanos. Salidas por el día en temporada.',
@@ -3147,6 +3184,49 @@ export const LUGARES_SEED = [
     como: {
       es: 'Plaza y sede vecinal de Villa O\'Higgins.',
       en: 'Villa O\'Higgins main square and community hall.',
+    },
+  },
+
+  // ---- Los dos parques de la Ruta que faltaban (25-ago-2026) ----------------
+  //
+  // Corcovado y Melimoyu eran los únicos dos de los 11 parques de la Ruta de los
+  // Parques en el tramo Puerto Montt → Villa O'Higgins sin ficha de ninguna
+  // clase (ver data/parques.js). Los otros nueve ya tenían la suya, o la de su
+  // puerta de entrada.
+  //
+  // Van `publicado: false` A PROPÓSITO, no por falta de dato: Chaitén y Raúl
+  // Marín Balmaceda ya tienen ocupado su cupo de `atractivo` publicado (el
+  // volcán Chaitén y la costa), y la regla de un servicio publicado por
+  // localidad y categoría vale también acá. Quedan escritas y listas para rotar
+  // el día que se decida cambiar el cupo, que es para lo que existe el flag.
+  //
+  // Y son los dos parques a los que NO se llega por camino: eso no es un dato
+  // que falte, es EL dato: quien planifica la ruta necesita saber que no puede
+  // simplemente desviarse a verlos.
+  {
+    id: 3084, cat: 'atractivo', localidad: 'chaiten', lat: -43.4, lng: -72.9, publicado: false,
+    nombre: { es: 'Parque Nacional Corcovado', en: 'Corcovado National Park' },
+    dist: { es: 'Sin acceso por camino', en: 'No road access' },
+    desc: {
+      es: 'Casi 294 mil hectáreas de fiordos, lagos y bosque siempreverde bajo el volcán Corcovado, la montaña que se ve desde toda la costa de Chaitén. Creado en 2005 y ampliado en 2018, es de los parques menos visitados de la Patagonia justo por lo que lo hace valioso: no hay camino que llegue.',
+      en: 'Almost 294,000 hectares of fjords, lakes and evergreen forest beneath the Corcovado volcano, the mountain visible along the whole Chaitén coast. Created in 2005 and expanded in 2018, it is one of Patagonia’s least-visited parks for the very reason that makes it valuable: no road reaches it.',
+    },
+    como: {
+      es: 'No se entra en vehículo. Por mar, a bahía Tictoc en embarcación coordinada desde Chaitén; por tierra solo existe una huella desde Villa Santa Lucía, casi intransitable y no apta para un viaje de ruta. Consulta en CONAF antes de intentarlo.',
+      en: 'You cannot drive in. By sea, to Tictoc Bay on a boat arranged from Chaitén; overland there is only a track from Villa Santa Lucía, nearly impassable and not suitable for a road trip. Check with CONAF before attempting it.',
+    },
+  },
+  {
+    id: 3085, cat: 'atractivo', localidad: 'raul-marin-balmaceda', lat: -44.08, lng: -72.88, publicado: false,
+    nombre: { es: 'Parque Nacional Melimoyu', en: 'Melimoyu National Park' },
+    dist: { es: 'Sin acceso por camino', en: 'No road access' },
+    desc: {
+      es: 'Un volcán de cumbre glaciar cuyo nombre en mapudungun alude a sus cuatro cimas, sobre 105 mil hectáreas de bosque siempreverde, canales e islas. En verano, cerca del 10% de las ballenas azules del mundo entra al golfo Corcovado a alimentarse frente a esta costa. Parque nacional desde enero de 2018, casi sin infraestructura de visita.',
+      en: 'A glacier-capped volcano whose Mapudungun name refers to its four summits, above 105,000 hectares of evergreen forest, channels and islands. In summer, close to 10% of the world’s blue whales enter the Corcovado gulf to feed off this coast. A national park since January 2018, with almost no visitor infrastructure.',
+    },
+    como: {
+      es: 'Sin camino de acceso ni portería. Se ve desde el ferry de Naviera Austral y desde la costa de Raúl Marín Balmaceda; para entrar hay que coordinar por mar con CONAF o con un operador local.',
+      en: 'No access road and no gatehouse. It is visible from the Naviera Austral ferry and from the Raúl Marín Balmaceda coast; entering requires arranging a boat with CONAF or a local operator.',
     },
   },
 ]

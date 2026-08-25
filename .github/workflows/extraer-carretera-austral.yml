@@ -1,0 +1,102 @@
+# Correr el extractor de carretera-austral.cl EN GITHUB, no en la máquina propia.
+#
+# Nació de una limitación concreta: el pipeline necesita red hacia el sitio, y
+# quien lo maneja no siempre está frente al PC. Un runner de Actions sí tiene
+# red, así que la extracción se dispara **desde el teléfono** —el botón "Run
+# workflow" de la app de GitHub— y el resultado queda como artefacto para
+# descargar, además de impreso en el log del job.
+#
+# Que el informe salga en el LOG no es un detalle: es lo que permite revisarlo
+# desde el teléfono sin bajar ni abrir un archivo.
+#
+# OJO: el botón "Run workflow" solo aparece si este archivo está en la rama por
+# defecto (`main`). Mientras viva solo en una rama de trabajo, no se ve.
+name: Extraer carretera-austral.cl
+
+on:
+  workflow_dispatch:
+    inputs:
+      explorar:
+        description: 'Solo reconocimiento (no baja páginas de contenido)'
+        type: boolean
+        default: false
+      solo:
+        description: 'Filtrar URLs que contengan este texto (vacío = todo el sitio)'
+        required: false
+        default: ''
+      limite:
+        description: 'Máximo de páginas a bajar (vacío = todas, ~750)'
+        required: false
+        default: ''
+
+# Una extracción a la vez: son ~55 min pidiéndole páginas a un sitio ajeno con
+# 3–6 s de espera entre cada una. Dos corridas en paralelo duplicarían esa carga
+# y romperían la cortesía que el script cuida en todo lo demás.
+concurrency:
+  group: extraer-carretera-austral
+  cancel-in-progress: false
+
+jobs:
+  extraer:
+    name: Extraer y mapear a `places`
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          # El pipeline es solo biblioteca estándar: no hay nada que instalar.
+
+      # La caché de páginas bajadas, entre corridas. Sin esto, cada corrida le
+      # vuelve a pedir el sitio entero a un servidor ajeno — que es exactamente
+      # lo que el script evita en local guardando `crudos/`.
+      - name: Recuperar las páginas ya bajadas
+        uses: actions/cache@v4
+        with:
+          path: scripts/carretera-austral/crudos
+          key: ca-crudos-${{ github.run_id }}
+          restore-keys: ca-crudos-
+
+      - name: Extraer
+        run: |
+          ARGS=""
+          if [ "${{ inputs.explorar }}" = "true" ]; then ARGS="$ARGS --explorar"; fi
+          if [ -n "${{ inputs.solo }}" ];    then ARGS="$ARGS --solo ${{ inputs.solo }}"; fi
+          if [ -n "${{ inputs.limite }}" ];  then ARGS="$ARGS --limite ${{ inputs.limite }}"; fi
+          echo "Argumentos: ${ARGS:-(ninguno: sitio completo)}"
+          python scripts/carretera-austral/1_extraer.py $ARGS
+
+      - name: Mapear a `places`
+        # En modo --explorar no se bajó nada, así que no hay qué mapear.
+        if: ${{ inputs.explorar != true }}
+        run: python scripts/carretera-austral/2_a_places.py
+
+      # Los dos informes, otra vez y juntos al final del log: es lo que se lee
+      # desde el teléfono sin descargar nada.
+      - name: Informes
+        if: always()
+        run: |
+          for f in scripts/carretera-austral/informe.txt scripts/carretera-austral/informe_places.txt; do
+            if [ -f "$f" ]; then
+              echo "════════════════════════════════  $f"
+              cat "$f"
+            fi
+          done
+
+      - name: Guardar los resultados
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: carretera-austral-${{ github.run_number }}
+          retention-days: 14
+          if-no-files-found: warn
+          # `crudos/` NO se sube: son páginas de un sitio ajeno, pesan y ya
+          # viven en la caché. Lo que se descarga es el dato extraído.
+          path: |
+            scripts/carretera-austral/ca-fichas.json
+            scripts/carretera-austral/ca_places.json
+            scripts/carretera-austral/informe.txt
+            scripts/carretera-austral/informe_places.txt

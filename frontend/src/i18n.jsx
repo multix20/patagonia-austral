@@ -36,6 +36,17 @@ const DICCIONARIO = {
     // como publicidad pagada, que es justo lo contrario de lo que es.
     recomendado: 'Recomendado',
     recomendadoAyuda: 'Recomendado por los viajeros: 4,5 estrellas o más, con al menos 3 opiniones.',
+    // La Ruta de los Parques de la Patagonia (ver data/parques.js). El rótulo es
+    // el nombre de la iniciativa y NO se traduce a la ligera: "Route of Parks of
+    // Patagonia" es como la nombran ellos mismos en inglés.
+    //
+    // El texto de ayuda dice de quién es la iniciativa, por la misma razón que
+    // el de la llama dice su regla: un sello sin procedencia visible se lee como
+    // una alianza que no existe. Esta app no es oficial de la Ruta de los
+    // Parques — describe parques públicos que forman parte de ella.
+    parqueRuta: 'Ruta de los Parques',
+    parqueRutaAyuda:
+      'Este parque forma parte de la Ruta de los Parques de la Patagonia, iniciativa de Fundación Rewilding Chile con CONAF y SERNATUR: 17 parques nacionales entre Puerto Montt y Cabo de Hornos, 11 de ellos en la Carretera Austral.',
     dispOffline: 'Esta información está disponible sin conexión',
     compartir: 'Compartir',
     enlaceCopiado: 'Enlace copiado',
@@ -211,6 +222,9 @@ const DICCIONARIO = {
     destacado: 'Featured',
     recomendado: 'Travellers’ pick',
     recomendadoAyuda: 'Picked by travellers: 4.5 stars or more, from at least 3 reviews.',
+    parqueRuta: 'Route of Parks',
+    parqueRutaAyuda:
+      'This park is part of the Route of Parks of Patagonia, an initiative by Fundación Rewilding Chile with CONAF and SERNATUR: 17 national parks between Puerto Montt and Cape Horn, 11 of them on the Carretera Austral.',
     dispOffline: 'This information is available offline',
     compartir: 'Share',
     enlaceCopiado: 'Link copied',

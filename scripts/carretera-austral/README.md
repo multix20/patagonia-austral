@@ -33,9 +33,25 @@ pero el JSON de salida no arrastra ni una línea de texto descriptivo: las
 descripciones de la app se escriben acá, bilingües, como se hizo con SERNATUR y
 con Tortel.
 
-Por lo mismo, las páginas `/producto/…` quedan **excluidas por defecto**: son los
-paquetes turísticos que vende el propio sitio. No son dato de servicio de la
-ruta, son su catálogo.
+### `/producto/` es el directorio, no el catálogo
+
+La primera versión de este pipeline excluía `/producto/` creyendo que eran los
+paquetes que el sitio vende. **No lo son.** Detrás de
+`/producto/camping-en-cochrane/` está el Camping Aquasol, y detrás de
+`/producto/cabanas-y-tinaja-en-cochrane/` las Cabañas Patagonino: son **429
+fichas de negocios**, o sea el grueso del dato útil del sitio, y estaban
+quedando fuera enteras.
+
+Los paquetes que el sitio sí vende viven en el mismo lugar
+(`carretera-austral-10-dias-9-noches`, `paquete-turistico-caleta-tortel`), pero
+**se caen solos**: sus slugs no nombran una localidad, y la regla de no adivinar
+los descarta sin que haya que enumerarlos. Es la misma disciplina que evita
+inventar categorías, haciendo de filtro sin que nadie la programara para eso.
+
+Que sean **fichas pagadas** (el sitio vende publicación: ver
+`/anunciate-en-carretera-austral/`) no cambia la regla de arriba: el teléfono
+del negocio es un hecho suyo, la redacción y las fotos de la ficha son de la
+guía y no se tocan.
 
 Y una tercera cosa, que es de calidad y no de derecho: **el dato de una guía
 ajena también envejece**. El proyecto no se está diferenciando por copiar
@@ -79,7 +95,28 @@ Sin dependencias: solo biblioteca estándar de Python 3. No hace falta venv.
 
 ---
 
-## Paso 1 — Extraer
+## Correrlo desde el teléfono (o sin tener el PC a mano)
+
+`.github/workflows/extraer-carretera-austral.yml` corre el pipeline **en un
+runner de GitHub**, que sí tiene red hacia el sitio. Se dispara con el botón
+**Run workflow** —desde la app de GitHub en el teléfono, o desde la web— con
+tres campos opcionales: `explorar`, `solo` y `limite`, los mismos del script.
+
+Lo que devuelve:
+
+- **Los dos informes impresos en el log del job.** Es lo que permite revisar el
+  resultado desde el teléfono sin descargar ni abrir un archivo.
+- **`ca-fichas.json` y `ca_places.json` como artefacto** para descargar, 14 días.
+
+Guarda `crudos/` en la caché de Actions entre corridas: sin eso, cada disparo le
+volvería a pedir el sitio entero a un servidor ajeno, que es justo lo que el
+script evita en local. Y corre **de a uno** (`concurrency`), por lo mismo.
+
+> **El botón solo aparece si el archivo está en `main`.** `workflow_dispatch` se
+> lee de la rama por defecto: mientras el workflow viva solo en una rama de
+> trabajo, no se ve en ninguna parte. Hay que mergearlo primero.
+
+## Paso 1 — Extraer (en local)
 
 ```bash
 python3 scripts/carretera-austral/1_extraer.py --explorar     # reconocimiento, no baja contenido
@@ -117,6 +154,23 @@ Las coordenadas se buscan en el schema y, si no, en el embed de Google Maps de
 la página. Todo lo que caiga **fuera de la caja Puerto Montt → O'Higgins** se
 descarta: un punto fuera de ahí no es un lugar lejano, es un `lat/lng` dado
 vuelta.
+
+### Cuando una página no da nada: `ver.py`
+
+```bash
+python3 scripts/carretera-austral/ver.py whatsapp-accounts
+python3 scripts/carretera-austral/ver.py servicios-gastronomicos --texto 4000
+python3 scripts/carretera-austral/ver.py aysen-ranch --crudo   # vuelca el HTML
+```
+
+Cuando el extractor saca cero fichas de una página, la pregunta es siempre la
+misma: **¿la página no tiene el dato, o lo tiene de una forma que el extractor
+no mira?** `ver.py` responde eso leyendo el HTML que ya quedó en `crudos/` —
+sin pedirle nada al sitio— y muestra para cada página el título, los tipos de
+JSON-LD, los `tel:`/`wa.me`/`mailto:`, las coordenadas, y **los números que
+parecen teléfono chileno aunque no estén enlazados**. Esa última línea es la
+que distingue los dos casos: un teléfono escrito como texto plano existe en la
+página y el extractor no lo ve.
 
 ## Paso 2 — Llevarlo al formato `places`
 
@@ -204,5 +258,6 @@ Por orden, y ninguno es opcional:
 ## Lo que este pipeline NO hace
 
 - No copia textos, fotos ni reseñas del sitio.
-- No importa los paquetes turísticos que el sitio vende (`/producto/…`).
+- No importa los paquetes turísticos que el sitio vende: no nombran localidad y
+  el paso 2 los descarta solo.
 - No publica nada. No toca producción. No decide qué se muestra.
