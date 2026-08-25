@@ -117,6 +117,7 @@ class Interaccion extends Model
         'muni' => 'Correo a municipios',
         'negocio' => 'Correo a negocios',
         'oit' => 'Oficina de información turística',
+        'landing' => 'Landing /proyecto',
         'qr-local' => 'QR — hamburguesería km 1020',
         'qr-furgon' => 'QR — furgón Tortel↔Cochrane',
         'qr-meson' => 'QR — mesón de alojamiento',

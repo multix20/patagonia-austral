@@ -383,8 +383,11 @@ rótulo fijo. Lo que faltaba era la etiqueta, no la localidad. Las que rotulan
 fijo están en `LOCALIDADES_ROTULADAS`; el lado del rótulo, en
 `ETIQUETAS_LOCALIDAD`, **se mide en el navegador en 360, 390 y 414** (Raúl Marín
 Balmaceda parecía condenado a salirse de pantalla por la izquierda y resultó ser
-la única posición limpia). Una localidad nueva va en `places.js` **y** en
-`LocalidadSeeder.php`. `ICONOS_LOCALIDAD` cambia el punto verde por un dibujo
+la única posición limpia). Una localidad nueva va en `places.js`, en
+`LocalidadSeeder.php` **y en la landing** (`frontend/public/proyecto.html`: el
+riel de pueblos, el recuento y las tres metaetiquetas). Puerto Yungay se agregó
+el 11-ago y la landing siguió diciendo 26 hasta el 25-ago — un pueblo faltante en
+esa lista lo nota justo el municipio al que se le está por escribir. `ICONOS_LOCALIDAD` cambia el punto verde por un dibujo
 (el avión de Balmaceda): la lista se mantiene corta, porque el disco es más
 grande que el punto y le quita sitio al mapa.
 
