@@ -22,6 +22,80 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
+## Dónde quedamos — para retomar (24-ago-2026)
+
+### El pipeline de carretera-austral.cl quedó armado y reconocido; falta una sesión LOCAL
+
+**Lo que está listo y funciona.** `scripts/carretera-austral/` corre contra el
+sitio real: lee `robots.txt`, arma el inventario por la **API REST de
+WordPress** y baja páginas con espera de 3–6 s y caché. El reconocimiento
+(`--explorar`) del 24-ago dio el mapa completo del sitio: **325 URLs
+candidatas** de 757 (432 descartadas por ser tienda o adjunto), inventario por
+`wp-json`, 15 tipos de contenido.
+
+**Lo que el reconocimiento corrigió**, y que estaba escrito a ciegas: dos
+localidades que el sitio nombra distinto (`puerto-montt-2` por el sufijo que
+WordPress le pone a un slug repetido, y `puerto-sanchez`, que no es localidad
+de la app y se ancló a Puerto Río Tranquilo), dos secciones que ninguna regla
+cazaba (`centros-termales` y `experiencias-turisticas`), y las páginas del
+sitio sobre sí mismo, que ahora se descartan explícitas — varias traen su
+propio teléfono y podrían haber entrado como si fueran un hospedaje de la ruta.
+
+**Las tres preguntas abiertas, que necesitan mirar HTML:**
+
+1. **`/whatsapp-accounts/` — 108 entradas, y son negocios.** `aysen-ranch`,
+   `casa-galvarino`, `turismo-agua-y-nieve`: un tipo de contenido propio con
+   108 fichas, presumiblemente con el WhatsApp de cada una — que en la Austral
+   es EL canal de reserva. Las tres páginas de muestra dieron **cero fichas**:
+   no tienen JSON-LD, ni `tel:`, ni `wa.me` en el HTML. Falta decidir si el
+   dato no está o está como texto plano (o lo pone JavaScript). Para eso se
+   escribió `ver.py`.
+2. **La localidad casi nunca está en la URL.** Solo las 19 páginas
+   `/visita-X/alojamientos-en-X/` la traen. Las ~20 secciones de servicios
+   (`/servicios-gastronomicos/`, `/tours-guiados/`, `/lugares-de-camping/`…)
+   son listados de TODA la ruta, y `whatsapp-accounts` no trae ni localidad ni
+   categoría. Con la regla actual —que descarta en vez de adivinar— todo eso se
+   cae. La localidad tiene que salir del **contenido** de la página, y cómo
+   hacerlo depende de cómo esté escrita cada ficha.
+3. **Los 429 `product` están excluidos, y puede que mal.** El filtro descarta
+   `/product/` por ser la tienda del sitio, pero 429 es mucho para un catálogo
+   de paquetes: el sitio vende publicación (`/anunciate-en-carretera-austral/`),
+   así que ahí podrían vivir las fichas de negocios. Hay que abrir una y
+   decidir. (Hay material previo en `data/scripts/carretera_austral_productos.json`,
+   fuera del repo, de una extracción del 23-ago.)
+
+**Por qué conviene seguirlo EN LOCAL, y no desde una sesión web.** El proxy del
+entorno web bloquea la salida hacia carretera-austral.cl (`403` al CONNECT,
+igual que con `tortel.cl`), así que desde ahí **no se puede mirar una sola
+página**: cada diagnóstico hay que pedírselo a la persona, copiar y pegar. Una
+sesión de Claude Code **local** tiene red: corre `ver.py`, abre el HTML,
+ajusta la expresión regular y vuelve a probar sin intermediarios. Las tres
+preguntas de arriba se cierran en una sentada.
+
+**Por dónde empezar esa sesión:**
+
+```bash
+cd scripts/carretera-austral
+py ver.py whatsapp-accounts            # ¿está el teléfono, y cómo?
+py 1_extraer.py --solo servicios-gastronomicos
+py ver.py servicios-gastronomicos --texto 4000
+```
+
+`ver.py` lee lo que ya está en `crudos/` y muestra, por página: título, tipos
+de JSON-LD, los `tel:`/`wa.me`/`mailto:`, coordenadas, lo que el extractor saca
+hoy, y —la línea que decide— **los números que parecen teléfono chileno aunque
+no estén enlazados**.
+
+> **La lección de proceso, que vale para el próximo lote externo.** Un pipeline
+> escrito a ciegas se puede dejar correcto en lo estructural (respeta
+> robots.txt, cachea, no copia prosa, entra en borrador), pero **las tablas de
+> categorías y localidades no se pueden adivinar**: salen de mirar el sitio. Si
+> el entorno no tiene red hacia la fuente, conviene escribir el andamio en la
+> web y **hacer el reconocimiento y el ajuste fino en local**, en vez de
+> descubrirlo a fuerza de copiar y pegar salidas de consola.
+
+---
+
 ## Dónde quedamos — para retomar (23-ago-2026)
 
 ### Pipeline para tomar los contactos de carretera-austral.cl
