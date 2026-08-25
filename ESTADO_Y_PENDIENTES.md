@@ -24,6 +24,39 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ## Dónde quedamos — para retomar (25-ago-2026)
 
+### La lista de envío se arma con un comando
+
+**Qué se hizo.** `php artisan campana:contactos` saca el CSV de la ola 2: una
+fila por ficha publicada, con **su** enlace personal ya al lado del nombre, en
+las columnas de `contactos.ejemplo.csv`. Filtros: `--cat`, `--localidad`,
+`--sin-telefono` y `--seco`.
+
+**Por qué era el atajo que más rendía.** El trabajo de la campaña no está en
+escribir los correos —esos ya estaban— sino en armar la lista: entrar al CMS,
+seleccionar fichas, copiar cada enlace y pegarlo en una planilla. Es una tarde, y
+es donde se cuela el error que no se puede deshacer: **pegar el enlace de otro
+negocio**, que le da a alguien acceso a editar una ficha ajena. El comando saca
+el nombre y el enlace de la misma consulta, así que no se pueden cruzar; es la
+propiedad que protege el primer test.
+
+**Tres decisiones que quedaron fijadas en el código:**
+
+- **`emergencia` nunca entra, y lo no publicado tampoco.** Posta, CESFAM,
+  Carabineros y Bomberos son servicio público: su dato se confirma con la
+  municipalidad en la ola 1, no pidiéndole a una posta rural que llene un
+  formulario. Y escribirle a alguien por una ficha que nadie puede ver invita la
+  única pregunta que no tiene buena respuesta.
+- **`preliminar` no existe en la base**, vive en el seed. Lo más cerca que se
+  puede estar mirando la BD es «publicada y sin teléfono ni WhatsApp», que además
+  es mejor nombre: esa ficha es exactamente la que la campaña existe para
+  arreglar. Por eso el filtro se llama `--sin-telefono` y no `--preliminar`.
+- **Correrlo dos veces reusa la invitación.** Dos enlaces para el mismo negocio
+  confunden a quien los recibe y rompen el seguimiento (¿respondió o no?).
+
+**Lo que el comando NO puede darte:** el correo del dueño. Esa columna sale vacía
+a propósito — el dato no está en `places`, viene de los pipelines de carga, que
+no se versionan porque traen datos personales.
+
 ### La Ruta de los Parques, y tres fichas que mentían desde 2018
 
 **De qué se trata.** La **Ruta de los Parques de la Patagonia** (Fundación
