@@ -242,16 +242,6 @@
   .marca-lateral { border-left: 3px solid var(--naranjo); padding-left: 11px; }
   .marca-lateral-verde { border-left: 3px solid var(--verde); padding-left: 11px; }
 
-  /* Barra de avance del pavimento: una sola medida, dos partes. */
-  .pavimento { display: flex; gap: 2px; height: 26px; border-radius: 4px; overflow: hidden; }
-  .pav-hecho { background: var(--barra); border-radius: 4px 0 0 4px; }
-  .pav-falta { background: var(--barra-apagada); border-radius: 0 4px 4px 0; }
-  .pav-leyenda { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--ink-2); }
-  .pav-leyenda span { display: inline-flex; align-items: center; gap: 7px; }
-  .punto { display: inline-block; width: 10px; height: 10px; border-radius: 3px; flex: none; }
-  .punto-hecho { background: var(--barra); }
-  .punto-falta { background: var(--barra-apagada); }
-
   /* ---------- Listas ---------- */
   .lista { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
   .lista li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: baseline; font-size: 15px; color: var(--ink-2); }
@@ -562,20 +552,11 @@
       </div>
     </div>
 
-    <div class="tarjeta">
-      <p class="rotulo">Pavimento · sobre los 1.058 km de calzada que mide el MOP</p>
-      <div class="pavimento" role="img" aria-label="De los 1.058 km de calzada que mide el MOP, 614,5 km están pavimentados (58%) y faltan 443,5 km por pavimentar.">
-        <span class="pav-hecho" style="flex:58.1"></span>
-        <span class="pav-falta" style="flex:41.9"></span>
-      </div>
-      <div class="pav-leyenda">
-        <span><i class="punto punto-hecho"></i> Pavimentado · <b class="num">614,5 km (58 %)</b></span>
-        <span><i class="punto punto-falta"></i> Ripio · <b class="num">443,5 km</b></span>
-      </div>
+    <div class="tarjeta tarjeta-cifra">
+      <p class="rotulo">Lo que falta por pavimentar</p>
+      <p class="cifra">443,5 <small>KM</small></p>
       <p class="pie">
-        El MOP mide la <b>calzada</b>: 1.058 km. El viaje de Puerto Montt a Villa
-        O'Higgins son ~1.240 km, porque incluye lo que se cruza en barcaza. Son dos
-        cosas distintas y por eso el porcentaje va sobre la primera.
+        De ripio en la Carretera Austral, según el MOP.
       </p>
       <p class="pie">
         Cuatro años de faenas y desvíos sobre el mismo tramo donde la app ya tiene
