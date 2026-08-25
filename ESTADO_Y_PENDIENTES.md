@@ -22,7 +22,72 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
-## Dónde quedamos — para retomar (24-ago-2026)
+## Dónde quedamos — para retomar (25-ago-2026)
+
+### La Ruta de los Parques, y tres fichas que mentían desde 2018
+
+**De qué se trata.** La **Ruta de los Parques de la Patagonia** (Fundación
+Rewilding Chile con CONAF y SERNATUR) son 2.800 km de Puerto Montt a Cabo de
+Hornos con 17 parques nacionales. **Su tramo norte ES la Carretera Austral**: 11
+de los 17 caen dentro del alcance de la app. No había que "agregar" una ruta
+nueva — había que decir que la que ya tenemos es esa.
+
+**Qué se hizo.**
+
+- **`frontend/src/data/parques.js`** — los 11 parques del tramo con sus puertas
+  de entrada. Se deduce en el cliente por el NOMBRE de la ficha (mismo criterio
+  que el subtipo de `iconos.js`): sin columna nueva, sin tocar el CMS, y vale
+  igual para la semilla y para lo que llega de la API.
+- **Distintivo** en `QuickCard` (chip verde en la fila de metadatos) y en
+  `PlaceDetail` (bloque con el parque y la procedencia de la iniciativa).
+- **El huemul contesta "¿qué parques hay?"** — con GPS, los que quedan por
+  delante en su sentido de marcha; sin GPS, los 11 con sus puertas. Y el "plan
+  de hoy" agrega una línea con los del tramo (`plan.parques`, `viaje.js`).
+- **Contenido**: fichas nuevas de **Corcovado** y **Melimoyu** (los dos únicos
+  sin ficha de ninguna clase), y el nombre del parque metido en las fichas de
+  **Glaciar O'Higgins** y **navegación a San Rafael**, que eran su única puerta.
+- **README** con la sección de los 11 parques y la nota de marca.
+
+**El hallazgo de dato.** El **decreto 98 del 25-oct-2018** desafectó las reservas
+nacionales **Lago Cochrane (Tamango)** y **Lago Jeinimeni** y las integró, con el
+valle Chacabuco donado por Tompkins, en el **Parque Nacional Patagonia**. La app
+las tenía como **tres áreas protegidas distintas, dos con nombre legalmente
+caduco** — exactamente el problema que el producto dice resolver, pero en casa.
+Ahora son "Parque Nacional Patagonia — sector Tamango / Jeinimeni / Valle
+Chacabuco".
+
+**PENDIENTE — decisión editorial tuya.** De los 11, hoy solo **6 tienen ficha
+publicada en la semilla**. Los otros 5 (Alerce Andino, Isla Magdalena, Patagonia,
+Corcovado y Melimoyu) están escritos pero con `publicado: false`, porque el cupo
+de `atractivo` de su localidad ya está ocupado y **la regla de un servicio
+publicado por localidad y categoría vale también acá**. El caso que más pesa:
+**el P.N. Patagonia no está publicado en Cochrane**, que es el destino #1 de
+Aysén por atenciones OIT, mientras el cupo lo tiene la confluencia Baker–Neff.
+**Revísalo en `/admin` → Lugares antes de decidir nada**: la BD manda sobre la
+semilla y puede que en producción ya estén publicados.
+
+**Reglas que salieron de hacerlo.**
+
+- **Antes de agregar una ficha por parque, mirar quién es su PUERTA.** De los 11,
+  nueve ya estaban en la app: como parque, o dentro de la ficha del sendero o la
+  navegación que entra en él. Lo que faltaba casi siempre era decir a qué parque
+  pertenecía esa ficha, no una ficha nueva — y una ficha por parque además habría
+  chocado de frente con el cupo de un atractivo publicado por localidad.
+- **Un reconocedor por nombre tiene que exigir la palabra completa.** "Cerro
+  Castillo" a secas mete en un parque nacional al *Hospedaje* Cerro Castillo y a
+  la *Posta de Salud* de Villa Cerro Castillo; "Patagonia" a secas mete a media
+  app, que se llama Patagonia Austral. Los patrones exigen "parque nacional" o
+  "P.N.", y en inglés `\bparks?\b` con límite de palabra, porque "park" también
+  está dentro de "parking" y *"where can I park"* no es una pregunta sobre
+  parques nacionales.
+- **El nombre de la ficha es lo que se lee; la descripción, no.** La ficha de
+  Jeinimeni ya decía "hoy parte del Parque Nacional Patagonia" en su texto —
+  desde hace años— mientras el título seguía anunciando una reserva que no
+  existe. En el mapa y en la tarjeta solo se ve el título.
+
+---
+
+## 24-ago-2026
 
 ### Seis pueblos que estaban pero no se veían, y una zona muerta sobre el mapa
 

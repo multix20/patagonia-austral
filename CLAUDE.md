@@ -364,4 +364,30 @@ la única posición limpia). Una localidad nueva va en `places.js` **y** en
 (el avión de Balmaceda): la lista se mantiene corta, porque el disco es más
 grande que el punto y le quita sitio al mapa.
 
+**La app cubre 11 de los 17 parques de la Ruta de los Parques (25-ago-2026).**
+La **Ruta de los Parques de la Patagonia** (Fundación Rewilding Chile con CONAF
+y SERNATUR) son 2.800 km Puerto Montt→Cabo de Hornos con 17 parques nacionales,
+y **su tramo norte es la Carretera Austral**: 11 caen dentro del alcance. La
+pertenencia se deduce en el cliente desde el NOMBRE de la ficha
+(`frontend/src/data/parques.js`), sin columna nueva ni campo en el CMS — mismo
+criterio que el subtipo de `iconos.js`. **La app no es oficial de esa
+iniciativa**: describe parques públicos que forman parte de ella, no usa su
+identidad y no reproduce su Pasaporte. El copy dice "forma parte de", nunca "en
+alianza con". Tres reglas de esto:
+
+- **Antes de agregar una ficha por parque, mirar quién es su PUERTA.** Nueve de
+  los 11 ya estaban: como parque, o dentro de la ficha del sendero o la
+  navegación que entra en él (el sendero de Cerro Castillo, el glaciar
+  O'Higgins). Faltaba decir a qué parque pertenecían, no una ficha nueva — que
+  además habría chocado con el cupo de un atractivo publicado por localidad.
+- **Un reconocedor por nombre exige la palabra completa.** "Cerro Castillo" a
+  secas mete en un parque nacional al *Hospedaje* Cerro Castillo y a la posta de
+  Villa Cerro Castillo; "Patagonia" a secas mete a la app entera. Los patrones
+  piden "parque nacional" o "P.N."; en inglés, `\bparks?\b` con límite de
+  palabra, porque "park" vive dentro de "parking".
+- **El nombre de la ficha es lo que se lee; la descripción, no.** El decreto 98
+  de oct-2018 integró Tamango y Jeinimeni al **P.N. Patagonia**, y la ficha de
+  Jeinimeni ya lo decía en su texto mientras el título seguía anunciando una
+  reserva desafectada. En el mapa y en la tarjeta solo se ve el título.
+
 Para trabajo de roadmap, usar el agente `roadmap` (`.claude/agents/roadmap.md`).

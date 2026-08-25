@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Icon from './Icon'
 import { CATEGORIAS, urlComoLlegar } from '../data/places'
 import { esRecomendado, iconoDeLugar } from '../data/iconos'
+import { parqueDeLugar } from '../data/parques'
 import {
   enviarCalificacion,
   miCalificacion,
@@ -81,6 +82,8 @@ export default function PlaceDetail({ lugar, onCerrar, onActualizar }) {
   // `calificable` lo manda la API; la semilla empaquetada no lo trae, así que
   // sin dato se decide igual que el backend (todo salvo emergencias).
   const calificable = lugar.calificable ?? lugar.cat !== 'emergencia'
+  // Parque de la Ruta de los Parques al que pertenece esta ficha, si es uno.
+  const parque = parqueDeLugar(lugar)
   // La llama se evalúa con el resumen VIVO, no con el `lugar` que llegó: si la
   // calificación recién enviada es la que cruza el umbral, el sello se enciende
   // ahí mismo en vez de esperar a la próxima carga del directorio.
@@ -214,6 +217,23 @@ export default function PlaceDetail({ lugar, onCerrar, onActualizar }) {
           </div>
         )}
         {recomendado && <div className="ficha-llama-nota">{t('recomendadoAyuda')}</div>}
+        {/* Ruta de los Parques de la Patagonia. Va con su explicación debajo por
+            lo mismo que la llama: un sello sin procedencia visible se lee como
+            una alianza comercial, y acá NO la hay — son parques públicos que
+            forman parte de una iniciativa de terceros (ver data/parques.js).
+            Se pone después de las estrellas y antes de la descripción: es
+            contexto de QUÉ es este lugar, así que tiene que leerse antes del
+            texto que lo describe. */}
+        {parque && (
+          <div className="ficha-parque">
+            <div className="ficha-parque-cab">
+              <Icon nombre="tree" tam={15} color="var(--verde)" />
+              <b>{parque.nombre[lang]}</b>
+              <span className="ficha-parque-pill">{t('parqueRuta')}</span>
+            </div>
+            <p className="ficha-parque-nota">{t('parqueRutaAyuda')}</p>
+          </div>
+        )}
         <p>{lugar.desc[lang]}</p>
         <div className="dato">
           <span className="d-ico">

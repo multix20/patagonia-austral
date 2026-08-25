@@ -22,6 +22,7 @@ import {
   planDelDia,
   ubicarEnRuta,
 } from '../viaje'
+import { PARQUES, parquesDeLocalidades } from '../data/parques'
 
 // Asistente turístico offline: motor de reglas que responde con los
 // contenidos locales (IndexedDB). No requiere conexión.
@@ -44,8 +45,8 @@ import {
 //    propio WhatsApp. Ver `reservas.js` para por qué.
 
 const SUGERENCIAS = {
-  es: ['¿Dónde estoy?', 'Plan de hoy', '¿Dónde dormir?', '¿Qué visitar?', 'Emergencias', 'Combustible'],
-  en: ['Where am I?', "Today's plan", 'Where to sleep?', 'What to visit?', 'Emergencies', 'Fuel'],
+  es: ['¿Dónde estoy?', 'Plan de hoy', '¿Dónde dormir?', '¿Qué visitar?', 'Parques nacionales', 'Emergencias', 'Combustible'],
+  en: ['Where am I?', "Today's plan", 'Where to sleep?', 'What to visit?', 'National parks', 'Emergencies', 'Fuel'],
 }
 
 function normalizar(s) {
@@ -263,6 +264,77 @@ const SIN_GPS = {
 
 const km = (n) => `${Math.round(n)} km`
 
+/** "A, B y C" / "A, B and C". Una enumeración leída se corta con la conjunción. */
+function listaY(nombres, es) {
+  if (nombres.length <= 1) return nombres[0] || ''
+  return `${nombres.slice(0, -1).join(', ')} ${es ? 'y' : 'and'} ${nombres[nombres.length - 1]}`
+}
+
+/**
+ * Los parques de la Ruta de los Parques que el viajero tiene por delante.
+ *
+ * Con GPS se recortan a los que quedan en su sentido de marcha — decirle a
+ * alguien que va bajando por Cochrane que "puede visitar Alerce Andino" es
+ * mandarlo 900 km hacia atrás. Sin GPS se listan los 11 del tramo, que es la
+ * respuesta honesta a "¿qué parques hay?" cuando no se sabe dónde está.
+ */
+function textoParques(ctx) {
+  const { pos, localidades, lang, perfil } = ctx
+  const es = lang === 'es'
+  const nombreLoc = Object.fromEntries((localidades || []).map((l) => [l.slug, l.nombre[lang]]))
+
+  // Las puertas de entrada se nombran con el nombre de la LOCALIDAD tal como la
+  // conoce la app; si alguna no estuviera cargada, se omite en vez de escribir
+  // el slug crudo ("raul-marin-balmaceda") en la cara del viajero.
+  const linea = (p) => {
+    const puertas = p.entradas.map((e) => nombreLoc[e]).filter(Boolean)
+    const desde = puertas.length ? ` — ${es ? 'desde' : 'from'} ${puertas.join(' / ')}` : ''
+    return `• **${p.nombre[lang]}**${desde}`
+  }
+
+  const cierre = es
+    ? '\n\nSon parques públicos de CONAF que forman parte de la Ruta de los Parques de la Patagonia: 17 en total entre Puerto Montt y Cabo de Hornos, 11 aquí en la Austral. Consulta accesos y horarios en la portería de cada uno: cambian por temporada.'
+    : '\n\nThese are public CONAF parks that form part of the Route of Parks of Patagonia: 17 in all between Puerto Montt and Cape Horn, 11 of them here on the Austral. Check access and opening hours at each gatehouse — they change with the season.'
+
+  const r = pos ? ubicarEnRuta(pos, localidades) : null
+  if (!r) {
+    return {
+      texto:
+        (es
+          ? 'Los 11 parques nacionales de la Ruta de los Parques que están en la Carretera Austral, de norte a sur:\n\n'
+          : 'The 11 national parks of the Route of Parks that lie on the Carretera Austral, north to south:\n\n') +
+        PARQUES.map(linea).join('\n') +
+        cierre,
+    }
+  }
+
+  const adelante = perfil?.sentido === 'norte' ? r.haciaElNorte : r.haciaElSur
+  // La localidad más cercana entra en la cuenta: si estás EN Puyuhuapi, el
+  // Queulat es justamente el parque que tienes al lado, y `haciaElSur` ya lo
+  // dejó atrás por estar a menos de 5 km.
+  const porDelante = parquesDeLocalidades([r.cercana?.slug, ...adelante.map((l) => l.slug)])
+
+  if (porDelante.length === 0) {
+    return {
+      texto: es
+        ? 'Por delante, en tu sentido de marcha, no te queda ningún parque de la Ruta de los Parques. Pregúntame "¿dónde estoy?" si diste la vuelta y ajustamos el rumbo.'
+        : "There are no more Route of Parks parks ahead of you in your direction of travel. Ask me \"where am I?\" if you turned around and we'll fix the heading.",
+    }
+  }
+
+  return {
+    texto:
+      (es
+        ? `Por delante tienes ${porDelante.length} ${porDelante.length === 1 ? 'parque' : 'parques'} de la Ruta de los Parques:\n\n`
+        : `You have ${porDelante.length} Route of Parks ${porDelante.length === 1 ? 'park' : 'parks'} ahead:\n\n`) +
+      porDelante.map(linea).join('\n') +
+      cierre,
+    sugerencias: es
+      ? ['Plan de hoy', 'Mi itinerario', '¿Qué visitar?']
+      : ["Today's plan", 'My itinerary', 'What to visit?'],
+  }
+}
+
 function textoUbicacion(ctx) {
   const { pos, localidades, lang } = ctx
   const r = ubicarEnRuta(pos, localidades)
@@ -340,9 +412,19 @@ function textoPlanDia(ctx) {
         : `\n\n⚠️ There ${plan.barcazas === 1 ? 'is 1 ferry' : `are ${plan.barcazas} ferries`} on this leg: check the schedule BEFORE you go, it decides your day.`
       : ''
 
+  // Los parques de la Ruta que se abren en el tramo del día. Una línea y no una
+  // lista con viñetas: es contexto de "mira lo que tienes al lado", no una tarea
+  // más del día — el plan ya trae paradas, desvíos y barcazas, y una cuarta
+  // lista lo convierte en un informe.
+  const parques = plan.parques?.length
+    ? es
+      ? `\n\n🌲 En este tramo puedes entrar a ${listaY(plan.parques.map((p) => p.nombre[lang]), es)} (Ruta de los Parques).`
+      : `\n\n🌲 On this leg you can enter ${listaY(plan.parques.map((p) => p.nombre[lang]), es)} (Route of Parks).`
+    : ''
+
   const texto = es
-    ? `Hoy llegas bien hasta **${meta.nombre[lang]}**: unos ${km(plan.km)}, cerca de ${formatoHoras(plan.horas)} de manejo.${enCamino ? `\n\nEn el camino:\n${enCamino}` : ''}${desvios}${barcazas}\n\nSon estimaciones para un viaje con paradas, no una carrera: en la Austral el ripio y las fotos mandan.`
-    : `Today you'll comfortably reach **${meta.nombre[lang]}**: about ${km(plan.km)}, roughly ${formatoHoras(plan.horas)} of driving.${enCamino ? `\n\nAlong the way:\n${enCamino}` : ''}${desvios}${barcazas}\n\nThese are estimates for a trip with stops, not a race: on the Austral, gravel and photo stops rule.`
+    ? `Hoy llegas bien hasta **${meta.nombre[lang]}**: unos ${km(plan.km)}, cerca de ${formatoHoras(plan.horas)} de manejo.${enCamino ? `\n\nEn el camino:\n${enCamino}` : ''}${desvios}${parques}${barcazas}\n\nSon estimaciones para un viaje con paradas, no una carrera: en la Austral el ripio y las fotos mandan.`
+    : `Today you'll comfortably reach **${meta.nombre[lang]}**: about ${km(plan.km)}, roughly ${formatoHoras(plan.horas)} of driving.${enCamino ? `\n\nAlong the way:\n${enCamino}` : ''}${desvios}${parques}${barcazas}\n\nThese are estimates for a trip with stops, not a race: on the Austral, gravel and photo stops rule.`
 
   return {
     texto,
@@ -416,6 +498,14 @@ function responder(pregunta, ctx) {
 
   if (tiene('itinerario', 'mi ruta', 'planificar', 'etapas', 'cuantos dias', 'itinerary', 'my route', 'plan my trip'))
     return textoItinerario(ctx)
+
+  // Los parques van ANTES que "qué visitar": quien escribe "parques nacionales"
+  // quiere la Ruta de los Parques, no la lista de atractivos del pueblo activo.
+  // En inglés se pide con límite de palabra (`\bparks?\b`) y no con `includes`:
+  // "park" a secas también está dentro de "parking", y "where can I park" no es
+  // una pregunta sobre parques nacionales.
+  if (tiene('parque', 'ruta de los parques') || /\bparks?\b/.test(p))
+    return textoParques(ctx)
 
   if (tiene('cambiar viaje', 'cambiar perfil', 'otro vehiculo', 'change trip', 'edit trip'))
     return { rehacerPerfil: true }
@@ -530,8 +620,8 @@ function responder(pregunta, ctx) {
 
   return {
     texto: es
-      ? `Puedo ayudarte con esto:\n\n• Dónde estás y hasta dónde llegas hoy\n• Tu itinerario por etapas\n• Pedir disponibilidad donde quieras parar\n• Qué visitar, dónde dormir y dónde comer en ${loc}\n• Emergencias, combustible, caminos y clima\n\nPrueba con una de las sugerencias o escribe tu pregunta con otras palabras.`
-      : `I can help you with:\n\n• Where you are and how far you'll get today\n• Your route, leg by leg\n• Asking about availability wherever you want to stop\n• What to visit, where to sleep and eat in ${loc}\n• Emergencies, fuel, roads and weather\n\nTry one of the suggestions or rephrase your question.`,
+      ? `Puedo ayudarte con esto:\n\n• Dónde estás y hasta dónde llegas hoy\n• Tu itinerario por etapas\n• Los parques de la Ruta de los Parques que tienes por delante\n• Pedir disponibilidad donde quieras parar\n• Qué visitar, dónde dormir y dónde comer en ${loc}\n• Emergencias, combustible, caminos y clima\n\nPrueba con una de las sugerencias o escribe tu pregunta con otras palabras.`
+      : `I can help you with:\n\n• Where you are and how far you'll get today\n• Your route, leg by leg\n• The Route of Parks national parks ahead of you\n• Asking about availability wherever you want to stop\n• What to visit, where to sleep and eat in ${loc}\n• Emergencies, fuel, roads and weather\n\nTry one of the suggestions or rephrase your question.`,
     sugerencias: sug,
   }
 }

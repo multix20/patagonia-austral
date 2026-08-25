@@ -893,6 +893,58 @@ h1 small {
   color: var(--gris);
   margin: 4px 0 11px;
 }
+/* Ruta de los Parques de la Patagonia (ver data/parques.js). Bloque y no
+   píldora: a diferencia de la llama, este sello tiene que decir a QUÉ parque
+   pertenece la ficha —"P.N. Queulat" no cabe dentro de una píldora junto al
+   rótulo de la iniciativa— y viene con la procedencia debajo.
+   Fondo verde muy claro y no ámbar: el ámbar es de la llama, que es un sello
+   que se GANA con las calificaciones. Este no se gana ni se compra: es un hecho
+   administrativo sobre el terreno, y compartir color los haría parecer parientes. */
+.ficha-parque {
+  background: #eef6f2;
+  border: 1px solid #cfe4da;
+  border-radius: 10px;
+  padding: 9px 11px;
+  margin: 0 0 14px;
+}
+.ficha-parque-cab {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--verde-osc);
+}
+.ficha-parque-pill {
+  font-family: var(--display);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--verde);
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 9px;
+  /* En versales lo pone el CSS, nunca la cadena de i18n: esa misma cadena es el
+     `title` del chip de la tarjeta rápida, y varios lectores de pantalla
+     deletrean una palabra escrita toda en mayúsculas. */
+}
+/* Doble clase A PROPÓSITO: la nota es un `<p>` dentro de `.ficha-cuerpo`, y
+   `.ficha-cuerpo p` (0,1,1) le gana a una clase suelta (0,1,0) — con
+   `.ficha-parque-nota` a secas seguía saliendo a 14 px y con 14 px de margen
+   abajo, o sea idéntica a la descripción de la ficha. */
+.ficha-cuerpo .ficha-parque-nota {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--gris);
+  margin: 5px 0 0;
+}
+/* Chip de la Ruta de los Parques en la tarjeta rápida. Verde y no gris como los
+   demás chips de esa fila (estrellas, distancia, horario): esos son datos de la
+   ficha, este es una distinción, y en gris se perdía entre ellos. */
+.qc-parque {
+  color: var(--verde);
+}
 .ficha-cuerpo p {
   font-size: 14px;
   line-height: 1.55;

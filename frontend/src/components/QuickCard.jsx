@@ -1,6 +1,7 @@
 import Icon from './Icon'
 import { CATEGORIAS, urlComoLlegar } from '../data/places'
 import { esRecomendado, iconoDeLugar } from '../data/iconos'
+import { parqueDeLugar } from '../data/parques'
 import { contar } from '../analitica'
 import { numeroWhatsApp } from '../reservas'
 import { useI18n } from '../i18n'
@@ -17,6 +18,7 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
 
   const c = CATEGORIAS[lugar.cat]
   const recomendado = esRecomendado(lugar)
+  const parque = parqueDeLugar(lugar)
   const mapsUrl = urlComoLlegar(lugar, lang)
   const foto = lugar.imagenes?.[0]
   const distancia = lugar.dist?.[lang]?.split('·')[0]?.trim()
@@ -129,6 +131,29 @@ export default function QuickCard({ lugar, onCerrar, onVerFicha, onToast }) {
           {lugar.nombre[lang]}
         </button>
         <div className="qc-meta">
+          {/* Pertenencia a la Ruta de los Parques. Va acá y NO como tercera
+              píldora sobre la foto: esa fila es un flex de una sola línea, y con
+              la categoría y la llama ya puestas, un tercer rótulo se sale de la
+              tarjeta en 360 px. Esta fila envuelve (`flex-wrap`), que es para lo
+              que existe.
+              El chip dice la RUTA, no el nombre del parque: el nombre del parque
+              casi siempre ya está en el título de la ficha justo encima
+              ("Parque Nacional Queulat — Ventisquero Colgante"), así que
+              repetirlo no agregaría nada. */}
+          {parque && (
+            <>
+              <span className="qc-chip qc-parque" title={t('parqueRutaAyuda')}>
+                <Icon nombre="tree" tam={13} color="var(--verde)" /> {t('parqueRuta')}
+              </span>
+              {/* El punto separador solo si DESPUÉS viene otro chip: en una
+                  ficha sin estrellas, sin distancia y sin horario —que la API
+                  puede perfectamente servir— quedaría un punto suelto colgando
+                  al final de la fila. */}
+              {(typeof lugar.estrellas === 'number' || distancia || lugar.hrs) && (
+                <span className="qc-dot" />
+              )}
+            </>
+          )}
           {/* Nota media de los viajeros. Viaja con el directorio (/api/places),
               así que se ve SIN SEÑAL — que es donde se decide dónde parar. El
               número de opiniones va al lado: un 5,0 con una no es un 4,3 con
