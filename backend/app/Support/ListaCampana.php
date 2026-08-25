@@ -111,16 +111,27 @@ class ListaCampana
     }
 
     /**
+     * Separador: **punto y coma**, no coma.
+     *
+     * No es preferencia. En configuración regional española —la de quien abre
+     * esta planilla— el separador de listas de Excel es `;`, así que un archivo
+     * separado por comas se abre con las quince columnas apiladas dentro de la
+     * primera. Pasó en la primera descarga de verdad. Google Sheets detecta las
+     * dos formas, así que `;` es el que funciona en los dos lados.
+     *
+     * Cada celda va entre comillas igual, así que un `;` dentro de un nombre no
+     * rompe nada.
+     *
      * @param  array{cat?: ?string, localidad?: ?string, sin_telefono?: bool}  $filtros
      */
     public static function csv(array $filtros = [], bool $conEnlace = true): string
     {
         $filas = self::fichas($filtros)->map(fn (Place $f) => self::fila($f, $conEnlace))->all();
 
-        $lineas = [implode(',', self::COLUMNAS)];
+        $lineas = [implode(';', self::COLUMNAS)];
 
         foreach ($filas as $fila) {
-            $lineas[] = implode(',', array_map(
+            $lineas[] = implode(';', array_map(
                 fn (string $celda) => '"'.str_replace('"', '""', $celda).'"',
                 array_map('strval', array_values($fila))
             ));

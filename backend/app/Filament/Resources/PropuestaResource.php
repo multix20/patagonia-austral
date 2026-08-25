@@ -74,7 +74,7 @@ class PropuestaResource extends Resource
                     ->label('Estado')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'enviada' => 'Esperando respuesta',
+                        'enviada' => 'Enlace generado, sin respuesta',
                         'respondida' => 'Por revisar',
                         'aplicada' => 'Aplicada',
                         default => 'Descartada',
@@ -104,7 +104,7 @@ class PropuestaResource extends Resource
                     ->label('Estado')
                     ->options([
                         'respondida' => 'Por revisar',
-                        'enviada' => 'Esperando respuesta',
+                        'enviada' => 'Enlace generado, sin respuesta',
                         'aplicada' => 'Aplicada',
                         'descartada' => 'Descartada',
                     ])
