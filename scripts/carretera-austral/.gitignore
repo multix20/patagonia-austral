@@ -4,6 +4,8 @@ crudos/
 # Salidas del pipeline (mismo criterio que SERNATUR y Tortel).
 ca-fichas.json
 ca_places.json
+# Las copias sin correos que sube el artefacto de Actions: se regeneran solas.
+*.sin-correos.json
 informe.txt
 informe_places.txt
 ver_*.html
