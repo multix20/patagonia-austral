@@ -29,7 +29,15 @@ la ruta.
    teléfono, esperar medio minuto y ver que aparezca en Analítica → "Por dónde
    llegaron". Si no aparece, el código no está en `Interaccion::CANALES` y ese
    canal se va a mandar sin medir.
-4. **Generar la lista de la ola 2 con un comando**, no a mano:
+4. **Generar la lista de la ola 2**, sin copiar enlaces a mano.
+
+   **Desde el teléfono:** `/admin` → Lugares → botón **«Lista de la campaña»**.
+   Elige categoría, localidad o solo las fichas sin teléfono, y descarga el CSV.
+   Es la única salida válida para este archivo: lleva los enlaces personales,
+   que son credenciales, y el repo es público —así que **no** puede salir por un
+   artefacto ni por un log de GitHub Actions—.
+
+   **Desde el PC**, lo mismo por consola:
 
    ```bash
    php artisan campana:contactos --cat=alojamiento --salida=docs/campana/contactos.csv
