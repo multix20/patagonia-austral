@@ -44,8 +44,15 @@ Guía completa: `DEPLOY.md`. Push a `main` = redeploy automático de Render y Ne
 - **Idioma**: código y docs en español; contenido de la app bilingüe ES/EN
   (diccionario en `frontend/src/i18n.jsx`).
 - **Flujo git**: rama de trabajo → **Pull Request** hacia `main` → CI (build +
-  lint) en verde → merge (rebase, historial lineal). El merge a `main` despliega.
-  CI en `.github/workflows/ci.yml`.
+  lint) en verde → **merge con commit de merge** (el «Merge pull request #NN»
+  que tienen todos los PR del repo). El merge a `main` despliega. CI en
+  `.github/workflows/ci.yml`.
+  > Esta línea decía «rebase, historial lineal» y la práctica era otra desde
+  > hacía varios PR. No es cosmético: **el rebase falla cuando la rama trae un
+  > merge de `main`**, que es lo normal apenas un PR dura más de un día. Al
+  > replayear los commits sueltos se pierde la resolución del conflicto, que
+  > vive justamente en el commit de merge; GitHub lo rechaza con un 405 «Base
+  > branch was modified» que no explica nada de eso (pasó en el PR #99).
 - **Estructura y dónde trabajar**: **monorepo único** (`frontend/` + `backend/`
   van siempre juntos; un cambio que toca ambos = un solo PR atómico) — no dividir
   en repos separados. Se puede desarrollar **en local** (ideal para lo que necesita
