@@ -9,6 +9,7 @@ use App\Models\Place;
 use App\Models\Propuesta;
 use App\Services\AlmacenamientoFotos;
 use App\Services\GuardarFoto;
+use App\Support\Ubicacion;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -211,6 +212,21 @@ class PlaceResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tel')
                     ->label('Teléfono')->toggleable()->placeholder('—'),
+                // Cuánto se alejó el pin del centro de su pueblo. Es la columna que
+                // delata las coordenadas heredadas de una importación: un
+                // alojamiento a 6 km del pueblo casi nunca es un alojamiento
+                // apartado. Ordenar por ella pone arriba los peores.
+                Tables\Columns\TextColumn::make('km_al_centro')
+                    ->label('Del centro')
+                    ->placeholder('—')
+                    ->badge()
+                    ->getStateUsing(fn (Place $record): ?string => self::textoDistancia($record->kmAlCentro()))
+                    ->color(fn (Place $record): string => self::colorDistancia($record))
+                    ->tooltip('Distancia en línea recta al centro de la localidad de la ficha.')
+                    ->sortable(query: fn ($query, string $direction) => $query
+                        ->conCentroDeLocalidad()
+                        ->orderByRaw(Ubicacion::km2Sql().' '.($direction === 'desc' ? 'desc' : 'asc')))
+                    ->toggleable(),
                 Tables\Columns\ToggleColumn::make('publicado')
                     ->label('Publicado')->sortable(),
                 Tables\Columns\ToggleColumn::make('destacado')
@@ -246,6 +262,31 @@ class PlaceResource extends Resource
                         ),
                         blank: fn ($query) => $query,
                     ),
+                /**
+                 * Auditoría del pin. Los lotes importados (SERNATUR, mapa
+                 * municipal de Tortel) traen coordenadas de calidad desigual, y
+                 * en el mapa eso se ve como fichas desparramadas lejos del
+                 * pueblo. Este filtro es cómo se encuentran para arreglarlas:
+                 * se elige el síntoma, se abre cada ficha y se pega el enlace de
+                 * Google Maps (o la foto con GPS) del lugar de verdad.
+                 *
+                 * Es una lista de SOSPECHA, no un veredicto: hay hospedajes que
+                 * de verdad están a 5 km del pueblo. Por eso nada se corrige
+                 * solo. El criterio (umbrales y categorías) vive en
+                 * App\Support\Ubicacion, para que el comando
+                 * `lugares:auditar-ubicacion` diga exactamente lo mismo.
+                 */
+                Tables\Filters\SelectFilter::make('ubicacion')
+                    ->label('Ubicación sospechosa')
+                    ->placeholder('Todas')
+                    ->options([
+                        'desparramo' => 'Sin ubicación real (relleno del importador)',
+                        'lejos' => 'Lejos de su pueblo (>'.(int) Ubicacion::KM_SOSPECHOSO.' km)',
+                        'centro' => 'Clavada en el centro del pueblo',
+                        'apilada' => 'Apilada sobre otra ficha',
+                        'fuera' => 'Fuera de la zona de la Austral',
+                    ])
+                    ->query(fn ($query, array $data) => $query->ubicacionSospechosa($data['value'] ?? null)),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -305,6 +346,36 @@ class PlaceResource extends Resource
                 ]),
             ])
             ->defaultSort('id');
+    }
+
+    /** "180 m" · "1,4 km" · "12 km" — sin decimales donde no aportan. */
+    protected static function textoDistancia(?float $km): ?string
+    {
+        if ($km === null) {
+            return null;
+        }
+
+        if ($km < 1) {
+            return round($km * 1000).' m';
+        }
+
+        return ($km < 10 ? number_format($km, 1, ',', '.') : round($km)).' km';
+    }
+
+    /** Rojo solo donde la distancia es sospechosa (ver Ubicacion). */
+    protected static function colorDistancia(Place $ficha): string
+    {
+        $km = $ficha->kmAlCentro();
+
+        if ($km === null) {
+            return 'gray';
+        }
+
+        if (! in_array($ficha->cat, Ubicacion::CATEGORIAS_EN_EL_PUEBLO, true)) {
+            return 'gray';
+        }
+
+        return $km > Ubicacion::KM_SOSPECHOSO ? 'danger' : 'gray';
     }
 
     /**

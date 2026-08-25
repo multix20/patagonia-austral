@@ -364,4 +364,29 @@ la única posición limpia). Una localidad nueva va en `places.js` **y** en
 (el avión de Balmaceda): la lista se mantiene corta, porque el disco es más
 grande que el punto y le quita sitio al mapa.
 
+**Hay pines que nadie ubicó nunca, y se pueden reconocer (25-ago-2026).** Los
+alojamientos de Tortel salían desparramados por el cerro porque el importador
+SERNATUR, ante coordenadas placeholder repetidas, las reemplazó por puntos
+**repartidos en espiral** alrededor del centro del pueblo
+(`scripts/sernatur/2_generar_textos.py` → `corrige_placeholders`). Fue lo
+correcto entonces —mejor "en el pueblo" que "a 60 km"— pero **son un relleno con
+forma de ubicación**: cada pin apunta a una casa que no es. Para encontrarlos hay
+`/admin` → Lugares → filtro **"Ubicación sospechosa"** (con la columna "Del
+centro" ordenable) y `php artisan lugares:auditar-ubicacion`; el criterio único
+vive en `App\Support\Ubicacion`. Se arreglan de a uno en la ficha, pegando el
+enlace de Google Maps o subiendo una foto sacada en la puerta. Tres reglas:
+
+- **"El pin está corrido" y "este servicio nunca se ubicó" son dos trabajos
+  distintos.** El primero se arregla mirando el mapa; el segundo hay que salir a
+  buscarlo. Se distinguen porque la espiral es determinista: se regenera y se
+  compara (`Ubicacion::esDelDesparramo`).
+- **Un relleno verosímil es más caro que uno roto.** Una coordenada en (0, 0) la
+  encuentra cualquiera; quince hostales prolijamente repartidos alrededor del
+  pueblo parecen dato bueno durante meses. Si hay que rellenar un campo que la
+  app dibuja, mejor que se note.
+- **El umbral es de sospecha, no un veredicto**, y nada se corrige solo: existe
+  el hospedaje a 5 km del pueblo. Por lo mismo los `atractivo` quedan fuera del
+  criterio "lejos" — la Confluencia Baker-Neff está a 22 km de Cochrane y su pin
+  está bien.
+
 Para trabajo de roadmap, usar el agente `roadmap` (`.claude/agents/roadmap.md`).

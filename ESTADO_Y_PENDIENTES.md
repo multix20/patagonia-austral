@@ -22,6 +22,74 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
+## Dónde quedamos — para retomar (25-ago-2026)
+
+### Los hostales del cerro: pines que nadie ubicó nunca
+
+**El síntoma.** En Caleta Tortel, los alojamientos aparecen desparramados por el
+cerro —sobre la Cascada Pisagua, camino al Cerro Vigía—, lejos de las pasarelas
+donde de verdad están. En un pueblo que se recorre a pie por pasarelas, un pin
+corrido 600 m no es un detalle estético: manda a alguien a subir un cerro.
+
+**La causa está escrita en el propio repo, y es peor que "el pin está mal".** El
+importador SERNATUR (`scripts/sernatur/2_generar_textos.py` →
+`corrige_placeholders`) se encontró con que el dato oficial traía **coordenadas
+por defecto repetidas** por decenas de servicios, a veces a 60 km del pueblo. Su
+arreglo fue reemplazarlas por puntos **repartidos en espiral** alrededor del
+centro de la localidad (ángulo áureo, radio ~100 m·√i, hasta ~450 m). Fue lo
+correcto en su momento —mejor "en el pueblo" que "a 60 km"—, pero hay que
+nombrarlo por lo que es: **esos pines no son una ubicación, son un relleno con
+forma de ubicación**. Cada uno apunta a una casa que no es. El paso 4 del
+pipeline (`4_geocodificar.py`, Google Places) existe justamente para
+reemplazarlos y **nunca se corrió**.
+
+**Qué se hizo: herramientas para encontrarlos.** No se corrigió ninguna
+coordenada —eso solo lo puede hacer quien sabe dónde está el negocio—, se
+construyó cómo encontrarlos y arreglarlos uno a uno:
+
+- **`App\Support\Ubicacion`** — el criterio en un solo lugar (umbrales,
+  categorías que sí están en el pueblo, haversine y el reconocedor de la
+  espiral), para que el CMS y el comando digan lo mismo y no dos números
+  parecidos.
+- **CMS → Lugares → filtro "Ubicación sospechosa"**, con cinco síntomas: *sin
+  ubicación real (relleno del importador)*, *lejos de su pueblo (>3 km)*,
+  *clavada en el centro del pueblo*, *apilada sobre otra ficha* y *fuera de la
+  zona de la Austral*. Más una columna **"Del centro"** ordenable, que pone
+  arriba los peores.
+- **`php artisan lugares:auditar-ubicacion`** (`--localidad=`, `--todas`,
+  `--csv=`) — la misma lista en tabla, para ver el tamaño del problema de una
+  sola vez en vez de pueblo por pueblo. Solo lee: no corrige nada.
+
+**El arreglo, ficha por ficha, ya estaba construido** y no hubo que tocarlo: en
+la ficha se pega el **enlace de Google Maps** del lugar, o se sube una **foto
+sacada en la puerta** y el pin sale del GPS de la foto
+(`TieneCampoUbicacionGoogleMaps`).
+
+**Tres reglas que salieron de esto:**
+
+- **Un pin generado no es un pin, y hay que poder distinguirlo.** "El pin está
+  corrido" se arregla mirando el mapa; "este servicio nunca se ubicó" no se
+  arregla mirando nada — hay que salir a buscar la dirección. Mezclados en la
+  misma lista, el segundo se pierde. Se distinguen porque la espiral es
+  determinista: se regenera y se compara (`Ubicacion::esDelDesparramo`).
+- **Un relleno que se ve verosímil es más caro que uno que se ve roto.** Una
+  coordenada en (0, 0) la encuentra cualquiera; quince hostales prolijamente
+  repartidos alrededor del pueblo parecen dato bueno durante meses. Cuando haya
+  que rellenar un campo que la app dibuja, mejor que se note.
+- **El umbral es de sospecha, no un veredicto.** Existe el hospedaje a 5 km del
+  pueblo. Por eso todo esto produce una lista para revisar y nada se corrige
+  solo — y por eso los `atractivo` quedan fuera del criterio de "lejos": la
+  Confluencia Baker-Neff está a 22 km de Cochrane y su pin está bien.
+
+**Pendiente que deja esto:** correr la auditoría contra producción (`/admin` o
+el comando en la consola de Render) y decidir por dónde se empieza. Para el lote
+que salga *sin ubicación real*, las dos vías son conseguir la dirección real
+(dueño / encargada de turismo, que es la campaña de correos que ya está en
+marcha) o correr `scripts/sernatur/4_geocodificar.py`, que necesita una API key
+de Google Places con facturación activa.
+
+---
+
 ## Dónde quedamos — para retomar (24-ago-2026)
 
 ### Seis pueblos que estaban pero no se veían, y una zona muerta sobre el mapa

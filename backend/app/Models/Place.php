@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Services\AlmacenamientoFotos;
+use App\Support\Ubicacion;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -44,6 +46,137 @@ class Place extends Model
     public function admiteCalificacion(): bool
     {
         return ! in_array($this->cat, Calificacion::CATEGORIAS_SIN_CALIFICACION, true);
+    }
+
+    /**
+     * Une `localidades` para poder comparar el pin con el centro de su pueblo
+     * dentro del SQL (ordenar y filtrar por distancia).
+     *
+     * Se protege de unir dos veces: el filtro de ubicación y el orden por
+     * distancia usan la misma tabla y el CMS los compone en una sola consulta.
+     * Fija `places.*` en el select porque, sin eso, el join mezcla las columnas
+     * de las dos tablas y `id` o `lat` pasan a ser las de la localidad. Y es
+     * `leftJoin` para que una ficha sin localidad no desaparezca de la lista
+     * por ordenarla; en los filtros da igual, comparar con NULL la deja fuera
+     * igual —que ahí es lo correcto: sin pueblo no hay distancia que medir.
+     */
+    public function scopeConCentroDeLocalidad(Builder $query): Builder
+    {
+        $yaUnida = collect($query->getQuery()->joins ?? [])
+            ->contains(fn ($join) => $join->table === 'localidades');
+
+        if (! $yaUnida) {
+            $query->select('places.*')
+                ->leftJoin('localidades', 'localidades.id', '=', 'places.localidad_id');
+        }
+
+        return $query;
+    }
+
+    /**
+     * Fichas con el pin sospechoso, por síntoma. Es el criterio del filtro
+     * "Ubicación sospechosa" del CMS y del comando `lugares:auditar-ubicacion`,
+     * en un solo lugar para que los dos digan exactamente lo mismo.
+     *
+     * Sospecha, no veredicto: existe el hospedaje a 5 km del pueblo. Nada se
+     * corrige solo; lo que sale de acá es una lista para ir a revisar.
+     */
+    public function scopeUbicacionSospechosa(Builder $query, ?string $sintoma): Builder
+    {
+        $km = Ubicacion::KM_SOSPECHOSO;
+        $centroKm = Ubicacion::METROS_CENTRO_EXACTO / 1000;
+
+        return match ($sintoma) {
+            // El pin no está mal puesto: nunca existió. Son las fichas que el
+            // importador SERNATUR repartió en espiral alrededor del centro
+            // porque su coordenada de origen era un placeholder. Es el único
+            // síntoma que NO se arregla mirando el mapa: hay que conseguir la
+            // dirección real.
+            'desparramo' => $query->whereIn('places.id', self::idsDelDesparramo() ?: [0]),
+
+            // Lejos del pueblo, solo para lo que por definición está EN el
+            // pueblo: un atractivo a 22 km es el dato correcto, no un error.
+            'lejos' => $query->conCentroDeLocalidad()
+                ->whereIn('places.cat', Ubicacion::CATEGORIAS_EN_EL_PUEBLO)
+                ->whereRaw(Ubicacion::km2Sql().' > '.Ubicacion::numeroSql($km * $km)),
+
+            // Clavada en el centro exacto: coordenada de relleno de quien no
+            // tenía la de verdad. Los `atractivo` quedan fuera igual que en
+            // "lejos", por el motivo simétrico: la Plaza de Armas, el fiordo o
+            // las pasarelas SON el centro del pueblo, y su pin está bien ahí.
+            'centro' => $query->conCentroDeLocalidad()
+                ->whereIn('places.cat', Ubicacion::CATEGORIAS_EN_EL_PUEBLO)
+                ->whereRaw(Ubicacion::km2Sql().' < '.Ubicacion::numeroSql($centroKm * $centroKm)),
+
+            // Dos fichas en el mismo punto exacto. Casi siempre es una
+            // coordenada copiada; a veces es real (dos servicios del mismo
+            // dueño), por eso se revisa y no se corrige solo.
+            'apilada' => $query->whereExists(fn ($sub) => $sub->selectRaw(1)
+                ->from('places as gemela')
+                ->whereColumn('gemela.lat', 'places.lat')
+                ->whereColumn('gemela.lng', 'places.lng')
+                ->whereColumn('gemela.id', '!=', 'places.id')),
+
+            // Ni siquiera cae en la caja de la Austral: coordenada rota,
+            // invertida o en (0, 0).
+            'fuera' => $query->where(fn ($q) => $q
+                ->whereNull('places.lat')
+                ->orWhereNull('places.lng')
+                ->orWhereNotBetween('places.lat', [Ubicacion::CAJA['lat_min'], Ubicacion::CAJA['lat_max']])
+                ->orWhereNotBetween('places.lng', [Ubicacion::CAJA['lng_min'], Ubicacion::CAJA['lng_max']])),
+
+            default => $query,
+        };
+    }
+
+    /**
+     * Ids de las fichas cuyo pin lo GENERÓ el desparramo en espiral del
+     * importador SERNATUR, en vez de venir de una ubicación real.
+     *
+     * Se resuelve en PHP y no en SQL a propósito: reconocer la espiral es
+     * regenerarla (seno, coseno y raíz por cada posición), y eso en SQL sería
+     * una expresión ilegible que además no corre igual en Postgres que en el
+     * SQLite de los tests. A la escala del catálogo —un par de cientos de
+     * fichas— recorrerlas en memoria cuesta milisegundos.
+     *
+     * @return int[]
+     */
+    public static function idsDelDesparramo(): array
+    {
+        $centros = Localidad::query()->get(['id', 'lat', 'lng'])->keyBy('id');
+
+        return static::query()
+            ->whereNotNull('localidad_id')
+            ->get(['id', 'lat', 'lng', 'localidad_id'])
+            ->filter(function (self $ficha) use ($centros) {
+                $centro = $centros[$ficha->localidad_id] ?? null;
+
+                return $centro
+                    && $ficha->lat !== null
+                    && $ficha->lng !== null
+                    && Ubicacion::esDelDesparramo($ficha->lat, $ficha->lng, $centro->lat, $centro->lng);
+            })
+            ->pluck('id')
+            ->all();
+    }
+
+    /**
+     * Distancia en línea recta al centro de su localidad, en km. `null` si a la
+     * ficha le falta la localidad o la coordenada.
+     *
+     * Es el número con el que se audita si el pin quedó donde el negocio está:
+     * un alojamiento a 6 km del centro de su pueblo no es un alojamiento
+     * apartado, es una coordenada heredada de una importación.
+     */
+    public function kmAlCentro(): ?float
+    {
+        $centro = $this->localidad;
+
+        if (! $centro || $this->lat === null || $this->lng === null) {
+            return null;
+        }
+
+        return Ubicacion::km($this->lat, $this->lng, $centro->lat, $centro->lng);
     }
 
     /**
