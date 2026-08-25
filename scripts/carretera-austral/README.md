@@ -95,7 +95,28 @@ Sin dependencias: solo biblioteca estándar de Python 3. No hace falta venv.
 
 ---
 
-## Paso 1 — Extraer
+## Correrlo desde el teléfono (o sin tener el PC a mano)
+
+`.github/workflows/extraer-carretera-austral.yml` corre el pipeline **en un
+runner de GitHub**, que sí tiene red hacia el sitio. Se dispara con el botón
+**Run workflow** —desde la app de GitHub en el teléfono, o desde la web— con
+tres campos opcionales: `explorar`, `solo` y `limite`, los mismos del script.
+
+Lo que devuelve:
+
+- **Los dos informes impresos en el log del job.** Es lo que permite revisar el
+  resultado desde el teléfono sin descargar ni abrir un archivo.
+- **`ca-fichas.json` y `ca_places.json` como artefacto** para descargar, 14 días.
+
+Guarda `crudos/` en la caché de Actions entre corridas: sin eso, cada disparo le
+volvería a pedir el sitio entero a un servidor ajeno, que es justo lo que el
+script evita en local. Y corre **de a uno** (`concurrency`), por lo mismo.
+
+> **El botón solo aparece si el archivo está en `main`.** `workflow_dispatch` se
+> lee de la rama por defecto: mientras el workflow viva solo en una rama de
+> trabajo, no se ve en ninguna parte. Hay que mergearlo primero.
+
+## Paso 1 — Extraer (en local)
 
 ```bash
 python3 scripts/carretera-austral/1_extraer.py --explorar     # reconocimiento, no baja contenido
