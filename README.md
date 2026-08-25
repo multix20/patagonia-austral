@@ -24,6 +24,33 @@ Villa O'Higgins.
 Incluye los datos de viaje críticos del tramo norte: las **barcazas** La
 Arena–Caleta Puelche y Hornopirén–Caleta Gonzalo (cruce bimodal por Pumalín).
 
+### Los 11 parques de la Ruta de los Parques
+
+La **Ruta de los Parques de la Patagonia** —iniciativa de Fundación Rewilding
+Chile (ex Tompkins Conservation) junto a CONAF y SERNATUR— son 2.800 km de
+Puerto Montt a Cabo de Hornos que enhebran 17 parques nacionales y unas 60
+comunidades. **Su tramo norte es la Carretera Austral**, así que **11 de esos 17
+parques caen dentro del alcance de esta app**, de norte a sur:
+
+Alerce Andino · Hornopirén · Pumalín Douglas Tompkins · Corcovado · Melimoyu ·
+Queulat · Isla Magdalena · Cerro Castillo · Laguna San Rafael · Patagonia ·
+Bernardo O'Higgins.
+
+Los 6 restantes (Torres del Paine, Pali Aike, Kawésqar, Alberto de Agostini,
+Yendegaia y Cabo de Hornos) están en Magallanes, fuera de la Ruta 7.
+
+La app **no agrega una ficha por parque**: marca la pertenencia al parque en la
+ficha de su **puerta de entrada**, que es la decisión real del viajero ("desde
+Cochrane entro a Tamango"). El copiloto usa lo mismo para decir qué parques se
+abren en el tramo del día, calculado **sin señal**. Detalle y criterios en
+`frontend/src/data/parques.js`.
+
+> **Esta app no es oficial de la Ruta de los Parques.** Los parques son públicos
+> (CONAF) y describirlos es libre; decir que un parque forma parte de la Ruta es
+> un hecho citable. Pero no se usa la identidad de Fundación Rewilding Chile ni
+> se reproduce su **Pasaporte** (el cuadernillo de sellos por parque visitado),
+> que es producto suyo. El copy dice "forma parte de", nunca "en alianza con".
+
 ## Estructura del repositorio
 
 - `frontend/` — PWA React 18 + Vite (offline-first, IndexedDB, Service Worker)

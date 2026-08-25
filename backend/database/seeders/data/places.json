@@ -31,16 +31,16 @@
     "tel": "+56 67 252 2164",
     "publicado": false,
     "nombre": {
-      "es": "Reserva Nacional Lago Cochrane (Tamango)",
-      "en": "Lago Cochrane National Reserve (Tamango)"
+      "es": "Parque Nacional Patagonia — sector Tamango",
+      "en": "Patagonia National Park — Tamango sector"
     },
     "dist": {
       "es": "6 km · 12 min en auto",
       "en": "6 km · 12 min by car"
     },
     "desc": {
-      "es": "Hogar de una de las últimas poblaciones de huemul del país. Senderos de baja y media dificultad bordeando el lago Cochrane, con aguas transparentes color esmeralda.",
-      "en": "Home to one of the last huemul deer populations in Chile. Easy-to-moderate trails along Lake Cochrane and its transparent emerald waters."
+      "es": "Hogar de una de las últimas poblaciones de huemul del país. Senderos de baja y media dificultad bordeando el lago Cochrane, con aguas transparentes color esmeralda. Es la puerta más cercana a Cochrane del Parque Nacional Patagonia, que integró esta antigua reserva en 2018.",
+      "en": "Home to one of the last huemul deer populations in Chile. Easy-to-moderate trails along Lake Cochrane and its transparent emerald waters. It is the closest gateway from Cochrane into Patagonia National Park, which absorbed this former reserve in 2018."
     },
     "como": {
       "es": "Camino a Tamango desde el centro, entrada CONAF. Lleva efectivo para la entrada.",
@@ -55,8 +55,8 @@
     "lng": -72.48,
     "publicado": false,
     "nombre": {
-      "es": "Parque Nacional Patagonia — Valle Chacabuco",
-      "en": "Patagonia National Park — Chacabuco Valley"
+      "es": "Parque Nacional Patagonia — sector Valle Chacabuco",
+      "en": "Patagonia National Park — Chacabuco Valley sector"
     },
     "dist": {
       "es": "28 km · 40 min en auto",
@@ -722,16 +722,16 @@
     "lng": -72,
     "publicado": false,
     "nombre": {
-      "es": "Reserva Nacional Lago Jeinimeni",
-      "en": "Lago Jeinimeni National Reserve"
+      "es": "Parque Nacional Patagonia — sector Jeinimeni",
+      "en": "Patagonia National Park — Jeinimeni sector"
     },
     "dist": {
       "es": "52 km · 1 h 30 min en auto",
       "en": "52 km · 1.5 h by car"
     },
     "desc": {
-      "es": "Lagunas color esmeralda entre estepa y bosque, hoy parte del Parque Nacional Patagonia. En el camino: la Piedra Clavada, la Cueva de las Manos y el valle Lunar, de paisaje casi marciano.",
-      "en": "Emerald lagoons between steppe and forest, now part of Patagonia National Park. On the way: Piedra Clavada, the Cave of Hands and the Moon Valley with its almost Martian landscape."
+      "es": "Lagunas color esmeralda entre estepa y bosque, en el sector norte del Parque Nacional Patagonia. En el camino: la Piedra Clavada, la Cueva de las Manos y el valle Lunar, de paisaje casi marciano.",
+      "en": "Emerald lagoons between steppe and forest, in the northern sector of Patagonia National Park. On the way: Piedra Clavada, the Cave of Hands and the Moon Valley with its almost Martian landscape."
     },
     "como": {
       "es": "Camino de ripio hacia el sur desde Chile Chico. Sin combustible ni señal en la ruta: sal preparado.",
@@ -1081,8 +1081,8 @@
     "lat": -48.9,
     "lng": -73.1,
     "nombre": {
-      "es": "Glaciar O’Higgins (navegación por el lago)",
-      "en": "O’Higgins Glacier (lake cruise)"
+      "es": "Glaciar O’Higgins (P.N. Bernardo O’Higgins)",
+      "en": "O’Higgins Glacier (Bernardo O’Higgins N.P.)"
     },
     "dist": {
       "es": "Navegación de día completo",
@@ -1415,8 +1415,8 @@
     "lat": -45.465,
     "lng": -72.818,
     "nombre": {
-      "es": "Navegación al Glaciar San Rafael",
-      "en": "San Rafael Glacier cruise"
+      "es": "Navegación al Glaciar San Rafael (P.N. Laguna San Rafael)",
+      "en": "San Rafael Glacier cruise (Laguna San Rafael N.P.)"
     },
     "dist": {
       "es": "Zarpe desde el terminal",
@@ -5594,6 +5594,54 @@
     "como": {
       "es": "Plaza y sede vecinal de Villa O'Higgins.",
       "en": "Villa O'Higgins main square and community hall."
+    }
+  },
+  {
+    "id": 3084,
+    "cat": "atractivo",
+    "localidad": "chaiten",
+    "lat": -43.4,
+    "lng": -72.9,
+    "publicado": false,
+    "nombre": {
+      "es": "Parque Nacional Corcovado",
+      "en": "Corcovado National Park"
+    },
+    "dist": {
+      "es": "Sin acceso por camino",
+      "en": "No road access"
+    },
+    "desc": {
+      "es": "Casi 294 mil hectáreas de fiordos, lagos y bosque siempreverde bajo el volcán Corcovado, la montaña que se ve desde toda la costa de Chaitén. Creado en 2005 y ampliado en 2018, es de los parques menos visitados de la Patagonia justo por lo que lo hace valioso: no hay camino que llegue.",
+      "en": "Almost 294,000 hectares of fjords, lakes and evergreen forest beneath the Corcovado volcano, the mountain visible along the whole Chaitén coast. Created in 2005 and expanded in 2018, it is one of Patagonia’s least-visited parks for the very reason that makes it valuable: no road reaches it."
+    },
+    "como": {
+      "es": "No se entra en vehículo. Por mar, a bahía Tictoc en embarcación coordinada desde Chaitén; por tierra solo existe una huella desde Villa Santa Lucía, casi intransitable y no apta para un viaje de ruta. Consulta en CONAF antes de intentarlo.",
+      "en": "You cannot drive in. By sea, to Tictoc Bay on a boat arranged from Chaitén; overland there is only a track from Villa Santa Lucía, nearly impassable and not suitable for a road trip. Check with CONAF before attempting it."
+    }
+  },
+  {
+    "id": 3085,
+    "cat": "atractivo",
+    "localidad": "raul-marin-balmaceda",
+    "lat": -44.08,
+    "lng": -72.88,
+    "publicado": false,
+    "nombre": {
+      "es": "Parque Nacional Melimoyu",
+      "en": "Melimoyu National Park"
+    },
+    "dist": {
+      "es": "Sin acceso por camino",
+      "en": "No road access"
+    },
+    "desc": {
+      "es": "Un volcán de cumbre glaciar cuyo nombre en mapudungun alude a sus cuatro cimas, sobre 105 mil hectáreas de bosque siempreverde, canales e islas. En verano, cerca del 10% de las ballenas azules del mundo entra al golfo Corcovado a alimentarse frente a esta costa. Parque nacional desde enero de 2018, casi sin infraestructura de visita.",
+      "en": "A glacier-capped volcano whose Mapudungun name refers to its four summits, above 105,000 hectares of evergreen forest, channels and islands. In summer, close to 10% of the world’s blue whales enter the Corcovado gulf to feed off this coast. A national park since January 2018, with almost no visitor infrastructure."
+    },
+    "como": {
+      "es": "Sin camino de acceso ni portería. Se ve desde el ferry de Naviera Austral y desde la costa de Raúl Marín Balmaceda; para entrar hay que coordinar por mar con CONAF o con un operador local.",
+      "en": "No access road and no gatehouse. It is visible from the Naviera Austral ferry and from the Raúl Marín Balmaceda coast; entering requires arranging a boat with CONAF or a local operator."
     }
   }
 ]

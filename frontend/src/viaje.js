@@ -1,4 +1,5 @@
 import { RUTA7 } from './data/ruta7'
+import { parquesDeLocalidades } from './data/parques'
 
 // Copiloto de ruta: dónde estás, qué viene y cuánto te falta (Fase 3).
 //
@@ -194,6 +195,19 @@ export function kmDeRuta(lat, lng) {
   return { km, ramal: desvio > 3 ? desvio * 1.2 : 0 }
 }
 
+/**
+ * Los parques de la Ruta de los Parques que se abren desde las localidades de un
+ * tramo. Se calcula por PUERTA DE ENTRADA y no por geometría: un parque nacional
+ * de la Austral ocupa cientos de miles de hectáreas, así que preguntar "¿lo
+ * cruza mi tramo?" da que sí casi siempre y no ayuda a decidir nada. Lo que el
+ * viajero necesita saber es desde qué pueblo de su día PUEDE entrar.
+ */
+function parquesDelTramo({ meta, intermedias = [], desvios = [] }) {
+  return parquesDeLocalidades(
+    [...intermedias, ...desvios, meta].filter(Boolean).map((l) => l.slug)
+  )
+}
+
 /** ¿Cuántas barcazas hay entre dos kilómetros de la ruta? */
 export function barcazasEntre(kmA, kmB) {
   const desde = Math.min(kmA, kmB)
@@ -289,6 +303,10 @@ export function planDelDia({ pos, localidades, perfil, sentido = 'sur' }) {
   const paso = alcance.filter((l) => !l.esDesvio)
   const meta = paso[paso.length - 1] || adelante.find((l) => !l.esDesvio) || adelante[0]
   const km = Math.abs(meta.kmRuta - r.kmYo) * FACTOR_SINUOSIDAD
+  const intermedias = paso.slice(0, -1)
+  // Los desvíos del tramo se ofrecen aparte, con sus kilómetros: son el
+  // "¿me desvío a Tortel?" que se decide en la ruta.
+  const desvios = alcance.filter((l) => l.esDesvio)
 
   return {
     ...r,
@@ -296,10 +314,9 @@ export function planDelDia({ pos, localidades, perfil, sentido = 'sur' }) {
     km,
     horas: horasDe(km, perfil?.vehiculo),
     barcazas: barcazasEntre(r.kmYo, meta.kmRuta),
-    intermedias: paso.slice(0, -1),
-    // Los desvíos del tramo se ofrecen aparte, con sus kilómetros: son el
-    // "¿me desvío a Tortel?" que se decide en la ruta.
-    desvios: alcance.filter((l) => l.esDesvio),
+    intermedias,
+    desvios,
+    parques: parquesDelTramo({ meta, intermedias, desvios }),
     siguiente: adelante.find((l) => l.kmRuta > meta.kmRuta && !l.esDesvio) || null,
   }
 }
@@ -328,14 +345,18 @@ export function etapas({ pos, localidades, perfil, sentido = 'sur' }) {
     const meta = paso[paso.length - 1] || restantes.find((l) => !l.esDesvio) || restantes[0]
     const km = Math.abs(meta.kmRuta - km0) * FACTOR_SINUOSIDAD
 
+    const intermedias = paso.slice(0, -1)
+    const desvios = alcance.filter((l) => l.esDesvio)
+
     lista.push({
       dia,
       meta,
       km,
       horas: horasDe(km, perfil.vehiculo),
       barcazas: barcazasEntre(km0, meta.kmRuta),
-      intermedias: paso.slice(0, -1),
-      desvios: alcance.filter((l) => l.esDesvio),
+      intermedias,
+      desvios,
+      parques: parquesDelTramo({ meta, intermedias, desvios }),
     })
 
     km0 = meta.kmRuta
