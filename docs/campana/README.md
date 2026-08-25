@@ -44,7 +44,9 @@ la ruta.
    ```
 
    Saca una fila por ficha publicada con **su** enlace personal ya pegado al
-   lado, en las columnas de `contactos.ejemplo.csv`. Queda por llenar el correo
+   lado, en las columnas de `contactos.ejemplo.csv`. El separador es **`;`**,
+   que es lo que Excel espera en configuración regional española: con comas se
+   abre todo apilado en la primera columna. Queda por llenar el correo
    del dueño, que no está en la base: sale de los pipelines de carga.
 
    - `--sin-telefono` deja solo las fichas que la campaña existe para arreglar.
@@ -81,8 +83,12 @@ La ola 1 va primero **a propósito**: si la encargada de turismo ya conoce el
 proyecto, el correo al dueño del hospedaje deja de ser frío ("hablé con la
 municipalidad") y la tasa de respuesta cambia por completo.
 
-Quién no respondió sale del CMS: `/admin` → **Propuestas de fichas**, estado
-`enviada` = se le mandó el enlace y no lo usó.
+**Quién no respondió sale del CSV, no del CMS.** El estado `enviada` del CMS se
+pone al **generar** el enlace, no al mandarlo —bajar la lista de una categoría
+entera marca de golpe decenas de fichas—, así que esa pantalla no sabe a quién
+le escribiste. El registro de envío es el CSV: las columnas `enviado_en` y
+`recordado_en`, que llenas tú. El CMS sabe lo otro, que es lo que de verdad le
+consta: si el dueño **respondió**.
 
 ## 3. Reglas de envío (son de entregabilidad, no de estilo)
 

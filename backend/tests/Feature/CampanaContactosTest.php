@@ -127,6 +127,25 @@ class CampanaContactosTest extends TestCase
         return $contenido;
     }
 
+    /**
+     * El separador es `;`, no `,`. Con comas, Excel en configuración regional
+     * española abre las quince columnas apiladas dentro de la primera — pasó en
+     * la primera descarga de verdad, y desde una planilla rota no se manda nada.
+     */
+    public function test_el_separador_es_punto_y_coma(): void
+    {
+        $this->ficha(['nombre' => ['es' => 'Cabañas; con punto y coma', 'en' => 'Semicolon']]);
+
+        $csv = $this->csv();
+        $cabecera = explode("\n", $csv)[0];
+
+        $this->assertSame('localidad;cat;rubro_correo;negocio', substr($cabecera, 0, 34));
+        $this->assertSame(15, substr_count($cabecera, ';') + 1);
+
+        // Un `;` dentro del nombre viaja entre comillas y no parte la fila.
+        $this->assertStringContainsString('"Cabañas; con punto y coma"', $csv);
+    }
+
     private function filaDe(string $csv, string $negocio): string
     {
         foreach (explode("\n", $csv) as $linea) {
