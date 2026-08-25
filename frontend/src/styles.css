@@ -1749,6 +1749,18 @@ h1 small {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
   transition: transform 0.15s;
 }
+/* Unas pocas localidades llevan un DIBUJO en vez del punto (ICONOS_LOCALIDAD):
+   disco verde más grande con el icono en blanco. Sigue centrado en la caja de
+   26 px del pin, así que no cambia ni el área tocable ni el sitio del rótulo —
+   solo se ve distinto, que es justo lo que se busca. */
+.pin-loc .dot.ico {
+  justify-content: center;
+  align-items: center;
+  width: 19px;
+  height: 19px;
+  display: flex;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
 /* Las localidades ancla ya NO llevan punto coral: usan el mismo punto verde que
    el resto (mapa uniforme). Su jerarquía la da solo la etiqueta siempre visible
    (ver .pin-loc.rel .lbl más abajo). */
@@ -1897,6 +1909,19 @@ h1 small {
   opacity: 1;
   background: #fff;
   box-shadow: 0 0 0 2px var(--verde);
+}
+/* Lo mismo para la gota de una ficha. Tenía el problema de Leaflet que el pin de
+   localidad ya no tiene: enfocable con Tab y anunciada como botón, pero muda y
+   sin responder a Enter (ver `hacerBoton` en MapView.jsx). El anillo va en el
+   elemento de Leaflet; agrandar el `drop-shadow` de la gota no sirve de marca de
+   foco, porque la gota YA lleva sombra en reposo y la diferencia no se ve. */
+.marcador-lugar:focus-visible {
+  outline: none;
+}
+.marcador-lugar:focus-visible .teardrop {
+  border-radius: 50% 50% 6px 6px;
+  outline: 3px solid var(--verde);
+  outline-offset: 2px;
 }
 
 /* Pin de categoría (vista localidad) — gota */
@@ -2361,6 +2386,18 @@ h1 small {
      por ambos lados y el rail se leía como dos cosas sueltas en vez de una
      columna. */
   align-items: flex-end;
+  /* La CAJA del rail no recibe toques; sus botones sí (regla de abajo).
+     Alineados a la derecha y con anchos distintos —el huemul mide 48 px y la
+     píldora de reportar 123—, la caja es tan ancha como la píldora, así que a la
+     izquierda del huemul quedaba una franja transparente de rail por encima del
+     mapa. Medido: 123×111 px de caja, de los cuales el 37% no es ningún botón.
+     Ese hueco se tragaba el toque —y el arrastre— de lo que hubiera debajo, y lo
+     que hay debajo en 360 y 390 px es el rótulo de COCHRANE, que desde que los
+     nombres abren el pueblo es un control de verdad. */
+  pointer-events: none;
+}
+.rail > * {
+  pointer-events: auto;
 }
 .fab-round {
   width: 48px;

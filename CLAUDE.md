@@ -360,4 +360,32 @@ grande y legible— para que el toque le cayera al mapa. Tres reglas de esto:
   abrir popups). Un marcador nuevo necesita las dos cosas a mano, o el foco
   recorre botones mudos que no responden.
 
+**Lo que flota sobre el mapa se come el mapa (24-ago-2026).** El rail de botones
+es un flex column con hijos de anchos distintos (huemul 48 px, píldora de
+reportar 123), así que su caja medía 123×111 px y **el 37% no era ningún botón**:
+franja transparente que se tragaba el toque y el arrastre, justo encima del
+rótulo de Cochrane en 360 y 390 px. Regla: **todo contenedor anclado sobre el
+mapa va con `pointer-events: none` y sus hijos con `auto`.**
+
+Y dos del mapa que valen para cualquier marcador nuevo:
+
+- **Arreglar el pin no sirve si lo que está delante sigue mudo.** Las bolitas de
+  agrupación tienen el mismo agujero de Leaflet que los pines, y son las que se
+  ven cuando hay fichas juntas. Se etiquetan por `layeradd` del mapa filtrando
+  `L.MarkerCluster`.
+- **Un pin dentro de un `markerClusterGroup` no está en el DOM al crearse** — el
+  grupo lo saca y lo mete en cada zoom, con elemento nuevo cada vez. El nombre
+  accesible y la tecla se ponen en el evento `add`, no en el `forEach`.
+
+**Antes de "agregar" una localidad al mapa, mirar si ya está.** De las seis que
+se pidieron el 24-ago, cinco ya existían como pin: eran puntos verdes mudos sin
+rótulo fijo. Lo que faltaba era la etiqueta, no la localidad. Las que rotulan
+fijo están en `LOCALIDADES_ROTULADAS`; el lado del rótulo, en
+`ETIQUETAS_LOCALIDAD`, **se mide en el navegador en 360, 390 y 414** (Raúl Marín
+Balmaceda parecía condenado a salirse de pantalla por la izquierda y resultó ser
+la única posición limpia). Una localidad nueva va en `places.js` **y** en
+`LocalidadSeeder.php`. `ICONOS_LOCALIDAD` cambia el punto verde por un dibujo
+(el avión de Balmaceda): la lista se mantiene corta, porque el disco es más
+grande que el punto y le quita sitio al mapa.
+
 Para trabajo de roadmap, usar el agente `roadmap` (`.claude/agents/roadmap.md`).

@@ -170,6 +170,68 @@ de los pipelines de carga.
 la analítica no agrega archivos); `php artisan test --filter=Interaccion` en
 verde, con un caso nuevo que prueba las dos mitades de la regla —un canal fuera
 de lista no se guarda, y el resto del lote llega igual—.
+### Seis pueblos que estaban pero no se veían, y una zona muerta sobre el mapa
+
+**Qué se hizo (segunda tanda del 24-ago).**
+
+- **Las gotas de las fichas son botones de verdad**, igual que los pines de
+  localidad: `aria-label` con nombre **y categoría** (el color y el dibujo dicen
+  "hostal" o "bomba de bencina" solo a quien los ve), Enter/Espacio y anillo de
+  foco. El helper `hacerBoton()` quedó compartido por los dos tipos de pin.
+- **Seis localidades rotulan fijo**: Hornopirén, Caleta Gonzalo, Raúl Marín
+  Balmaceda, Villa Cerro Castillo, Balmaceda y Puerto Río Ibáñez.
+- **Puerto Río Ibáñez es localidad nueva** (`places.js` + `LocalidadSeeder`).
+- **Balmaceda lleva un avión** en vez del punto verde (`ICONOS_LOCALIDAD`).
+- **El huemul adelgazó**: era un óvalo tan hondo como largas las patas.
+
+**Lo primero que hay que entender: cinco de las seis YA ESTABAN en el mapa.**
+Eran puntos verdes mudos que solo decían su nombre al acercar el zoom. Lo que
+faltaba no era el pin, era el **rótulo fijo**. Solo Puerto Río Ibáñez no existía.
+Vale la pena mirarlo antes de "agregar" algo al mapa: puede que ya esté y el
+problema sea que no se lee.
+
+**Una zona muerta de 5.000 px² sobre el mapa, encontrada de casualidad.** Al
+probar la accesibilidad de las gotas, el toque sobre el rótulo de **Cochrane** no
+llegaba: `elementFromPoint` devolvía `rail`. El rail es un flex column con
+`align-items: flex-end` y dos hijos de anchos distintos (el huemul mide 48 px, la
+píldora de reportar 123), así que **su caja es tan ancha como el más ancho** y a
+la izquierda del huemul quedaba una franja transparente por encima del mapa.
+Medido: caja de 123×111 px, **37% de la cual no es ningún botón**, y ahí caía el
+nombre de Cochrane en 360 y 390 px — el destino #1 de la región, con el nombre
+muerto en los dos anchos más comunes. Arreglado con `pointer-events: none` en el
+contenedor y `auto` en los hijos.
+
+**Cuatro reglas que salieron:**
+
+- **Un contenedor flotante con hijos de anchos distintos tapa mapa que no
+  dibuja.** Su caja es la del hijo más ancho; todo lo demás es superficie
+  transparente que igual se come el toque Y el arrastre. Cualquier contenedor
+  anclado sobre el mapa va con `pointer-events: none` y sus hijos con `auto`.
+- **Arreglar el pin no sirve si lo que está delante sigue mudo.** Las bolitas de
+  grupo tenían el mismo agujero de Leaflet, y son las que se ven cuando hay
+  fichas juntas: sin ellas el teclado llegaba a un número sin nombre que no se
+  abría. Se etiquetan por `layeradd` del mapa, filtrando `L.MarkerCluster`.
+- **Un pin dentro de un grupo de agrupación no está en el DOM cuando se crea.**
+  El grupo lo saca y lo mete en cada cambio de zoom, con elemento nuevo cada vez:
+  el nombre y la tecla se ponen en el evento `add`, no en el `forEach`.
+- **El lado del rótulo se mide, no se decide de memoria.** Raúl Marín Balmaceda
+  —el nombre más largo de la ruta— chocaba con La Junta y con Palena a la vez.
+  Yo daba por hecho que a la izquierda se saldría de pantalla por estar tan al
+  oeste; medido, `izq` quedó limpio en 360, 390 y 414 y el nombre entra entero.
+
+**Pendiente que deja esto:** Puerto Río Ibáñez **abre vacío** ("Aún no hay
+lugares publicados"). Es la primera localidad sin ninguna ficha. El estado vacío
+está manejado, pero conviene sembrarle al menos la barcaza a Chile Chico —que es
+justo la razón por la que entró al mapa— y los teléfonos de emergencia.
+
+**Verificado con Playwright** (390×800 táctil, más 360 y 414 para los rótulos):
+21 rótulos visibles sin choques entre sí, sin salirse de pantalla y sin pisar la
+interfaz en los tres anchos; las gotas y las bolitas de grupo con nombre
+accesible y Enter (que además expande el grupo: 2 → 5 gotas); el avión de
+Balmaceda abre su localidad; ningún rótulo apagado roba el toque. `npm run lint`
+y `npm run build` en verde, `php -l` sobre el seeder también.
+
+---
 
 ### El nombre del pueblo abre el pueblo
 
