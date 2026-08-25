@@ -1733,6 +1733,12 @@ h1 small {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* El pin ENTERO abre la localidad —el punto verde y el nombre—, así que se
+     comporta como un control: puntero de mano y sin el destello azul que el
+     navegador le pone solo a lo que toca (el acuse de recibo lo da el propio
+     pin, en las reglas `:active` de más abajo). */
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 .pin-loc .dot {
   width: 9px;
@@ -1741,6 +1747,19 @@ h1 small {
   background: var(--verde);
   border: 2px solid #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s;
+}
+/* Unas pocas localidades llevan un DIBUJO en vez del punto (ICONOS_LOCALIDAD):
+   disco verde más grande con el icono en blanco. Sigue centrado en la caja de
+   26 px del pin, así que no cambia ni el área tocable ni el sitio del rótulo —
+   solo se ve distinto, que es justo lo que se busca. */
+.pin-loc .dot.ico {
+  justify-content: center;
+  align-items: center;
+  width: 19px;
+  height: 19px;
+  display: flex;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 /* Las localidades ancla ya NO llevan punto coral: usan el mismo punto verde que
    el resto (mapa uniforme). Su jerarquía la da solo la etiqueta siempre visible
@@ -1768,7 +1787,23 @@ h1 small {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
   opacity: 0;
   transition: opacity 0.18s;
+  /* Sin toques MIENTRAS ESTÁ INVISIBLE. El rótulo se sale de la caja de 26 px
+     del pin, así que apagado sería una franja transparente sobre el mapa
+     robándole el toque al arrastre y a los pines de al lado. Se enciende junto
+     con su opacidad, en las reglas de visibilidad de más abajo — clickable y
+     visible son la misma condición, y por eso van siempre en la misma regla. */
   pointer-events: none;
+}
+/* Área tocable del nombre, sin agrandar la píldora dibujada. La píldora mide
+   unos 16 px de alto: como blanco de dedo es poco, justo para lo que es la
+   parte más fácil de apuntar del pin (el punto son 9 px de dibujo dentro de una
+   caja de 26). El pseudo-elemento la estira a ~28 px de alto sin tocar el
+   dibujo ni el flujo — agrandar el `padding` habría cambiado los anchos, y los
+   costados del rótulo están medidos uno por uno en ETIQUETAS_LOCALIDAD. */
+.pin-loc .lbl::after {
+  content: '';
+  position: absolute;
+  inset: -6px -4px;
 }
 /* Ajustes de posición del rótulo (ETIQUETAS_LOCALIDAD): a la IZQUIERDA para los
    pueblos sin espacio limpio a su derecha, y una línea más ARRIBA cuando dos
@@ -1786,11 +1821,13 @@ h1 small {
    Google Maps). En la vista general de toda la ruta se ocultan para no saturar. */
 .mapa-full.labels-on .pin-loc .lbl {
   opacity: 1;
+  pointer-events: auto;
 }
 /* Las localidades destacadas rotulan su nombre siempre, un poco más marcado
    (mismo costado derecho, algo más grande y firme, fondo blanco pleno). */
 .pin-loc.rel .lbl {
   opacity: 1;
+  pointer-events: auto;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.1px;
@@ -1802,6 +1839,7 @@ h1 small {
    con el resalte coral de las anclas. */
 .pin-loc.fija .lbl {
   opacity: 1;
+  pointer-events: auto;
 }
 /* Tercer nivel (localidad menor, p. ej. El Amarillo): punto chico y apagado, y
    sin etiqueta ni siquiera al acercar → se conserva en el mapa sin notoriedad.
@@ -1816,6 +1854,74 @@ h1 small {
 .pin-loc.menor .lbl,
 .mapa-full.labels-on .pin-loc.menor .lbl {
   opacity: 0;
+  pointer-events: none;
+}
+
+/* ---- Respuesta del pin de localidad al puntero y al dedo ----
+   En escritorio el nombre reacciona al pasar por encima: es la única pista de
+   que la palabra es tocable y no un rótulo pintado en el mapa. En un teléfono
+   esta regla no corre — de ahí el `hover: hover`, sin el cual el resalte se
+   quedaría pegado en el último pin tocado.
+
+   El bloque de hover va ANTES del de `:active`: los dos pesan lo mismo
+   (0-2-0) y en un escritorio se cumplen a la vez mientras se mantiene apretado
+   el botón, así que el desempate es el orden del archivo. Al revés, la pulsación
+   se quedaba con el `scale` del hover y no se distinguía de pasar el mouse por
+   encima — medido, no supuesto. */
+@media (hover: hover) {
+  .pin-loc:hover .dot {
+    transform: scale(1.25);
+  }
+  .pin-loc:hover .lbl {
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+  }
+}
+/* Acuse de recibo del toque. Tocar un pueblo dispara un vuelo del mapa que
+   tarda; sin respuesta inmediata, en un teléfono lento el toque se lee como que
+   no entró y el viajero vuelve a tocar (y termina en otra parte). El punto crece
+   y la píldora se asienta, que es el mismo recurso de la gota de los lugares
+   (`.pin-cat:active`). */
+.pin-loc:active .dot {
+  transform: scale(1.35);
+}
+.pin-loc:active .lbl {
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+}
+/* Foco de teclado. Leaflet deja cada pin enfocable con Tab (le pone `tabindex` y
+   `role="button"`), pero sin marca visible el foco viajaba invisible por dos
+   docenas de pueblos. El anillo va en el elemento de Leaflet —`.marcador-loc`,
+   el que recibe el foco—, no en `.pin-loc`, que es hijo suyo. Y con el foco
+   puesto el nombre se muestra aunque el zoom lo tenga apagado: el pin enfocado
+   tiene que decir cuál es. (Las localidades `menor` siguen sin rótulo, ahí el
+   anillo del punto es toda la marca; el nombre lo dice igual el `aria-label`.) */
+.marcador-loc:focus-visible {
+  outline: none;
+}
+.marcador-loc:focus-visible .dot {
+  transform: scale(1.35);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.95),
+    0 0 0 5px var(--verde);
+}
+.marcador-loc:focus-visible .lbl {
+  opacity: 1;
+  background: #fff;
+  box-shadow: 0 0 0 2px var(--verde);
+}
+/* Lo mismo para la gota de una ficha. Tenía el problema de Leaflet que el pin de
+   localidad ya no tiene: enfocable con Tab y anunciada como botón, pero muda y
+   sin responder a Enter (ver `hacerBoton` en MapView.jsx). El anillo va en el
+   elemento de Leaflet; agrandar el `drop-shadow` de la gota no sirve de marca de
+   foco, porque la gota YA lleva sombra en reposo y la diferencia no se ve. */
+.marcador-lugar:focus-visible {
+  outline: none;
+}
+.marcador-lugar:focus-visible .teardrop {
+  border-radius: 50% 50% 6px 6px;
+  outline: 3px solid var(--verde);
+  outline-offset: 2px;
 }
 
 /* Pin de categoría (vista localidad) — gota */
@@ -2280,6 +2386,18 @@ h1 small {
      por ambos lados y el rail se leía como dos cosas sueltas en vez de una
      columna. */
   align-items: flex-end;
+  /* La CAJA del rail no recibe toques; sus botones sí (regla de abajo).
+     Alineados a la derecha y con anchos distintos —el huemul mide 48 px y la
+     píldora de reportar 123—, la caja es tan ancha como la píldora, así que a la
+     izquierda del huemul quedaba una franja transparente de rail por encima del
+     mapa. Medido: 123×111 px de caja, de los cuales el 37% no es ningún botón.
+     Ese hueco se tragaba el toque —y el arrastre— de lo que hubiera debajo, y lo
+     que hay debajo en 360 y 390 px es el rótulo de COCHRANE, que desde que los
+     nombres abren el pueblo es un control de verdad. */
+  pointer-events: none;
+}
+.rail > * {
+  pointer-events: auto;
 }
 .fab-round {
   width: 48px;

@@ -141,7 +141,10 @@ necesita el worker de la Fase 4. Tests: `backend/tests/Feature/ReporteApiTest.ph
   cantidad`, enviado por lotes desde IndexedDB. **Anónima por diseño** — sin
   usuario, sesión, dispositivo, IP ni orden de eventos. Panel en el CMS.
   Es el prerrequisito de la difusión al viajero (la analítica va antes del
-  primer volante).
+  primer volante). Desde el 23-ago-2026 cuenta además **país e idioma del
+  visitante** (`origen_pais`, `origen_idioma`), y eso **no rompe la anonimidad**:
+  siguen sin existir usuario, sesión, dispositivo ni IP — es un contador diario
+  por país. Ver más abajo.
 
 **Contexto estratégico — Plan Ruta Austral** (MOP, anunciado 30-abr-2026;
 fuente: mop.gob.cl). Inversión ~$800 mil millones CLP **2026–2030 enfocada en la
@@ -245,6 +248,31 @@ Hay un botón **"Poner en cero"** para no arrastrar las cifras de las pruebas
 propias a la primera campaña. Borra por FECHA, no "mis pruebas": la analítica es
 anónima por diseño, así que el dato que permitiría distinguirlas no existe.
 
+**De dónde entran, sin IP (23-ago-2026).** El panel agrega dos rankings —
+**"Desde qué países entran"** e **"Idioma del visitante"**— que se cuentan en
+cada apertura, junto a `app_abierta`. Las dos señales salen del navegador, no
+del servidor: la **zona horaria** (`Intl…timeZone`) dice dónde está el TELÉFONO
+y el **idioma del sistema** (`navigator.language`) de dónde viene la PERSONA —
+el alemán que ya va por Coyhaique manda `America/Santiago` **y** `de-DE`, y por
+eso hacen falta las dos. La PWA manda la zona cruda y el servidor la reduce a
+país (`App\Support\Origen`; la tabla IANA→país ya viene en PHP y no hay que
+empaquetar 400 zonas en un bundle que se precachea). Tres cosas que fija esto:
+
+- **"Quién" no se puede contestar y no se va a poder.** No hay cuentas, sesión,
+  dispositivo ni IP; lo más cerca que se llega es "hoy entraron 4 desde
+  Alemania", que no reconstruye el recorrido de ninguna de las 4. Si algún día
+  se pide "quién", la respuesta es esa, no una cookie.
+- **Una referencia de texto libre hay que canonizarla contra un conjunto
+  cerrado.** Es el único campo que llega libre del navegador a un endpoint que
+  escribe **sin login**: sin reducirlo a país / `xx-YY` —y descartar lo que no
+  exista— la tabla dejaría de estar acotada por el catálogo, que es la propiedad
+  por la que el rollup cabe en el plan gratis.
+- **Un dato nuevo llega con su propia fecha de estreno.** Un ranking que empezó
+  ayer, al lado de un contador que lleva meses, se lee como "casi nadie hizo
+  esto"; por eso el widget dice "se mide desde el dd/mm" cuando su primer día cae
+  dentro de la ventana (`Interaccion::primerDia($tipos)`). Es el mismo "cero vs
+  sin medir" de más arriba, aplicado por familia de eventos.
+
 **El asistente es un copiloto, y ya se puede reservar (15-ago-2026).** Con un
 **perfil de viaje** de cuatro toques (personas, días, vehículo, sentido) y el GPS,
 el bot responde "¿dónde estoy?", "plan de hoy" (hasta dónde llega según el ritmo
@@ -289,5 +317,51 @@ Y para lo que se ancla al fondo de la pantalla: `100dvh` sigue al viewport de
 LAYOUT, que con `viewport-fit=cover` se extiende por debajo de lo visible. La
 variable `--piso-extra` (calculada desde `visualViewport`) es lo que hay que
 sumar para que la barra de categorías no se pierda abajo.
+
+**El nombre del pueblo abre el pueblo (24-ago-2026).** En la vista de ruta se
+entra a una localidad tocando el **punto verde o su nombre**: el rótulo era
+decoración (`pointer-events: none`) y el viajero apuntaba a la palabra —lo
+grande y legible— para que el toque le cayera al mapa. Tres reglas de esto:
+
+- **Clickable y visible son la misma condición → la misma regla CSS.** Un rótulo
+  apagado que reciba toques es una franja transparente robándole el gesto al
+  arrastre y a los pines vecinos, y en la vista general hay más apagados que
+  encendidos.
+- **Un área tocable se agranda con un `::after`, no con `padding`.** Los costados
+  de cada rótulo están medidos uno por uno en `ETIQUETAS_LOCALIDAD`: engordar la
+  píldora invalida esa tabla entera.
+- **Leaflet promete un botón que no cumple.** A cada marcador le pone
+  `tabindex="0"` y `role="button"`, pero no le da nombre accesible (su `alt`
+  solo aplica a iconos `<img>`) ni le ata Enter (solo escucha esa tecla para
+  abrir popups). Un marcador nuevo necesita las dos cosas a mano, o el foco
+  recorre botones mudos que no responden.
+
+**Lo que flota sobre el mapa se come el mapa (24-ago-2026).** El rail de botones
+es un flex column con hijos de anchos distintos (huemul 48 px, píldora de
+reportar 123), así que su caja medía 123×111 px y **el 37% no era ningún botón**:
+franja transparente que se tragaba el toque y el arrastre, justo encima del
+rótulo de Cochrane en 360 y 390 px. Regla: **todo contenedor anclado sobre el
+mapa va con `pointer-events: none` y sus hijos con `auto`.**
+
+Y dos del mapa que valen para cualquier marcador nuevo:
+
+- **Arreglar el pin no sirve si lo que está delante sigue mudo.** Las bolitas de
+  agrupación tienen el mismo agujero de Leaflet que los pines, y son las que se
+  ven cuando hay fichas juntas. Se etiquetan por `layeradd` del mapa filtrando
+  `L.MarkerCluster`.
+- **Un pin dentro de un `markerClusterGroup` no está en el DOM al crearse** — el
+  grupo lo saca y lo mete en cada zoom, con elemento nuevo cada vez. El nombre
+  accesible y la tecla se ponen en el evento `add`, no en el `forEach`.
+
+**Antes de "agregar" una localidad al mapa, mirar si ya está.** De las seis que
+se pidieron el 24-ago, cinco ya existían como pin: eran puntos verdes mudos sin
+rótulo fijo. Lo que faltaba era la etiqueta, no la localidad. Las que rotulan
+fijo están en `LOCALIDADES_ROTULADAS`; el lado del rótulo, en
+`ETIQUETAS_LOCALIDAD`, **se mide en el navegador en 360, 390 y 414** (Raúl Marín
+Balmaceda parecía condenado a salirse de pantalla por la izquierda y resultó ser
+la única posición limpia). Una localidad nueva va en `places.js` **y** en
+`LocalidadSeeder.php`. `ICONOS_LOCALIDAD` cambia el punto verde por un dibujo
+(el avión de Balmaceda): la lista se mantiene corta, porque el disco es más
+grande que el punto y le quita sitio al mapa.
 
 Para trabajo de roadmap, usar el agente `roadmap` (`.claude/agents/roadmap.md`).

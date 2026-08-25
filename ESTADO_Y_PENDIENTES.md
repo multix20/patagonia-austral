@@ -24,6 +24,120 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ## Dónde quedamos — para retomar (24-ago-2026)
 
+### Seis pueblos que estaban pero no se veían, y una zona muerta sobre el mapa
+
+**Qué se hizo (segunda tanda del 24-ago).**
+
+- **Las gotas de las fichas son botones de verdad**, igual que los pines de
+  localidad: `aria-label` con nombre **y categoría** (el color y el dibujo dicen
+  "hostal" o "bomba de bencina" solo a quien los ve), Enter/Espacio y anillo de
+  foco. El helper `hacerBoton()` quedó compartido por los dos tipos de pin.
+- **Seis localidades rotulan fijo**: Hornopirén, Caleta Gonzalo, Raúl Marín
+  Balmaceda, Villa Cerro Castillo, Balmaceda y Puerto Río Ibáñez.
+- **Puerto Río Ibáñez es localidad nueva** (`places.js` + `LocalidadSeeder`).
+- **Balmaceda lleva un avión** en vez del punto verde (`ICONOS_LOCALIDAD`).
+- **El huemul adelgazó**: era un óvalo tan hondo como largas las patas.
+
+**Lo primero que hay que entender: cinco de las seis YA ESTABAN en el mapa.**
+Eran puntos verdes mudos que solo decían su nombre al acercar el zoom. Lo que
+faltaba no era el pin, era el **rótulo fijo**. Solo Puerto Río Ibáñez no existía.
+Vale la pena mirarlo antes de "agregar" algo al mapa: puede que ya esté y el
+problema sea que no se lee.
+
+**Una zona muerta de 5.000 px² sobre el mapa, encontrada de casualidad.** Al
+probar la accesibilidad de las gotas, el toque sobre el rótulo de **Cochrane** no
+llegaba: `elementFromPoint` devolvía `rail`. El rail es un flex column con
+`align-items: flex-end` y dos hijos de anchos distintos (el huemul mide 48 px, la
+píldora de reportar 123), así que **su caja es tan ancha como el más ancho** y a
+la izquierda del huemul quedaba una franja transparente por encima del mapa.
+Medido: caja de 123×111 px, **37% de la cual no es ningún botón**, y ahí caía el
+nombre de Cochrane en 360 y 390 px — el destino #1 de la región, con el nombre
+muerto en los dos anchos más comunes. Arreglado con `pointer-events: none` en el
+contenedor y `auto` en los hijos.
+
+**Cuatro reglas que salieron:**
+
+- **Un contenedor flotante con hijos de anchos distintos tapa mapa que no
+  dibuja.** Su caja es la del hijo más ancho; todo lo demás es superficie
+  transparente que igual se come el toque Y el arrastre. Cualquier contenedor
+  anclado sobre el mapa va con `pointer-events: none` y sus hijos con `auto`.
+- **Arreglar el pin no sirve si lo que está delante sigue mudo.** Las bolitas de
+  grupo tenían el mismo agujero de Leaflet, y son las que se ven cuando hay
+  fichas juntas: sin ellas el teclado llegaba a un número sin nombre que no se
+  abría. Se etiquetan por `layeradd` del mapa, filtrando `L.MarkerCluster`.
+- **Un pin dentro de un grupo de agrupación no está en el DOM cuando se crea.**
+  El grupo lo saca y lo mete en cada cambio de zoom, con elemento nuevo cada vez:
+  el nombre y la tecla se ponen en el evento `add`, no en el `forEach`.
+- **El lado del rótulo se mide, no se decide de memoria.** Raúl Marín Balmaceda
+  —el nombre más largo de la ruta— chocaba con La Junta y con Palena a la vez.
+  Yo daba por hecho que a la izquierda se saldría de pantalla por estar tan al
+  oeste; medido, `izq` quedó limpio en 360, 390 y 414 y el nombre entra entero.
+
+**Pendiente que deja esto:** Puerto Río Ibáñez **abre vacío** ("Aún no hay
+lugares publicados"). Es la primera localidad sin ninguna ficha. El estado vacío
+está manejado, pero conviene sembrarle al menos la barcaza a Chile Chico —que es
+justo la razón por la que entró al mapa— y los teléfonos de emergencia.
+
+**Verificado con Playwright** (390×800 táctil, más 360 y 414 para los rótulos):
+21 rótulos visibles sin choques entre sí, sin salirse de pantalla y sin pisar la
+interfaz en los tres anchos; las gotas y las bolitas de grupo con nombre
+accesible y Enter (que además expande el grupo: 2 → 5 gotas); el avión de
+Balmaceda abre su localidad; ningún rótulo apagado roba el toque. `npm run lint`
+y `npm run build` en verde, `php -l` sobre el seeder también.
+
+---
+
+### El nombre del pueblo abre el pueblo
+
+**Qué se hizo.** En la vista de ruta, el pin de una localidad se selecciona
+ahora **por el nombre y por el punto verde**. Antes solo servía el punto: el
+rótulo llevaba `pointer-events: none` en el CSS, o sea que era decoración. El
+viajero apuntaba a la palabra —que es lo grande, lo legible y lo que dice de qué
+pueblo se trata— y el toque le caía al mapa, que no hace nada. El blanco real
+eran los 26 px de la caja del punto, con 9 px de dibujo adentro.
+
+Cambió esto:
+
+- **El rótulo recibe toques**, y el pseudo-elemento `.lbl::after` le estira el
+  área tocable a unos 28 px de alto sin agrandar la píldora dibujada.
+- **Acuse de recibo**: al tocar, el punto crece y la píldora se asienta (mismo
+  recurso que la gota de los lugares). Entrar a un pueblo dispara un vuelo del
+  mapa que tarda; sin respuesta inmediata el toque se lee como que no entró.
+- **Teclado y lector de pantalla**: cada pin es un botón de verdad, con nombre
+  (`aria-label` "Ver Cochrane"), anillo de foco visible y Enter/Espacio.
+
+**Tres reglas que salieron de hacerlo:**
+
+- **Clickable y visible son la MISMA condición, y por eso van en la misma
+  regla.** Un rótulo apagado (`opacity: 0`) que igual recibiera toques sería una
+  franja transparente sobre el mapa robándole el gesto al arrastre y a los pines
+  de al lado — y hay doce apagados en la vista general, más que los quince
+  encendidos. Cada regla que enciende la opacidad enciende también el
+  `pointer-events`; las de `menor`, que nunca se muestran, lo dejan apagado.
+- **Agrandar un área tocable con `padding` cambia el ancho; con un
+  pseudo-elemento, no.** Los costados de cada rótulo están medidos uno por uno en
+  `ETIQUETAS_LOCALIDAD` para que dos nombres vecinos no se encimen: engordar la
+  píldora habría invalidado esa tabla entera. `inset: -6px -4px` en un `::after`
+  crece el blanco del dedo sin tocar el dibujo ni el flujo.
+- **`:hover` y `:active` pesan lo mismo, así que manda el orden del archivo.** En
+  un escritorio los dos se cumplen a la vez mientras se mantiene apretado el
+  botón: con el bloque de hover escrito después, la pulsación se quedaba con el
+  `scale` del hover y no se distinguía de pasar el mouse por encima. Medido en el
+  navegador, no supuesto — el bloque `@media (hover: hover)` va **antes**.
+
+Y una que es de Leaflet y conviene tener presente: **Leaflet promete un botón que
+no cumple.** A cada marcador le pone `tabindex="0"` y `role="button"`, pero no le
+pone nombre accesible (su `alt` solo aplica si el icono es un `<img>`, y estos
+son `<div>`) ni le ata Enter (solo escucha esa tecla para abrir popups, y estos
+pines no usan popup). O sea que sin las dos líneas que se agregaron, el foco
+recorría 27 botones idénticos y mudos que no respondían. Lo mismo vale para
+cualquier marcador nuevo que se agregue al mapa.
+
+**Verificado en Chromium con Playwright** (390×800, táctil): entra tocando el
+punto, tocando el centro del nombre y tocando 5 px por encima de la píldora;
+un rótulo invisible no navega; Enter con el pin enfocado entra; y un arrastre que
+**empieza sobre un rótulo** sigue paneando el mapa en vez de abrir el pueblo. Sin
+choques de rótulos ni con el botón de reportar en 360, 390 y 414 px.
 ### El pipeline de carretera-austral.cl quedó armado y reconocido; falta una sesión LOCAL
 
 **Lo que está listo y funciona.** `scripts/carretera-austral/` corre contra el
@@ -245,6 +359,70 @@ escrito y solo se veía dentro de la conversación.
 - **Logotipo en el header** — era el cuarto frente de esta sesión y no se tomó;
   "Patagonia Austral" sigue siendo texto plano sobre verde, y la coherencia con
   el icono PWA y la vista previa al compartir está sin revisar.
+
+### El panel ya dice DESDE DÓNDE entran (y por qué nunca va a decir quién)
+
+**El punto de partida.** El 23 de agosto la app la abrió, por primera vez,
+alguien que no era el fundador. El panel de Analítica mostraba el movimiento
+—197 aperturas, 40 fichas vistas, 11 contactos— pero no podía contestar la
+única pregunta que importaba ese día: **¿quién fue, y desde dónde?** No era un
+widget que faltara: el dato no existía. La analítica se diseñó anónima (rollup
+diario `(tipo, referencia, día) → cantidad`, sin usuario, sesión, dispositivo ni
+IP), así que no había NADA en la base con que responder.
+
+**La decisión.** No se tocó la anonimidad. "Quién" queda sin respuesta —para
+contestarlo harían falta cuentas o una cookie de seguimiento, y eso cambia el
+producto—, pero **"desde dónde" sí se puede contestar sin espiar a nadie**, y
+para decidir suele ser lo mismo: no es igual que las 30 aperturas de la semana
+vengan de Chile a que vengan de Alemania.
+
+**Lo que se hizo.** Dos contadores nuevos, que se suman en cada apertura junto a
+`app_abierta` (así los rankings totalizan lo mismo que las aperturas y se leen
+como porcentaje):
+
+| Señal | De dónde sale | Qué contesta |
+|---|---|---|
+| `origen_pais` | zona horaria del navegador (`Intl…timeZone`), reducida a país en el servidor | dónde está el **teléfono** |
+| `origen_idioma` | `navigator.language`, canonizado a `xx` / `xx-YY` | de dónde viene la **persona** |
+
+Hacen falta las dos: el alemán que ya va por Coyhaique manda `America/Santiago`
+(su teléfono cambió de hora al aterrizar) **y** `de-DE`. Con una sola señal
+aparecería como chileno. Y `es-AR` separa al argentino del chileno, que en la
+Austral son dos públicos distintos.
+
+En `/admin` → Analítica → Interacciones aparecen abajo dos rankings nuevos:
+**"Desde qué países entran"** e **"Idioma del visitante"**. Código:
+`backend/app/Support/Origen.php` (normalización y nombres),
+`frontend/src/analitica.js` → `contarOrigen()`.
+
+**Tres reglas que salieron de hacerlo:**
+
+- **Una referencia de texto libre hay que canonizarla contra un conjunto
+  cerrado.** Estos dos son los únicos eventos cuya referencia no es un id
+  nuestro sino texto del navegador, y entran por un endpoint que **escribe sin
+  login**. Si se guardara tal cual, cualquiera podría mandar referencias
+  inventadas hasta hacer crecer la tabla sin techo — justo la propiedad por la
+  que esto es un rollup y cabe en el plan gratis. Se reduce a país / `xx-YY`
+  contra la base de PHP y **lo que no existe se descarta en silencio**, sin
+  responder 422: un 422 haría que la PWA tirara el lote entero, y con él las
+  fichas y contactos del día (ver el manejo del 422 en `analitica.js`).
+- **Un dato nuevo llega con su propia fecha de estreno.** Un ranking que empezó
+  ayer, puesto al lado de un contador que lleva meses, se lee como "casi nadie
+  hizo esto" cuando la verdad es "casi nadie fue medido todavía". Por eso
+  `Interaccion::primerDia()` ahora acepta tipos y el widget dice "se mide desde
+  el dd/mm" cuando su primer día cae dentro de la ventana. Es el mismo "cero vs
+  sin medir" de agosto, aplicado por familia de eventos.
+- **La respuesta honesta a "quién" es que no se sabe.** Conviene dejarlo escrito
+  para no reabrirlo cada vez que aparezca la curiosidad: el día que se quiera
+  saber quién, la conversación es sobre cuentas y seguimiento, no sobre agregar
+  un widget.
+
+**Ojo con el orden del despliegue.** El frontend (Netlify) publica en un par de
+minutos y el backend (Render, imagen Docker) tarda más. En esa ventana la PWA
+nueva manda `origen_pais` a un backend que todavía no conoce el tipo → 422 → la
+app descarta ese lote. Son unos pocos contadores de unos pocos minutos, pero es
+la forma general del problema: **un tipo de evento nuevo hay que desplegarlo
+primero en el backend**.
 
 ---
 

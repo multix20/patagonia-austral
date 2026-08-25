@@ -6,6 +6,7 @@ import {
   LOCALIDADES_ROTULADAS,
   LOCALIDADES_MENORES,
   ETIQUETAS_LOCALIDAD,
+  ICONOS_LOCALIDAD,
 } from './data/places'
 import { REPORTES, ESTILO_REPORTE } from './data/reportes'
 import {
@@ -20,7 +21,7 @@ import {
   votarReporte,
   sincronizarColaCalificaciones,
 } from './api/client'
-import { contar, conectarAnalitica } from './analitica'
+import { contar, contarOrigen, conectarAnalitica } from './analitica'
 import { activarPush, pushSoportado } from './push'
 import { useActualizacion, seRecienActualizo } from './actualizacion'
 import Icon from './components/Icon'
@@ -302,6 +303,7 @@ function AppInterna() {
   useEffect(() => {
     const desconectar = conectarAnalitica()
     contar('app_abierta')
+    contarOrigen()
     return desconectar
   }, [])
 
@@ -845,6 +847,7 @@ function AppInterna() {
         rotuladas={rotuladasSlugs}
         menores={menoresSlugs}
         etiquetas={ETIQUETAS_LOCALIDAD}
+        iconos={ICONOS_LOCALIDAD}
         filtro={filtro}
         localidadActiva={locActiva}
         reportes={reportesVisibles}

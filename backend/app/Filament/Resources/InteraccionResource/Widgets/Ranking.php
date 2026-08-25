@@ -4,6 +4,7 @@ namespace App\Filament\Resources\InteraccionResource\Widgets;
 
 use App\Models\Interaccion;
 use Filament\Widgets\Widget;
+use Illuminate\Support\Carbon;
 use Livewire\Attributes\Reactive;
 
 /**
@@ -47,6 +48,28 @@ abstract class Ranking extends Widget
     protected function detalleDe(array $fila): ?string
     {
         return null;
+    }
+
+    /**
+     * Agrega a la descripción desde cuándo existe ESTE dato, y solo cuando su
+     * medición empieza dentro de la ventana que se está mirando.
+     *
+     * Es la misma regla que el gráfico de actividad: "cero" y "sin medir" no
+     * son lo mismo. Un ranking que se estrenó hace dos días, puesto al lado de
+     * un contador de aperturas que lleva meses, se lee como "casi nadie hizo
+     * esto" cuando la verdad es "casi nadie fue medido todavía". Con la fecha
+     * al pie, el mismo número se lee bien.
+     */
+    protected function medidoDesde(string $descripcion): string
+    {
+        $primero = Interaccion::primerDia($this->tipos());
+        $ventana = now()->subDays(($this->periodo ?: 30) - 1)->toDateString();
+
+        if ($primero === null || $primero <= $ventana) {
+            return $descripcion;
+        }
+
+        return $descripcion.' · se mide desde el '.Carbon::parse($primero)->format('d/m/Y');
     }
 
     protected function getViewData(): array

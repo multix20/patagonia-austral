@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Interaccion;
+use App\Support\Origen;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -30,12 +31,32 @@ class InteraccionController extends Controller
         ]);
 
         foreach ($datos['eventos'] as $e) {
+            $ref = $e['ref'] ?? null;
+
+            // Los dos eventos de origen son los únicos cuya referencia NO es un
+            // id nuestro sino texto libre del navegador (una zona horaria IANA,
+            // una etiqueta de idioma). Se canonizan contra la base de PHP antes
+            // de guardar —la zona se reduce a país— y lo que no exista se
+            // descarta en silencio: sin ese cierre, un endpoint que escribe sin
+            // login admitiría referencias inventadas sin fin y la tabla dejaría
+            // de estar acotada por el catálogo, que es la propiedad por la que
+            // esto es un rollup (ver la migración y App\Support\Origen).
+            if (in_array($e['tipo'], Interaccion::TIPOS_DE_ORIGEN, true)) {
+                $ref = $e['tipo'] === 'origen_pais'
+                    ? Origen::paisDeZona((string) $ref)
+                    : Origen::idiomaNormalizado((string) $ref);
+
+                if ($ref === null) {
+                    continue;
+                }
+            }
+
             // El día lo pone el SERVIDOR, no el cliente. Un reloj mal puesto (o
             // alguien con ganas) podría cargar el contador a una fecha futura y
             // ensuciar el informe para siempre. Se pierde algo de precisión con
             // los lotes que cruzan la medianoche o que estuvieron días en la
             // cola sin señal; a cambio, ninguna fila puede quedar en 2035.
-            Interaccion::sumar($e['tipo'], $e['ref'] ?? null, (int) $e['n']);
+            Interaccion::sumar($e['tipo'], $ref, (int) $e['n']);
         }
 
         // 204: la PWA solo necesita saber que llegó para vaciar su cola. No hay

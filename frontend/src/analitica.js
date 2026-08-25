@@ -52,6 +52,36 @@ export function contar(tipo, ref = null) {
     .catch(() => {})
 }
 
+/**
+ * Cuenta DE DÓNDE se abrió la app. Se llama una sola vez, junto a
+ * `app_abierta`, así que los dos rankings del panel suman lo mismo que las
+ * aperturas y se pueden leer como porcentaje.
+ *
+ * Son dos señales porque una sola contesta a medias: la zona horaria dice dónde
+ * está el TELÉFONO (el alemán que ya va por Coyhaique manda `America/Santiago`,
+ * porque el sistema le cambió la hora al aterrizar) y el idioma del navegador
+ * de dónde viene la PERSONA (ese mismo alemán sigue mandando `de-DE`).
+ *
+ * Se manda la zona horaria CRUDA y el servidor la reduce a país: la tabla IANA
+ * → país ya viene dentro de PHP, y meter un mapa de 400 zonas en un bundle que
+ * se precachea entero para usarlo sin señal no se paga con nada. Lo que se
+ * guarda al otro lado es un contador diario por país, no la zona.
+ *
+ * Sigue sin haber IP, sesión ni identificador de dispositivo: "hoy entraron 4
+ * desde Alemania" no permite reconstruir el recorrido de ninguna de las 4.
+ */
+export function contarOrigen() {
+  try {
+    const zona = Intl.DateTimeFormat().resolvedOptions().timeZone
+    if (zona) contar('origen_pais', zona)
+  } catch {
+    // Navegador sin zona horaria resoluble: no impide contar el idioma.
+  }
+
+  const idioma = navigator.language || navigator.languages?.[0]
+  if (idioma) contar('origen_idioma', idioma)
+}
+
 function programarEnvio() {
   if (!API_URL || temporizador) return
   temporizador = setTimeout(() => {

@@ -73,6 +73,13 @@ class ListInteracciones extends ListRecords
             Widgets\ActividadDiaria::class,
             Widgets\TopLocalidades::class,
             Widgets\TopFichas::class,
+            // De dónde llega quien abre la app. Van al final y no arriba a
+            // propósito: contestan "quién vino", que es la pregunta del día que
+            // aparece el primer visitante de verdad, pero lo que se mira todas
+            // las semanas para decidir contenido y capa comercial sigue siendo
+            // qué pueblo y qué ficha se abren.
+            Widgets\TopOrigenes::class,
+            Widgets\TopIdiomas::class,
         ];
     }
 
