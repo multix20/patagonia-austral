@@ -24,6 +24,32 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ## Dónde quedamos — para retomar (25-ago-2026)
 
+### La lista de envío se descarga desde el CMS (y por qué no desde GitHub)
+
+**El pedido.** No depender del PC: manejar el proyecto desde el teléfono. Para
+los pipelines ya se resolvió con un runner de Actions (`extraer-carretera-austral.yml`),
+así que la pregunta natural fue mover ahí también la lista de la campaña.
+
+**No se puede, y la razón vale para todo lo que venga.** **El repo es público.**
+Un artefacto de Actions y el log de un job los baja cualquiera, y la lista lleva
+los enlaces `/mi-ficha/<token>`, que **son credenciales**: con uno, un
+desconocido propone cambios sobre esa ficha. Regla que queda: **lo que tenga
+datos personales o credenciales sale por el CMS, que pide login; por GitHub sale
+solo lo que puede ser público.**
+
+**Qué se hizo.** El botón **«Lista de la campaña»** en `/admin` → Lugares, con
+los mismos filtros del comando (categoría, localidad, solo sin teléfono) y la
+misma lógica (`App\Support\ListaCampana`), para que las dos puertas no entreguen
+listas distintas y nadie sepa cuál se mandó. Se abre desde el teléfono como
+cualquier otra pantalla del CMS.
+
+> **Pendiente que apareció mirando esto**, y es del mismo tipo:
+> `extraer-carretera-austral.yml` sube `ca-fichas.json` como artefacto, y ese
+> JSON trae los correos personales de los dueños (por eso mismo no se versiona).
+> En un repo público, ese artefacto es descargable durante 14 días. Hay que
+> decidir: sacarlo del artefacto, filtrar los correos antes de subirlo, o hacer
+> el repo privado.
+
 ### La lista de envío se arma con un comando
 
 **Qué se hizo.** `php artisan campana:contactos` saca el CSV de la ola 2: una
