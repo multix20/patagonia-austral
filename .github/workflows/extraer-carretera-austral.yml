@@ -86,6 +86,36 @@ jobs:
             fi
           done
 
+      # Los JSON traen los correos personales de los dueños — por eso mismo no
+      # se versionan. Y este repo es PÚBLICO, así que su artefacto lo descarga
+      # cualquiera: lo que sube es una copia sin correos, con `emails_n` en su
+      # lugar. Ver scripts/carretera-austral/sin_correos.py.
+      #
+      # Si el filtro deja una sola arroba, el archivo se borra en vez de subirse.
+      # Perder la descarga de una corrida es barato; publicar los correos de 40
+      # negocios de la ruta no se deshace.
+      - name: Sacar los correos antes de publicar el artefacto
+        if: always()
+        run: |
+          cd scripts/carretera-austral
+          for f in ca-fichas ca_places; do
+            [ -f "$f.json" ] || continue
+            if ! python sin_correos.py "$f.json" "$f.sin-correos.json"; then
+              echo "::error::Quedaron correos en $f.sin-correos.json — no se sube."
+              rm -f "$f.sin-correos.json"
+            fi
+          done
+          # Los informes solo imprimen nombres, URLs y conteos, pero se revisan
+          # igual: el día que alguien agregue una línea con el contacto, esto lo
+          # ataja sin que haya que acordarse.
+          for f in informe.txt informe_places.txt; do
+            [ -f "$f" ] || continue
+            if grep -q '@' "$f"; then
+              echo "::warning::$f traía direcciones; se ocultan en la copia del artefacto."
+              sed -i -E 's/[[:alnum:]._%+-]+@[[:alnum:].-]+\.[[:alpha:]]{2,}/«correo oculto»/g' "$f"
+            fi
+          done
+
       - name: Guardar los resultados
         if: always()
         uses: actions/upload-artifact@v4
@@ -94,9 +124,10 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
           # `crudos/` NO se sube: son páginas de un sitio ajeno, pesan y ya
-          # viven en la caché. Lo que se descarga es el dato extraído.
+          # viven en la caché. Y los JSON van en su versión sin correos: el
+          # repo es público y el artefacto también.
           path: |
-            scripts/carretera-austral/ca-fichas.json
-            scripts/carretera-austral/ca_places.json
+            scripts/carretera-austral/ca-fichas.sin-correos.json
+            scripts/carretera-austral/ca_places.sin-correos.json
             scripts/carretera-austral/informe.txt
             scripts/carretera-austral/informe_places.txt

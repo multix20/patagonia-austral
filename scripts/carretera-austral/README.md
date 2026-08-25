@@ -261,3 +261,26 @@ Por orden, y ninguno es opcional:
 - No importa los paquetes turísticos que el sitio vende: no nombran localidad y
   el paso 2 los descarta solo.
 - No publica nada. No toca producción. No decide qué se muestra.
+
+## Los correos no salen del computador (ni del artefacto)
+
+`ca-fichas.json` y `ca_places.json` traen los **correos personales** de los
+dueños. Por eso ninguno se versiona, y por eso el workflow de Actions
+(`.github/workflows/extraer-carretera-austral.yml`) **no los sube tal cual**:
+antes de publicar el artefacto corre
+
+```bash
+python sin_correos.py ca-fichas.json ca-fichas.sin-correos.json
+```
+
+que copia el JSON reemplazando cada `emails` por `emails_n` —cuántos había— y
+falla si queda una sola arroba en la salida. El artefacto lleva esa copia; si el
+filtro falla, el archivo se borra en vez de subirse.
+
+**El motivo es el repositorio, no el pipeline: este repo es público, así que su
+artefacto lo descarga cualquiera.** La regla general del proyecto quedó en
+`ESTADO_Y_PENDIENTES.md`: lo que tenga datos personales o credenciales sale por
+el CMS, que pide login; por GitHub sale solo lo que puede ser público.
+
+Con los correos completos se trabaja **en local**, corriendo el pipeline en el
+computador, hasta que exista una columna de correo en el CMS.

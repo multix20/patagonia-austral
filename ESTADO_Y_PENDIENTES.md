@@ -43,12 +43,27 @@ misma lógica (`App\Support\ListaCampana`), para que las dos puertas no entregue
 listas distintas y nadie sepa cuál se mandó. Se abre desde el teléfono como
 cualquier otra pantalla del CMS.
 
-> **Pendiente que apareció mirando esto**, y es del mismo tipo:
-> `extraer-carretera-austral.yml` sube `ca-fichas.json` como artefacto, y ese
-> JSON trae los correos personales de los dueños (por eso mismo no se versiona).
-> En un repo público, ese artefacto es descargable durante 14 días. Hay que
-> decidir: sacarlo del artefacto, filtrar los correos antes de subirlo, o hacer
-> el repo privado.
+**El artefacto del extractor ya no publica correos.** Era el mismo problema en
+otra puerta: `extraer-carretera-austral.yml` subía `ca-fichas.json` y
+`ca_places.json`, que traen los correos personales de los dueños —por eso mismo
+no se versionan—, y en un repo público el artefacto lo baja cualquiera. Se
+decidió **no privatizar el repo** (los minutos de Actions son ilimitados solo en
+los públicos, y el extractor gasta ~55 por corrida) sino dejar de subir el dato:
+
+- `scripts/carretera-austral/sin_correos.py` copia el JSON reemplazando cada
+  `emails` por `emails_n` —cuántos había—, recorriendo el árbol completo para
+  que un archivo nuevo no arrastre correos por una forma que el filtro no
+  previó.
+- **Si queda una sola arroba, el archivo se borra en vez de subirse.** Perder la
+  descarga de una corrida es barato; publicar los correos de los negocios de la
+  ruta no se deshace.
+- Los informes se revisan igual aunque hoy solo impriman nombres, URLs y
+  conteos: el día que alguien agregue una línea con el contacto, el filtro lo
+  ataja sin que haya que acordarse.
+
+Con los correos completos se sigue trabajando **en local**, hasta que exista
+columna de correo en el CMS. Los artefactos de las corridas ANTERIORES siguen
+siendo públicos hasta que caduquen (14 días) o se borren a mano desde Actions.
 
 ### La lista de envío se arma con un comando
 
