@@ -106,10 +106,23 @@ TIPOS_NEGOCIO = {
     'sportsactivitylocation', 'campingpitch', 'place',
 }
 
-# Rutas que no se piden nunca. `/producto/` y `/tienda|carrito|mi-cuenta` son la
-# tienda del sitio; el resto es ruido de WordPress.
+# Rutas que no se piden nunca: la maquinaria de la tienda, las taxonomías y el
+# ruido de WordPress.
+#
+# OJO CON `/producto/` — NO está acá, y es a propósito (24-ago-2026). La primera
+# versión lo excluía creyendo que eran los paquetes que el sitio vende. No lo
+# son: `/producto/` es **el directorio de negocios**. Detrás de
+# `camping-en-cochrane` está el Camping Aquasol, y detrás de
+# `cabanas-y-tinaja-en-cochrane` las Cabañas Patagonino. Son 429 fichas, o sea
+# el grueso del dato útil del sitio, y estaban quedando fuera.
+#
+# Los paquetes que el sitio SÍ vende viven en el mismo lugar
+# (`carretera-austral-10-dias-9-noches`, `paquete-turistico-caleta-tortel`),
+# pero se caen solos en el paso 2: sus slugs no nombran una localidad, y la
+# regla de no adivinar los descarta sin que haya que enumerarlos.
 EXCLUIR_RUTA = re.compile(
-    r'/(producto|product|tienda|shop|carrito|cart|checkout|mi-cuenta|my-account'
+    r'/(etiqueta-producto|categoria-producto|product-tag|product-category'
+    r'|tienda|shop|carrito|cart|checkout|mi-cuenta|my-account'
     r'|wp-admin|wp-content|wp-includes|feed|author|tag|comment-page|\?)',
     re.I)
 

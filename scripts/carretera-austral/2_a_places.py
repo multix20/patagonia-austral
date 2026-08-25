@@ -194,7 +194,17 @@ def slugificar(s):
 
 
 def localidad_de(ficha):
-    """Localidad de la app a partir de la ruta de la URL. None si no se sabe."""
+    """Localidad de la app a partir de la ruta de la URL. None si no se sabe.
+
+    La segunda regla —quedarse con lo que va después del último "-en-" o
+    "-de-"— es la que hace utilizable el directorio: las fichas del sitio viven
+    en `/producto/` y su slug nombra el pueblo (`camping-en-cochrane`,
+    `glamping-y-pesca-en-villa-manihuales`, `hostal-en-las-afueras-de-cochrane`).
+
+    Y de paso hace de filtro: los paquetes que el sitio vende no nombran
+    localidad (`carretera-austral-10-dias-9-noches`), así que se descartan solos
+    sin tener que enumerarlos.
+    """
     candidatos = []
     for p in ficha.get('ruta') or []:
         p = p.lower()

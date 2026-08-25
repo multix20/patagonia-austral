@@ -33,9 +33,25 @@ pero el JSON de salida no arrastra ni una línea de texto descriptivo: las
 descripciones de la app se escriben acá, bilingües, como se hizo con SERNATUR y
 con Tortel.
 
-Por lo mismo, las páginas `/producto/…` quedan **excluidas por defecto**: son los
-paquetes turísticos que vende el propio sitio. No son dato de servicio de la
-ruta, son su catálogo.
+### `/producto/` es el directorio, no el catálogo
+
+La primera versión de este pipeline excluía `/producto/` creyendo que eran los
+paquetes que el sitio vende. **No lo son.** Detrás de
+`/producto/camping-en-cochrane/` está el Camping Aquasol, y detrás de
+`/producto/cabanas-y-tinaja-en-cochrane/` las Cabañas Patagonino: son **429
+fichas de negocios**, o sea el grueso del dato útil del sitio, y estaban
+quedando fuera enteras.
+
+Los paquetes que el sitio sí vende viven en el mismo lugar
+(`carretera-austral-10-dias-9-noches`, `paquete-turistico-caleta-tortel`), pero
+**se caen solos**: sus slugs no nombran una localidad, y la regla de no adivinar
+los descarta sin que haya que enumerarlos. Es la misma disciplina que evita
+inventar categorías, haciendo de filtro sin que nadie la programara para eso.
+
+Que sean **fichas pagadas** (el sitio vende publicación: ver
+`/anunciate-en-carretera-austral/`) no cambia la regla de arriba: el teléfono
+del negocio es un hecho suyo, la redacción y las fotos de la ficha son de la
+guía y no se tocan.
 
 Y una tercera cosa, que es de calidad y no de derecho: **el dato de una guía
 ajena también envejece**. El proyecto no se está diferenciando por copiar
@@ -221,5 +237,6 @@ Por orden, y ninguno es opcional:
 ## Lo que este pipeline NO hace
 
 - No copia textos, fotos ni reseñas del sitio.
-- No importa los paquetes turísticos que el sitio vende (`/producto/…`).
+- No importa los paquetes turísticos que el sitio vende: no nombran localidad y
+  el paso 2 los descarta solo.
 - No publica nada. No toca producción. No decide qué se muestra.

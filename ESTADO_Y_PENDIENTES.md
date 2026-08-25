@@ -57,12 +57,29 @@ propio teléfono y podrían haber entrado como si fueran un hospedaje de la ruta
    categoría. Con la regla actual —que descarta en vez de adivinar— todo eso se
    cae. La localidad tiene que salir del **contenido** de la página, y cómo
    hacerlo depende de cómo esté escrita cada ficha.
-3. **Los 429 `product` están excluidos, y puede que mal.** El filtro descarta
-   `/product/` por ser la tienda del sitio, pero 429 es mucho para un catálogo
-   de paquetes: el sitio vende publicación (`/anunciate-en-carretera-austral/`),
-   así que ahí podrían vivir las fichas de negocios. Hay que abrir una y
-   decidir. (Hay material previo en `data/scripts/carretera_austral_productos.json`,
-   fuera del repo, de una extracción del 23-ago.)
+3. ~~**Los 429 `product` están excluidos, y puede que mal.**~~ **RESUELTO el
+   mismo día, y era lo más caro de las tres.** `/producto/` no es el catálogo
+   del sitio: **es su directorio de negocios**. Detrás de
+   `/producto/camping-en-cochrane/` está el Camping Aquasol; de
+   `/producto/cabanas-y-tinaja-en-cochrane/`, las Cabañas Patagonino; de
+   `/producto/camping-en-puerto-aysen/`, el Aysén Ranch. Son 429 fichas —el
+   grueso del dato útil— y el filtro las tiraba enteras. Ya no se excluyen.
+
+   Y de yapa resolvió casi toda la pregunta 2: **el slug del producto nombra el
+   pueblo**, así que la localidad sale de la URL con la regla que ya existía
+   (quedarse con lo que va después del último `-en-` o `-de-`). Probado contra
+   slugs reales: `camping-en-puerto-aysen` → `puerto-aysen`,
+   `glamping-y-pesca-en-villa-manihuales` → `villa-manihuales`,
+   `hostal-en-las-afueras-de-cochrane` → `cochrane`. Los paquetes que el sitio
+   sí vende (`carretera-austral-10-dias-9-noches`) no nombran localidad y **se
+   descartan solos**: la regla de no adivinar terminó haciendo de filtro sin que
+   nadie la programara para eso.
+
+   **Cómo se averiguó, que es la parte reusable:** no bajando nada. El proxy
+   bloquea el sitio, pero **la búsqueda web sí lo tiene indexado**, y los
+   títulos y resúmenes de sus resultados bastaron para reconocer qué hay detrás
+   de cada URL. Cuando la red hacia una fuente está cerrada, buscarla sigue
+   abierto.
 
 **Por qué conviene seguirlo EN LOCAL, y no desde una sesión web.** El proxy del
 entorno web bloquea la salida hacia carretera-austral.cl (`403` al CONNECT,
