@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class Place extends Model
 {
     protected $fillable = [
-        'cat', 'lat', 'lng', 'tel', 'whatsapp', 'horario', 'nombre', 'descripcion', 'como', 'dist',
+        'cat', 'lat', 'lng', 'tel', 'whatsapp', 'email', 'horario', 'nombre', 'descripcion', 'como', 'dist',
         'publicado', 'destacado', 'localidad_id', 'imagenes', 'calificacion_promedio',
         'calificaciones_total',
     ];
@@ -136,6 +136,10 @@ class Place extends Model
             // así que un negocio con un solo móvil no necesita repetirlo acá.
             'whatsapp' => $this->whatsapp,
             'hrs' => $this->horario,
+            // `email` NO va acá, y no es un olvido: este endpoint es público y
+            // sin login, así que publicar el correo de cada negocio de la ruta
+            // sería repartir una lista de direcciones lista para raspar. Vive
+            // solo en el CMS, para escribirle al dueño. Hay un test que lo fija.
             'nombre' => $this->nombre,
             'desc' => $this->descripcion,
             'como' => $this->como,

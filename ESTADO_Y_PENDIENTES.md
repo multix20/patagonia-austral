@@ -24,6 +24,33 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ## Dónde quedamos — para retomar (25-ago-2026)
 
+### El correo del dueño ya vive en la ficha
+
+**Qué se hizo.** Columna `email` en `places`, campo «Correo del dueño (interno)»
+en el CMS, y la columna `correo` del CSV de la campaña se llena sola. El
+pipeline de carretera-austral.cl lo emite y su seeder lo copia, así que el lote
+entra con el contacto puesto.
+
+**Por qué faltaba.** La lista de envío se podía generar desde el teléfono, pero
+la columna del correo salía **siempre vacía**: ese dato solo existía en los JSON
+de los pipelines, que no se versionan porque traen datos personales. O sea que
+para completarla había que volver al computador — justo lo que se estaba
+tratando de evitar.
+
+**La excepción que hay que sostener: `email` NO viaja en `/api/places`.** Es la
+única columna de `places` que se queda dentro del CMS. La API es pública y sin
+login, así que publicar ahí el correo de cada negocio de la ruta sería repartir
+una lista de direcciones lista para raspar. `Place::toApi()` lo dice donde
+correspondería agregarlo, y hay un test (`test_el_correo_del_dueno_no_sale_por_la_api`)
+que falla si alguien lo suma «por completitud» — que es exactamente la forma que
+tendría el error.
+
+Tampoco entra en `Propuesta::CAMPOS`: el formulario del dueño es un endpoint
+público, y un campo de correo ahí es una invitación a llenarlo con el de otro.
+
+**Una celda vacía en esa columna es información**, no un hueco: es la lista de a
+quién todavía no se le puede escribir.
+
 ### La lista de envío se descarga desde el CMS (y por qué no desde GitHub)
 
 **El pedido.** No depender del PC: manejar el proyecto desde el teléfono. Para

@@ -61,6 +61,28 @@ class ContactoReservaTest extends TestCase
             ]);
     }
 
+    /**
+     * El correo del dueño NO sale por la API.
+     *
+     * Es la única columna de `places` que se queda dentro del CMS. `/api/places`
+     * es público y sin login: publicar ahí el correo de cada negocio de la ruta
+     * sería repartir una lista de direcciones lista para raspar. Este test
+     * existe para que nadie lo agregue "por completitud" al ver que faltaba —
+     * la tentación es real, porque el resto de los campos de contacto sí van.
+     */
+    public function test_el_correo_del_dueno_no_sale_por_la_api(): void
+    {
+        $this->ficha([
+            'tel' => '+56 67 2 522 115',
+            'email' => 'dueno@ejemplo.cl',
+        ]);
+
+        $respuesta = $this->getJson('/api/places')->assertOk();
+
+        $this->assertStringNotContainsString('dueno@ejemplo.cl', $respuesta->getContent());
+        $this->assertStringNotContainsString('email', $respuesta->getContent());
+    }
+
     /** Una ficha sin esos datos sigue viajando igual: los campos van en null. */
     public function test_una_ficha_sin_contacto_no_rompe_la_api(): void
     {

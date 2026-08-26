@@ -46,7 +46,11 @@ la ruta.
    Saca una fila por ficha publicada con **su** enlace personal ya pegado al
    lado, en las columnas de `contactos.ejemplo.csv`. El separador es **`;`**,
    que es lo que Excel espera en configuración regional española: con comas se
-   abre todo apilado en la primera columna. Queda por llenar el correo
+   abre todo apilado en la primera columna.
+
+   La columna **`correo`** sale del campo «Correo del dueño» de la ficha, que se
+   carga en el CMS o lo trae el pipeline. **Una celda vacía ahí es la lista de a
+   quién todavía no se le puede escribir**, y es lo que conviene mirar primero. Queda por llenar el correo
    del dueño, que no está en la base: sale de los pipelines de carga.
 
    - `--sin-telefono` deja solo las fichas que la campaña existe para arreglar.
@@ -128,7 +132,11 @@ por subir lo que no correspondía.
   (ver `.gitignore`). En el repo queda solo `contactos.ejemplo.csv`, con las
   columnas y tres filas de ejemplo.
 - Las direcciones de los dueños salen de los pipelines de carga, cuyos JSON
-  tampoco están versionados (`scripts/sernatur/`, `scripts/carretera-austral/`).
+  tampoco están versionados (`scripts/sernatur/`, `scripts/carretera-austral/`),
+  y desde el 25-ago-2026 quedan guardadas en la ficha (campo «Correo del dueño»)
+  para que la lista salga completa sin pasar por el computador. **Ese campo no
+  viaja en `/api/places`**: la API es pública y publicar ahí los correos sería
+  repartir una lista lista para raspar.
 - Las de las municipalidades se sacan a mano de cada sitio `.cl` institucional —
   suele ser `turismo@municipalidadXXX.cl` o la Dirección de Desarrollo
   Económico Local (DIDEL).
