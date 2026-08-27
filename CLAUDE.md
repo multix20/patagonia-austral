@@ -169,7 +169,8 @@ Carretera Austral, de Puerto Montt a Villa O'Higgins**, barcazas incluidas. La
 identidad ya dice "Puerto Montt a Villa O'Higgins" en i18n, manifest e
 index.html. La fase cerró con 24 localidades y 192 lugares; después se sumaron
 Raúl Marín Balmaceda y Balmaceda (22-jul) y **Puerto Yungay (11-ago)**, así que
-**hoy son 27 localidades**.
+**hoy son 28** (Puerto Río Ibáñez entró después y la landing siguió diciendo 27
+hasta que el generador de QR contó los slugs y no cuadró).
 
 > **Los recuentos de fichas NO se anotan acá, a propósito.** Cambian cada vez que
 > se publica o se cura algo, así que un número escrito en un documento está

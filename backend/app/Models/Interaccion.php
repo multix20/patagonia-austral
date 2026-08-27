@@ -127,6 +127,46 @@ class Interaccion extends Model
         'firma' => 'Firma de correo o tarjeta',
     ];
 
+    /**
+     * Prefijo del código de cada oficina de información turística:
+     * `oit-cochrane`, `oit-caleta-tortel`. Uno por localidad, no uno genérico.
+     *
+     * Por qué por localidad y no una entrada fija en `CANALES`: el QR del mesón
+     * se imprime por oficina, y lo que cada municipio quiere saber es cuánta
+     * gente instaló la guía **en su mesón** — no cuánta en el país. Además le da
+     * al municipio una razón concreta para ponerlo: son sus números.
+     *
+     * Sigue siendo un conjunto cerrado, que es la propiedad que importa en un
+     * endpoint sin login: el sufijo tiene que ser el slug de una localidad que
+     * exista. Y se mantiene solo — una localidad nueva trae su código sin que
+     * nadie tenga que acordarse de agregarlo acá.
+     */
+    public const PREFIJO_OIT = 'oit-';
+
+    /**
+     * Todos los códigos de canal que se pueden guardar hoy: la lista fija más el
+     * QR de cada oficina (`oit-<slug>`), uno por localidad cargada.
+     *
+     * Devuelve el conjunto entero en vez de validar de a uno —y sin caché
+     * estática— a propósito: un lote trae hasta 100 eventos, así que el
+     * controlador lo pide UNA vez por petición, y una estática se quedaría
+     * pegada con las localidades de la petición anterior (en los tests, con las
+     * de otro test).
+     *
+     * @return array<string, string> código → etiqueta para el panel
+     */
+    public static function canalesValidos(): array
+    {
+        $oit = Localidad::orderBy('orden')
+            ->get()
+            ->mapWithKeys(fn (Localidad $l) => [
+                self::PREFIJO_OIT.$l->slug => 'OIT — '.($l->nombre['es'] ?? $l->slug),
+            ])
+            ->all();
+
+        return self::CANALES + $oit;
+    }
+
     /** Tope por evento y envío: ataja un lote absurdo sin castigar el uso real. */
     public const MAX_POR_EVENTO = 500;
 

@@ -7,7 +7,7 @@ con código `?c=muni`. Instrucciones de envío: `README.md`.
 
 ## Las 14 comunas, y qué localidades nombrarle a cada una
 
-Las 27 localidades de la app caen en **14 comunas**. Nombrar dentro del correo
+Las 28 localidades de la app caen en **14 comunas**. Nombrar dentro del correo
 todas las que le tocan a esa comuna es lo que convierte un correo genérico en uno
 que se lee: prueba que alguien miró su territorio de verdad.
 
@@ -17,7 +17,7 @@ que se lee: prueba que alguien miró su territorio de verdad.
 | 2 | **Cochrane** | Cochrane | Aysén |
 | 3 | **O'Higgins** | Villa O'Higgins | Aysén |
 | 4 | **Chile Chico** | Chile Chico, Puerto Guadal, Puerto Bertrand | Aysén |
-| 5 | **Río Ibáñez** | Villa Cerro Castillo, Puerto Río Tranquilo | Aysén |
+| 5 | **Río Ibáñez** | Villa Cerro Castillo, Puerto Río Ibáñez, Puerto Río Tranquilo | Aysén |
 | 6 | **Cisnes** | Puerto Cisnes, Puyuhuapi, La Junta, Raúl Marín Balmaceda | Aysén |
 | 7 | **Lago Verde** | Villa Amengual | Aysén |
 | 8 | **Aysén** | Puerto Aysén, Puerto Chacabuco, Villa Mañihuales | Aysén |
