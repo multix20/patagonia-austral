@@ -117,6 +117,27 @@ class CampanaContactosTest extends TestCase
         $this->assertStringNotContainsString('Solo Whatsapp', $csv);
     }
 
+    /**
+     * El correo del dueño sale en el CSV, que es para lo que existe la columna:
+     * hasta ahora esa celda salía siempre vacía y había que completarla en el
+     * computador desde los JSON de los pipelines.
+     */
+    public function test_el_correo_del_dueno_viaja_en_la_lista(): void
+    {
+        $this->ficha([
+            'nombre' => ['es' => 'Hospedaje Con Correo', 'en' => 'With email'],
+            'email' => 'dueno@ejemplo.cl',
+        ]);
+        $this->ficha(['nombre' => ['es' => 'Hospedaje Sin Correo', 'en' => 'No email']]);
+
+        $csv = $this->csv();
+
+        $this->assertStringContainsString('"dueno@ejemplo.cl"', $this->filaDe($csv, 'Hospedaje Con Correo'));
+        // Sin correo la celda queda vacía, que es la lista de a quién todavía no
+        // se le puede escribir.
+        $this->assertStringNotContainsString('@', $this->filaDe($csv, 'Hospedaje Sin Correo'));
+    }
+
     private function csv(array $opciones = []): string
     {
         $archivo = tempnam(sys_get_temp_dir(), 'campana').'.csv';

@@ -115,6 +115,7 @@ class PlaceSeeder extends Seeder
                 // escrito en places.json se perdía en silencio al sembrar. Se
                 // notó cargando los horarios de las barcazas.
                 'whatsapp' => $l['whatsapp'] ?? null,
+                'email' => $l['email'] ?? null,
                 'horario' => $l['horario'] ?? null,
                 'nombre' => $l['nombre'],
                 'descripcion' => $l['desc'],

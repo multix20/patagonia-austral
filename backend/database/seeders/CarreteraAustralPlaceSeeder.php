@@ -102,6 +102,8 @@ class CarreteraAustralPlaceSeeder extends Seeder
                     // —le pasó a PlaceSeeder con las barcazas—. Al agregar una
                     // columna: BD, CMS, API y seeder.
                     'whatsapp' => $l['whatsapp'] ?? null,
+                    // Solo para escribirle al dueño: no se publica en la API.
+                    'email' => $l['email'] ?? null,
                     'horario' => $l['horario'] ?? null,
                     'nombre' => $l['nombre'],
                     'descripcion' => $l['desc'],

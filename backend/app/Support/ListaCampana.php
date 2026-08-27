@@ -97,9 +97,10 @@ class ListaCampana
             'tel' => (string) $ficha->tel,
             'whatsapp' => (string) $ficha->whatsapp,
             'horario' => (string) $ficha->horario,
-            // El correo del dueño no está en la BD: sale de los pipelines de
-            // carga, que no se versionan porque traen datos personales.
-            'correo' => '',
+            // Vive solo en el CMS: no viaja en `/api/places` (ver Place::toApi).
+            // Sale vacío mientras nadie lo haya cargado — y esa celda vacía es
+            // justamente la lista de a quién todavía no se le puede escribir.
+            'correo' => (string) $ficha->email,
             'enlace_ficha' => $conEnlace ? Propuesta::invitar($ficha)->url() : '',
             'ola' => '2',
             'enviado_en' => '',

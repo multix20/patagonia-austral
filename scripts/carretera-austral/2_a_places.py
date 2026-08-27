@@ -396,6 +396,11 @@ def main():
             'tel': tel,
             'whatsapp': wa,
             'horario': normalizar_horario(f.get('horario')),
+            # El correo del dueño, para poder escribirle en la campaña. Es
+            # columna de `places` desde el 25-ago-2026 y NO se publica en la
+            # API: vive solo en el CMS. Se toma el primero; la lista completa
+            # queda en `_origen` para tenerla a mano al curar.
+            'email': (f.get('emails') or [None])[0],
             # Los nombres propios no se traducen.
             'nombre': {'es': nombre, 'en': nombre},
             # Plantilla, no la prosa del origen. Ver la regla 1 arriba.
@@ -407,8 +412,9 @@ def main():
                       'en': f'In {nombre_loc}, Carretera Austral.'}),
             'dist': texto_dist(km, nombre_loc),
             'publicado': False,
-            # Trazabilidad y lo que `places` no sabe guardar. No lo lee el
-            # seeder: viaja para tener todo a mano al curar la ficha.
+            # Trazabilidad y lo que `places` no sabe guardar en una columna
+            # (varios teléfonos, varios correos, la web). No lo lee el seeder:
+            # viaja para tener todo a mano al curar la ficha.
             '_origen': {
                 'fuente': f.get('fuente'),
                 'fecha_extraccion': f.get('fecha_extraccion'),

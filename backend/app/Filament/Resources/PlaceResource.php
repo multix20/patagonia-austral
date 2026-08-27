@@ -103,6 +103,11 @@ class PlaceResource extends Resource
                         ->tel()
                         ->maxLength(255)
                         ->helperText('Solo si es distinto del teléfono: si el teléfono ya es un móvil, la app lo usa para el chat. Habilita "Pedir disponibilidad" en el asistente.'),
+                    Forms\Components\TextInput::make('email')
+                        ->label('Correo del dueño (interno)')
+                        ->email()
+                        ->maxLength(255)
+                        ->helperText('NO se muestra en la app ni viaja en la API: sirve para escribirle en la campaña. Sale en la «Lista de la campaña».'),
                     Forms\Components\TextInput::make('horario')
                         ->label('Horario de atención')
                         ->maxLength(255)
