@@ -105,7 +105,13 @@ export default defineConfig({
         // la piden los rastreadores de WhatsApp/Facebook cuando alguien comparte
         // el enlace, y el viajero NUNCA la ve. Precargarla seria hacer que cada
         // telefono baje ~90 KB para nada.
-        globIgnores: ['proyecto.html', 'qr-rutaaustral.*', 'og-rutaaustral.png'],
+        // `qr/` son los códigos por canal y por oficina: viven en la landing y en
+        // el mesón de una OIT, y al viajero no le sirve de nada llevarlos
+        // guardados. Mismo criterio que el QR general.
+        // `guia-*.jpg` son las capturas de la app que ilustran la landing: las
+        // mira el municipio una vez, desde un computador de oficina. Al viajero
+        // no le sirve de nada bajarlas — ya tiene la app.
+        globIgnores: ['proyecto.html', 'qr-rutaaustral.*', 'qr/**', 'og-rutaaustral.png', 'guia-*.jpg'],
         // ...pero sacarla del precache NO basta para que /proyecto se vea. El SW
         // registra una NavigationRoute que responde index.html a CUALQUIER
         // navegacion (es lo que hace funcionar la SPA sin conexion), asi que a

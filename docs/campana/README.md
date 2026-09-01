@@ -25,11 +25,20 @@ la ruta.
 2. **Poner la analítica en cero**: `/admin` → Analítica → Interacciones → "Poner
    en cero", con la fecha de ayer. Si no, la campaña se mide contra meses de
    pruebas propias. Anotar la fecha de corte acá abajo, en §6.
-3. **Probar los enlaces con código**: abrir `https://rutaaustral.cl/?c=muni` en el
+3. **El QR de cada oficina.** `frontend/public/qr/` tiene uno por localidad
+   (`oit-cochrane.svg` → `rutaaustral.cl/?c=oit-cochrane`), más los de los
+   canales que se imprimen. Se regeneran con
+   `python frontend/scripts/generar-qr.py`.
+
+   Al escribirle a una comuna, se le manda **el de su oficina**: así ese
+   municipio ve en sus propios números cuánta gente instaló la guía en su mesón
+   — y esa es la razón por la que va a querer ponerlo.
+
+4. **Probar los enlaces con código**: abrir `https://rutaaustral.cl/?c=muni` en el
    teléfono, esperar medio minuto y ver que aparezca en Analítica → "Por dónde
    llegaron". Si no aparece, el código no está en `Interaccion::CANALES` y ese
    canal se va a mandar sin medir.
-4. **Generar la lista de la ola 2**, sin copiar enlaces a mano.
+5. **Generar la lista de la ola 2**, sin copiar enlaces a mano.
 
    **Desde el teléfono:** `/admin` → Lugares → botón **«Lista de la campaña»**.
    Elige categoría, localidad o solo las fichas sin teléfono, y descarga el CSV.
@@ -64,7 +73,7 @@ la ruta.
    error caro —pegar el enlace de otro negocio, que le da acceso a editar una
    ficha ajena—. El comando saca el nombre y el enlace de la misma consulta, así
    que no se pueden cruzar.
-5. **Mirar la ficha antes de nombrarla en el correo.** Si el correo dice "su
+6. **Mirar la ficha antes de nombrarla en el correo.** Si el correo dice "su
    ficha ya está publicada" y la ficha tiene el pin en el centro del pueblo y una
    descripción de plantilla, el remitente pierde en el primer clic.
 

@@ -30,6 +30,8 @@ class InteraccionController extends Controller
             'eventos.*.n' => ['required', 'integer', 'between:1,'.Interaccion::MAX_POR_EVENTO],
         ]);
 
+        $canales = null;
+
         foreach ($datos['eventos'] as $e) {
             $ref = $e['ref'] ?? null;
 
@@ -57,8 +59,14 @@ class InteraccionController extends Controller
             // descarta EN SILENCIO —sin 422— porque un 422 haría que la PWA
             // tirara el lote entero, y con él las aperturas y las fichas del
             // día (ver el manejo del 422 en analitica.js).
-            if ($e['tipo'] === 'campana' && ! array_key_exists((string) $ref, Interaccion::CANALES)) {
-                continue;
+            if ($e['tipo'] === 'campana') {
+                // Se pide una sola vez por lote, y solo si de verdad llegó un
+                // canal: la mayoría de los lotes son fichas y contactos.
+                $canales ??= Interaccion::canalesValidos();
+
+                if (! isset($canales[(string) $ref])) {
+                    continue;
+                }
             }
 
             // El día lo pone el SERVIDOR, no el cliente. Un reloj mal puesto (o

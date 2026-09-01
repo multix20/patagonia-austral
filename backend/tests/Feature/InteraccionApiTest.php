@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Interaccion;
+use App\Models\Localidad;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -155,6 +156,33 @@ class InteraccionApiTest extends TestCase
 
         // El resto del lote llegó entero: es lo que se perdería con un 422.
         $this->assertSame(4, Interaccion::where('tipo', 'app_abierta')->value('cantidad'));
+    }
+
+    /**
+     * El QR de cada oficina de información turística tiene su propio código
+     * (`oit-cochrane`), y solo vale si ese pueblo existe.
+     *
+     * Es lo que le permite a un municipio ver cuánta gente instaló la guía EN SU
+     * MESÓN, que es la razón por la que va a querer ponerlo. Y sigue siendo un
+     * conjunto cerrado: el sufijo se valida contra las localidades cargadas, así
+     * que un endpoint sin login no puede inventar códigos.
+     */
+    public function test_el_qr_de_cada_oit_cuenta_aparte(): void
+    {
+        Localidad::firstOrCreate(
+            ['slug' => 'cochrane'],
+            ['nombre' => ['es' => 'Cochrane', 'en' => 'Cochrane'],
+                'lat' => -47.25, 'lng' => -72.57, 'orden' => 170]
+        );
+
+        $this->postJson('/api/interacciones', ['eventos' => [
+            ['tipo' => 'campana', 'ref' => 'oit-cochrane', 'n' => 3],
+            ['tipo' => 'campana', 'ref' => 'oit-narnia', 'n' => 9],
+            ['tipo' => 'campana', 'ref' => 'oit-', 'n' => 1],
+        ]])->assertNoContent();
+
+        $canales = Interaccion::where('tipo', 'campana')->pluck('cantidad', 'referencia')->all();
+        $this->assertSame(['oit-cochrane' => 3], $canales);
     }
 
     /** Días distintos son filas distintas: eso es lo que permite ver la evolución. */

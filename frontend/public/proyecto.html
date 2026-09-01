@@ -4,9 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Patagonia Austral — la guía de la Carretera Austral, con el dato correcto</title>
-<meta name="description" content="Una aplicación gratuita con los servicios de las 27 localidades de la Carretera Austral, corregidos por quienes viven en ellas. Invitación a encargados de turismo, municipios y servicios turísticos." />
+<meta name="description" content="Una aplicación gratuita con los servicios de las 28 localidades de la Carretera Austral, corregidos por quienes viven en ellas. Invitación a encargados de turismo, municipios y servicios turísticos." />
 <meta property="og:title" content="Patagonia Austral — la guía de la Carretera Austral, con el dato correcto" />
-<meta property="og:description" content="27 localidades de Puerto Montt a Villa O'Higgins, con la información que hoy no está en ninguna plataforma, y disponible también en la ruta. Gratis para el turista y para el servicio." />
+<meta property="og:description" content="28 localidades de Puerto Montt a Villa O'Higgins, con la información que hoy no está en ninguna plataforma, y disponible también en la ruta. Gratis para el turista y para el servicio." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://rutaaustral.cl/proyecto" />
 <!-- La tarjeta ya tenía título y bajada, pero le faltaba la imagen: un enlace sin
@@ -17,7 +17,7 @@
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="Patagonia Austral — la guía de la Carretera Austral, 27 localidades de Puerto Montt a Villa O'Higgins" />
+<meta property="og:image:alt" content="Patagonia Austral — la guía de la Carretera Austral, 28 localidades de Puerto Montt a Villa O'Higgins" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="canonical" href="https://rutaaustral.cl/proyecto" />
 <!-- Iconos locales, mismo origen (no son recurso externo). Sin esto el navegador
@@ -57,9 +57,10 @@
 -->
 
 <style>
+  /* Los tokens son EXACTAMENTE los de frontend/public/proyecto.html, para que
+     este borrador se pueda portar a la landing sin retocar una sola variable. */
   :root {
     color-scheme: light;
-
     --verde-hondo: #08322a;
     --verde: #0f6e56;
     --verde-claro: #e4efea;
@@ -71,620 +72,490 @@
     --coral: #c14a22;
     --coral-suave: #f9e8e0;
     --ambar: #b57a10;
-
     --serif: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
     --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   }
 
-  *, *::before, *::after { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
-  body {
-    margin: 0;
-    background: var(--crema);
-    color: var(--tinta);
-    font-family: var(--sans);
-    font-size: 16px;
-    line-height: 1.65;
-    -webkit-font-smoothing: antialiased;
-  }
-  img { max-width: 100%; }
-  a { color: var(--verde); }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; }
-
+  body { background: var(--crema); color: var(--tinta); font-family: var(--sans); font-size: 16.5px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
   h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.14; text-wrap: balance; margin: 0; }
-  p { margin: 0; max-width: 64ch; }
-  ul { margin: 0; padding-left: 1.15em; }
-  li { margin-block: .38em; }
-  li::marker { color: var(--verde); }
-  strong { font-weight: 640; }
+  p { margin: 0; }
 
-  .envoltura { max-width: 1000px; margin-inline: auto; padding-inline: 22px; }
+  .envoltura { max-width: 780px; margin: 0 auto; padding: 0 20px; }
+  .rotulo { font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--gris); }
 
-  .rotulo {
-    font-family: var(--mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: .13em;
-    font-weight: 500;
-  }
-
-  /* ───────── portada ───────── */
-  .portada {
-    background: var(--verde-hondo);
-    color: #f2efe6;
-    padding-block: clamp(52px, 9vw, 96px) clamp(38px, 6vw, 60px);
-    position: relative;
-    overflow: hidden;
-  }
-  .portada::after {
-    content: "";
-    position: absolute; inset: auto 0 0 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(242,239,230,.28), transparent);
-  }
-  .portada .rotulo { color: #8fc4b1; }
-  .portada h1 {
-    font-size: clamp(34px, 6.4vw, 60px);
-    margin-block: 16px 20px;
-    letter-spacing: -.015em;
-  }
-  .portada .tesis {
-    font-size: clamp(17px, 2.4vw, 21px);
-    color: #cfded7;
-    max-width: 40ch;
-    line-height: 1.5;
-  }
+  /* ---------- Portada ---------- */
+  .portada { background: var(--verde-hondo); color: var(--crema); padding: 54px 0 60px; }
+  .portada .rotulo { color: #7fb8a4; }
+  .portada h1 { font-size: clamp(30px, 6.2vw, 46px); margin: 14px 0 20px; }
+  .portada .tesis { font-size: clamp(16.5px, 2.3vw, 19px); color: #d6e4de; max-width: 56ch; }
   .portada .tesis b { color: #fff; font-weight: 600; }
 
-  /* riel de la ruta */
-  .riel { margin-top: clamp(38px, 6vw, 58px); }
-  .riel-cabecera {
-    display: flex; justify-content: space-between; align-items: baseline;
-    gap: 16px; flex-wrap: wrap;
-    color: #8fc4b1;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(143,196,177,.32);
-  }
-  .riel-lista {
-    list-style: none; margin: 0; padding: 14px 0 0;
-    display: flex; flex-wrap: wrap; gap: 7px 0;
-    font-size: 13.5px;
-  }
-  .riel-lista li {
-    margin: 0;
-    color: #dfeae5;
-    padding-right: 11px;
-    margin-right: 4px;
-    border-right: 1px solid rgba(143,196,177,.34);
-    white-space: nowrap;
-  }
-  .riel-lista li:last-child { border-right: none; }
-  .riel-pie { margin-top: 14px; font-size: 13.5px; color: #a7c9bd; max-width: 62ch; }
-
-  /* ───────── secciones ───────── */
-  section { padding-block: clamp(44px, 7vw, 72px); }
-  section + section { border-top: 1px solid var(--borde); }
-  .seccion-cabecera { margin-bottom: 26px; }
-  .seccion-cabecera .rotulo { color: var(--verde); display: block; margin-bottom: 10px; }
-  .seccion-cabecera h2 { font-size: clamp(24px, 3.6vw, 33px); letter-spacing: -.012em; }
-  .bajada { margin-top: 12px; color: var(--gris); font-size: 17px; }
-
-  .prosa { display: flex; flex-direction: column; gap: 15px; }
-
-  /* rejillas */
-  .rejilla-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(238px, 1fr)); gap: 18px; }
-  .rejilla-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
-
-  .ficha {
-    background: var(--papel);
-    border: 1px solid var(--borde);
-    border-radius: 9px;
-    padding: 22px;
-    display: flex; flex-direction: column; gap: 9px;
-  }
-  .ficha h3 { font-size: 18px; }
-  .ficha p { font-size: 14.5px; color: var(--gris); }
-  .ficha .rotulo { color: var(--verde); }
-
-  /* cifras */
-  .cifras {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
-    gap: 1px;
-    background: var(--borde);
-    border: 1px solid var(--borde);
-    border-radius: 9px;
-    overflow: hidden;
-    margin-top: 8px;
-  }
-  .cifra { background: var(--papel); padding: 18px; display: flex; flex-direction: column; gap: 4px; }
-  .cifra b {
-    font-family: var(--mono);
-    font-variant-numeric: tabular-nums;
-    font-size: 27px;
-    font-weight: 600;
-    letter-spacing: -.03em;
-    line-height: 1;
-    color: var(--verde);
-  }
-  .cifra span { font-size: 13px; color: var(--gris); line-height: 1.45; }
-
-  /* dato destacado */
-  .dato-fuerte {
-    background: var(--verde-claro);
-    border-left: 3px solid var(--verde);
-    border-radius: 0 8px 8px 0;
-    padding: 20px 22px;
-    display: flex; flex-direction: column; gap: 7px;
-  }
-  .dato-fuerte .rotulo { color: var(--verde); }
-  .dato-fuerte p { font-size: 15.5px; }
-
-  /* el pedido */
-  .pedido { background: var(--papel); }
-  .pedido .seccion-cabecera .rotulo { color: var(--coral); }
-  .caja-pedido {
-    border: 1px solid var(--borde);
-    border-top: 3px solid var(--coral);
-    border-radius: 0 0 9px 9px;
-    padding: 24px;
-    background: var(--crema);
-    display: flex; flex-direction: column; gap: 12px;
-  }
-  .caja-pedido h3 { font-size: 19px; }
-  .caja-pedido .quien { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--coral); }
-  .caja-pedido ul { font-size: 14.5px; }
-
-  /* contacto */
-  /* Bloque del QR: en pantalla ancha va el código a un lado y la explicación
-     al otro; en teléfono se apila, con el QR primero. */
-  .qr-caja {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: clamp(20px, 4vw, 40px);
-    background: var(--papel);
-    border: 1px solid var(--borde);
-    border-radius: 16px;
-    padding: clamp(20px, 3vw, 30px);
-  }
-  .qr-caja img {
-    width: 190px;
-    height: 190px;
-    flex: none;
-    /* Fondo blanco propio: el QR necesita contraste franco para leerse, y el
-       papel de la sección es crema. */
-    background: #fff;
-    border-radius: 10px;
-  }
-  .qr-texto { flex: 1 1 300px; }
-  .qr-texto p { color: var(--gris); margin-top: 10px; }
-  .qr-url {
-    font-weight: 700;
-    color: var(--verde);
-    letter-spacing: .01em;
-  }
-  .qr-descargas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
-  .qr-descargas a {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--verde);
-    border: 1px solid var(--borde);
-    border-radius: 999px;
-    padding: 8px 14px;
-    text-decoration: none;
-  }
-  .qr-descargas a:hover { border-color: var(--verde); }
-  .contacto { background: var(--verde-hondo); color: #f2efe6; }
-  .contacto h2 { color: #fff; }
-  .contacto .seccion-cabecera .rotulo { color: #8fc4b1; }
-  .contacto .bajada { color: #cfded7; }
-  .botones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+  .botonera { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
   .boton {
-    display: inline-flex; align-items: center; gap: 9px;
-    padding: 13px 22px;
-    border-radius: 7px;
-    font-weight: 600;
-    font-size: 15.5px;
-    text-decoration: none;
-    border: 1px solid transparent;
+    font-family: var(--sans); font-size: 15px; font-weight: 600; text-decoration: none;
+    padding: 11px 18px; border-radius: 6px; display: inline-block;
   }
-  .boton.primario { background: var(--coral); color: #fff; }
-  .boton.primario:hover { background: #a83e1a; }
-  .boton.secundario { border-color: rgba(242,239,230,.4); color: #f2efe6; }
-  .boton.secundario:hover { background: rgba(242,239,230,.09); }
+  .primario { background: var(--coral); color: #fff; }
+  .secundario { border: 1px solid rgba(255,255,255,.35); color: var(--crema); }
 
-  /* marcador sin rellenar */
-  .pendiente {
-    background: #ffe4e0;
-    color: #a01e00;
-    font-family: var(--mono);
-    font-size: .82em;
-    padding: .1em .4em;
-    border-radius: 3px;
-    border: 1px dashed #a01e00;
+  /* ---------- El teléfono ---------- */
+  .con-foto { display: grid; grid-template-columns: 1fr 250px; gap: 34px; align-items: start; }
+  .telefono {
+    border-radius: 22px; overflow: hidden; background: #0b1f1a;
+    border: 5px solid #0b1f1a; box-shadow: 0 18px 40px -22px rgba(0,0,0,.75);
+    line-height: 0;
+    /* Recorta la franja blanca que dejó la barra de categorías al capturar. */
+    aspect-ratio: 560 / 962;
+  }
+  .telefono img { width: 100%; height: auto; display: block; }
+  .pie-foto { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: #7fb8a4; margin-top: 9px; text-align: center; line-height: 1.5; }
+
+  /* Se muestra la parte de arriba de la captura —el pueblo con sus pines—, que
+     es lo que cuenta la escena. Entera queda larguísima al lado del texto. */
+  .foto-escena {
+    margin-top: 14px; border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--borde); max-width: 250px; line-height: 0;
+    aspect-ratio: 3 / 4; position: relative;
+  }
+  .foto-escena img { width: 100%; height: auto; display: block; position: absolute; top: -6px; left: 0; }
+
+  @media (max-width: 720px) {
+    .con-foto { grid-template-columns: 1fr; gap: 26px; }
+    .telefono { max-width: 250px; margin: 0 auto; }
+    .pie-foto { color: #7fb8a4; }
   }
 
-  .nota-honesta {
-    margin-top: 26px;
-    padding-top: 18px;
-    border-top: 1px solid rgba(242,239,230,.22);
-    font-size: 13.5px;
-    color: #a7c9bd;
-    max-width: 64ch;
+  /* ---------- El viaje ---------- */
+  .viaje { padding: 56px 0 20px; }
+  .intro-viaje { max-width: 60ch; color: var(--gris); margin-bottom: 34px; }
+
+  .parada { display: grid; grid-template-columns: 128px 1fr; gap: 26px; padding: 26px 0; border-top: 1px solid var(--borde); }
+  .parada:first-of-type { border-top: 2px solid var(--tinta); }
+  .lugar { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--coral); line-height: 1.5; }
+  .lugar span { display: block; color: var(--gris); letter-spacing: .04em; }
+  .escena h3 { font-size: clamp(19px, 3.2vw, 23px); margin-bottom: 10px; }
+  .escena p + p { margin-top: 10px; }
+  .escena .cuenta { color: var(--tinta); }
+
+  .trae {
+    margin-top: 14px; background: var(--papel); border: 1px solid var(--borde);
+    border-radius: 8px; padding: 13px 15px;
+  }
+  .trae .rotulo { color: var(--verde); }
+  .trae p { font-size: 14.5px; color: var(--gris); margin-top: 5px; }
+  .trae b { color: var(--tinta); font-weight: 600; }
+
+  /* ---------- El giro ---------- */
+  .giro { background: var(--verde-claro); padding: 50px 0; margin-top: 46px; }
+  .giro h2 { font-size: clamp(24px, 4.4vw, 33px); margin-bottom: 16px; }
+  .giro .prosa { max-width: 62ch; display: flex; flex-direction: column; gap: 12px; color: #2a3a36; }
+  .giro .prosa b { color: var(--verde-hondo); }
+
+  /* ---------- El pedido ---------- */
+  .pedido { padding: 50px 0; }
+  .pedido h2 { font-size: clamp(23px, 4.2vw, 30px); margin-bottom: 14px; }
+  .lista { list-style: none; padding: 0; margin: 20px 0 0; display: flex; flex-direction: column; gap: 13px; }
+  .lista li { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start; }
+  .lista .n { font-family: var(--mono); font-size: 12px; color: var(--coral); padding-top: 4px; }
+  .lista b { font-weight: 600; }
+  .lista span { color: var(--gris); }
+  .lista span b { color: var(--tinta); }
+
+  /* ---------- QR, números y obras ---------- */
+  .meson { background: var(--verde-hondo); color: var(--crema); padding: 46px 0; }
+  .meson h2 { font-size: clamp(23px, 4.2vw, 30px); margin-bottom: 12px; }
+  .meson .rotulo { color: #7fb8a4; }
+  .meson-cuerpo { display: grid; grid-template-columns: 1fr 190px; gap: 30px; align-items: center; margin-top: 22px; }
+  .meson p { color: #d6e4de; max-width: 52ch; }
+  .meson p b { color: #fff; }
+  .qr { background: #fff; border-radius: 10px; padding: 12px; }
+  .qr svg { width: 100%; height: auto; display: block; }
+  .qr-pie { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: #7fb8a4; text-align: center; margin-top: 9px; }
+  .descargas { display: flex; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+  .descargas a { color: #fff; font-size: 14.5px; }
+
+  .numeros { padding: 48px 0; }
+  .numeros h2 { font-size: clamp(23px, 4.2vw, 30px); margin-bottom: 8px; }
+  .cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin: 24px 0 18px; }
+  .cifra { background: var(--papel); border: 1px solid var(--borde); border-radius: 10px; padding: 17px; }
+  .cifra .n { font-family: var(--serif); font-size: clamp(26px, 4.6vw, 34px); line-height: 1; color: var(--verde-hondo); }
+  .cifra p { font-size: 13.5px; color: var(--gris); margin-top: 8px; }
+  .fuente { font-size: 13px; color: var(--gris); }
+
+  .obras { background: var(--papel); border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); padding: 46px 0; }
+  .obras h2 { font-size: clamp(23px, 4.2vw, 30px); margin-bottom: 14px; }
+  .obras .prosa { max-width: 62ch; display: flex; flex-direction: column; gap: 12px; }
+  .obras .prosa b { color: var(--verde-hondo); }
+
+  @media (max-width: 620px) {
+    .meson-cuerpo { grid-template-columns: 1fr; }
+    .qr { max-width: 190px; margin: 0 auto; }
   }
 
-  footer {
-    background: var(--tinta);
-    color: #9aa7a3;
-    font-size: 13px;
-    padding-block: 26px;
-  }
-  footer a { color: #b9cfc7; }
+  .contacto { padding: 48px 0; }
+  .contacto h2 { font-size: clamp(23px, 4.2vw, 30px); margin-bottom: 12px; }
+  .contacto p { max-width: 60ch; color: var(--gris); }
+  .contacto .botonera { margin-top: 22px; }
+  .boton.borde { border: 1px solid var(--borde); color: var(--tinta); }
 
-  @media (prefers-reduced-motion: reduce) {
-    * { animation: none !important; transition: none !important; }
+  .cierre { border-top: 1px solid var(--borde); margin-top: 44px; padding: 34px 0 70px; color: var(--gris); font-size: 15px; display: flex; flex-direction: column; gap: 12px; }
+  .cierre b { color: var(--tinta); }
+
+  .nota {
+    background: var(--coral-suave); border-left: 3px solid var(--coral);
+    padding: 13px 16px; border-radius: 0 8px 8px 0; font-size: 14.5px; color: #6b3a26;
+    margin: 26px 0 0;
   }
+  .nota b { color: #4a2317; }
+
+  @media (max-width: 620px) {
+    .parada { grid-template-columns: 1fr; gap: 10px; }
+    .lugar span { display: inline; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
-
 <header class="portada">
   <div class="envoltura">
-    <span class="rotulo">Carretera Austral · Puerto Montt a Villa O'Higgins</span>
-    <h1>Su localidad ya está en la guía.<br />Los datos correctos<br />solo los tienen ustedes.</h1>
+    <div class="con-foto">
+    <div>
+    <p class="rotulo">Carretera Austral · km 0 → km ~1.240</p>
+    <h1>Un viajero baja de la barcaza en Caleta Gonzalo y no sabe si alcanza a llegar a Chaitén.</h1>
     <p class="tesis">
-      Patagonia Austral es una aplicación <b>gratuita</b> que el viajero lleva en el
-      teléfono por la Ruta 7. Las <b>27 localidades</b> ya están cargadas, cada una con
-      seis categorías. Lo que se encuentra hoy sobre los servicios chicos de la Austral
-      —acá y en cualquier otra parte— está <b>incompleto o desactualizado</b>. Eso es lo
-      que venimos a corregir con ustedes.
+      Esta página es ese viaje, de norte a sur. En cada parada, lo que él no sabía
+      —y <b>quién sí lo sabe</b>. Patagonia Austral es la guía que lleva en el
+      teléfono: gratuita, sin cuenta, y funcionando también donde se corta la señal.
     </p>
-
-    <div class="riel">
-      <div class="riel-cabecera">
-        <span class="rotulo">Las 27 localidades, norte a sur</span>
-        <span class="rotulo">km 0 → km ~1.240</span>
-      </div>
-      <ul class="riel-lista">
-        <li>Puerto Montt</li>
-        <li>Hornopirén</li>
-        <li>Caleta Gonzalo</li>
-        <li>Chaitén</li>
-        <li>El Amarillo</li>
-        <li>Villa Santa Lucía</li>
-        <li>Futaleufú</li>
-        <li>Palena</li>
-        <li>La Junta</li>
-        <li>Raúl Marín Balmaceda</li>
-        <li>Puyuhuapi</li>
-        <li>Villa Amengual</li>
-        <li>Puerto Cisnes</li>
-        <li>Villa Mañihuales</li>
-        <li>Puerto Aysén</li>
-        <li>Puerto Chacabuco</li>
-        <li>Coyhaique</li>
-        <li>Balmaceda</li>
-        <li>Villa Cerro Castillo</li>
-        <li>Puerto Río Tranquilo</li>
-        <li>Puerto Guadal</li>
-        <li>Chile Chico</li>
-        <li>Puerto Bertrand</li>
-        <li>Cochrane</li>
-        <li>Caleta Tortel</li>
-        <li>Puerto Yungay</li>
-        <li>Villa O'Higgins</li>
-      </ul>
-      <p class="riel-pie">
-        Ocho en la Región de Los Lagos y diecinueve en la Región de Aysén. Cada una con
-        su propia ficha de qué visitar, dónde dormir, dónde comer, servicios,
-        emergencias y eventos.
-      </p>
+    <div class="botonera">
+      <a class="boton primario" href="https://rutaaustral.cl/?c=landing">Ver la guía</a>
+      <a class="boton secundario" href="#pedido">Qué le pedimos a su municipio</a>
+    </div>
+    </div>
+    <div>
+      <div class="telefono"><img src="/guia-ruta.jpg" alt="La guía abierta en el teléfono: la Ruta 7 completa, de Puerto Montt a Villa O'Higgins, con los pueblos marcados." /></div>
+      <p class="pie-foto">La ruta completa,<br />dentro del teléfono</p>
+    </div>
     </div>
   </div>
 </header>
 
 <main>
-
-  <section>
+  <section class="viaje">
     <div class="envoltura">
-      <div class="seccion-cabecera">
-        <span class="rotulo">El problema</span>
-        <h2>El viajero busca su localidad y encuentra información que ya no es</h2>
-      </div>
-      <div class="prosa">
-        <p>
-          El turista que llega a un pueblo de la Austral saca el teléfono y busca. El
-          problema no es que no pueda: es <strong>lo que encuentra</strong>. Los servicios
-          chicos de la ruta —la cabaña de seis camas, el comedor que abre en temporada, el
-          taller que arregla un neumático un domingo— aparecen incompletos, con un teléfono
-          que cambió hace dos años, o no aparecen. Las plataformas globales no mantienen
-          esa información y nadie tiene el encargo de hacerlo. La que sí la tiene al día es
-          la gente de cada pueblo.
-        </p>
-        <p>
-          Hay una segunda parte, y ocurre <strong>antes de llegar</strong>. La decisión de
-          dónde parar se toma manejando, entre un pueblo y otro, que es donde la cobertura
-          se corta: si sigo hasta el próximo o me quedo acá, si alcanza la bencina, si
-          conviene esperar la barcaza. En ese tramo no hay dónde consultar nada, y lo único
-          que sirve es lo que ya venía guardado en el equipo.
-        </p>
-        <p>
-          A eso se suma que no todas las localidades tienen una oficina de información
-          turística con horario extendido. Los números de la temporada 2026 lo muestran con
-          crudeza: <strong>Caleta Tortel registró 21 atenciones en OIT</strong> en toda la
-          temporada, siendo uno de los destinos más icónicos del país. No es que no lleguen
-          turistas — es que no hay dónde preguntar.
-        </p>
-      </div>
+      <p class="intro-viaje">
+        Las paradas son reales y las fichas también: cada una está hoy en la app.
+        Lo que cambia de un pueblo a otro no es el paisaje — es cuánto de lo que
+        aparece publicado sigue siendo cierto.
+      </p>
 
-      <div class="dato-fuerte" style="margin-top:24px">
-        <span class="rotulo">Temporada alta 2026 · Región de Aysén</span>
-        <p>
-          <strong>16.998 personas</strong> registradas en grupo de viaje y
-          <strong>6.357 atendidas en oficinas de información turística</strong> entre
-          diciembre y marzo. <strong>Cochrane fue el destino número uno de la región</strong>
-          por atenciones (1.312). La demanda de información existe y está medida; lo que
-          falta es que la respuesta sea la correcta y esté a mano donde se toma la decisión.
-        </p>
-        <p style="font-size:13.5px;color:var(--gris)">
-          Fuente: Red de Informadores Turísticos, Patagonia Chilena, temporada dic-2025 a mar-2026.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="envoltura">
-      <div class="seccion-cabecera">
-        <span class="rotulo">La propuesta</span>
-        <h2>Una oficina de información turística que viaja en el bolsillo</h2>
-        <p class="bajada">
-          Se instala una vez, con señal, y desde ahí funciona sola. Sin publicidad, sin
-          cuenta, sin costo para el viajero.
-        </p>
-      </div>
-
-      <div class="rejilla-3">
-        <div class="ficha">
-          <span class="rotulo">01 · Por localidad</span>
-          <h3>Cada pueblo tiene su propia ficha</h3>
-          <p>
-            El viajero elige la localidad —o la app la detecta por GPS— y ve qué visitar,
-            dónde dormir, dónde comer, servicios, emergencias y eventos de ese lugar. En
-            español e inglés. El listado es curado uno por uno, no una descarga automática
-            de otra plataforma.
+      <div class="parada">
+        <p class="lugar">Hornopirén <span>km 109</span></p>
+        <div class="escena">
+          <h3>Llega para el zarpe y el zarpe era otro</h3>
+          <p class="cuenta">
+            El horario que encontró en internet es de la temporada pasada. Pregunta
+            en el pueblo y le dan tres versiones distintas. La barcaza a Caleta
+            Gonzalo sale una vez al día y cruzarla toma casi cinco horas: si la
+            pierde, pierde el día.
           </p>
-        </div>
-        <div class="ficha">
-          <span class="rotulo">02 · En la ruta</span>
-          <h3>Sigue sirviendo donde se corta la cobertura</h3>
-          <p>
-            Los lugares, los teléfonos, las descripciones y los mapas quedan guardados en
-            el equipo al instalarla. Eso importa entre un pueblo y otro, que es donde no
-            hay señal y donde el viajero está decidiendo dónde va a parar.
-          </p>
-        </div>
-        <div class="ficha">
-          <span class="rotulo">03 · Estado de la ruta</span>
-          <h3>Los viajeros avisan lo que está pasando hoy</h3>
-          <p>
-            Cortes de camino, derrumbes, si hay bencina, cómo está la barcaza, el clima.
-            El aviso se escribe donde ocurre, aunque no haya señal, y sale solo al llegar
-            al pueblo. Cada uno caduca según su tipo, para que nadie confíe en un dato
-            viejo.
-          </p>
+          <div class="trae">
+            <p class="rotulo">Lo que la guía trae acá</p>
+            <p>La ficha <b>«Rampa de barcazas Hornopirén»</b>, con los zarpes, el
+            teléfono de reserva y las tarifas <b>con la fecha en que se tomaron</b> —
+            porque un valor sin fecha envejece mintiendo.</p>
+          </div>
+          <div class="foto-escena"><img src="/guia-hornopiren.jpg" alt="Hornopirén abierto en la guía, con sus fichas sobre el mapa." /></div>
         </div>
       </div>
 
-      <div class="cifras">
-        <div class="cifra"><b>26</b><span>localidades, de Puerto Montt a Villa O'Higgins</span></div>
-        <div class="cifra"><b>190+</b><span>lugares cargados y descritos</span></div>
-        <div class="cifra"><b>ES/EN</b><span>todo el contenido en dos idiomas</span></div>
-        <div class="cifra"><b>$0</b><span>para el viajero y para el servicio listado</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="envoltura">
-      <div class="seccion-cabecera">
-        <span class="rotulo">Por qué ahora</span>
-        <h2>Las obras que vienen van a mover el mapa durante cuatro años</h2>
-      </div>
-      <div class="prosa">
-        <p>
-          El <strong>Plan Ruta Austral</strong> del Ministerio de Obras Públicas, anunciado en
-          abril de 2026, contempla cerca de <strong>$800 mil millones entre 2026 y 2030</strong>
-          concentrados en la Región de Aysén: 244 kilómetros intervenidos, 150,4 km de
-          pavimentación definitiva, los puentes Palena y Rosselot, <strong>dos barcazas
-          nuevas</strong> para los lagos General Carrera y O'Higgins, y el puerto Yungay.
-        </p>
-        <p>
-          Son buenas noticias para la ruta y, mientras duren, significan
-          <strong>faenas, desvíos y cortes</strong>. Es exactamente el tipo de información que
-          cambia de un día para otro, que ninguna plataforma global mantiene para la
-          Austral, y que hoy circula por radio y por boca a boca. Tener a los viajeros
-          avisándose entre ellos —y a los municipios pudiendo publicar un aviso oficial—
-          vale más en 2027 que en cualquier otro momento.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="pedido">
-    <div class="envoltura">
-      <div class="seccion-cabecera">
-        <span class="rotulo">Lo que les pedimos</span>
-        <h2>Los datos correctos de su localidad. Nada más.</h2>
-        <p class="bajada">
-          Hoy varias fichas están publicadas con información preliminar y el texto lo dice
-          abiertamente: <em>“dato por confirmar”</em>. Preferimos eso antes que inventar un
-          teléfono. Con la información oficial, esa ficha se reemplaza el mismo día.
-        </p>
-      </div>
-
-      <div class="rejilla-2">
-        <div class="caja-pedido">
-          <span class="quien">Municipio · Encargatura de Turismo</span>
-          <h3>Un listado y un contacto</h3>
-          <ul>
-            <li>Alojamientos, restaurantes y servicios <strong>en operación</strong> en la comuna, con teléfono.</li>
-            <li>Postas, hospital, Carabineros, bomberos: nombre y número vigente.</li>
-            <li>Horarios reales de la bomba de bencina y de las barcazas, si aplica.</li>
-            <li>Fiestas costumbristas y eventos con fecha.</li>
-            <li>Un correo o teléfono al que podamos volver cuando algo cambie.</li>
-          </ul>
-          <p style="font-size:14px;color:var(--gris)">
-            Sirve un Excel, un PDF, un correo escrito a mano o un WhatsApp. Nosotros lo
-            ordenamos, lo redactamos y lo traducimos.
+      <div class="parada">
+        <p class="lugar">Caleta Gonzalo <span>Parque Pumalín</span></p>
+        <div class="escena">
+          <h3>Cinco horas de fiordo, y cero señal al bajar</h3>
+          <p class="cuenta">
+            Desembarca entrada la tarde, dentro del Parque Pumalín. No hay dónde
+            buscar nada: hay que decidir ahí mismo si sigue a Chaitén o se queda.
           </p>
-        </div>
-
-        <div class="caja-pedido">
-          <span class="quien">Alojamiento · Restaurante · Servicio</span>
-          <h3>Su ficha, con foto, sin costo</h3>
-          <ul>
-            <li>Nombre exacto, teléfono y dirección o referencia para llegar.</li>
-            <li>Qué ofrecen, en dos o tres líneas, dicho por ustedes.</li>
-            <li><strong>Una o dos fotos propias</strong> — las suyas, no las bajamos de internet.</li>
-            <li>Temporada y días de atención, si no atienden todo el año.</li>
-          </ul>
-          <p style="font-size:14px;color:var(--gris)">
-            Aparecer en la app es gratis y seguirá siéndolo. Más adelante habrá fichas
-            destacadas de pago, pero estar listado no se cobra.
-          </p>
+          <div class="trae">
+            <p class="rotulo">Lo que la guía trae acá</p>
+            <p>El <b>Sendero Cascadas</b>, los <b>Alerces</b>, el camping y la
+            cafetería — todo guardado en el teléfono desde antes de embarcar. La
+            guía no necesita señal para servir: esa es la parte del viaje donde se
+            decide dónde parar.</p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <section>
-    <div class="envoltura">
-      <div class="seccion-cabecera">
-        <span class="rotulo">Lo que reciben</span>
-        <h2>Qué gana la comuna y qué gana el negocio</h2>
-      </div>
-      <div class="rejilla-2">
-        <div class="ficha">
-          <h3>Para el municipio</h3>
-          <p>
-            Presencia de la comuna frente a un turista que ya está en la ruta y decidiendo
-            dónde parar, tenga o no señal en ese momento y esté o no abierta la oficina.
-            Los avisos oficiales —cortes, cambios de horario, emergencias— llegan al
-            teléfono del viajero que tiene la app instalada.
+      <div class="parada">
+        <p class="lugar">Chaitén <span>km 200</span></p>
+        <div class="escena">
+          <h3>Golpeando puertas a las nueve de la noche</h3>
+          <p class="cuenta">
+            Llega sin alojamiento. Los teléfonos que encuentra publicados o no
+            contestan o cambiaron hace dos años. Termina preguntando en la calle.
           </p>
+          <div class="trae">
+            <p class="rotulo">Lo que la guía trae acá</p>
+            <p>El asistente le arma el mensaje y él <b>pide disponibilidad</b> por
+            WhatsApp con un toque. Si no hay señal, la consulta queda escrita y sale
+            sola al llegar al pueblo. La guía no reserva por nadie: deja el mensaje
+            listo para que lo mande la persona.</p>
+          </div>
+          <div class="foto-escena"><img src="/guia-chaiten.jpg" alt="Chaitén abierto en la guía, con sus fichas sobre el mapa." /></div>
         </div>
-        <div class="ficha">
-          <h3>Para el servicio turístico</h3>
-          <p>
-            Una ficha con su teléfono y su foto, encontrable justo cuando el viajero busca
-            dónde dormir o comer en ese pueblo. Los servicios pequeños de la Austral suelen
-            estar mal representados o directamente ausentes en las plataformas globales;
-            aquí el listado es curado, no automático.
+      </div>
+
+      <div class="parada">
+        <p class="lugar">El Amarillo <span>desvío corto</span></p>
+        <div class="escena">
+          <h3>Lo que no venía a buscar</h3>
+          <p class="cuenta">
+            Se entera de las <b>Termas El Amarillo</b> por casualidad, en una
+            conversación. Podría haber pasado de largo, como pasa la mayoría.
+          </p>
+          <div class="trae">
+            <p class="rotulo">Lo que la guía trae acá</p>
+            <p>Las termas, el <b>portal El Amarillo del Pumalín</b> y el ventisquero
+            del <b>Michinmahuida</b>, con cómo llegar y cuánto se demora. Una guía
+            no sirve solo para evitar problemas: sirve para que el viajero se quede
+            una noche más en su comuna.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="parada">
+        <p class="lugar">Cuesta Moraga <span>a Villa Santa Lucía</span></p>
+        <div class="escena">
+          <h3>El camino de hoy no es el del mapa</h3>
+          <p class="cuenta">
+            Una faena, una máquina cruzada, un desprendimiento después de la lluvia.
+            El que viene detrás no tiene cómo saberlo hasta que llega.
+          </p>
+          <div class="trae">
+            <p class="rotulo">Lo que la guía trae acá</p>
+            <p>Los viajeros avisan <b>peligro, accidente o faena</b> donde ocurre,
+            aunque no haya señal: el aviso sale solo al llegar al pueblo, dura
+            <b>24 horas</b>, y los que van pasando confirman si sigue ahí.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="parada">
+        <p class="lugar">Futaleufú <span>desvío · 77 km</span></p>
+        <div class="escena">
+          <h3>El desvío que se convierte en el viaje</h3>
+          <p class="cuenta">
+            En el cruce de Villa Santa Lucía dobla hacia la cordillera. Se enamora
+            del río, del kayak, del azul imposible del <b>lago Espolón</b>. Se queda
+            tres días más de los que tenía pensado.
+          </p>
+          <div class="trae">
+            <p class="rotulo">Lo que la guía trae acá</p>
+            <p>Futaleufú aparece <b>como desvío, con sus kilómetros aparte</b>, no
+            como una parada del camino: así el viajero sabe lo que le cuesta ir y
+            decide con el número a la vista, en vez de descubrirlo manejando.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="parada">
+        <p class="lugar">La Junta <span>de vuelta al sur</span></p>
+        <div class="escena">
+          <h3>Vuelve a la ruta y sigue bajando</h3>
+          <p class="cuenta">
+            El <b>lago Rosselot</b>, la confluencia del Rosselot con el Palena, y el
+            desvío al mar por Raúl Marín Balmaceda que casi nadie sabe que existe.
           </p>
         </div>
       </div>
-    </div>
-  </section>
 
-  <section>
-    <div class="envoltura">
-      <div class="seccion-cabecera">
-        <span class="rotulo">Quién está detrás</span>
-        <h2>Un proyecto hecho desde la zona, no sobre la zona</h2>
-      </div>
-      <div class="prosa">
-        <p>
-          Patagonia Austral la desarrolla <strong>Juan Pablo Monsalve Suazo</strong>, que
-          vive y trabaja en el eje Cochrane–Tortel: opera una hamburguesería en el km 1020
-          y un servicio de transporte y encomiendas entre Caleta Tortel y Cochrane. La
-          falta de información confiable en la ruta no es un problema teórico — es el que
-          enfrenta cada semana manejando ese tramo.
-        </p>
-        <p>
-          El contenido de alojamiento parte de los registros públicos de <strong>SERNATUR</strong>
-          y se completa y corrige con información entregada directamente por los municipios
-          y los dueños. Nada se copia de otras plataformas y las fotos se usan solo con
-          autorización de quien las tomó.
-        </p>
-        <p>
-          <strong>Este es un proyecto privado e independiente.</strong> No es una iniciativa de
-          SERNATUR, de un municipio ni de ningún organismo público, y no representa a
-          ninguno de ellos.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="envoltura">
-      <div class="seccion-cabecera">
-        <span class="rotulo">Para el mesón</span>
-        <h2>Un código para que el viajero la instale ahí mismo</h2>
-        <p class="bajada">
-          Imprímalo y déjelo a la vista en la oficina de información, en la recepción o
-          en el mostrador. El viajero lo escanea con la cámara y la app se abre al
-          instante — no hay que buscarla en ninguna tienda ni descargar nada pesado.
-        </p>
-      </div>
-      <div class="qr-caja">
-        <img src="/qr-rutaaustral.svg" alt="Código QR que abre rutaaustral.cl" width="190" height="190" />
-        <div class="qr-texto">
-          <p>
-            Lleva a <span class="qr-url">rutaaustral.cl</span>. Si alguien prefiere
-            escribirlo a mano, funciona igual.
+      <div class="parada">
+        <p class="lugar">Puyuhuapi <span>y Villa Amengual</span></p>
+        <div class="escena">
+          <h3>Queulat, el Ventisquero Colgante, y el pueblo que casi se salta</h3>
+          <p class="cuenta">
+            Después de Puyuhuapi y sus termas, <b>Villa Amengual</b>: el lago Las
+            Torres, el mirador del Cerro Pirámide, la iglesia. Un pueblo por el que
+            se pasa de largo cuando nadie te cuenta qué hay.
           </p>
-          <p>
-            Impreso sirve para el viajero que ya está frente al mostrador: no hay que
-            dictarle la dirección ni pedirle el teléfono para mandársela. La cámara lo
-            reconoce sola, sin instalar ninguna aplicación para leerlo.
-          </p>
-          <div class="qr-descargas">
-            <a href="/qr-rutaaustral.svg" download>Descargar para imprimir (SVG)</a>
-            <a href="/qr-rutaaustral.png" download>Descargar imagen (PNG)</a>
+          <div class="trae">
+            <p class="rotulo">Y así hasta el final</p>
+            <p>Coyhaique, Cerro Castillo, Río Tranquilo, Cochrane, Tortel, Villa
+            O'Higgins. <b>28 localidades</b>, cada una con lo suyo: dónde dormir,
+            dónde comer, combustible, salud, transporte y qué visitar.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="contacto">
+  <section class="giro">
     <div class="envoltura">
-      <div class="seccion-cabecera">
-        <span class="rotulo">Conversemos</span>
-        <h2>Si su localidad debería estar mejor representada, escríbanos</h2>
-        <p class="bajada">
-          Respondemos todos los correos. Si prefiere mandar la información por WhatsApp o
-          por teléfono, también sirve — lo importante es que el dato sea el correcto.
+      <h2>En todo ese viaje, lo único que falla es el dato</h2>
+      <div class="prosa">
+        <p>
+          El paisaje está. Los servicios están. Lo que no está es la <b>información
+          correcta en el momento en que se decide</b>: el zarpe de esta temporada, el
+          teléfono que contesta, el horario de invierno, si hay que reservar.
+        </p>
+        <p>
+          Y eso no se arregla desde un escritorio en Santiago ni raspando otra
+          plataforma. <b>Lo saben ustedes</b>, que están en el pueblo, que conocen a
+          los dueños, que saben cuál cerró y cuál abrió esta temporada.
+        </p>
+        <p>
+          Por eso esta página no le está vendiendo nada a su municipio. Le está
+          pidiendo <b>que revise lo que dice de su comuna</b>.
         </p>
       </div>
-      <div class="botones">
-        <a class="boton primario" href="mailto:contacto@rutaaustral.cl?subject=Datos%20de%20turismo%20-%20Patagonia%20Austral">
-          Escribir un correo
-        </a>
-        <a class="boton secundario" href="https://wa.me/56951569704?text=Hola%2C%20escribo%20por%20la%20app%20Patagonia%20Austral%20y%20los%20datos%20de%20turismo%20de%20mi%20localidad." target="_blank" rel="noopener">
-          Escribir por WhatsApp
-        </a>
-        <a class="boton secundario" href="/?c=landing">Ver la aplicación</a>
-      </div>
-      <p class="nota-honesta">
-        Una aclaración sobre las fichas preliminares: mientras no tengamos el dato oficial,
-        preferimos publicar una ficha que diga “por confirmar” antes que dejar la categoría
-        vacía o inventar un teléfono. Si ve algo incorrecto de su localidad o de su negocio,
-        avísenos y lo corregimos — esa es exactamente la idea de esta página.
+    </div>
+  </section>
+
+  <section class="pedido" id="pedido">
+    <div class="envoltura">
+      <p class="rotulo">Lo que le pedimos</p>
+      <h2>Cinco minutos, y nada más</h2>
+      <ul class="lista">
+        <li><span class="n">01</span><span><b>Mire su localidad</b> en la guía y dígame qué está mal — aunque sea en una línea de respuesta. Lo corrijo el mismo día.</span></li>
+        <li><span class="n">02</span><span><b>Pase el código QR</b> a la oficina de información turística: el viajero la instala en el mesón y la sigue teniendo en el camino, donde ustedes ya no lo alcanzan.</span></li>
+        <li><span class="n">03</span><span>Si quiere, <b>páseme los contactos</b> de los alojamientos y restoranes de su comuna, y les escribo yo para que cada uno confirme su propio dato.</span></li>
+      </ul>
+      <p class="nota">
+        <b>Gratis, y sin comisión.</b> Ni la comuna ni los negocios pagan por
+        aparecer, y no cobro por nadie que llegue. Si un negocio prefiere no estar,
+        lo saco el mismo día que me lo diga.
       </p>
     </div>
   </section>
 
-</main>
+  <section class="meson">
+    <div class="envoltura">
+      <p class="rotulo">Para el mesón</p>
+      <h2>Un código para que el viajero la instale ahí mismo</h2>
+      <div class="meson-cuerpo">
+        <div>
+          <p>
+            Impreso y puesto en el mesón de la oficina de información turística, o
+            pegado en la puerta cuando está cerrada. El viajero apunta la cámara,
+            la guía se le instala en el teléfono <b>y la sigue teniendo en el
+            camino</b> — que es donde ustedes ya no lo alcanzan.
+          </p>
+          <p style="margin-top:12px">
+            No hay que descargar nada de una tienda de aplicaciones ni crear una
+            cuenta: se abre y queda.
+          </p>
+          <div class="descargas">
+            <a href="/qr-rutaaustral.svg" download>Descargar para imprimir (SVG)</a>
+            <a href="/qr-rutaaustral.png" download>Descargar imagen (PNG)</a>
+          </div>
+        </div>
+        <div>
+          <div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" shape-rendering="crispEdges"><path fill="#FFFFFF" d="M0 0h37v37H0z"/><path stroke="#0F6E56" d="M4 4.5h7m3 0h1m1 0h1m1 0h2m1 0h3m2 0h7M4 5.5h1m5 0h1m3 0h2m1 0h1m1 0h2m3 0h1m1 0h1m5 0h1M4 6.5h1m1 0h3m1 0h1m1 0h2m1 0h2m1 0h2m2 0h1m1 0h1m1 0h1m1 0h3m1 0h1M4 7.5h1m1 0h3m1 0h1m1 0h5m2 0h3m1 0h1m2 0h1m1 0h3m1 0h1M4 8.5h1m1 0h3m1 0h1m3 0h2m1 0h7m2 0h1m1 0h3m1 0h1M4 9.5h1m5 0h1m2 0h1m1 0h4m1 0h3m1 0h1m1 0h1m5 0h1M4 10.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M13 11.5h1m2 0h3m4 0h1M7 12.5h2m1 0h2m2 0h3m1 0h1m3 0h2m5 0h2M5 13.5h2m2 0h1m5 0h3m1 0h3m2 0h1m2 0h5M8 14.5h1m1 0h1m4 0h8m1 0h3m1 0h3M5 15.5h2m2 0h1m1 0h2m2 0h2m4 0h1m2 0h1m2 0h3m2 0h1M4 16.5h1m1 0h1m3 0h1m1 0h1m1 0h2m1 0h1m1 0h1m1 0h1m3 0h2m4 0h1M4 17.5h2m2 0h1m3 0h1m1 0h1m2 0h3m1 0h1m4 0h1m1 0h1m1 0h3M4 18.5h1m2 0h1m1 0h2m1 0h1m3 0h2m2 0h1m1 0h2m3 0h1m1 0h1m2 0h1M4 19.5h2m1 0h3m1 0h4m2 0h4m1 0h3m1 0h1m1 0h5M4 20.5h3m1 0h5m1 0h1m1 0h1m3 0h1m1 0h1m1 0h2m1 0h1m1 0h1m1 0h1M4 21.5h1m1 0h1m2 0h1m1 0h3m1 0h5m2 0h3m3 0h1M4 22.5h2m1 0h1m2 0h1m2 0h4m1 0h4m1 0h1m3 0h1m4 0h1M4 23.5h5m2 0h1m1 0h2m2 0h3m4 0h3m1 0h1m1 0h1m1 0h1M4 24.5h2m1 0h4m2 0h8m2 0h6m1 0h1m1 0h1M12 25.5h1m2 0h1m4 0h5m3 0h3M4 26.5h7m1 0h1m2 0h1m3 0h1m3 0h2m1 0h1m1 0h1m1 0h1M4 27.5h1m5 0h1m3 0h1m3 0h2m1 0h4m3 0h2m1 0h2M4 28.5h1m1 0h3m1 0h1m1 0h1m2 0h3m1 0h2m2 0h6m2 0h2M4 29.5h1m1 0h3m1 0h1m1 0h3m1 0h5m6 0h1m2 0h2M4 30.5h1m1 0h3m1 0h1m3 0h2m3 0h1m1 0h1m2 0h2m1 0h3m1 0h2M4 31.5h1m5 0h1m5 0h1m1 0h2m1 0h2m2 0h1m2 0h3m1 0h1M4 32.5h7m10 0h9"/></svg></div>
+          <p class="qr-pie">rutaaustral.cl</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<footer>
+  <section class="numeros">
+    <div class="envoltura">
+      <p class="rotulo">Que la demanda existe, está medido</p>
+      <h2>La gente pregunta. El problema es dónde</h2>
+      <div class="cifras">
+        <div class="cifra">
+          <p class="n">16.998</p>
+          <p>Personas registradas en grupo de viaje en Aysén, entre diciembre y marzo.</p>
+        </div>
+        <div class="cifra">
+          <p class="n">6.357</p>
+          <p>De ellas, atendidas en una oficina de información turística.</p>
+        </div>
+        <div class="cifra">
+          <p class="n">1.312</p>
+          <p>Atenciones en Cochrane: el destino número uno de la región.</p>
+        </div>
+        <div class="cifra">
+          <p class="n">21</p>
+          <p>Atenciones en Caleta Tortel en toda la temporada, siendo de los destinos más icónicos del país.</p>
+        </div>
+      </div>
+      <p style="max-width:62ch;color:var(--gris)">
+        Los últimos dos números, juntos, son el proyecto entero: donde hay oficina
+        se pregunta mucho, y donde no la hay <b style="color:var(--tinta)">el viajero llega igual y
+        no tiene a quién preguntarle</b>. Eso es lo que viene a llenar una guía que
+        va en el bolsillo.
+      </p>
+      <p class="fuente" style="margin-top:14px">
+        Fuente: Red de Informadores Turísticos, Patagonia Chilena, temporada dic-2025 a mar-2026.
+      </p>
+    </div>
+  </section>
+
+  <section class="obras">
+    <div class="envoltura">
+      <p class="rotulo">Por qué ahora</p>
+      <h2>Las obras que vienen van a mover el mapa durante cuatro años</h2>
+      <div class="prosa">
+        <p>
+          El <b>Plan Ruta Austral</b> del Ministerio de Obras Públicas, anunciado en
+          abril de 2026, contempla cerca de <b>$800 mil millones entre 2026 y 2030</b>
+          concentrados en la Región de Aysén: 244 kilómetros intervenidos, 150,4 km de
+          pavimentación definitiva, los puentes Palena y Rosselot, <b>dos barcazas
+          nuevas</b> para los lagos General Carrera y O'Higgins, y el puerto Yungay.
+        </p>
+        <p>
+          Son buenas noticias para la ruta y, mientras duren, significan
+          <b>faenas, desvíos y cortes</b>: exactamente el tipo de información que
+          cambia de un día para otro y que ninguna plataforma global mantiene para la
+          Austral. Es la misma cuesta Moraga del relato, cuatro años seguidos y en
+          media región.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="contacto">
+    <div class="envoltura">
+      <p class="rotulo">Escríbanos</p>
+      <h2>Si su localidad debería estar mejor representada</h2>
+      <p>
+        Respondemos todos los correos, el mismo día cuando se puede. Si prefiere
+        mandar la información por WhatsApp, también sirve — lo importante es que el
+        dato sea el correcto.
+      </p>
+      <div class="botonera">
+        <a class="boton primario" href="mailto:contacto@rutaaustral.cl?subject=Datos%20de%20turismo%20-%20Patagonia%20Austral">Escribir un correo</a>
+        <a class="boton borde" href="https://wa.me/56951569704?text=Hola%2C%20escribo%20por%20la%20app%20Patagonia%20Austral%20y%20los%20datos%20de%20turismo%20de%20mi%20localidad." target="_blank" rel="noopener">Escribir por WhatsApp</a>
+        <a class="boton borde" href="/?c=landing">Ver la guía</a>
+      </div>
+      <p class="nota" style="margin-top:24px">
+        <b>Sobre las fichas que dicen «por confirmar».</b> Mientras no tengamos el
+        dato oficial, preferimos publicar una ficha honesta antes que dejar la
+        categoría vacía o inventar un teléfono. Si ve algo incorrecto de su
+        localidad o de su negocio, avísenos y lo corregimos — esa es exactamente
+        la idea de esta página.
+      </p>
+    </div>
+  </section>
+
   <div class="envoltura">
-    Patagonia Austral · Carretera Austral, Puerto Montt a Villa O'Higgins ·
-    Proyecto privado independiente · <a href="/?c=landing">Ir a la aplicación</a>
+    <div class="cierre">
+      <p>
+        <b>Un proyecto privado e independiente.</b> No es una iniciativa de SERNATUR,
+        de un municipio ni de ningún organismo público, y no representa a ninguno.
+        Lo desarrolla <b>Juan Pablo Monsalve Suazo</b>, que vive en el eje
+        Cochrane–Tortel y recorre ese tramo cada semana.
+      </p>
+      <p>
+        El contenido parte de registros públicos y se corrige con lo que entregan
+        los municipios y los dueños. Nada se copia de otras plataformas, y las fotos
+        se usan solo con autorización de quien las tomó.
+      </p>
+    </div>
   </div>
-</footer>
-
+</main>
 </body>
 </html>

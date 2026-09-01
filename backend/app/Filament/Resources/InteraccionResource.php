@@ -41,6 +41,9 @@ class InteraccionResource extends Resource
 
     private static ?array $nombresLocalidad = null;
 
+    /** Códigos de canal → etiqueta, incluido el QR de cada oficina. */
+    private static ?array $canales = null;
+
     /** Etiquetas de `referencia` que no salen de ninguna tabla. */
     private const ETIQUETAS_FIJAS = [
         'idioma' => ['es' => 'Español', 'en' => 'English'],
@@ -104,8 +107,13 @@ class InteraccionResource extends Resource
         // que viaja en la URL impresa; el nombre largo se arma acá, que es
         // donde se lee. Un código que ya no está en la lista se muestra tal
         // cual: siguió contando para el total del día en que se usó.
+        // El mapa de canales incluye el QR de cada oficina (`oit-cochrane` →
+        // «OIT — Cochrane»). Se pide una vez por petición, como los nombres de
+        // ficha: esta función se llama una vez por fila de la tabla.
         if ($tipo === 'campana') {
-            return Interaccion::CANALES[$referencia] ?? $referencia;
+            self::$canales ??= Interaccion::canalesValidos();
+
+            return self::$canales[$referencia] ?? $referencia;
         }
 
         return self::ETIQUETAS_FIJAS[$tipo][$referencia] ?? $referencia;
