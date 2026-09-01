@@ -76,6 +76,48 @@ verificar — el proxy de red bloquea las consultas DNS, así que ni siquiera se
 puede mirar si el SPF, el DKIM y el DMARC de `rutaaustral.cl` están bien puestos:
 eso lo dice el propio mail-tester.
 
+### El buzón mide 10/10, y quedaba un calendario de más
+
+**La puerta pasó.** Mail-tester dio **10/10** el 1-sep-2026 con el correo real a
+Tortel, mandado desde `contacto@rutaaustral.cl` por Gmail «Enviar como».
+Autenticación (SPF+DKIM+DMARC), SpamAssassin, listas negras y enlaces: los cuatro
+en verde. **Purelymail se queda** —el riesgo de IPs compartidas que justificaba
+tener este paso como puerta no se materializó— y no hay que gastar los US$84/año
+de Workspace. La única fila naranja fue "tu mensaje se podría mejorar", que no
+descontó: es el `List-Unsubscribe` que un correo personal uno a uno no lleva.
+
+**Una corrección de lo que yo mismo había escrito**: el paso 8 decía que esos dos
+avisos "van a salir como descuentos" y que por eso el corte era 8. Salieron como
+aviso y no costaron puntos. El corte se queda en 8, pero por otra razón —no vale
+la pena perseguir la fila naranja—, y así quedó escrito.
+
+**Y había dos calendarios.** El PR #111 entró justo después del #110 con
+`plan-20-dias.md`, mientras el #110 había dejado el mismo calendario dentro de
+`README.md` §2. No decían lo mismo: el reparto de las comunas de los días 5 y 6
+(4+3 contra 3+4, con Chaitén cambiando de tanda) y la medición de la puerta del
+día 10. **Dos calendarios operativos que difieren es peor que ninguno**: se manda
+dos veces a la misma comuna, o no se manda a una.
+
+Quedó **uno solo**, `plan-20-dias.md`, que es el más completo (trae bitácora y
+día tipo). Del otro se portaron las tres cosas que sí aportaba:
+
+- **La puerta del día 10 se mide distinto en cada ola.** `plan-20-dias.md` decía
+  "propuestas recibidas sobre enlaces mandados" para las comunas, y **ese número
+  no existe para ellas**: reciben `?c=muni`, no un enlace personal, así que el CMS
+  no las ve. Su tasa se cuenta a mano en el buzón; la del CMS vale para la ola 2.
+- **Chaitén viaja en la tanda del día 5 por reparto de carga, no por región** —es
+  de Los Lagos, como las tres del día 6—, y su correo nombra cuatro localidades.
+  Quedó dicho en la tabla para que nadie lo lea como un error de región.
+- **Lo que puede romper los días 11–17 es la columna `correo`**, no el
+  calendario: un rubro sin correos del dueño es un día de tres envíos, y eso se
+  sabe el día 2 mirando la lista, no el día 11.
+
+**Regla que sale de esto, y vale para cualquier trabajo en paralelo:** dos
+sesiones sobre el mismo tema **en ramas distintas no se ven entre sí**, y el
+segundo merge no avisa que duplicó al primero. Lo que protege no es git —los dos
+PR pasaron limpios— sino que el documento **diga que es el único**, como ahora lo
+dice `README.md`.
+
 ## Dónde quedamos — para retomar (25-ago-2026)
 
 ### El correo del dueño ya vive en la ficha
@@ -372,9 +414,8 @@ de los pipelines de carga.
 
 **Lo que falta y es tuyo** (nada de esto se puede hacer desde una sesión web):
 
-1. **Mail-tester antes del primer envío** (`DEPLOY.md` §2.4.1, paso 8). Menos de
-   8/10 y no se manda nada: un correo que cae en la carpeta de spam de una cuenta
-   municipal falla igual que uno que rebota, solo que sin avisar.
+1. ~~**Mail-tester antes del primer envío**~~ — **hecho el 1-sep-2026: 10/10**
+   (`DEPLOY.md` §2.4.1, paso 8). La puerta quedó pasada; el buzón manda y llega.
 2. **Armar `docs/campana/contactos.csv`** — una fila por comuna para la ola 1, una
    por negocio para la ola 2, con el enlace personal que da `/admin` → Lugares →
    "Enlace para actualizar".
@@ -1801,9 +1842,11 @@ después de escribirlo todo.
       **Paso a paso completo: `DEPLOY.md` §2.4.1** (4-ago-2026), incluida la
       verificación con `spf=pass`/`dkim=pass` y las precauciones de
       entregabilidad para que la campaña no caiga en spam.
-- [ ] **Medir la entregabilidad con mail-tester** (paso 8 de `DEPLOY.md` §2.4.1,
-      escrito el 1-sep-2026: qué mandar, por qué camino y qué hacer con cada
-      puntaje) — es un paso **distinto** de montar el buzón y sigue pendiente. Purelymail
+- [x] **Entregabilidad medida — 10/10 el 1-sep-2026** (paso 8 de `DEPLOY.md`
+      §2.4.1). Autenticación, SpamAssassin, listas negras y enlaces, los cuatro en
+      verde sobre el texto real del correo a Tortel. **La campaña puede salir y
+      Purelymail se queda**: el riesgo de las IPs compartidas —la razón por la que
+      este paso era una puerta— no se materializó. Purelymail
       se eligió asumiendo el riesgo de IPs compartidas; un correo que sale pero
       cae en la carpeta de spam de una cuenta municipal falla igual que uno que
       rebota, solo que sin avisar. Si el puntaje sale bajo, se migra a Google

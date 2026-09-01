@@ -334,11 +334,21 @@ que es único por cuenta).
    | **< 7, por autenticación** | Un registro mal escrito — el clásico es el SPF guardado como tipo `SPF` en vez de `TXT` | Arreglarlo (paso 3) y repetir. **No se manda nada** |
    | **< 7, por reputación de IP o lista negra** | El riesgo que se asumió al elegir Purelymail | Migrar a Google Workspace (~US$84/año): es cambiar los MX, una tarde. Se paga **recién acá** |
 
-   **Dos descuentos que van a salir y NO son un problema que arreglar**: no
+   > **✅ Medido el 1-sep-2026: 10/10.** Se mandó el correo real a la
+   > municipalidad de Tortel desde `contacto@rutaaustral.cl` (vía Gmail «Enviar
+   > como»). Las cuatro filas que importan salieron en verde: **correctamente
+   > autenticado** (SPF + DKIM + DMARC), **SpamAssassin conforme**, **sin listas
+   > negras** y **sin enlaces rotos**. La única fila naranja fue "tu mensaje se
+   > podría mejorar", que **no descontó**. O sea: **la campaña sale, y no hay que
+   > migrar a Google Workspace** — el riesgo de las IPs compartidas de Purelymail
+   > no se materializó.
+
+   **Dos cosas van a aparecer marcadas y NO son un problema que arreglar**: no
    llevar cabecera `List-Unsubscribe` (un correo personal uno a uno no la lleva;
-   un boletín sí) y ser un dominio sin historial. Por eso el corte está en 8 y
-   no en 10 — perseguir el 10/10 acá es gastar días en algo que la campaña no
-   necesita.
+   un boletín sí) y ser un dominio sin historial. Aparecieron como aviso, no como
+   descuento — la medición del 1-sep dio 10/10 igual. El corte se deja en 8 y no
+   en 10 porque perseguir la fila naranja es gastar días en algo que la campaña
+   no necesita, no porque esos avisos cuesten puntos.
 
    **Los intentos gratis están limitados por día y por IP, y son pocos.** Conviene
    releer los siete registros del paso 3 antes de gastar el primero.
