@@ -304,6 +304,15 @@ fijan:
 - **La lista de contactos de la campaña no va al repo** (`.gitignore`): son
   correos personales de dueños y de funcionarias municipales. En el repo queda
   solo `docs/campana/contactos.ejemplo.csv`.
+- **El techo de la campaña no es el esfuerzo, es la reputación del buzón.** Sobre
+  ~20 correos al día un dominio nuevo empieza a filtrarse, y ese fallo no avisa:
+  el correo sale y no llega. Por eso el calendario
+  (`docs/campana/plan-20-dias.md`) reparte 14 municipalidades y siete rubros en
+  tandas, y lo que se intensifica es **contestar el mismo día**, no mandar más.
+  Y 20 días alcanzan para mandar y responder todo, **no** para ver el efecto:
+  una oficina municipal contesta en semanas y «contactos a un negocio»
+  necesita viajeros, que llegan recién con la difusión posterior. El número
+  del día 20 es piso, no resultado.
 
 **El asistente es un copiloto, y ya se puede reservar (15-ago-2026).** Con un
 **perfil de viaje** de cuatro toques (personas, días, vehículo, sentido) y el GPS,

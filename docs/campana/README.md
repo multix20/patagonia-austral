@@ -7,6 +7,9 @@ la ruta.
 - **Qué se dice y por qué**: `POSICIONAMIENTO.md` (leerlo antes de tocar el copy).
 - **Los textos**: `correo-1-municipios.md`, `correo-2-negocios.md`.
 - **A quién**: `contactos.csv`, que **no está en el repo** (ver §5).
+- **Cuándo**: `plan-20-dias.md`, el calendario día por día.
+- **Ya resueltos**: `ola1-por-comuna.md`, los 14 correos municipales listos
+  para copiar, con las localidades de cada comuna y su QR ya escritos.
 
 > **Esta campaña decide el producto.** No es difusión: es la que consigue el
 > teléfono que contesta. La difusión al viajero va **después**, cuando lo que se
@@ -151,6 +154,10 @@ campaña terminó un día antes.
 > **completa** en la preparación y mirar cuántas filas traen correo por rubro es lo
 > que convierte este calendario en algo que se puede cumplir.
 
+El «Día 0» de esa tabla es el primer día de **envío**, que en
+`plan-20-dias.md` cae en el día 3: los dos primeros se van en preparar. Ese
+archivo es el que manda sobre las fechas; esta tabla dice el orden.
+
 La ola 2 no sale de una vez: va **por rubro**, en el orden de la tabla de
 `correo-2-negocios.md` (alojamiento → gastronomía → combustible → transporte →
 barcazas → guías → comercio). Dos razones prácticas: el buzón es nuevo y no
@@ -215,10 +222,11 @@ por subir lo que no correspondía.
 - Las de las municipalidades se sacan a mano de cada sitio `.cl` institucional —
   suele ser `turismo@municipalidadXXX.cl` o la Dirección de Desarrollo
   Económico Local (DIDEL).
-- **Una comuna, un correo.** Las 27 localidades de la app se agrupan en bastante
-  menos comunas, y mandar cuatro correos a la misma oficina —uno por caleta— es
-  la forma más rápida de que los cuatro se ignoren. Se nombran las localidades
-  de esa comuna adentro del correo.
+- **Una comuna, un correo.** Las 28 localidades de la app se agrupan en 14
+  comunas, y mandar cuatro correos a la misma oficina —uno por caleta— es la
+  forma más rápida de que los cuatro se ignoren. Se nombran las localidades de
+  esa comuna adentro del correo, que es lo que ya está resuelto en
+  `ola1-por-comuna.md`.
 
 ## 6. Qué se mira después, y cuándo
 
