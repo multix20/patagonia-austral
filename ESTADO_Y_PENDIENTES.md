@@ -22,6 +22,60 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
+## Dónde quedamos — para retomar (1-sep-2026)
+
+### La campaña tiene calendario, y el paso que la bloqueaba no existía
+
+**Qué se hizo.** El calendario de 20 días quedó escrito en
+`docs/campana/README.md` §2, y se escribió el **paso 8 de `DEPLOY.md` §2.4.1**,
+que ocho lugares del repo citaban como la puerta de la campaña y **no existía**:
+la lista numerada de esa sección terminaba en el 7 y lo único que había del
+mail-tester era un bullet suelto de tres líneas en la lista de "Verificar".
+
+**Por qué importa que faltara justo ese.** Es el único paso que decide si la
+campaña sale o si primero hay que cambiar de proveedor de correo, y el que no se
+puede deducir de que "el buzón anda": un correo se entrega perfecto en tu propio
+Gmail y va a spam en una cuenta municipal sin rebotar ni avisar. Lo que se agregó
+no es el recordatorio de hacerlo —eso ya estaba en cuatro archivos— sino **qué
+mandar y qué hacer con cada puntaje**:
+
+- **Se manda el correo real de la campaña, no un "hola, probando".** Mail-tester
+  puntúa el contenido con SpamAssassin y revisa los enlaces contra listas negras.
+  Un correo de dos palabras da un puntaje que no es el de la campaña.
+- **Se manda por el camino real**: Gmail con *Enviar como* → Purelymail. Desde el
+  webmail de Purelymail se mide otra ruta y otra IP, que la campaña no va a usar.
+- **Dos descuentos van a salir y no son un problema que arreglar**: la cabecera
+  `List-Unsubscribe` (que un correo personal uno a uno no lleva) y el dominio sin
+  historial. Por eso el corte es 8 y no 10; perseguir el 10/10 es gastar días en
+  algo que la campaña no necesita.
+
+**Tres cosas que el calendario dejó fijadas**, y son las que no se ven mirando la
+tabla:
+
+- **La puerta del día 10 se mide distinto en cada ola.** El documento decía
+  "propuestas recibidas / enlaces mandados", que es del CMS — pero **las comunas
+  no reciben enlace personal**, reciben `?c=muni`, así que el CMS no sabe nada de
+  ellas. Su tasa de respuesta se cuenta a mano en el buzón. La razón del CMS vale
+  solo para la ola 2.
+- **Alojamiento sale antes de la puerta a propósito**: los días 7–8 caen antes
+  del 10, así que la puerta protege a los seis rubros siguientes, no a él. Es el
+  mismo argumento por el que la ola 2 va por rubro — alguien tiene que ir primero
+  para que sus respuestas corrijan el texto del que viene.
+- **Lo que puede romper el calendario no es el calendario: es la columna
+  `correo`.** Los días 7–8 y 11–17 valen lo que valga la lista. Si un rubro tiene
+  tres fichas con correo del dueño, ese día son tres correos — y conviene saberlo
+  el día 2, no el día 11.
+
+**El día se numera, no se fecha, y el día 3 se ancla a un martes.** Un correo
+institucional que sale el viernes por la tarde se lee el lunes con tres días de
+bandeja encima, y la primera impresión ante una municipalidad no se repite.
+
+**Lo que sigue siendo tuyo, y es lo próximo**: correr el paso 8 (mail-tester)
+desde el teléfono. Diez minutos. Desde una sesión web no se puede hacer ni
+verificar — el proxy de red bloquea las consultas DNS, así que ni siquiera se
+puede mirar si el SPF, el DKIM y el DMARC de `rutaaustral.cl` están bien puestos:
+eso lo dice el propio mail-tester.
+
 ## Dónde quedamos — para retomar (25-ago-2026)
 
 ### El correo del dueño ya vive en la ficha
@@ -227,7 +281,7 @@ entera y aparece scroll horizontal en el teléfono.
 **Qué se agregó.** La campaña dejó de ser dos textos y pasó a ser una lista de
 envío ejecutable:
 
-- **Ola 1 — las 14 comunas.** Las 27 localidades de la app caen en 14 comunas, y
+- **Ola 1 — las 14 comunas.** Las 28 localidades de la app caen en 14 comunas, y
   el correo de cada una **nombra las suyas** (Chaitén son cuatro; Cisnes, cuatro).
   Esa lista es lo que separa un correo genérico de uno que prueba que alguien
   miró el territorio.
@@ -1747,8 +1801,9 @@ después de escribirlo todo.
       **Paso a paso completo: `DEPLOY.md` §2.4.1** (4-ago-2026), incluida la
       verificación con `spf=pass`/`dkim=pass` y las precauciones de
       entregabilidad para que la campaña no caiga en spam.
-- [ ] **Medir la entregabilidad con mail-tester** (paso 8 de `DEPLOY.md` §2.4.1)
-      — es un paso **distinto** de montar el buzón y sigue pendiente. Purelymail
+- [ ] **Medir la entregabilidad con mail-tester** (paso 8 de `DEPLOY.md` §2.4.1,
+      escrito el 1-sep-2026: qué mandar, por qué camino y qué hacer con cada
+      puntaje) — es un paso **distinto** de montar el buzón y sigue pendiente. Purelymail
       se eligió asumiendo el riesgo de IPs compartidas; un correo que sale pero
       cae en la carpeta de spam de una cuenta municipal falla igual que uno que
       rebota, solo que sin avisar. Si el puntaje sale bajo, se migra a Google
@@ -1967,8 +2022,8 @@ Carretera Austral se pide una vez, y si el que entra encuentra medio directorio
 - **PWA instalable de verdad**: manifest correcto, iconos por plataforma
   (incluido `apple-touch-icon`, sin el cual iOS guardaba una captura),
   `beforeinstallprompt` atrapado en el `<head>` y aviso de versión nueva.
-- **Contenido publicado**: 27 localidades, 159 fichas, mapa offline, chatbot,
-  reportes de ruta.
+- **Contenido publicado**: 28 localidades, mapa offline, chatbot, reportes de
+  ruta. (El recuento de fichas se mira en `/admin` → Lugares, no acá.)
 - **Landing `/proyecto`** con el copy corregido, correo y botón de WhatsApp — es
   para municipios y dueños, pero sirve de respaldo cuando alguien pregunta "¿y
   quién está detrás de esto?".

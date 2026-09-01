@@ -132,8 +132,8 @@ Elegido el 3-ago-2026. Registrado en **NIC Chile** (`nic.cl`). Orden de los paso
 > pendiente de esta sección es el paso 8: medir la entregabilidad con
 > mail-tester antes de mandar la campaña.**
 
-Esta casilla es el remitente de la campaña a las 26 encargadas de turismo
-municipal, y el destino del botón de correo de la landing.
+Esta casilla es el remitente de la campaña a las **14** encargadas de turismo
+municipal (una por comuna, no una por localidad), y el destino del botón de correo de la landing.
 
 **Dónde van los registros: en Netlify DNS, no en NIC Chile.** El dominio usa los
 *nameservers* de Netlify (`dns*.p06.nsone.net`), así que NIC ya no resuelve nada.
@@ -183,7 +183,7 @@ de plan.
 filtran fuerte**, y sale desde IPs compartidas de un proveedor chico y un dominio
 recién nacido. Por eso el paso 8 —medir la entregabilidad **antes** de la
 campaña— no es opcional. Si sale mal ahí, se migra a Workspace cambiando los MX;
-lo que no puede pasar es enterarse con los 26 correos ya enviados.
+lo que no puede pasar es enterarse con la campaña ya enviada.
 
 **Ningún plan gratis sirve acá**: sin SMTP propio no se puede enviar desde
 `contacto@rutaaustral.cl`.
@@ -306,6 +306,43 @@ que es único por cuenta).
    - En el teléfono, si prefieres app aparte: IMAP `imap.purelymail.com`, puerto
      `993`, SSL.
 
+8. **Medir la entregabilidad con mail-tester — la puerta de la campaña.** Es un
+   paso **distinto** de montar el buzón: el buzón manda y recibe desde el
+   5-ago-2026, y aun así la campaña puede estar cayendo entera en la carpeta de
+   spam de las cuentas municipales sin que rebote ni un correo. Se hace **desde
+   el teléfono o el PC, en diez minutos**:
+
+   1. Abrir [mail-tester.com](https://www.mail-tester.com/). Da una dirección al
+      azar (`test-xxxxx@srv1.mail-tester.com`) que se usa **una sola vez**.
+   2. **Mandarle el correo real de la campaña**, no un "hola, probando". El texto
+      de `docs/campana/correo-1-municipios.md` con su asunto de verdad y el
+      enlace `https://rutaaustral.cl/?c=muni` adentro. Mail-tester puntúa el
+      **contenido** con SpamAssassin y revisa los enlaces contra listas negras:
+      un correo de dos palabras da un puntaje que no es el de la campaña, y es
+      el puntaje de la campaña el que se está midiendo.
+   3. **Mandarlo por el camino real**: desde el Gmail de siempre con *Enviar
+      como* → `contacto@rutaaustral.cl` (paso 7). Enviarlo desde el webmail de
+      Purelymail mide otra ruta y otra IP que la campaña no va a usar.
+   4. Volver a la pestaña de mail-tester y apretar *Then check your score*.
+
+   **Qué se hace con cada puntaje** — esto es la puerta, no una sugerencia:
+
+   | Puntaje | Qué suele ser | Qué se hace |
+   |---|---|---|
+   | **≥ 8/10** | Todo en orden (con los siete registros bien puestos lo normal es 9–10) | Sale la campaña: día 3 del calendario (`docs/campana/README.md` §2) |
+   | **7–8** | SPF, DKIM o DMARC a medio propagar | Revisar los siete registros del paso 3 y repetir a las 24 h |
+   | **< 7, por autenticación** | Un registro mal escrito — el clásico es el SPF guardado como tipo `SPF` en vez de `TXT` | Arreglarlo (paso 3) y repetir. **No se manda nada** |
+   | **< 7, por reputación de IP o lista negra** | El riesgo que se asumió al elegir Purelymail | Migrar a Google Workspace (~US$84/año): es cambiar los MX, una tarde. Se paga **recién acá** |
+
+   **Dos descuentos que van a salir y NO son un problema que arreglar**: no
+   llevar cabecera `List-Unsubscribe` (un correo personal uno a uno no la lleva;
+   un boletín sí) y ser un dominio sin historial. Por eso el corte está en 8 y
+   no en 10 — perseguir el 10/10 acá es gastar días en algo que la campaña no
+   necesita.
+
+   **Los intentos gratis están limitados por día y por IP, y son pocos.** Conviene
+   releer los siete registros del paso 3 antes de gastar el primero.
+
 **Verificar** — no darlo por hecho hasta que estas cuatro pasen:
 
 - Mandar un correo **desde fuera** (tu Gmail) a `contacto@rutaaustral.cl` y que
@@ -316,15 +353,15 @@ que es único por cuenta).
   estás enviando como Gmail disfrazado). Si sale `dkim=neutral`, falta un CNAME
   o todavía no propaga.
 - Abrir `/proyecto` y probar el botón de contacto.
-- **Antes de la campaña**: mandar un correo a `mail-tester.com` desde la
-  dirección nueva y que dé **≥ 8/10** (lo normal con todo bien puesto es 10/10).
-  Si sale bajo por reputación de IP, ahí es donde se decide migrar a Workspace
-  —cambiando los MX— y no con los 26 correos ya salidos.
+- **Antes de la campaña**: el **paso 8** completo (mail-tester ≥ 8/10). Es la
+  única de las cuatro que no se puede dar por hecha mirando un correo que llegó
+  bien: un mensaje puede entregarse perfecto en tu Gmail y aun así ir a spam en
+  una cuenta municipal.
 
 Propagación: los MX suelen andar en 1–2 h; SPF y DKIM pueden tardar hasta 24–48 h.
 
 **Antes de la campaña — entregabilidad.** El dominio es de agosto de 2026: su
-reputación es cero. Mandar 26 correos de golpe desde un dominio recién nacido es
+reputación es cero. Mandar la campaña de golpe desde un dominio recién nacido es
 justo el patrón que marca spam, y estos correos van a **cuentas municipales**,
 que suelen filtrar con la mano pesada.
 

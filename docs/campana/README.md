@@ -77,13 +77,79 @@ la ruta.
    ficha ya está publicada" y la ficha tiene el pin en el centro del pueblo y una
    descripción de plantilla, el remitente pierde en el primer clic.
 
+   Dos cosas concretas a curar antes del día 3, porque se ven sin abrir la ficha:
+   **los nombres que quedaron en MAYÚSCULAS** de los pipelines de carga (un
+   nombre gritado es la firma de un dato importado sin mirar, que es exactamente
+   lo contrario de lo que el correo afirma) y **Puerto Aysén**, cuya ficha vio el
+   texto de plantilla más veces que ninguna. Se ordena por localidad en `/admin`
+   → Lugares.
+
 ## 2. Las olas
 
 | Ola | A quién | Texto | Código del enlace | Cuándo |
 |---|---|---|---|---|
-| 1 | Encargadas de turismo municipal (una por comuna, no por localidad) | `correo-1-municipios.md` | `?c=muni` | Día 0 |
-| 2 | Dueños de servicios con ficha publicada, **por rubro** | `correo-2-negocios.md` | `?c=negocio` + su enlace personal | Día 1–3 |
-| 3 | Recordatorio a quien no respondió | El bloque "Recordatorio" de cada archivo | El mismo de su ola | Día 10 |
+| 1 | Encargadas de turismo municipal (una por comuna, no por localidad) | `correo-1-municipios.md` | `?c=muni` | Días 3–6 y 9 |
+| 2 | Dueños de servicios con ficha publicada, **por rubro** | `correo-2-negocios.md` | `?c=negocio` + su enlace personal | Días 7–8 y 11–17 |
+| 3 | Recordatorio a quien no respondió | El bloque "Recordatorio" de cada archivo | El mismo de su ola | Día 10 (ola 1) y 18–20 (ola 2) |
+
+### El calendario, día por día
+
+Son veinte días, y la numeración es de **días de envío, no de fechas**: el día 1
+es cuando partes. **Ancla el día 3 —el primer correo— a un martes**, y no cuentes
+sábado ni domingo como día: un correo institucional que llega el viernes por la
+tarde se lee el lunes con tres días de bandeja encima, y esa primera impresión no
+se repite.
+
+| Días | Qué sale | Cuántos correos |
+|---|---|---|
+| **1–2** | **Nada.** Preparar: los seis pasos de §1 — mail-tester, curar Puerto Aysén y los nombres en MAYÚSCULAS, analítica en cero, probar `?c=muni`, bajar la lista de la ola 2 | 0 |
+| **3** | Ola 1 — **Capitán Prat**: Tortel, Cochrane, O'Higgins | 3 |
+| **4** | Ola 1 — **el lago**: Chile Chico, Río Ibáñez | 2 |
+| **5** | Ola 1 — **Aysén centro-norte**: Cisnes, Lago Verde, Aysén | 3 |
+| **6** | Ola 1 — **Los Lagos**: Chaitén, Futaleufú, Palena, Hualaihué | 4 |
+| **7–8** | Ola 2 — **alojamiento**, empezando por las localidades cuyo municipio ya respondió | según la lista |
+| **9** | Ola 1 — **Coyhaique y Puerto Montt** | 2 |
+| **10** | Recordatorio de la ola 1 **+ la puerta** (acá abajo) | los que no contestaron |
+| **11–17** | Ola 2 — los seis rubros restantes, **uno por día**: gastronomía → combustible → transporte → barcazas → guías → comercio | según la lista |
+| **18–20** | Recordatorio de la ola 2, curar todo lo llegado, leer el embudo | los que no contestaron |
+
+Las 14 comunas quedan repartidas 3+2+3+4 en los días 3–6, más las 2 del día 9.
+Ninguna repetida, ninguna afuera — la lista completa, con qué localidades nombrarle
+a cada una, está en `correo-1-municipios.md`.
+
+**Por qué el orden es ese, y no alfabético ni por tamaño.** Empieza por Capitán
+Prat, donde el correo no es frío —el remitente vive ahí—, y sube por la ruta:
+lago, Aysén centro-norte, Los Lagos. **Coyhaique y Puerto Montt van al final, el
+día 9**, porque son las oficinas más grandes, las que menos necesitan la app, y
+las únicas que se mueven si uno llega con media región ya respondida detrás.
+
+**La puerta del día 10 se mide distinto en cada ola.** Si responde **menos de 1 de
+cada 4**, no sale el rubro del día 11: primero se reescribe el correo. Pero el
+número no sale del mismo lado:
+
+- **Ola 1 — se cuenta a mano, en el buzón.** Las comunas no reciben enlace
+  personal (reciben `?c=muni`), así que el CMS no sabe nada de ellas: lo único
+  que hay es la respuesta al correo, y se anota en el CSV.
+- **Ola 2 — se cuenta en el CMS.** `/admin` → Propuestas, contra los enlaces
+  personales mandados. Ahí sí el sistema sabe quién usó el suyo.
+
+**Alojamiento sale ANTES de la puerta, a propósito.** Los días 7–8 caen antes del
+10, así que la puerta no lo protege: protege a los seis rubros que vienen después.
+Es la misma razón por la que la ola 2 va por rubro y no de una vez —las respuestas
+del primero corrigen el texto del siguiente—, y para eso alguien tiene que ir
+primero. Si el correo de negocios resulta malo, se gasta un rubro, no siete.
+
+**Los días 11–17 son siete para seis rubros: el que sobra es holgura, no un rubro
+sin nombre.** Se lo va a comer la primera respuesta que obligue a corregir un
+texto, o el día que no haya tiempo de sentarse. Si llega al día 17 sin usarse, la
+campaña terminó un día antes.
+
+> **Lo que puede romper este calendario no es el calendario: es la columna
+> `correo`.** Los días 7–8 y 11–17 valen lo que valga la lista de §1 paso 5. Si un
+> rubro tiene tres fichas con correo del dueño, ese día son tres correos y no hay
+> nada que arreglar — pero conviene saberlo el día 2, no el día 11. Bajar la lista
+> **completa** en la preparación y mirar cuántas filas traen correo por rubro es lo
+> que convierte este calendario en algo que se puede cumplir.
 
 La ola 2 no sale de una vez: va **por rubro**, en el orden de la tabla de
 `correo-2-negocios.md` (alojamiento → gastronomía → combustible → transporte →
@@ -161,11 +227,12 @@ la página.
 
 | Cuándo | Qué se mira | Qué se decide |
 |---|---|---|
-| Día 0 | Fecha del "Poner en cero" → anotar acá: `________` | Es la línea base de todo lo demás |
-| Día 2 | "Por dónde llegaron" → `muni` / `negocio` | Si casi nadie entró, el problema es el **asunto** del correo |
-| Día 2 | Aperturas vs **Fichas vistas** | Si menos de la mitad llega a una ficha, el problema es la primera pantalla |
-| Día 10 | Propuestas recibidas / enlaces mandados | Menos de 1 de cada 4: se reescribe el correo antes de la ola siguiente |
-| Día 21 | Contactos a un negocio | Es la cifra que se le muestra a un negocio para la capa comercial |
+| Día 2 | Fecha del "Poner en cero" → anotar acá: `________` | Es la línea base de todo lo demás |
+| Día 5 | "Por dónde llegaron" → `muni` | Si casi nadie entró, el problema es el **asunto** del correo — y todavía quedan 9 comunas por escribir |
+| Día 5 | Aperturas vs **Fichas vistas** | Si menos de la mitad llega a una ficha, el problema es la primera pantalla |
+| Día 9 | "Por dónde llegaron" → `negocio` | Lo mismo para la ola 2, con alojamiento ya mandado |
+| Día 10 | **La puerta**: respuestas de comunas (buzón) y propuestas / enlaces mandados (CMS) | Menos de 1 de cada 4: se reescribe el correo **antes** del día 11 |
+| Día 20 | Contactos a un negocio | Es la cifra que se le muestra a un negocio para la capa comercial |
 
 **Lo que estos números no van a decir nunca es quién.** La analítica es anónima
 por diseño: no hay cuenta, ni sesión, ni dispositivo, ni IP. Se sabe que hoy
