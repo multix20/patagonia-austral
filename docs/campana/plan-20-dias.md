@@ -80,9 +80,11 @@ se contesta el domingo.
 | 1 | **mail-tester** desde `contacto@rutaaustral.cl` (`DEPLOY.md` §2.4.1, paso 8). **Bajo 8/10 no se manda nada**: se arregla SPF/DKIM/DMARC primero. Y la curaduría que la campaña va a exponer: la **ficha duplicada de Puerto Aysén**, los alojamientos publicados de más en esa localidad (rige **uno por localidad y categoría**) y los nombres que quedaron en MAYÚSCULAS del volcado SERNATUR |
 | 2 | **Analítica en cero** (`/admin` → Analítica → "Poner en cero", con fecha de ayer) y anotar la fecha en la tabla del final. Probar desde el teléfono `rutaaustral.cl/?c=muni` y un `?c=oit-cochrane`, y verificar que aparezcan en "Por dónde llegaron". Bajar la **Lista de la campaña** desde `/admin` → Lugares. Buscar las 14 direcciones municipales en los sitios institucionales |
 
-> **Puerta.** Si mail-tester no da 8/10, el día 3 no manda: se arregla y el
-> calendario entero corre. Un buzón quemado no se recupera dentro de estos 20
-> días.
+> **Puerta — PASADA el 1-sep-2026 con 10/10.** Si mail-tester no da 8/10, el día
+> 3 no manda: se arregla y el calendario entero corre. Un buzón quemado no se
+> recupera dentro de estos 20 días. **Ya no aplica**: SPF, DKIM y DMARC salieron
+> los tres en verde, sin listas negras y con SpamAssassin conforme sobre el texto
+> real del correo a Tortel. Detalle en `DEPLOY.md` §2.4.1, paso 8.
 
 ### Días 3–9 · Ola 1 — las 14 municipalidades
 
@@ -95,6 +97,11 @@ citan por nombre en las que siguen.
 | 4 | 2 — las vecinas del lago | Chile Chico · Río Ibáñez | 2 |
 | 5 | 3a | Cisnes · Lago Verde · Aysén · Chaitén | 4 |
 | 6 | 3b | Futaleufú · Palena · Hualaihué | 3 |
+
+> **Chaitén va en la tanda 3a por reparto de carga, no por región**: es de Los
+> Lagos, como las tres del día 6. Se dice acá porque el correo de Chaitén nombra
+> cuatro localidades (Chaitén, El Amarillo, Villa Santa Lucía y Caleta Gonzalo) y
+> equivocarse de región en ese es de los errores que no se perdonan.
 | 9 | 4 — las grandes | Coyhaique · Puerto Montt | 2 |
 
 La tanda 4 va al final **con la región ya respondida**: son las oficinas más
@@ -114,16 +121,27 @@ cuánta gente instaló la guía en su mesón.
 
 - **Recordatorio** a quien no respondió de las tandas 1–3 (el bloque
   "Recordatorio" de `correo-1-municipios.md`), con el mismo código de su ola.
-- **La puerta de decisión** (`POSICIONAMIENTO.md` §8): propuestas recibidas sobre
-  enlaces mandados. **Si responde menos de 1 de cada 4 comunas, se reescribe el
-  correo antes de seguir con los rubros que faltan.** No se manda más del mismo
-  texto esperando que cambie: si no funcionó en catorce municipalidades, no va a
-  funcionar en la quince.
+- **La puerta de decisión** (`POSICIONAMIENTO.md` §8). **Si responde menos de 1
+  de cada 4 comunas, se reescribe el correo antes de seguir con los rubros que
+  faltan.** No se manda más del mismo texto esperando que cambie: si no funcionó
+  en catorce municipalidades, no va a funcionar en la quince.
+
+  **Y se mide distinto en cada ola, porque el dato no está en el mismo lado.** La
+  ola 1 **no** se cuenta con "propuestas sobre enlaces mandados": las comunas
+  reciben `?c=muni`, no un enlace personal, así que el CMS no sabe nada de ellas.
+  Su tasa es a mano, en el buzón, anotada en el CSV. La del CMS (`/admin` →
+  Propuestas) vale para la **ola 2**, que sí lleva enlace personal.
 - Mirar también **aperturas vs fichas vistas**: si menos de la mitad de quien
   abre llega a ver una ficha, el problema no es el correo sino la primera
   pantalla, y eso se arregla en la app, no en el texto.
 
 ### Días 11–17 · Ola 2 — los rubros 2 a 7
+
+> **Lo que puede romper estos días no es el calendario: es la columna `correo`.**
+> Un día de la ola 2 vale lo que valga la lista del día 2. Si un rubro tiene tres
+> fichas con correo del dueño, ese día son tres correos y no hay nada que
+> arreglar — pero conviene saberlo el día 2, mirando cuántas filas traen correo
+> por rubro, y no el día 11 con la tanda a medio armar.
 
 Uno por día, en el orden de `correo-2-negocios.md`. El orden no es arbitrario: va
 del dato que más envejece al que menos.
@@ -173,7 +191,7 @@ tendencia en vez de una sensación.
 
 | Día | Fecha | Mandados | Respuestas | Propuestas aplicadas | Nota |
 |---|---|---|---|---|---|
-| 1 |  | 0 | — | — | mail-tester: ___ /10 |
+| 1 | 1-sep-2026 | 0 | — | — | **mail-tester: 10/10** ✅ |
 | 2 |  | 0 | — | — | analítica en cero el: ___ |
 | 3 |  |  |  |  |  |
 | 4 |  |  |  |  |  |

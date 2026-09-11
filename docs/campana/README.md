@@ -19,10 +19,12 @@ la ruta.
 
 ## 1. Antes de mandar el primer correo (media hora, en este orden)
 
-1. **Medir la entregabilidad** con [mail-tester](https://www.mail-tester.com/):
-   mandar un correo real desde `contacto@rutaaustral.cl` a la dirección que da el
-   sitio y mirar el puntaje (`DEPLOY.md` §2.4.1, paso 8). **Menos de 8/10 = no se
-   manda nada**: se arregla SPF/DKIM/DMARC o se migra el buzón. Un correo que sale
+1. ✅ **Entregabilidad medida — 10/10 el 1-sep-2026.** Se mandó el correo real de
+   Tortel desde `contacto@rutaaustral.cl` a la dirección que da
+   [mail-tester](https://www.mail-tester.com/) (`DEPLOY.md` §2.4.1, paso 8):
+   autenticación, SpamAssassin, listas negras y enlaces, los cuatro en verde. Se
+   repite si alguna vez cambian los MX o el proveedor. La regla sigue siendo
+   **menos de 8/10 = no se manda nada**: se arregla SPF/DKIM/DMARC o se migra el buzón. Un correo que sale
    pero cae en la carpeta de spam de una cuenta municipal falla igual que uno que
    rebota, solo que sin avisar — y quema la dirección para siempre.
 2. **Poner la analítica en cero**: `/admin` → Analítica → Interacciones → "Poner
@@ -95,68 +97,21 @@ la ruta.
 | 2 | Dueños de servicios con ficha publicada, **por rubro** | `correo-2-negocios.md` | `?c=negocio` + su enlace personal | Días 7–8 y 11–17 |
 | 3 | Recordatorio a quien no respondió | El bloque "Recordatorio" de cada archivo | El mismo de su ola | Día 10 (ola 1) y 18–20 (ola 2) |
 
-### El calendario, día por día
+### El calendario está en `plan-20-dias.md`
 
-Son veinte días, y la numeración es de **días de envío, no de fechas**: el día 1
-es cuando partes. **Ancla el día 3 —el primer correo— a un martes**, y no cuentes
-sábado ni domingo como día: un correo institucional que llega el viernes por la
-tarde se lee el lunes con tres días de bandeja encima, y esa primera impresión no
-se repite.
+Los veinte días, tanda por tanda, con la bitácora que se llena a mano y el día
+tipo (responder → aplicar → mandar, en ese orden). **Es el único calendario**: si
+alguna vez vuelve a aparecer uno acá, sobra uno de los dos y la campaña se va a
+mandar dos veces a la misma comuna.
 
-| Días | Qué sale | Cuántos correos |
-|---|---|---|
-| **1–2** | **Nada.** Preparar: los seis pasos de §1 — mail-tester, curar Puerto Aysén y los nombres en MAYÚSCULAS, analítica en cero, probar `?c=muni`, bajar la lista de la ola 2 | 0 |
-| **3** | Ola 1 — **Capitán Prat**: Tortel, Cochrane, O'Higgins | 3 |
-| **4** | Ola 1 — **el lago**: Chile Chico, Río Ibáñez | 2 |
-| **5** | Ola 1 — **Aysén centro-norte**: Cisnes, Lago Verde, Aysén | 3 |
-| **6** | Ola 1 — **Los Lagos**: Chaitén, Futaleufú, Palena, Hualaihué | 4 |
-| **7–8** | Ola 2 — **alojamiento**, empezando por las localidades cuyo municipio ya respondió | según la lista |
-| **9** | Ola 1 — **Coyhaique y Puerto Montt** | 2 |
-| **10** | Recordatorio de la ola 1 **+ la puerta** (acá abajo) | los que no contestaron |
-| **11–17** | Ola 2 — los seis rubros restantes, **uno por día**: gastronomía → combustible → transporte → barcazas → guías → comercio | según la lista |
-| **18–20** | Recordatorio de la ola 2, curar todo lo llegado, leer el embudo | los que no contestaron |
+Lo que sí queda fijado acá, porque es de medición y no de agenda: **la puerta del
+día 10 se mide distinto en cada ola.**
 
-Las 14 comunas quedan repartidas 3+2+3+4 en los días 3–6, más las 2 del día 9.
-Ninguna repetida, ninguna afuera — la lista completa, con qué localidades nombrarle
-a cada una, está en `correo-1-municipios.md`.
-
-**Por qué el orden es ese, y no alfabético ni por tamaño.** Empieza por Capitán
-Prat, donde el correo no es frío —el remitente vive ahí—, y sube por la ruta:
-lago, Aysén centro-norte, Los Lagos. **Coyhaique y Puerto Montt van al final, el
-día 9**, porque son las oficinas más grandes, las que menos necesitan la app, y
-las únicas que se mueven si uno llega con media región ya respondida detrás.
-
-**La puerta del día 10 se mide distinto en cada ola.** Si responde **menos de 1 de
-cada 4**, no sale el rubro del día 11: primero se reescribe el correo. Pero el
-número no sale del mismo lado:
-
-- **Ola 1 — se cuenta a mano, en el buzón.** Las comunas no reciben enlace
-  personal (reciben `?c=muni`), así que el CMS no sabe nada de ellas: lo único
-  que hay es la respuesta al correo, y se anota en el CSV.
-- **Ola 2 — se cuenta en el CMS.** `/admin` → Propuestas, contra los enlaces
-  personales mandados. Ahí sí el sistema sabe quién usó el suyo.
-
-**Alojamiento sale ANTES de la puerta, a propósito.** Los días 7–8 caen antes del
-10, así que la puerta no lo protege: protege a los seis rubros que vienen después.
-Es la misma razón por la que la ola 2 va por rubro y no de una vez —las respuestas
-del primero corrigen el texto del siguiente—, y para eso alguien tiene que ir
-primero. Si el correo de negocios resulta malo, se gasta un rubro, no siete.
-
-**Los días 11–17 son siete para seis rubros: el que sobra es holgura, no un rubro
-sin nombre.** Se lo va a comer la primera respuesta que obligue a corregir un
-texto, o el día que no haya tiempo de sentarse. Si llega al día 17 sin usarse, la
-campaña terminó un día antes.
-
-> **Lo que puede romper este calendario no es el calendario: es la columna
-> `correo`.** Los días 7–8 y 11–17 valen lo que valga la lista de §1 paso 5. Si un
-> rubro tiene tres fichas con correo del dueño, ese día son tres correos y no hay
-> nada que arreglar — pero conviene saberlo el día 2, no el día 11. Bajar la lista
-> **completa** en la preparación y mirar cuántas filas traen correo por rubro es lo
-> que convierte este calendario en algo que se puede cumplir.
-
-El «Día 0» de esa tabla es el primer día de **envío**, que en
-`plan-20-dias.md` cae en el día 3: los dos primeros se van en preparar. Ese
-archivo es el que manda sobre las fechas; esta tabla dice el orden.
+- **Ola 1 — a mano, en el buzón.** Las comunas reciben `?c=muni`, no un enlace
+  personal, así que el CMS no sabe nada de ellas: lo único que hay es si
+  respondieron el correo, y se anota en el CSV.
+- **Ola 2 — en el CMS.** `/admin` → Propuestas contra los enlaces personales
+  mandados. Ahí sí el sistema sabe quién usó el suyo.
 
 La ola 2 no sale de una vez: va **por rubro**, en el orden de la tabla de
 `correo-2-negocios.md` (alojamiento → gastronomía → combustible → transporte →
