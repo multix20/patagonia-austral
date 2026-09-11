@@ -6,10 +6,14 @@ la ruta.
 
 - **Qué se dice y por qué**: `POSICIONAMIENTO.md` (leerlo antes de tocar el copy).
 - **Los textos**: `correo-1-municipios.md`, `correo-2-negocios.md`.
-- **A quién**: `contactos.csv`, que **no está en el repo** (ver §5).
+- **A quién**: `contactos.csv`, que **no está en el repo** (ver §5). Las 14
+  filas de la ola 1 ya están llenas (11-sep-2026).
 - **Cuándo**: `plan-20-dias.md`, el calendario día por día.
 - **Ya resueltos**: `ola1-por-comuna.md`, los 14 correos municipales listos
   para copiar, con las localidades de cada comuna y su QR ya escritos.
+- **Cómo se sacan en texto plano**: `python scripts/campana/a_texto_plano.py
+  [comuna]` — nunca copiando del `.md`, que mandaría los asteriscos de las
+  negritas dentro del correo (§3).
 
 > **Esta campaña decide el producto.** No es difusión: es la que consigue el
 > teléfono que contesta. La difusión al viajero va **después**, cuando lo que se
@@ -139,6 +143,12 @@ consta: si el dueño **respondió**.
   nuevo y no tiene reputación todavía.
 - **Sin adjuntos y sin imágenes.** Texto plano o casi. Un PDF adjunto en un
   correo frío institucional multiplica el riesgo de filtro.
+- **El correo no se copia del `.md`, se saca con el script.** Los archivos de la
+  campaña están en Markdown y llevan `**negritas**`; pegados tal cual, esos
+  asteriscos viajan dentro del correo. `python scripts/campana/a_texto_plano.py
+  [comuna]` entrega el texto ya plano, con el párrafo en una sola línea (para
+  que envuelva el cliente y no quede en escalera en un teléfono) y el enlace
+  solo en la suya.
 - **Un solo enlace visible** por correo (dos en el de negocios: la app y su
   ficha). Tres enlaces cortos y un logo es la firma clásica de un boletín.
 - **Sin acortadores** (`bit.ly` y compañía). El dominio propio es justamente lo
@@ -174,9 +184,22 @@ por subir lo que no correspondía.
   para que la lista salga completa sin pasar por el computador. **Ese campo no
   viaja en `/api/places`**: la API es pública y publicar ahí los correos sería
   repartir una lista lista para raspar.
-- Las de las municipalidades se sacan a mano de cada sitio `.cl` institucional —
-  suele ser `turismo@municipalidadXXX.cl` o la Dirección de Desarrollo
-  Económico Local (DIDEL).
+- Las de las municipalidades **ya están buscadas** (11-sep-2026): las 14 filas
+  están en `contactos.csv`, con teléfono y una nota que dice de dónde salió cada
+  una. Buscarlas dejó un dato que cambia el correo: **solo siete comunas
+  publican una casilla de turismo** (Cochrane, Chaitén, Futaleufú, Palena,
+  Hualaihué, Puerto Montt y la caseta de Villa O'Higgins). En seis lo único que
+  hay es oficina de partes, alcaldía o administración, y **Chile Chico no
+  publica ninguna** — solo un formulario web, así que esa se pide por teléfono.
+  Las genéricas llevan el párrafo de derivación que está en
+  `ola1-por-comuna.md`; sin él, un correo dirigido a «la encargada de turismo»
+  que cae en oficina de partes se archiva sin leerse.
+- **No se completa una dirección por patrón.** `turismo@` + el dominio es la
+  tentación obvia cuando falta una, y es cara: si esa casilla no existe el
+  correo rebota, y un rebote en un dominio nuevo cuesta reputación — que es el
+  único techo real de esta campaña (§3). Donde no hay dato confirmado se llama
+  por teléfono, igual que con las barcazas: **sin dato real no se rellena el
+  campo**.
 - **Una comuna, un correo.** Las 28 localidades de la app se agrupan en 14
   comunas, y mandar cuatro correos a la misma oficina —uno por caleta— es la
   forma más rápida de que los cuatro se ignoren. Se nombran las localidades de

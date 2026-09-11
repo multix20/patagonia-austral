@@ -78,7 +78,7 @@ se contesta el domingo.
 | Día | Qué |
 |---|---|
 | 1 | **mail-tester** desde `contacto@rutaaustral.cl` (`DEPLOY.md` §2.4.1, paso 8). **Bajo 8/10 no se manda nada**: se arregla SPF/DKIM/DMARC primero. Y la curaduría que la campaña va a exponer: la **ficha duplicada de Puerto Aysén**, los alojamientos publicados de más en esa localidad (rige **uno por localidad y categoría**) y los nombres que quedaron en MAYÚSCULAS del volcado SERNATUR |
-| 2 | **Analítica en cero** (`/admin` → Analítica → "Poner en cero", con fecha de ayer) y anotar la fecha en la tabla del final. Probar desde el teléfono `rutaaustral.cl/?c=muni` y un `?c=oit-cochrane`, y verificar que aparezcan en "Por dónde llegaron". Bajar la **Lista de la campaña** desde `/admin` → Lugares. Buscar las 14 direcciones municipales en los sitios institucionales |
+| 2 | **Analítica en cero** (`/admin` → Analítica → "Poner en cero", con fecha de ayer) y anotar la fecha en la tabla del final. Probar desde el teléfono `rutaaustral.cl/?c=muni` y un `?c=oit-cochrane`, y verificar que aparezcan en "Por dónde llegaron". Bajar la **Lista de la campaña** desde `/admin` → Lugares. ~~Buscar las 14 direcciones municipales~~ ✅ **hechas el 11-sep-2026**, están en `contactos.csv` |
 
 > **Puerta — PASADA el 1-sep-2026 con 10/10.** Si mail-tester no da 8/10, el día
 > 3 no manda: se arregla y el calendario entero corre. Un buzón quemado no se
@@ -192,7 +192,7 @@ tendencia en vez de una sensación.
 | Día | Fecha | Mandados | Respuestas | Propuestas aplicadas | Nota |
 |---|---|---|---|---|---|
 | 1 | 1-sep-2026 | 0 | — | — | **mail-tester: 10/10** ✅ |
-| 2 |  | 0 | — | — | analítica en cero el: ___ |
+| 2 | 11-sep-2026 | 0 | — | — | 14 direcciones ✅ · analítica en cero el: ___ |
 | 3 |  |  |  |  |  |
 | 4 |  |  |  |  |  |
 | 5 |  |  |  |  |  |

@@ -22,6 +22,61 @@ Repo: https://github.com/multix20/patagonia-austral — rama `main`.
 
 ---
 
+## Dónde quedamos — para retomar (11-sep-2026)
+
+### Las 14 direcciones municipales, y lo que destapó buscarlas
+
+**Qué se hizo.** Se completó el paso del día 2 que quedaba: las **14 comunas de
+la ola 1** ya tienen dirección, teléfono y una nota de procedencia en
+`contactos.csv` (fuera del repo, por la regla §5 del README de la campaña). Con
+eso, el día 3 puede salir.
+
+**Lo que destapó, que cambia el correo.** Solo **siete de las catorce publican
+una casilla de turismo** —Cochrane, Chaitén, Futaleufú, Palena, Hualaihué,
+Puerto Montt y la caseta de Villa O'Higgins—. En seis lo único publicado es
+oficina de partes, alcaldía o administración, y **Chile Chico no publica
+ninguna**: solo un formulario web.
+
+Eso no es un detalle de la lista, es un defecto del texto: los 14 correos
+abrían dirigidos a «la encargada de turismo», y seis de ellos iban a caer en
+oficina de partes, donde un correo dirigido a otra persona se archiva sin
+leerse. Se agregó a `ola1-por-comuna.md` el **párrafo de derivación** que abre
+esos seis, y la nota de cuál es cuál vive en la columna `notas` del CSV.
+
+**La regla que sale de esto: no se completa una dirección por patrón.**
+`turismo@` + el dominio es la tentación obvia cuando falta una —y es el mismo
+error que rellenar el teléfono de una barcaza sin dato real, pero más caro: si
+la casilla no existe el correo rebota, y un rebote en un dominio nuevo cuesta
+reputación, que es el único techo real de esta campaña. Donde no hay dato
+confirmado se llama por teléfono.
+
+### El correo no se copia del Markdown
+
+**Qué se hizo.** `scripts/campana/a_texto_plano.py` saca cualquiera de los 14 ya
+en texto plano.
+
+**Por qué existe.** Los archivos de la campaña están en Markdown y llevan
+`**negritas**`, pero el README §3 manda el correo en **texto plano**. Copiar y
+pegar del `.md` —que es lo que el propio archivo invitaba a hacer, se llama «los
+14 correos listos para copiar»— manda los asteriscos dentro del correo, en el
+primer contacto con una encargada de turismo municipal. El script además arregla
+dos cosas de formato que son de entregabilidad y no de estilo: deja **cada
+párrafo en una sola línea** (los cortes a 76 columnas del editor, en un teléfono,
+quedan en escalera) y el **enlace solo en su renglón**, que es el único enlace
+visible del correo.
+
+De paso, las siete comunas de una sola localidad no tenían línea de QR en
+`ola1-por-comuna.md` —se había escrito solo para las de varias—, así que las 14
+la tienen ahora.
+
+**Lo que sigue pendiente y NO se puede hacer fuera de `/admin`:** poner la
+analítica en cero (sin eso la campaña se mide contra meses de pruebas propias),
+probar `?c=muni` desde el teléfono, y la curaduría del día 1 (Puerto Aysén
+duplicada, alojamientos de más, nombres en MAYÚSCULAS). Los nombres gritados
+**no están en el repo**: vienen de los pipelines cargados directo a la base.
+
+---
+
 ## Dónde quedamos — para retomar (1-sep-2026)
 
 ### La campaña tiene calendario, y el paso que la bloqueaba no existía

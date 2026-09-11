@@ -1,12 +1,35 @@
 # Ola 1 — los 14 correos, listos para copiar
 
-Uno por comuna, con sus localidades ya escritas. Lo único que falta es el
-**nombre de quien recibe** y su dirección: eso sale del sitio institucional de
-cada municipalidad (busca «encargada de turismo» o la Dirección de Desarrollo
-Económico Local; si no aparece, va «Estimados» y se pide la derivación).
+Uno por comuna, con sus localidades ya escritas. Las **direcciones ya están
+buscadas** y viven en `contactos.csv` (fuera del repo, §5 del `README.md`). Lo
+único que falta escribir es el **nombre de quien recibe**, cuando se sabe.
 
 El texto sale de `correo-1-municipios.md`, que es donde está el porqué de cada
 frase. Acá está resuelto para no pensarlo catorce veces.
+
+## Seis de las catorce no publican correo de turismo
+
+Buscarlas dejó un dato que cambia el correo: **solo siete comunas tienen una
+casilla de turismo publicada** (Cochrane, Chaitén, Futaleufú, Palena, Hualaihué,
+Puerto Montt y la caseta de Villa O'Higgins). En el resto lo único que hay es
+oficina de partes, alcaldía o administración — y **Chile Chico no publica
+ninguna**, solo un formulario web.
+
+Eso importa porque un correo que empieza «Estimada encargada de turismo» y llega
+a oficina de partes se archiva sin leerse. Cuando la dirección es genérica, el
+correo abre con esta línea y **nada más cambia**:
+
+> Estimados:
+>
+> Si esta no es la casilla que corresponde, les agradezco que reenvíen este
+> correo a quien lleva turismo en la municipalidad — es para esa persona, y son
+> cinco minutos de su tiempo.
+
+Cuál es genérica y cuál no está anotado ficha por ficha en la columna `notas` de
+`contactos.csv`. **No se inventa una dirección por patrón** (`turismo@` + el
+dominio): un correo a una casilla que no existe rebota, y un rebote en un
+dominio nuevo cuesta reputación —que es el único techo real de esta campaña—.
+Donde no hay dato, se llama por teléfono o se pide la derivación.
 
 **No mandes ninguno antes de que mail-tester dé sobre 8/10.** Un correo que cae
 en spam en una cuenta municipal falla igual que uno que rebota, solo que sin
